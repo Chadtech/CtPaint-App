@@ -1,0 +1,1 @@
+app = Elm.Main.fullscreen()
