@@ -9,6 +9,7 @@ module.exports.make = ->
         [ 
             "elm-make"
             "source/Main.elm"
+            "--warn"
             "--output"
             "development/elm.js"
         ].join " "
