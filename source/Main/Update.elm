@@ -7,5 +7,11 @@ import Main.Model exposing (Model)
 update : Message -> Model -> ( Model, Cmd Message )
 update message model =
     case message of
-        NoOp ->
-            ( model, Cmd.none )
+        GetWindowSize (Ok size) ->
+            { model
+                | window = Just size
+            }
+                ! []
+
+        _ ->
+            model ! []

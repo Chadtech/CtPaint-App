@@ -6,15 +6,17 @@ import Main.Message exposing (Message(..))
 import Main.View exposing (view)
 import Main.Update exposing (update)
 import Main.Subscriptions exposing (subscriptions)
+import Main.Init exposing (init)
+import Json.Decode exposing (Value)
 
 
 -- MAIN --
 
 
-main : Program Never Model Message
+main : Program Value Model Message
 main =
-    Html.program
-        { init = ( Model Nothing, Cmd.none )
+    Html.programWithFlags
+        { init = init
         , view = view
         , update = update
         , subscriptions = subscriptions

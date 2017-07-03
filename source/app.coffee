@@ -1,1 +1,1 @@
-app = Elm.Main.fullscreen()
+app = Elm.Main.fullscreen (wow: "neat")
