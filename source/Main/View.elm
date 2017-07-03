@@ -1,32 +1,17 @@
 module Main.View exposing (view)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (on, onInput, keyCode)
+import Html exposing (Html, div, p, text)
+import Html.Attributes exposing (class)
 import Main.Model exposing (Model)
-import Main.Message exposing (Msg(..))
+import Main.Message exposing (Message(..))
 
 
--- VIEW
+-- VIEW --
 
 
-view : Model -> Html Msg
+view : Model -> Html Message
 view model =
     div
         [ class "main" ]
-        [ title
+        [ p [] [ text "Admin Panel" ]
         ]
-
-
-
--- COMPONENTS
-
-
-title : Html Msg
-title =
-    words "Admin Panel"
-
-
-words : String -> Html Msg
-words str =
-    node "words" [] [ text str ]

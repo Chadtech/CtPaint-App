@@ -1,10 +1,10 @@
 module Main.Update exposing (update)
 
-import Main.Message exposing (Msg(..))
+import Main.Message exposing (Message(..))
 import Main.Model exposing (Model)
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Message -> Model -> ( Model, Cmd Message )
 update message model =
     case message of
         NoOp ->

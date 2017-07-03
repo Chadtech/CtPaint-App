@@ -1,5 +1,5 @@
-module Main.Message exposing (Msg(..))
+module Main.Message exposing (Message(..))
 
 
-type Msg
+type Message
     = NoOp
