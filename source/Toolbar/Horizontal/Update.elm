@@ -26,11 +26,6 @@ handleResize direction model =
                         >> ResizeToolbar
                         >> MainMessage.HorizontalToolbarMessage
                         |> Just
-                    --, subMouseUp =
-                    --    Up
-                    --        >> ResizeToolbar
-                    --        >> MainMessage.HorizontalToolbarMessage
-                    --        |> Just
             }
                 ! []
 
@@ -38,7 +33,6 @@ handleResize direction model =
             { model
                 | subMouseMove =
                     Nothing
-                    --, subMouseUp = Nothing
             }
                 ! []
 

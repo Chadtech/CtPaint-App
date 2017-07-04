@@ -1,6 +1,7 @@
 module Main.Message exposing (Message(..))
 
 import Toolbar.Horizontal.Types as HorizontalToolbar
+import Window exposing (Size)
 
 
 --import Toolbar.Vertical.Types as VerticalToolbar
@@ -8,6 +9,7 @@ import Toolbar.Horizontal.Types as HorizontalToolbar
 
 type Message
     = HorizontalToolbarMessage HorizontalToolbar.Message
+    | GetWindowSize Size
 
 
 

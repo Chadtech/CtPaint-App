@@ -14,3 +14,9 @@ update message model =
                     HorizontalToolbar.update subMessage model
             in
                 ( newModel, Cmd.map HorizontalToolbarMessage cmd )
+
+        GetWindowSize { height } ->
+            { model
+                | windowHeight = height
+            }
+                ! []
