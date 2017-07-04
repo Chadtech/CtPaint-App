@@ -16,5 +16,16 @@ view model =
     div
         [ class "main" ]
         [ ToolbarVertical.view
-        , ToolbarHorizontal.view model.horizontalToolbarHeight
+        , horizontalToolbar model
         ]
+
+
+
+-- TOOL BARS --
+
+
+horizontalToolbar : Model -> Html Message
+horizontalToolbar { horizontalToolbarHeight } =
+    Html.map
+        HorizontalToolbarMessage
+        (ToolbarHorizontal.view horizontalToolbarHeight)

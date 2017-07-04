@@ -1,5 +1,8 @@
 module Types.Tools exposing (..)
 
+import Mouse exposing (Position)
+import Main.Message exposing (Message(..))
+
 
 type Name
     = Hand
@@ -9,6 +12,12 @@ type Name
 type alias Tool =
     { name : Name
     , icon : String
+    , canvasMouseDown : Maybe (Position -> Message)
+    , canvasMouseUp : Maybe (Position -> Message)
+    , canvasMouseMove : Maybe (Position -> Message)
+    , subMouseDown : Maybe (Position -> Message)
+    , subMouseUp : Maybe (Position -> Message)
+    , subMouseMove : Maybe (Position -> Message)
     }
 
 
@@ -27,6 +36,12 @@ hand : Tool
 hand =
     { name = Hand
     , icon = "\xEA0A"
+    , canvasMouseDown = Nothing
+    , canvasMouseUp = Nothing
+    , canvasMouseMove = Nothing
+    , subMouseDown = Nothing
+    , subMouseUp = Nothing
+    , subMouseMove = Nothing
     }
 
 
@@ -34,4 +49,10 @@ pencil : Tool
 pencil =
     { name = Pencil
     , icon = "\xEA02"
+    , canvasMouseDown = Nothing
+    , canvasMouseUp = Nothing
+    , canvasMouseMove = Nothing
+    , subMouseDown = Nothing
+    , subMouseUp = Nothing
+    , subMouseMove = Nothing
     }

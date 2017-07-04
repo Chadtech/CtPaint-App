@@ -5,6 +5,7 @@ import Main.Message exposing (Message(..))
 import Json.Decode exposing (Value)
 import Canvas exposing (Size)
 import Types.Session as Session
+import Json.Decode as Decode exposing (Decoder)
 
 
 init : Value -> ( Model, Cmd Message )
@@ -14,5 +15,22 @@ init json =
     , pendingDraw = Canvas.batch []
     , palette = []
     , horizontalToolbarHeight = 58
+    , subMouseMove = Nothing
+    , windowHeight =
+        case Decode.decodeValue heightDecoder json of
+            Ok height ->
+                height
+
+            _ ->
+                800
     }
         ! []
+
+
+
+-- HEIGHT DECODER --
+
+
+heightDecoder : Decoder Int
+heightDecoder =
+    Decode.field "windowHeight" Decode.int
