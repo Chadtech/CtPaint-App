@@ -13,6 +13,6 @@ init json =
     , canvas = Canvas.initialize (Size 400 400)
     , pendingDraw = Canvas.batch []
     , palette = []
-    , toolbarsSize = Size 29 58
+    , horizontalToolbarHeight = 58
     }
         ! []

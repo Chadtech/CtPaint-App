@@ -10,5 +10,5 @@ type alias Model =
     , canvas : Canvas
     , pendingDraw : DrawOp
     , palette : List Color
-    , toolbarsSize : Size
+    , horizontalToolbarHeight : Int
     }
