@@ -1,6 +1,6 @@
 module Toolbar.Vertical.View exposing (view)
 
-import Html exposing (Html, div, a, p, text)
+import Html exposing (Html, div, a, text)
 import Html.Attributes exposing (class)
 import Main.Message exposing (Message(..))
 import Types.Tools as Tools exposing (Tool)
