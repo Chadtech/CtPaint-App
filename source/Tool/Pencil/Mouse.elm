@@ -1,8 +1,8 @@
-module Tool.Hand.Mouse exposing (..)
+module Tool.Pencil.Mouse exposing (..)
 
 import Html exposing (Attribute)
 import ElementRelativeMouseEvents as Events
-import Tool.Hand.Types exposing (Message(..))
+import Tool.Pencil.Types exposing (Message(..))
 import Util exposing (toPosition)
 import Mouse
 

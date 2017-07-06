@@ -4,6 +4,7 @@ import Main.Message exposing (Message(..))
 import Main.Model exposing (Model)
 import Toolbar.Horizontal.Update as HorizontalToolbar
 import Tool.Hand.Update as Hand
+import Tool.Pencil.Update as Pencil
 import Tool.Types exposing (Tool(..))
 
 
@@ -31,10 +32,17 @@ update message model =
 
         ( HandMessage subMessage, Hand subModel ) ->
             let
-                ( newModel, cmd ) =
+                newModel =
                     Hand.update subMessage subModel model
             in
-                newModel ! [ Cmd.map HandMessage cmd ]
+                newModel ! []
+
+        ( PencilMessage subMessage, Pencil subModel ) ->
+            let
+                newModel =
+                    Pencil.update subMessage subModel model
+            in
+                newModel ! []
 
         _ ->
             model ! []

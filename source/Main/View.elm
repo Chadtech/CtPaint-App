@@ -10,6 +10,7 @@ import Util exposing ((:=), px)
 import Canvas
 import Tool.Types as Tool exposing (Tool(..))
 import Tool.Hand.Mouse as Hand
+import Tool.Pencil.Mouse as Pencil
 
 
 -- VIEW --
@@ -61,8 +62,10 @@ addToolAttributes tool attributes =
                         (Attributes.map HandMessage)
                         Hand.attributes
 
-                Pencil ->
-                    []
+                Pencil _ ->
+                    List.map
+                        (Attributes.map PencilMessage)
+                        Pencil.attributes
     in
         toolAttributes ++ attributes
 

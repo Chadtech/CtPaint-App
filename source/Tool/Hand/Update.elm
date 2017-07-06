@@ -3,53 +3,43 @@ module Tool.Hand.Update exposing (..)
 import Main.Model exposing (Model)
 import Tool.Hand.Types exposing (Message(..))
 import Tool.Types exposing (Tool(..))
-import ElementRelativeMouseEvents exposing (Point)
 import Mouse exposing (Position)
-import Util exposing (toPoint)
 
 
-update : Message -> Maybe ( Point, Point ) -> Model -> ( Model, Cmd Message )
+update : Message -> Maybe ( Position, Position ) -> Model -> Model
 update message tool model =
     case ( message, tool ) of
-        ( OnScreenMouseDown point, Nothing ) ->
-            let
-                canvasPosition =
-                    toPoint model.canvasPosition
-            in
-                { model
-                    | tool = Hand (Just ( canvasPosition, point ))
-                }
-                    ! []
+        ( OnScreenMouseDown position, Nothing ) ->
+            { model
+                | tool =
+                    Hand (Just ( model.canvasPosition, position ))
+            }
 
-        ( OnScreenMouseMove position, Just ( canvasPoint, originalClick ) ) ->
+        ( SubMouseMove position, Just ( canvasPosition, originalClick ) ) ->
             let
                 x =
                     List.sum
-                        [ canvasPoint.x
-                        , toFloat position.x
+                        [ canvasPosition.x
+                        , position.x
                         , -originalClick.x
                         ]
 
                 y =
                     List.sum
-                        [ canvasPoint.y
-                        , toFloat position.y
+                        [ canvasPosition.y
+                        , position.y
                         , -originalClick.y
                         ]
             in
                 { model
                     | canvasPosition =
-                        Position
-                            (floor x)
-                            (floor y)
+                        Position x y
                 }
-                    ! []
 
-        ( OnScreenMouseUp, _ ) ->
+        ( SubMouseUp, _ ) ->
             { model
                 | tool = Hand Nothing
             }
-                ! []
 
         _ ->
-            model ! []
+            model

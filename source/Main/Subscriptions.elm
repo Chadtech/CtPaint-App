@@ -5,6 +5,7 @@ import Main.Message exposing (Message(..))
 import Util exposing (maybeCons)
 import Tool.Types exposing (Tool(..))
 import Tool.Hand.Mouse as Hand
+import Tool.Pencil.Mouse as Pencil
 import Mouse
 import Window
 
@@ -17,8 +18,8 @@ subscriptions model =
                 Hand _ ->
                     List.map (Sub.map HandMessage) Hand.subs
 
-                Pencil ->
-                    []
+                Pencil _ ->
+                    List.map (Sub.map PencilMessage) Pencil.subs
     in
         Sub.batch
             [ generalSubs model

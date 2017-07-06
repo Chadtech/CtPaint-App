@@ -1,11 +1,11 @@
 module Tool.Types exposing (..)
 
-import ElementRelativeMouseEvents exposing (Point)
+import Mouse exposing (Position)
 
 
 type Tool
-    = Hand (Maybe ( Point, Point ))
-    | Pencil
+    = Hand (Maybe ( Position, Position ))
+    | Pencil (Maybe Position)
 
 
 
@@ -15,7 +15,7 @@ type Tool
 all : List Tool
 all =
     [ Hand Nothing
-    , Pencil
+    , Pencil Nothing
     ]
 
 
@@ -25,7 +25,7 @@ icon tool =
         Hand _ ->
             "\xEA0A"
 
-        Pencil ->
+        Pencil _ ->
             "\xEA02"
 
 
@@ -35,5 +35,5 @@ name tool =
         Hand _ ->
             "hand"
 
-        Pencil ->
+        Pencil _ ->
             "pencil"
