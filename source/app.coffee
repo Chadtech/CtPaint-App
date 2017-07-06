@@ -36,5 +36,6 @@ if user isnt null
             else
                 flags = _.reduce attributes, makeFlags, flags
                 flags.windowHeight = window.innerHeight
+                flags.windowWidth = window.innerWidth
 
             app = Elm.Main.fullscreen flags

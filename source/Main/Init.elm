@@ -3,34 +3,82 @@ module Main.Init exposing (..)
 import Main.Model exposing (Model)
 import Main.Message exposing (Message(..))
 import Json.Decode exposing (Value)
-import Canvas exposing (Size)
+import Canvas exposing (Canvas, Size, DrawOp(..), Point)
 import Types.Session as Session
+import Tool.Types exposing (Tool(..))
 import Json.Decode as Decode exposing (Decoder)
+import Mouse exposing (Position)
+import Color
 
 
 init : Value -> ( Model, Cmd Message )
 init json =
-    { session = Session.decode json
-    , canvas = Canvas.initialize (Size 400 400)
-    , pendingDraw = Canvas.batch []
-    , palette = []
-    , horizontalToolbarHeight = 58
-    , subMouseMove = Nothing
-    , windowHeight =
-        case Decode.decodeValue heightDecoder json of
-            Ok height ->
-                height
+    let
+        windowSize =
+            decodeWindow json
 
-            _ ->
-                800
-    }
-        ! []
+        canvas =
+            Canvas.initialize (Size 400 400)
+                |> fillBlack
+    in
+        { session = Session.decode json
+        , canvas = canvas
+        , canvasPosition =
+            getCanvasPosition
+                windowSize
+                (Canvas.getSize canvas)
+        , pendingDraw = Canvas.batch []
+        , palette = []
+        , horizontalToolbarHeight = 58
+        , subMouseMove = Nothing
+        , windowSize = windowSize
+        , tool = Hand
+        }
+            ! []
 
 
 
--- HEIGHT DECODER --
+-- INIT CANVAS --
 
 
-heightDecoder : Decoder Int
-heightDecoder =
-    Decode.field "windowHeight" Decode.int
+getCanvasPosition : Size -> Size -> Position
+getCanvasPosition window { width, height } =
+    Position
+        ((window.width - width) // 2)
+        ((window.height - height) // 2)
+
+
+fillBlack : Canvas -> Canvas
+fillBlack canvas =
+    Canvas.draw (fillBlackOp canvas) canvas
+
+
+fillBlackOp : Canvas -> DrawOp
+fillBlackOp canvas =
+    [ BeginPath
+    , Rect (Point 0 0) (Canvas.getSize canvas)
+    , FillStyle Color.black
+    , Fill
+    ]
+        |> Canvas.batch
+
+
+
+-- WINDOW SIZE DECODER --
+
+
+decodeWindow : Value -> Size
+decodeWindow json =
+    case Decode.decodeValue windowDecoder json of
+        Ok ( w, h ) ->
+            Size w h
+
+        Err _ ->
+            Size 800 800
+
+
+windowDecoder : Decoder ( Int, Int )
+windowDecoder =
+    Decode.map2 (,)
+        (Decode.field "windowWidth" Decode.int)
+        (Decode.field "windowHeight" Decode.int)

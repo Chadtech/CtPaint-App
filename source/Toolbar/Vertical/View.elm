@@ -1,24 +1,36 @@
 module Toolbar.Vertical.View exposing (view)
 
 import Html exposing (Html, div, a, text)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, classList)
+import Html.Events exposing (onClick)
 import Main.Message exposing (Message(..))
-import Types.Tools as Tools exposing (Tool)
+import Main.Model exposing (Model)
+import Tool.Types as Tool exposing (Tool(..))
+import Util exposing ((:=))
 
 
-view : Html Message
-view =
+view : Model -> Html Message
+view model =
     div
         [ class "vertical-tool-bar" ]
-        (List.map buttonView Tools.all)
+        (List.map (buttonView model.tool) Tool.all)
 
 
 
 -- COMPONENTS --
 
 
-buttonView : Tool -> Html Message
-buttonView tool =
-    a
-        [ class "tool-button" ]
-        [ text tool.icon ]
+buttonView : Tool -> Tool -> Html Message
+buttonView currentTool thisButtonsTool =
+    let
+        isSelected =
+            (Tool.name currentTool) == (Tool.name thisButtonsTool)
+    in
+        a
+            [ classList
+                [ "tool-button" := True
+                , "selected" := isSelected
+                ]
+            , onClick (SetTool thisButtonsTool)
+            ]
+            [ text (Tool.icon thisButtonsTool) ]

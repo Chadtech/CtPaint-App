@@ -1,13 +1,7 @@
 module Toolbar.Horizontal.Types exposing (..)
 
-import Mouse exposing (..)
+import Types.Mouse exposing (Direction(..))
 
 
 type Message
-    = ResizeToolbar MouseDirection
-
-
-type MouseDirection
-    = Up Position
-    | Down Position
-    | Move Position
+    = ResizeToolbar Direction

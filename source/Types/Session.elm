@@ -13,10 +13,8 @@ type alias Session =
 
 decoder : Decoder Session
 decoder =
-    Decode.map Session <|
-        Decode.field
-            "email"
-            Decode.string
+    Decode.field "email" Decode.string
+        |> Decode.map Session
 
 
 decode : Value -> Maybe Session

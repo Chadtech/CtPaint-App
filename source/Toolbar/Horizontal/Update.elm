@@ -1,6 +1,7 @@
 module Toolbar.Horizontal.Update exposing (update)
 
-import Toolbar.Horizontal.Types exposing (Message(..), MouseDirection(..))
+import Toolbar.Horizontal.Types exposing (Message(..))
+import Types.Mouse exposing (Direction(..))
 import Main.Model exposing (Model)
 import Main.Message as MainMessage
 
@@ -16,7 +17,7 @@ update message model =
 -- RESIZE TOOL BAR --
 
 
-handleResize : MouseDirection -> Model -> ( Model, Cmd Message )
+handleResize : Direction -> Model -> ( Model, Cmd Message )
 handleResize direction model =
     case direction of
         Down _ ->
@@ -37,8 +38,12 @@ handleResize direction model =
                 ! []
 
         Move position ->
-            { model
-                | horizontalToolbarHeight =
-                    model.windowHeight - position.y
-            }
-                ! []
+            let
+                { width, height } =
+                    model.windowSize
+            in
+                { model
+                    | horizontalToolbarHeight =
+                        height - position.y
+                }
+                    ! []
