@@ -1,8 +1,10 @@
 module Tool.Types exposing (..)
 
+import ElementRelativeMouseEvents exposing (Point)
+
 
 type Tool
-    = Hand
+    = Hand (Maybe ( Point, Point ))
     | Pencil
 
 
@@ -12,7 +14,7 @@ type Tool
 
 all : List Tool
 all =
-    [ Hand
+    [ Hand Nothing
     , Pencil
     ]
 
@@ -20,8 +22,8 @@ all =
 icon : Tool -> String
 icon tool =
     case tool of
-        Hand ->
-            "/xEA0A"
+        Hand _ ->
+            "\xEA0A"
 
         Pencil ->
             "\xEA02"
@@ -30,7 +32,7 @@ icon tool =
 name : Tool -> String
 name tool =
     case tool of
-        Hand ->
+        Hand _ ->
             "hand"
 
         Pencil ->

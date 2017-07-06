@@ -32,7 +32,7 @@ init json =
         , horizontalToolbarHeight = 58
         , subMouseMove = Nothing
         , windowSize = windowSize
-        , tool = Hand
+        , tool = Hand Nothing
         }
             ! []
 

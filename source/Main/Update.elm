@@ -29,10 +29,10 @@ update message model =
             }
                 ! []
 
-        ( HandMessage subMessage, Hand ) ->
+        ( HandMessage subMessage, Hand subModel ) ->
             let
                 ( newModel, cmd ) =
-                    Hand.update subMessage Hand model
+                    Hand.update subMessage subModel model
             in
                 newModel ! [ Cmd.map HandMessage cmd ]
 
