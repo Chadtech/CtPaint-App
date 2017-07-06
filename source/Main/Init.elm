@@ -9,6 +9,7 @@ import Tool.Types exposing (Tool(..))
 import Json.Decode as Decode exposing (Decoder)
 import Mouse exposing (Position)
 import Color
+import Palette.Init
 
 
 init : Value -> ( Model, Cmd Message )
@@ -28,7 +29,8 @@ init json =
                 windowSize
                 (Canvas.getSize canvas)
         , pendingDraw = Canvas.batch []
-        , palette = []
+        , swatches = Palette.Init.swatches
+        , palette = Palette.Init.palette
         , horizontalToolbarHeight = 58
         , subMouseMove = Nothing
         , windowSize = windowSize

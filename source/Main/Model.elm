@@ -6,6 +6,7 @@ import Canvas exposing (Canvas, Size, DrawOp(..))
 import Color exposing (Color)
 import Main.Message exposing (Message(..))
 import Mouse exposing (Position)
+import Palette.Types exposing (Swatches)
 
 
 type alias Model =
@@ -13,6 +14,7 @@ type alias Model =
     , canvas : Canvas
     , canvasPosition : Position
     , pendingDraw : DrawOp
+    , swatches : Swatches
     , palette : List Color
     , horizontalToolbarHeight : Int
     , subMouseMove : Maybe (Position -> Message)
