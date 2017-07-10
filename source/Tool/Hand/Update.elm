@@ -22,6 +22,7 @@ update message tool model =
                         [ canvasPosition.x
                         , position.x
                         , -originalClick.x
+                        , -29
                         ]
 
                 y =

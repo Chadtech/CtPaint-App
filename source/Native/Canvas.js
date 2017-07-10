@@ -315,6 +315,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
       break;
 
     case "PutImageData" :
+      // console.log("PUT IMAGE DATA", drawOp._0);
 
       point = drawOp._2;
       size = drawOp._1;

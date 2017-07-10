@@ -8,6 +8,7 @@ import Tool.Hand.Mouse as Hand
 import Tool.Pencil.Mouse as Pencil
 import Mouse
 import Window
+import AnimationFrame
 
 
 subscriptions : Model -> Sub Message
@@ -29,6 +30,8 @@ subscriptions model =
 
 generalSubs : Model -> Sub Message
 generalSubs model =
-    [ Window.resizes GetWindowSize ]
+    [ Window.resizes GetWindowSize
+    , AnimationFrame.diffs Tick
+    ]
         |> maybeCons (Maybe.map Mouse.moves model.subMouseMove)
         |> Sub.batch

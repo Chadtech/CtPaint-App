@@ -30,6 +30,10 @@ maybeCons maybe list =
             list
 
 
+
+-- POSITION AND POINT --
+
+
 toPosition : Point -> Position
 toPosition { x, y } =
     Position (floor x) (floor y)

@@ -6,6 +6,7 @@ import Toolbar.Horizontal.Update as HorizontalToolbar
 import Tool.Hand.Update as Hand
 import Tool.Pencil.Update as Pencil
 import Tool.Types exposing (Tool(..))
+import Canvas exposing (Size, DrawOp(..))
 
 
 update : Message -> Model -> ( Model, Cmd Message )
@@ -43,6 +44,22 @@ update message model =
                     Pencil.update subMessage subModel model
             in
                 newModel ! []
+
+        ( Tick dt, _ ) ->
+            case model.pendingDraw of
+                Batch [] ->
+                    model ! []
+
+                _ ->
+                    { model
+                        | canvas =
+                            Canvas.draw
+                                model.pendingDraw
+                                model.canvas
+                        , pendingDraw =
+                            Canvas.batch []
+                    }
+                        ! []
 
         _ ->
             model ! []
