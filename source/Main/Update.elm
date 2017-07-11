@@ -7,6 +7,7 @@ import Tool.Hand.Update as Hand
 import Tool.Pencil.Update as Pencil
 import Tool.Types exposing (Tool(..))
 import Canvas exposing (Size, DrawOp(..))
+import Keyboard.Update as Keyboard
 
 
 update : Message -> Model -> ( Model, Cmd Message )
@@ -30,6 +31,13 @@ update message model =
                 | tool = tool
             }
                 ! []
+
+        ( KeyboardMessage subMessage, _ ) ->
+            let
+                newModel =
+                    Keyboard.update subMessage model
+            in
+                newModel ! []
 
         ( HandMessage subMessage, Hand subModel ) ->
             let

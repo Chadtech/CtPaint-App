@@ -9,6 +9,8 @@ import Tool.Pencil.Mouse as Pencil
 import Mouse
 import Window
 import AnimationFrame
+import Keyboard
+import Keyboard.Types as Keyboard
 
 
 subscriptions : Model -> Sub Message
@@ -32,6 +34,8 @@ generalSubs : Model -> Sub Message
 generalSubs model =
     [ Window.resizes GetWindowSize
     , AnimationFrame.diffs Tick
+    , Keyboard.ups
+        (KeyboardMessage << Keyboard.KeyEvent << Keyboard.Up)
     ]
         |> maybeCons (Maybe.map Mouse.moves model.subMouseMove)
         |> Sub.batch
