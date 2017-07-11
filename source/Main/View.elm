@@ -97,7 +97,7 @@ canvasArea canvasAreaHeight { canvasPosition, canvas } =
 
 
 horizontalToolbar : Model -> Html Message
-horizontalToolbar { horizontalToolbarHeight } =
+horizontalToolbar model =
     Html.map
         HorizontalToolbarMessage
-        (ToolbarHorizontal.view horizontalToolbarHeight)
+        (ToolbarHorizontal.view model)
