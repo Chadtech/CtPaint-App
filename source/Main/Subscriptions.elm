@@ -36,6 +36,8 @@ generalSubs model =
     , AnimationFrame.diffs Tick
     , Keyboard.ups
         (KeyboardMessage << Keyboard.KeyEvent << Keyboard.Up)
+    , Keyboard.downs
+        (KeyboardMessage << Keyboard.KeyEvent << Keyboard.Down)
     ]
         |> maybeCons (Maybe.map Mouse.moves model.subMouseMove)
         |> Sub.batch

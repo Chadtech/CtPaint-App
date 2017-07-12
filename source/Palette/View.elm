@@ -16,13 +16,13 @@ view model =
 
 
 swatches : Swatches -> Html Message
-swatches { topLeft, topRight, bottomLeft, bottomRight } =
+swatches { primary, first, second, third } =
     div
         [ class "swatches" ]
-        [ swatch topLeft "topLeft"
-        , swatch topRight "topRight"
-        , swatch bottomLeft "bottomLeft"
-        , swatch bottomRight "bottomRight"
+        [ swatch primary "primary"
+        , swatch first "first"
+        , swatch second "second"
+        , swatch third "third"
         ]
 
 

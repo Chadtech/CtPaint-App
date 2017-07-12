@@ -5,6 +5,7 @@ import Keyboard exposing (KeyCode)
 
 type Direction
     = Up KeyCode
+    | Down KeyCode
 
 
 type Message

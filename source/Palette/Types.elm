@@ -5,10 +5,11 @@ import ParseInt
 
 
 type alias Swatches =
-    { bottomLeft : Color
-    , bottomRight : Color
-    , topLeft : Color
-    , topRight : Color
+    { primary : Color
+    , first : Color
+    , second : Color
+    , third : Color
+    , keyIsDown : Bool
     }
 
 

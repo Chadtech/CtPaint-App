@@ -39,7 +39,7 @@ update message tool ({ canvasPosition } as model) =
                         Canvas.batch
                             [ model.pendingDraw
                             , Line.draw
-                                model.swatches.topLeft
+                                model.swatches.primary
                                 priorPosition
                                 adjustedPosition
                             ]
