@@ -24,8 +24,16 @@ toHex color =
             Color.toRgb color
     in
         [ "#"
-        , ParseInt.toHex red
-        , ParseInt.toHex green
-        , ParseInt.toHex blue
+        , toHexHelper <| ParseInt.toHex red
+        , toHexHelper <| ParseInt.toHex green
+        , toHexHelper <| ParseInt.toHex blue
         ]
             |> String.concat
+
+
+toHexHelper : String -> String
+toHexHelper hex =
+    if String.length hex > 1 then
+        hex
+    else
+        "0" ++ hex

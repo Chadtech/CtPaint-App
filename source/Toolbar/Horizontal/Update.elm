@@ -12,6 +12,19 @@ update message model =
         ResizeToolbar direction ->
             handleResize direction model
 
+        SetPrimarySwatch color ->
+            let
+                { swatches } =
+                    model
+            in
+                { model
+                    | swatches =
+                        { swatches
+                            | primary = color
+                        }
+                }
+                    ! []
+
 
 
 -- RESIZE TOOL BAR --

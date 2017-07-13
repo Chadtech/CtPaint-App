@@ -13,18 +13,19 @@ import Palette.View as Palette
 view : Model -> Html Message
 view model =
     div
-        [ class "horizontal-tool-bar" ]
-        [ edge model.horizontalToolbarHeight
+        [ class "horizontal-tool-bar"
+        , style
+            [ "height" := (px model.horizontalToolbarHeight) ]
+        ]
+        [ edge
         , Palette.view model
         ]
 
 
-edge : Int -> Html Message
-edge height =
+edge : Html Message
+edge =
     div
         [ class "edge"
-        , style
-            [ "height" := (px height) ]
         , Util.toPosition
             >> Down
             >> ResizeToolbar
