@@ -8,6 +8,7 @@ import Toolbar.Horizontal.Types exposing (Message(..))
 import Palette.Types as Palette exposing (Swatches)
 import Color exposing (Color)
 import Util exposing ((:=), px)
+import Array
 
 
 view : Model -> Html Message
@@ -25,14 +26,20 @@ view model =
 
 palette : Model -> Html Message
 palette model =
-    div
-        [ class "general"
-        , style
-            [ "height"
-                := (px (model.horizontalToolbarHeight - 10))
+    let
+        paletteSquares =
+            model.palette
+                |> Array.map paletteSquare
+                |> Array.toList
+    in
+        div
+            [ class "general"
+            , style
+                [ "height"
+                    := (px (model.horizontalToolbarHeight - 10))
+                ]
             ]
-        ]
-        (List.map paletteSquare model.palette)
+            paletteSquares
 
 
 paletteSquare : Color -> Html Message

@@ -2,9 +2,10 @@ module Palette.Init exposing (..)
 
 import Color exposing (Color)
 import Palette.Types exposing (Swatches)
+import Array exposing (Array)
 
 
-palette : List Color
+palette : Array Color
 palette =
     [ Color.white
     , Color.black
@@ -17,6 +18,7 @@ palette =
     ]
         |> List.repeat 25
         |> List.concat
+        |> Array.fromList
 
 
 swatches : Swatches
