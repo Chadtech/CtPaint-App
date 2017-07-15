@@ -1,4 +1,65 @@
-module Tool.Zoom exposing (next, prev)
+module Tool.Zoom exposing (..)
+
+import Mouse exposing (Position)
+import Main.Model exposing (Model)
+import Mouse exposing (Position)
+import Canvas exposing (Size)
+
+
+adjust : Position -> Int -> Model -> Model
+adjust { x, y } bias ({ zoom, windowSize, canvasPosition } as model) =
+    let
+        halfWindowSize =
+            Size
+                ((windowSize.width - 29) // 2)
+                (windowSize.height // 2)
+
+        x_ =
+            (x - halfWindowSize.width) // zoom
+
+        y_ =
+            (y - halfWindowSize.height) // zoom
+    in
+        { model
+            | canvasPosition =
+                Position
+                    (canvasPosition.x + (x_ * bias))
+                    (canvasPosition.y + (y_ * bias))
+        }
+
+
+set : Int -> Model -> Model
+set zoom ({ canvas, canvasPosition, windowSize } as model) =
+    let
+        canvasSize =
+            Canvas.getSize canvas
+
+        halfWindowSize =
+            Size
+                ((windowSize.width - 29) // 2)
+                (windowSize.height // 2)
+
+        relZoom : Int -> Int
+        relZoom d =
+            d * zoom // model.zoom
+
+        x =
+            halfWindowSize.width
+                |> (-) canvasPosition.x
+                |> relZoom
+                |> (+) halfWindowSize.width
+
+        y =
+            halfWindowSize.height
+                |> (-) canvasPosition.y
+                |> relZoom
+                |> (+) halfWindowSize.height
+    in
+        { model
+            | zoom = zoom
+            , canvasPosition =
+                Position x y
+        }
 
 
 next : Int -> Int

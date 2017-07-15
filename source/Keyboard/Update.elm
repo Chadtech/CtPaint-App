@@ -4,6 +4,7 @@ import Main.Model exposing (Model)
 import Keyboard.Types exposing (Message(..), Direction(..))
 import Char
 import Tool.Types exposing (Tool(..))
+import Tool.Zoom as Zoom
 
 
 update : Message -> Model -> Model
@@ -138,6 +139,27 @@ handleKeyUp char model =
                     , keyIsDown = False
                     }
             }
+
+        -- This is the plus sign
+        '»' ->
+            let
+                newZoom =
+                    Zoom.next model.zoom
+            in
+                if model.zoom == newZoom then
+                    model
+                else
+                    Zoom.set newZoom model
+
+        '½' ->
+            let
+                newZoom =
+                    Zoom.prev model.zoom
+            in
+                if model.zoom == newZoom then
+                    model
+                else
+                    Zoom.set newZoom model
 
         _ ->
             model

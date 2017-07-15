@@ -29,7 +29,7 @@ init json =
         , canvas = canvas
         , canvasPosition =
             Position
-                ((windowSize.width - canvasSize.width) // 2)
+                (((windowSize.width - 29) - canvasSize.width) // 2)
                 ((windowSize.height - canvasSize.height) // 2)
         , pendingDraw = Canvas.batch []
         , swatches = Palette.Init.swatches
