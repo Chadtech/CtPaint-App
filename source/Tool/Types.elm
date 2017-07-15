@@ -6,6 +6,8 @@ import Mouse exposing (Position)
 type Tool
     = Hand (Maybe ( Position, Position ))
     | Pencil (Maybe Position)
+    | ZoomIn
+    | ZoomOut
 
 
 
@@ -14,7 +16,9 @@ type Tool
 
 all : List Tool
 all =
-    [ Hand Nothing
+    [ ZoomIn
+    , ZoomOut
+    , Hand Nothing
     , Pencil Nothing
     ]
 
@@ -28,6 +32,12 @@ icon tool =
         Pencil _ ->
             "\xEA02"
 
+        ZoomIn ->
+            "\xEA17"
+
+        ZoomOut ->
+            "\xEA18"
+
 
 name : Tool -> String
 name tool =
@@ -37,3 +47,9 @@ name tool =
 
         Pencil _ ->
             "pencil"
+
+        ZoomIn ->
+            "zoom-in"
+
+        ZoomOut ->
+            "zoom-out"

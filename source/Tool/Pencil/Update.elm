@@ -12,26 +12,26 @@ update : Message -> Maybe Position -> Model -> Model
 update message tool ({ canvasPosition } as model) =
     case ( message, tool ) of
         ( OnScreenMouseDown position, Nothing ) ->
-            { model
-                | tool =
-                    let
-                        { canvasPosition } =
-                            model
-
-                        adjustedPosition =
-                            Position
-                                (position.x - canvasPosition.x)
-                                (position.y - canvasPosition.y)
-                    in
-                        Pencil (Just adjustedPosition)
-            }
+            let
+                adjustedPosition =
+                    adjustPosition model 0 position
+            in
+                { model
+                    | tool = Pencil (Just adjustedPosition)
+                    , pendingDraw =
+                        Canvas.batch
+                            [ model.pendingDraw
+                            , Line.draw
+                                model.swatches.primary
+                                adjustedPosition
+                                adjustedPosition
+                            ]
+                }
 
         ( SubMouseMove position, Just priorPosition ) ->
             let
                 adjustedPosition =
-                    Position
-                        (position.x - canvasPosition.x - 29)
-                        (position.y - canvasPosition.y)
+                    adjustPosition model 29 position
             in
                 { model
                     | tool = Pencil (Just adjustedPosition)
@@ -52,3 +52,22 @@ update message tool ({ canvasPosition } as model) =
 
         _ ->
             model
+
+
+adjustPosition : Model -> Int -> Position -> Position
+adjustPosition { canvas, canvasPosition, zoom } leftOffset { x, y } =
+    let
+        x_ =
+            List.sum
+                [ x
+                , -canvasPosition.x
+                , -leftOffset
+                ]
+
+        y_ =
+            List.sum
+                [ y
+                , -canvasPosition.y
+                ]
+    in
+        Position (x_ // zoom) (y_ // zoom)

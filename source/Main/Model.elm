@@ -21,4 +21,5 @@ type alias Model =
     , subMouseMove : Maybe (Position -> Message)
     , windowSize : Size
     , tool : Tool
+    , zoom : Int
     }

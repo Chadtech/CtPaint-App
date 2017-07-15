@@ -15,11 +15,6 @@ meaning you can use it at the end of a pipeline and have the precedence work out
 infixl 0 :=
 
 
-px : Int -> String
-px int =
-    (toString int) ++ "px"
-
-
 maybeCons : Maybe a -> List a -> List a
 maybeCons maybe list =
     case maybe of
@@ -28,6 +23,35 @@ maybeCons maybe list =
 
         Nothing ->
             list
+
+
+
+-- HTML STYLE --
+
+
+px : Int -> String
+px int =
+    (toString int) ++ "px"
+
+
+left : Int -> ( String, String )
+left =
+    px >> (,) "left"
+
+
+top : Int -> ( String, String )
+top =
+    px >> (,) "top"
+
+
+width : Int -> ( String, String )
+width =
+    px >> (,) "width"
+
+
+height : Int -> ( String, String )
+height =
+    px >> (,) "height"
 
 
 

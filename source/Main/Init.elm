@@ -21,13 +21,16 @@ init json =
         canvas =
             Canvas.initialize (Size 400 400)
                 |> fillBlack
+
+        canvasSize =
+            Canvas.getSize canvas
     in
         { session = Session.decode json
         , canvas = canvas
         , canvasPosition =
-            getCanvasPosition
-                windowSize
-                (Canvas.getSize canvas)
+            Position
+                ((windowSize.width - canvasSize.width) // 2)
+                ((windowSize.height - canvasSize.height) // 2)
         , pendingDraw = Canvas.batch []
         , swatches = Palette.Init.swatches
         , palette = Palette.Init.palette
@@ -35,19 +38,13 @@ init json =
         , subMouseMove = Nothing
         , windowSize = windowSize
         , tool = Hand Nothing
+        , zoom = 1
         }
             ! []
 
 
 
 -- INIT CANVAS --
-
-
-getCanvasPosition : Size -> Size -> Position
-getCanvasPosition window { width, height } =
-    Position
-        ((window.width - width) // 2)
-        ((window.height - height) // 2)
 
 
 fillBlack : Canvas -> Canvas

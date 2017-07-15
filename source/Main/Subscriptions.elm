@@ -6,6 +6,8 @@ import Util exposing (maybeCons)
 import Tool.Types exposing (Tool(..))
 import Tool.Hand.Mouse as Hand
 import Tool.Pencil.Mouse as Pencil
+import Tool.ZoomIn.Mouse as ZoomIn
+import Tool.ZoomOut.Mouse as ZoomOut
 import Mouse
 import Window
 import AnimationFrame
@@ -23,6 +25,12 @@ subscriptions model =
 
                 Pencil _ ->
                     List.map (Sub.map PencilMessage) Pencil.subs
+
+                ZoomIn ->
+                    List.map (Sub.map ZoomInMessage) ZoomIn.subs
+
+                ZoomOut ->
+                    List.map (Sub.map ZoomOutMessage) ZoomOut.subs
     in
         Sub.batch
             [ generalSubs model

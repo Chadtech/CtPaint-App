@@ -6,11 +6,13 @@ import Main.Model exposing (Model)
 import Main.Message exposing (Message(..))
 import Toolbar.Vertical.View as ToolbarVertical
 import Toolbar.Horizontal.View as ToolbarHorizontal
-import Util exposing ((:=), px)
+import Util exposing ((:=), left, top, width, height)
 import Canvas
 import Tool.Types as Tool exposing (Tool(..))
 import Tool.Hand.Mouse as Hand
 import Tool.Pencil.Mouse as Pencil
+import Tool.ZoomIn.Mouse as ZoomIn
+import Tool.ZoomOut.Mouse as ZoomOut
 
 
 -- VIEW --
@@ -46,7 +48,7 @@ clickScreen canvasAreaHeight { tool } =
                 tool
                 [ class ("screen " ++ (Tool.name tool))
                 , style
-                    [ "height" := (px canvasAreaHeight) ]
+                    [ height canvasAreaHeight ]
                 ]
     in
         div attributes []
@@ -66,6 +68,16 @@ addToolAttributes tool attributes =
                     List.map
                         (Attributes.map PencilMessage)
                         Pencil.attributes
+
+                ZoomIn ->
+                    List.map
+                        (Attributes.map ZoomInMessage)
+                        ZoomIn.attributes
+
+                ZoomOut ->
+                    List.map
+                        (Attributes.map ZoomOutMessage)
+                        ZoomOut.attributes
     in
         toolAttributes ++ attributes
 
@@ -75,20 +87,30 @@ addToolAttributes tool attributes =
 
 
 canvasArea : Int -> Model -> Html Message
-canvasArea canvasAreaHeight { canvasPosition, canvas } =
+canvasArea canvasAreaHeight model =
     div
         [ class "canvas-area"
         , style
-            [ "height" := (px canvasAreaHeight) ]
+            [ height canvasAreaHeight ]
         ]
         [ Canvas.toHtml
             [ class "main-canvas"
-            , style
-                [ "left" := (px canvasPosition.x)
-                , "top" := (px canvasPosition.y)
-                ]
+            , style (canvasStyles model)
             ]
-            canvas
+            model.canvas
+        ]
+
+
+canvasStyles : Model -> List ( String, String )
+canvasStyles ({ zoom, canvasPosition, canvas } as model) =
+    let
+        canvasSize =
+            Canvas.getSize canvas
+    in
+        [ left canvasPosition.x
+        , top canvasPosition.y
+        , width (canvasSize.width * zoom)
+        , height (canvasSize.height * zoom)
         ]
 
 
