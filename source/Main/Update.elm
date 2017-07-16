@@ -7,6 +7,8 @@ import Tool.Hand.Update as Hand
 import Tool.Pencil.Update as Pencil
 import Tool.ZoomIn.Update as ZoomIn
 import Tool.ZoomOut.Update as ZoomOut
+import ColorPicker.Update as ColorPicker
+import ColorPicker.Handle as ColorPicker
 import Tool.Types exposing (Tool(..))
 import Canvas exposing (Size, DrawOp(..))
 import Keyboard.Update as Keyboard
@@ -84,6 +86,13 @@ update message model =
                             Canvas.batch []
                     }
                         ! []
+
+        ( ColorPickerMessage subMessage, _ ) ->
+            let
+                colorPickerUpdate =
+                    ColorPicker.update subMessage model.colorPicker
+            in
+                (ColorPicker.handle colorPickerUpdate model) ! []
 
         _ ->
             model ! []

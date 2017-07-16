@@ -2,7 +2,7 @@ module Palette.View exposing (view)
 
 import Html exposing (Html, Attribute, div)
 import Html.Attributes exposing (class, style)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onDoubleClick)
 import Main.Model exposing (Model)
 import Toolbar.Horizontal.Types exposing (Message(..))
 import Palette.Types as Palette exposing (Swatches)
@@ -29,7 +29,7 @@ palette model =
     let
         paletteSquares =
             model.palette
-                |> Array.map paletteSquare
+                |> Array.indexedMap paletteSquare
                 |> Array.toList
     in
         div
@@ -40,12 +40,12 @@ palette model =
             paletteSquares
 
 
-paletteSquare : Color -> Html Message
-paletteSquare color =
+paletteSquare : Int -> Color -> Html Message
+paletteSquare index color =
     div
         [ class "square"
         , background color
-        , onClick (SetPrimarySwatch color)
+        , onClick (PaletteSquareClick color index)
         ]
         []
 

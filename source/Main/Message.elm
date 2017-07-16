@@ -7,6 +7,7 @@ import Tool.Hand.Types as Hand
 import Tool.Pencil.Types as Pencil
 import Tool.ZoomIn.Types as ZoomIn
 import Tool.ZoomOut.Types as ZoomOut
+import ColorPicker.Types as ColorPicker
 import Keyboard.Types as Keyboard
 import Time exposing (Time)
 
@@ -21,3 +22,4 @@ type Message
     | ZoomInMessage ZoomIn.Message
     | ZoomOutMessage ZoomOut.Message
     | Tick Time
+    | ColorPickerMessage ColorPicker.Message

@@ -2,9 +2,9 @@ module Keyboard.Update exposing (update)
 
 import Main.Model exposing (Model)
 import Keyboard.Types exposing (Message(..), Direction(..))
-import Char
 import Tool.Types exposing (Tool(..))
 import Tool.Zoom as Zoom
+import Keyboard exposing (KeyCode)
 
 
 update : Message -> Model -> Model
@@ -13,20 +13,25 @@ update message model =
         KeyEvent direction ->
             case direction of
                 Up code ->
-                    handleKeyUp (Char.fromCode code) model
+                    handleKeyUp code model
 
                 Down code ->
-                    handleKeyDown (Char.fromCode code) model
+                    handleKeyDown code model
 
 
 
 -- KEY EVENTS --
 
 
-handleKeyDown : Char -> Model -> Model
-handleKeyDown char model =
-    case char of
-        '1' ->
+handleKeyDown : KeyCode -> Model -> Model
+handleKeyDown code model =
+    case code of
+        16 ->
+            { model
+                | ctrlDown = True
+            }
+
+        49 ->
             if not model.swatches.keyIsDown then
                 { model
                     | swatches =
@@ -40,7 +45,7 @@ handleKeyDown char model =
             else
                 model
 
-        '2' ->
+        50 ->
             if not model.swatches.keyIsDown then
                 { model
                     | swatches =
@@ -54,7 +59,7 @@ handleKeyDown char model =
             else
                 model
 
-        '3' ->
+        51 ->
             if not model.swatches.keyIsDown then
                 { model
                     | swatches =
@@ -72,20 +77,25 @@ handleKeyDown char model =
             model
 
 
-handleKeyUp : Char -> Model -> Model
-handleKeyUp char model =
-    case char of
-        'P' ->
+handleKeyUp : KeyCode -> Model -> Model
+handleKeyUp code model =
+    case code of
+        16 ->
+            { model
+                | ctrlDown = False
+            }
+
+        80 ->
             { model
                 | tool = Pencil Nothing
             }
 
-        'H' ->
+        72 ->
             { model
                 | tool = Hand Nothing
             }
 
-        'X' ->
+        88 ->
             { model
                 | swatches =
                     { primary = model.swatches.first
@@ -96,7 +106,7 @@ handleKeyUp char model =
                     }
             }
 
-        'A' ->
+        65 ->
             { model
                 | swatches =
                     { primary = model.swatches.third
@@ -107,7 +117,7 @@ handleKeyUp char model =
                     }
             }
 
-        '1' ->
+        49 ->
             { model
                 | swatches =
                     { primary = model.swatches.third
@@ -118,7 +128,7 @@ handleKeyUp char model =
                     }
             }
 
-        '2' ->
+        50 ->
             { model
                 | swatches =
                     { primary = model.swatches.second
@@ -129,7 +139,7 @@ handleKeyUp char model =
                     }
             }
 
-        '3' ->
+        51 ->
             { model
                 | swatches =
                     { primary = model.swatches.first
@@ -141,7 +151,7 @@ handleKeyUp char model =
             }
 
         -- This is the plus sign
-        '»' ->
+        187 ->
             let
                 newZoom =
                     Zoom.next model.zoom
@@ -151,7 +161,7 @@ handleKeyUp char model =
                 else
                     Zoom.set newZoom model
 
-        '½' ->
+        189 ->
             let
                 newZoom =
                     Zoom.prev model.zoom

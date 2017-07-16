@@ -6,6 +6,7 @@ import Json.Decode exposing (Value)
 import Canvas exposing (Canvas, Size, DrawOp(..), Point)
 import Types.Session as Session
 import Tool.Types exposing (Tool(..))
+import ColorPicker.Types as ColorPicker
 import Json.Decode as Decode exposing (Decoder)
 import Mouse exposing (Position)
 import Color
@@ -39,6 +40,8 @@ init json =
         , windowSize = windowSize
         , tool = Hand Nothing
         , zoom = 1
+        , colorPicker = ColorPicker.init
+        , ctrlDown = False
         }
             ! []
 

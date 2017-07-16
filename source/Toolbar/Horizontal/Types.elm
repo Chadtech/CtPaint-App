@@ -6,4 +6,4 @@ import Color exposing (Color)
 
 type Message
     = ResizeToolbar Direction
-    | SetPrimarySwatch Color
+    | PaletteSquareClick Color Int

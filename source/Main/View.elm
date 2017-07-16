@@ -7,6 +7,7 @@ import Main.Message exposing (Message(..))
 import Toolbar.Vertical.View as ToolbarVertical
 import Toolbar.Horizontal.View as ToolbarHorizontal
 import Toolbar.Top.View as ToolbarTop
+import ColorPicker.View as ColorPicker
 import Util exposing ((:=), left, top, width, height)
 import Canvas
 import Tool.Types as Tool exposing (Tool(..))
@@ -26,7 +27,7 @@ view model =
             model.windowSize
 
         canvasAreaHeight =
-            height - model.horizontalToolbarHeight
+            height - model.horizontalToolbarHeight - 29
     in
         div
             [ class "main" ]
@@ -35,7 +36,22 @@ view model =
             , horizontalToolbar model
             , canvasArea canvasAreaHeight model
             , clickScreen canvasAreaHeight model
+            , colorPicker model
             ]
+
+
+
+-- COLOR PICKER --
+
+
+colorPicker : Model -> Html Message
+colorPicker { colorPicker } =
+    if colorPicker.show then
+        Html.map
+            ColorPickerMessage
+            (ColorPicker.view colorPicker)
+    else
+        Html.text ""
 
 
 

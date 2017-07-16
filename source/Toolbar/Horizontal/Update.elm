@@ -4,6 +4,9 @@ import Toolbar.Horizontal.Types exposing (Message(..))
 import Types.Mouse exposing (Direction(..))
 import Main.Model exposing (Model)
 import Main.Message as MainMessage
+import ColorPicker.Update as ColorPicker
+import ColorPicker.Handle as ColorPicker
+import ColorPicker.Types as ColorPicker
 
 
 update : Message -> Model -> ( Model, Cmd Message )
@@ -12,18 +15,32 @@ update message model =
         ResizeToolbar direction ->
             handleResize direction model
 
-        SetPrimarySwatch color ->
-            let
-                { swatches } =
-                    model
-            in
-                { model
-                    | swatches =
-                        { swatches
-                            | primary = color
-                        }
-                }
-                    ! []
+        PaletteSquareClick color index ->
+            if model.ctrlDown then
+                let
+                    colorPickerUpdate =
+                        ColorPicker.update
+                            (ColorPicker.WakeUp color index)
+                            model.colorPicker
+
+                    newModel =
+                        ColorPicker.handle
+                            colorPickerUpdate
+                            model
+                in
+                    ( newModel, Cmd.none )
+            else
+                let
+                    { swatches } =
+                        model
+                in
+                    { model
+                        | swatches =
+                            { swatches
+                                | primary = color
+                            }
+                    }
+                        ! []
 
 
 

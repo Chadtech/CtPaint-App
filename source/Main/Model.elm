@@ -2,6 +2,7 @@ module Main.Model exposing (Model)
 
 import Types.Session as Session exposing (Session)
 import Tool.Types exposing (Tool(..))
+import ColorPicker.Types as ColorPicker
 import Canvas exposing (Canvas, Size, DrawOp(..))
 import Color exposing (Color)
 import Main.Message exposing (Message(..))
@@ -22,4 +23,6 @@ type alias Model =
     , windowSize : Size
     , tool : Tool
     , zoom : Int
+    , colorPicker : ColorPicker.Model
+    , ctrlDown : Bool
     }
