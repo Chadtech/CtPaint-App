@@ -36,10 +36,10 @@ type ColorScale
 
 init : Model
 init =
-    { position = Position 50 50
+    { position = Position 50 350
     , color = Color.black
     , index = 0
     , colorFormat = Rgb
     , colorScale = Abs
-    , show = False
+    , show = True
     }
