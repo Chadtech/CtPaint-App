@@ -7,7 +7,7 @@ import Main.Model exposing (Model)
 import Toolbar.Horizontal.Types exposing (Message(..))
 import Palette.Types as Palette exposing (Swatches)
 import Color exposing (Color)
-import Util exposing ((:=), px)
+import Util exposing ((:=), px, height)
 import Array
 
 
@@ -35,9 +35,7 @@ palette model =
         div
             [ class "general"
             , style
-                [ "height"
-                    := (px (model.horizontalToolbarHeight - 10))
-                ]
+                [ height (model.horizontalToolbarHeight - 10) ]
             ]
             paletteSquares
 

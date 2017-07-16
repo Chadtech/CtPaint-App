@@ -55,19 +55,20 @@ update message tool ({ canvasPosition } as model) =
 
 
 adjustPosition : Model -> Int -> Position -> Position
-adjustPosition { canvas, canvasPosition, zoom } leftOffset { x, y } =
+adjustPosition { canvas, canvasPosition, zoom } offset { x, y } =
     let
         x_ =
             List.sum
                 [ x
                 , -canvasPosition.x
-                , -leftOffset
+                , -offset
                 ]
 
         y_ =
             List.sum
                 [ y
                 , -canvasPosition.y
+                , -offset
                 ]
     in
         Position (x_ // zoom) (y_ // zoom)

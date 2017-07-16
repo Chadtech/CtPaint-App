@@ -6,6 +6,7 @@ import Main.Model exposing (Model)
 import Main.Message exposing (Message(..))
 import Toolbar.Vertical.View as ToolbarVertical
 import Toolbar.Horizontal.View as ToolbarHorizontal
+import Toolbar.Top.View as ToolbarTop
 import Util exposing ((:=), left, top, width, height)
 import Canvas
 import Tool.Types as Tool exposing (Tool(..))
@@ -30,6 +31,7 @@ view model =
         div
             [ class "main" ]
             [ ToolbarVertical.view model
+            , ToolbarTop.view
             , horizontalToolbar model
             , canvasArea canvasAreaHeight model
             , clickScreen canvasAreaHeight model

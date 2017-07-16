@@ -12,7 +12,7 @@ adjust { x, y } bias ({ zoom, windowSize, canvasPosition } as model) =
         halfWindowSize =
             Size
                 ((windowSize.width - 29) // 2)
-                (windowSize.height // 2)
+                ((windowSize.height - 29) // 2)
 
         x_ =
             (x - halfWindowSize.width) // zoom
@@ -37,7 +37,7 @@ set zoom ({ canvas, canvasPosition, windowSize } as model) =
         halfWindowSize =
             Size
                 ((windowSize.width - 29) // 2)
-                (windowSize.height // 2)
+                ((windowSize.height - 29) // 2)
 
         relZoom : Int -> Int
         relZoom d =
