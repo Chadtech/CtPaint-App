@@ -65,5 +65,8 @@ view model =
                     ]
                     []
                 ]
+            , div
+                [ class "visualization" ]
+                []
             ]
         ]
