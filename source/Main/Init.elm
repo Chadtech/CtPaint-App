@@ -40,8 +40,9 @@ init json =
         , windowSize = windowSize
         , tool = Hand Nothing
         , zoom = 1
-        , colorPicker = ColorPicker.init
+        , colorPicker = ColorPicker.init Palette.Init.palette
         , ctrlDown = False
+        , textInputFocused = False
         }
             ! []
 

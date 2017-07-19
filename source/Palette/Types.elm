@@ -37,3 +37,34 @@ toHexHelper hex =
         hex
     else
         "0" ++ hex
+
+
+toColor : String -> Maybe Color
+toColor colorMaybe =
+    if isSixChars colorMaybe then
+        let
+            r =
+                String.slice 0 2 colorMaybe
+                    |> ParseInt.parseIntHex
+
+            g =
+                String.slice 2 4 colorMaybe
+                    |> ParseInt.parseIntHex
+
+            b =
+                String.slice 4 6 colorMaybe
+                    |> ParseInt.parseIntHex
+        in
+            case ( r, g, b ) of
+                ( Ok red, Ok green, Ok blue ) ->
+                    Just (Color.rgb red green blue)
+
+                _ ->
+                    Nothing
+    else
+        Nothing
+
+
+isSixChars : String -> Bool
+isSixChars =
+    (==) 6 << String.length

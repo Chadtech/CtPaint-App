@@ -22,3 +22,8 @@ handle ( colorPicker, maybeMessage ) model =
                         color
                         model.palette
             }
+
+        Just (SetFocus focus) ->
+            { model
+                | textInputFocused = focus
+            }

@@ -25,4 +25,5 @@ type alias Model =
     , zoom : Int
     , colorPicker : ColorPicker.Model
     , ctrlDown : Bool
+    , textInputFocused : Bool
     }

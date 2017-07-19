@@ -1,10 +1,10 @@
 .color-picker
-    width 319px
+    width 330px
     height 200px
     position absolute
     
     .header
-        width 311px
+        width 322px
         height 25px
         
         padding 2px
@@ -24,19 +24,39 @@
             
             display inline-block
             
-    a
-        border-top 2px solid ignorable1
-        border-left 2px solid ignorable1
-        border-right 2px solid ignorable3
-        border-bottom 2px solid ignorable3
+        a
+            border-top 2px solid ignorable1
+            border-left 2px solid ignorable1
+            border-right 2px solid ignorable3
+            border-bottom 2px solid ignorable3
+            
+            height 21px
+            width 21px
+            
+            line-height 21px
+            
+            padding 0
+            
+            float right
+            
+            text-align center
+            
+            &:active
+                border-top 2px solid ignorable3
+                border-left 2px solid ignorable3
+                border-right 2px solid ignorable1
+                border-bottom 2px solid ignorable1
+            
+
+    .body
+        padding 2px
         
-        height 21px
-        width 21px
-        
-        line-height 21px
-        
-        padding 0
-        
-        float right
-        
-        text-align center
+        .break
+            margin-left 4px
+            
+        form
+            margin-top 2px
+            
+            input
+                width 71px
+            

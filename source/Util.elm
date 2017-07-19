@@ -66,3 +66,17 @@ toPosition { x, y } =
 toPoint : Position -> Point
 toPoint { x, y } =
     Point (toFloat x) (toFloat y)
+
+
+
+-- BOOL --
+
+
+allTrue : List Bool -> Bool
+allTrue =
+    List.foldr (&&) True
+
+
+allFalse : List Bool -> Bool
+allFalse =
+    List.map not >> allTrue
