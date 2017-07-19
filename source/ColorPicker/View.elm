@@ -6,6 +6,7 @@ import Html.Events exposing (onClick, onSubmit, onMouseDown, onFocus, onBlur, on
 import ColorPicker.Types exposing (..)
 import Util exposing ((:=), left, top, toPosition)
 import MouseEvents as Events
+import Palette.Types as Palette
 
 
 view : Model -> Html Message
@@ -66,7 +67,10 @@ view model =
                     []
                 ]
             , div
-                [ class "visualization" ]
+                [ class "visualization"
+                , style
+                    [ "background" := (Palette.toHex model.color) ]
+                ]
                 []
             ]
         ]
