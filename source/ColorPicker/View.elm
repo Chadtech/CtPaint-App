@@ -258,6 +258,8 @@ lightnessGradient color =
         div
             [ class "gradient"
             , style [ nanSafeGradient ]
+            , MouseEvents.onMouseMove
+                (MouseMoveInGradient Lightness)
             ]
             [ pointer
                 (floor (lightness * 255))

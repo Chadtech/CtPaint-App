@@ -5,6 +5,7 @@ import Color exposing (Color)
 import MouseEvents exposing (MouseEvent)
 import Array exposing (Array)
 import Palette.Types as Palette
+import MouseEvents exposing (MouseEvent)
 
 
 type ExternalMessage
@@ -29,6 +30,7 @@ type Message
     | LightnessFieldUpdate String
     | UpdateColorHexField String
     | MouseDownOnPointer Gradient
+    | MouseMoveInGradient Gradient MouseEvent
 
 
 type Gradient
@@ -51,6 +53,12 @@ type alias Model =
     , hueField : String
     , saturationField : String
     , lightnessField : String
+    , redPointer : Maybe Position
+    , greenPointer : Maybe Position
+    , bluePointer : Maybe Position
+    , huePointer : Maybe Position
+    , saturationPointer : Maybe Position
+    , lightnessPointer : Maybe Position
     , colorScale : ColorScale
     , show : Bool
     , colorHexField : String
@@ -98,6 +106,12 @@ init colors =
             (lightness * 255)
                 |> floor
                 |> toString
+        , redPointer = Nothing
+        , greenPointer = Nothing
+        , bluePointer = Nothing
+        , huePointer = Nothing
+        , saturationPointer = Nothing
+        , lightnessPointer = Nothing
         , colorScale = Abs
         , show = True
         , colorHexField =

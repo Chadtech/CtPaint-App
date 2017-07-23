@@ -288,6 +288,13 @@ update message model =
             in
                 ( model, Nothing )
 
+        MouseMoveInGradient gradient { targetPos, clientPos } ->
+            let
+                _ =
+                    log "event" (clientPos.x - targetPos.x)
+            in
+                ( model, Nothing )
+
 
 setColorMaybe : Model -> ( Model, Maybe ExternalMessage )
 setColorMaybe model =
