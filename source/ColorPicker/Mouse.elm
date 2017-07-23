@@ -9,10 +9,12 @@ subscriptions : Model -> Sub Message
 subscriptions model =
     if model.show && (model.clickState /= Nothing) then
         Sub.batch
-            [ Mouse.moves
-                (ColorPickerMessage << ColorPicker.HeaderMouseMove)
-            , Mouse.ups
-                (ColorPickerMessage << ColorPicker.HeaderMouseUp)
+            [ ColorPicker.HeaderMouseMove
+                >> ColorPickerMessage
+                |> Mouse.moves
+            , ColorPicker.HeaderMouseUp
+                >> ColorPickerMessage
+                |> Mouse.ups
             ]
     else
         Sub.none

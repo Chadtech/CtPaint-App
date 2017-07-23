@@ -18,11 +18,26 @@ type Message
     | HeaderMouseUp Position
     | WakeUp Color Int
     | Close
-    | SetColorFormat ColorFormat
     | SetColorScale ColorScale
     | HandleFocus Bool
-    | UpdateColorHexField String
     | StealSubmit
+    | RedFieldUpdate String
+    | GreenFieldUpdate String
+    | BlueFieldUpdate String
+    | HueFieldUpdate String
+    | SaturationFieldUpdate String
+    | LightnessFieldUpdate String
+    | UpdateColorHexField String
+    | MouseDownOnPointer Gradient
+
+
+type Gradient
+    = Red
+    | Green
+    | Blue
+    | Hue
+    | Saturation
+    | Lightness
 
 
 type alias Model =
@@ -30,16 +45,16 @@ type alias Model =
     , clickState : Maybe Position
     , color : Color
     , index : Int
-    , colorFormat : ColorFormat
+    , redField : String
+    , greenField : String
+    , blueField : String
+    , hueField : String
+    , saturationField : String
+    , lightnessField : String
     , colorScale : ColorScale
     , show : Bool
     , colorHexField : String
     }
-
-
-type ColorFormat
-    = Rgb
-    | Hsl
 
 
 type ColorScale
@@ -57,12 +72,32 @@ init colors =
 
                 Nothing ->
                     Color.black
+
+        { red, green, blue } =
+            Color.toRgb color
+
+        { hue, saturation, lightness } =
+            Color.toHsl color
     in
         { position = Position 50 350
         , clickState = Nothing
         , color = color
         , index = 0
-        , colorFormat = Rgb
+        , redField = toString red
+        , greenField = toString green
+        , blueField = toString blue
+        , hueField =
+            ((radians hue) / (2 * pi) * 360)
+                |> floor
+                |> toString
+        , saturationField =
+            (saturation * 255)
+                |> floor
+                |> toString
+        , lightnessField =
+            (lightness * 255)
+                |> floor
+                |> toString
         , colorScale = Abs
         , show = True
         , colorHexField =
