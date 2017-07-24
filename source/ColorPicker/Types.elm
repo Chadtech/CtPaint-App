@@ -53,12 +53,6 @@ type alias Model =
     , hueField : String
     , saturationField : String
     , lightnessField : String
-    , redPointer : Maybe Position
-    , greenPointer : Maybe Position
-    , bluePointer : Maybe Position
-    , huePointer : Maybe Position
-    , saturationPointer : Maybe Position
-    , lightnessPointer : Maybe Position
     , colorScale : ColorScale
     , show : Bool
     , colorHexField : String
@@ -106,12 +100,6 @@ init colors =
             (lightness * 255)
                 |> floor
                 |> toString
-        , redPointer = Nothing
-        , greenPointer = Nothing
-        , bluePointer = Nothing
-        , huePointer = Nothing
-        , saturationPointer = Nothing
-        , lightnessPointer = Nothing
         , colorScale = Abs
         , show = True
         , colorHexField =
