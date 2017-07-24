@@ -30,6 +30,7 @@ type Message
     | LightnessFieldUpdate String
     | UpdateColorHexField String
     | MouseDownOnPointer Gradient
+    | SetNoGradientClickedOn
     | MouseMoveInGradient Gradient MouseEvent
 
 
@@ -56,6 +57,7 @@ type alias Model =
     , colorScale : ColorScale
     , show : Bool
     , colorHexField : String
+    , gradientClickedOn : Maybe Gradient
     }
 
 
@@ -104,4 +106,5 @@ init colors =
         , show = True
         , colorHexField =
             String.dropLeft 1 (Palette.toHex color)
+        , gradientClickedOn = Nothing
         }

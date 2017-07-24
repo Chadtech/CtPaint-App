@@ -1,8 +1,8 @@
 module ColorPicker.View exposing (view)
 
-import Html exposing (Html, div, p, text, a, input, form)
+import Html exposing (Html, Attribute, div, p, text, a, input, form)
 import Html.Attributes exposing (class, classList, style, spellcheck, value)
-import Html.Events exposing (onClick, onSubmit, onMouseDown, onFocus, onBlur, onInput)
+import Html.Events exposing (onClick, onSubmit, onMouseDown, onMouseUp, onFocus, onBlur, onInput)
 import MouseEvents
 import ColorPicker.Types exposing (..)
 import Util exposing ((:=), left, top, toPosition)
@@ -31,48 +31,40 @@ view model =
             ]
         , div
             [ class "body" ]
-            (staticButtons model)
+            (body model)
         ]
 
 
 
--- BUTTONS --
+-- BODY --
 
 
-staticButtons : Model -> List (Html Message)
-staticButtons ({ colorScale, colorHexField, color } as model) =
-    let
-        { red, green, blue } =
-            Color.toRgb color
-    in
-        [ div
-            [ class "visualization"
-            , style
-                [ "background" := (Palette.toHex color) ]
+body : Model -> List (Html Message)
+body ({ colorHexField, color } as model) =
+    [ div
+        [ class "visualization"
+        , style
+            [ "background" := (Palette.toHex color) ]
+        ]
+        []
+    , form
+        [ onSubmit StealSubmit ]
+        [ input
+            [ spellcheck False
+            , onFocus (HandleFocus True)
+            , onBlur (HandleFocus False)
+            , onInput UpdateColorHexField
+            , value colorHexField
             ]
             []
-        , form
-            [ onSubmit StealSubmit ]
-            [ input
-                [ spellcheck False
-                , onFocus (HandleFocus True)
-                , onBlur (HandleFocus False)
-                , onInput UpdateColorHexField
-                , value colorHexField
-                ]
-                []
-            ]
-        , slider "H" model.hueField HueFieldUpdate (hueGradient color)
-        , slider "S" model.saturationField SaturationFieldUpdate (saturationGradient color)
-        , slider "L" model.lightnessField LightnessFieldUpdate (lightnessGradient color)
-        , slider "R" model.redField RedFieldUpdate (redGradient color)
-        , slider "G" model.greenField GreenFieldUpdate (greenGradient color)
-        , slider "B" model.blueField BlueFieldUpdate (blueGradient color)
         ]
-
-
-
--- SLIDERS --
+    , slider "H" model.hueField HueFieldUpdate (hueGradient model)
+    , slider "S" model.saturationField SaturationFieldUpdate (saturationGradient model)
+    , slider "L" model.lightnessField LightnessFieldUpdate (lightnessGradient model)
+    , slider "R" model.redField RedFieldUpdate (redGradient model)
+    , slider "G" model.greenField GreenFieldUpdate (greenGradient model)
+    , slider "B" model.blueField BlueFieldUpdate (blueGradient model)
+    ]
 
 
 slider : String -> String -> (String -> Message) -> Html Message -> Html Message
@@ -89,62 +81,114 @@ slider label fieldContent handler sliderGradient =
         ]
 
 
-redGradient : Color -> Html Message
-redGradient color =
+
+-- SLIDERS --
+
+
+redGradient : Model -> Html Message
+redGradient { color, gradientClickedOn } =
     let
         { red, green, blue } =
             Color.toRgb color
+
+        attributes : List (Attribute Message)
+        attributes =
+            let
+                gradientField =
+                    gradientStyle
+                        [ Color.rgb 0 green blue
+                        , Color.rgb 255 green blue
+                        ]
+            in
+                addMouseMoveHandler
+                    (gradientAttributes gradientField)
+                    gradientClickedOn
+                    Red
     in
         div
-            [ class "gradient"
-            , style
-                [ gradientStyle
-                    [ Color.rgb 0 green blue
-                    , Color.rgb 255 green blue
+            attributes
+            [ div
+                [ classList
+                    [ "pointer" := True
+                    , "transparent" := (gradientClickedOn == (Just Red))
                     ]
+                , style [ left (red - 2) ]
+                , onMouseDown (MouseDownOnPointer Red)
                 ]
+                []
             ]
-            [ pointer red Red ]
 
 
-greenGradient : Color -> Html Message
-greenGradient color =
+greenGradient : Model -> Html Message
+greenGradient { color, gradientClickedOn } =
     let
         { red, green, blue } =
             Color.toRgb color
+
+        attributes : List (Attribute Message)
+        attributes =
+            let
+                gradientField =
+                    gradientStyle
+                        [ Color.rgb red 0 blue
+                        , Color.rgb red 255 blue
+                        ]
+            in
+                addMouseMoveHandler
+                    (gradientAttributes gradientField)
+                    gradientClickedOn
+                    Green
     in
         div
-            [ class "gradient"
-            , style
-                [ gradientStyle
-                    [ Color.rgb red 0 blue
-                    , Color.rgb red 255 blue
+            attributes
+            [ div
+                [ classList
+                    [ "pointer" := True
+                    , "transparent" := (gradientClickedOn == (Just Green))
                     ]
+                , style [ left (green - 2) ]
+                , onMouseDown (MouseDownOnPointer Green)
                 ]
+                []
             ]
-            [ pointer green Green ]
 
 
-blueGradient : Color -> Html Message
-blueGradient color =
+blueGradient : Model -> Html Message
+blueGradient { color, gradientClickedOn } =
     let
         { red, green, blue } =
             Color.toRgb color
+
+        attributes : List (Attribute Message)
+        attributes =
+            let
+                gradientField =
+                    gradientStyle
+                        [ Color.rgb red green 0
+                        , Color.rgb red green 255
+                        ]
+            in
+                addMouseMoveHandler
+                    (gradientAttributes gradientField)
+                    gradientClickedOn
+                    Blue
     in
         div
-            [ class "gradient"
-            , style
-                [ gradientStyle
-                    [ Color.rgb red green 0
-                    , Color.rgb red green 255
+            attributes
+            [ div
+                [ classList
+                    [ "pointer" := True
+                    , "transparent" := (gradientClickedOn == (Just Blue))
                     ]
+                , style [ left (blue - 2) ]
+                , onMouseDown (MouseDownOnPointer Blue)
                 ]
+                []
             ]
-            [ pointer blue Blue ]
 
 
-hueGradient : Color -> Html Message
-hueGradient color =
+hueGradient : Model -> Html Message
+hueGradient { color, gradientClickedOn } =
     let
         { red, green, blue } =
             Color.toRgb color
@@ -152,15 +196,8 @@ hueGradient color =
         { hue, saturation, lightness } =
             Color.toHsl color
 
-        allEqual =
-            Util.allTrue
-                [ red == green
-                , red == blue
-                , blue == green
-                ]
-
         nanSafeGradient =
-            if allEqual then
+            if doesntHaveHue color then
                 gradientStyle
                     [ Color.rgb red red red
                     , Color.rgb red red red
@@ -177,73 +214,83 @@ hueGradient color =
                     [ 0, 60, 120, 180, 240, 300, 360 ]
                         |> List.map atDegree
                         |> gradientStyle
+
+        attributes : List (Attribute Message)
+        attributes =
+            addMouseMoveHandler
+                (gradientAttributes nanSafeGradient)
+                gradientClickedOn
+                Hue
     in
         div
-            [ class "gradient"
-            , style [ nanSafeGradient ]
-            ]
-            [ pointer
-                (floor ((hue / (2 * pi)) * 255))
-                Hue
+            attributes
+            [ div
+                [ classList
+                    [ "pointer" := True
+                    , "transparent" := (gradientClickedOn == (Just Hue))
+                    ]
+                , style
+                    [ left (floor ((hue / (2 * pi)) * 255)) ]
+                , onMouseDown (MouseDownOnPointer Hue)
+                ]
+                []
             ]
 
 
-saturationGradient : Color -> Html Message
-saturationGradient color =
+saturationGradient : Model -> Html Message
+saturationGradient { color, gradientClickedOn } =
     let
-        { red, green, blue } =
-            Color.toRgb color
-
         { hue, saturation, lightness } =
             Color.toHsl color
 
-        allEqual =
-            Util.allTrue
-                [ red == green
-                , red == blue
-                , blue == green
-                ]
-
+        nanSafeGradient : ( String, String )
         nanSafeGradient =
-            if allEqual then
-                gradientStyle
-                    [ Color.rgb red red red
-                    , Color.rgb red red red
-                    ]
+            if doesntHaveHue color then
+                let
+                    { red } =
+                        Color.toRgb color
+                in
+                    gradientStyle
+                        [ Color.rgb red red red
+                        , Color.rgb red red red
+                        ]
             else
                 gradientStyle
                     [ Color.hsl hue 0 lightness
                     , Color.hsl hue 1 lightness
                     ]
+
+        attributes : List (Attribute Message)
+        attributes =
+            addMouseMoveHandler
+                (gradientAttributes nanSafeGradient)
+                gradientClickedOn
+                Saturation
     in
         div
-            [ class "gradient"
-            , style [ nanSafeGradient ]
-            ]
-            [ pointer
-                (floor (saturation * 255))
-                Saturation
+            attributes
+            [ div
+                [ classList
+                    [ "pointer" := True
+                    , "transparent" := (gradientClickedOn == (Just Saturation))
+                    ]
+                , style
+                    [ left (floor (saturation * 255) - 2) ]
+                , onMouseDown (MouseDownOnPointer Saturation)
+                ]
+                []
             ]
 
 
-lightnessGradient : Color -> Html Message
-lightnessGradient color =
+lightnessGradient : Model -> Html Message
+lightnessGradient { color, gradientClickedOn } =
     let
-        { red, green, blue } =
-            Color.toRgb color
-
         { hue, saturation, lightness } =
             Color.toHsl color
 
-        allEqual =
-            Util.allTrue
-                [ red == green
-                , red == blue
-                , blue == green
-                ]
-
+        nanSafeGradient : ( String, String )
         nanSafeGradient =
-            if allEqual then
+            if doesntHaveHue color then
                 gradientStyle
                     [ Color.rgb 0 0 0
                     , Color.rgb 255 255 255
@@ -254,17 +301,57 @@ lightnessGradient color =
                     , Color.hsl hue saturation 0.5
                     , Color.hsl hue saturation 1
                     ]
+
+        attributes : List (Attribute Message)
+        attributes =
+            addMouseMoveHandler
+                (gradientAttributes nanSafeGradient)
+                gradientClickedOn
+                Lightness
     in
         div
-            [ class "gradient"
-            , style [ nanSafeGradient ]
-            , MouseEvents.onMouseMove
-                (MouseMoveInGradient Lightness)
+            attributes
+            [ div
+                [ classList
+                    [ "pointer" := True
+                    , "transparent" := (gradientClickedOn == (Just Lightness))
+                    ]
+                , style
+                    [ left (floor (lightness * 255) - 2) ]
+                , onMouseDown (MouseDownOnPointer Lightness)
+                ]
+                []
             ]
-            [ pointer
-                (floor (lightness * 255))
-                Lightness
-            ]
+
+
+
+-- INTERNAL HELPERS --
+
+
+gradientAttributes : ( String, String ) -> List (Attribute Message)
+gradientAttributes gradientStyle_ =
+    [ class "gradient"
+    , style [ gradientStyle_ ]
+    , onMouseUp SetNoGradientClickedOn
+    ]
+
+
+addMouseMoveHandler : List (Attribute Message) -> Maybe Gradient -> Gradient -> List (Attribute Message)
+addMouseMoveHandler attributes maybeGradient gradient =
+    case maybeGradient of
+        Just g ->
+            if g == gradient then
+                let
+                    moveHandler =
+                        MouseEvents.onMouseMove
+                            (MouseMoveInGradient gradient)
+                in
+                    moveHandler :: attributes
+            else
+                attributes
+
+        Nothing ->
+            attributes
 
 
 gradientStyle : List Color -> ( String, String )
@@ -277,6 +364,19 @@ gradientStyle colors =
     , ")"
     ]
         |> (String.concat >> (,) "background")
+
+
+doesntHaveHue : Color -> Bool
+doesntHaveHue color =
+    let
+        { red, green, blue } =
+            Color.toRgb color
+    in
+        Util.allTrue
+            [ red == green
+            , green == blue
+            , blue == red
+            ]
 
 
 toCssString : Color -> String
@@ -294,14 +394,3 @@ toCssString color =
         , ")"
         ]
             |> String.concat
-
-
-pointer : Int -> Gradient -> Html Message
-pointer position gradient =
-    div
-        [ class "pointer"
-        , style
-            [ left (position - 2) ]
-        , onMouseDown (MouseDownOnPointer gradient)
-        ]
-        []

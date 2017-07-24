@@ -5,7 +5,6 @@ import Mouse exposing (Position)
 import Palette.Types as Palette
 import Color
 import ParseInt
-import Debug exposing (log)
 
 
 update : Message -> Model -> ( Model, Maybe ExternalMessage )
@@ -281,19 +280,146 @@ update message model =
                     in
                         ( newModel, Nothing )
 
+        SetNoGradientClickedOn ->
+            let
+                newModel =
+                    { model
+                        | gradientClickedOn = Nothing
+                    }
+            in
+                ( newModel, Nothing )
+
         MouseDownOnPointer gradient ->
             let
-                _ =
-                    log "gradient" gradient
+                newModel =
+                    { model
+                        | gradientClickedOn = Just gradient
+                    }
             in
-                ( model, Nothing )
+                ( newModel, Nothing )
 
         MouseMoveInGradient gradient { targetPos, clientPos } ->
             let
-                _ =
-                    log "event" (clientPos.x - targetPos.x)
+                x =
+                    (clientPos.x - targetPos.x - 4)
+                        |> min 255
+                        |> max 0
             in
-                ( model, Nothing )
+                case model.gradientClickedOn of
+                    Just Lightness ->
+                        let
+                            { hue, saturation } =
+                                Color.toHsl model.color
+
+                            newColor =
+                                Color.hsl
+                                    hue
+                                    saturation
+                                    (toFloat x / 255)
+
+                            newModel =
+                                { model
+                                    | color = newColor
+                                }
+                        in
+                            ( cohereModel newModel, Nothing )
+
+                    Just Saturation ->
+                        let
+                            { hue, lightness } =
+                                Color.toHsl model.color
+
+                            newColor =
+                                Color.hsl
+                                    hue
+                                    (toFloat x / 255)
+                                    lightness
+
+                            newModel =
+                                { model
+                                    | color = newColor
+                                }
+                        in
+                            ( cohereModel newModel, Nothing )
+
+                    Just Hue ->
+                        let
+                            { saturation, lightness } =
+                                Color.toHsl model.color
+
+                            newColor =
+                                Color.hsl
+                                    (degrees ((toFloat x / 255) * 360))
+                                    saturation
+                                    lightness
+
+                            newModel =
+                                { model
+                                    | color = newColor
+                                }
+                        in
+                            ( cohereModel newModel, Nothing )
+
+                    Just Red ->
+                        let
+                            { green, blue } =
+                                Color.toRgb model.color
+
+                            newColor =
+                                Color.rgb
+                                    x
+                                    green
+                                    blue
+
+                            newModel =
+                                { model
+                                    | color = newColor
+                                }
+                        in
+                            ( cohereModel newModel, Nothing )
+
+                    Just Green ->
+                        let
+                            { red, blue } =
+                                Color.toRgb model.color
+
+                            newColor =
+                                Color.rgb
+                                    red
+                                    x
+                                    blue
+
+                            newModel =
+                                { model
+                                    | color = newColor
+                                }
+                        in
+                            ( cohereModel newModel, Nothing )
+
+                    Just Blue ->
+                        let
+                            { red, green } =
+                                Color.toRgb model.color
+
+                            newColor =
+                                Color.rgb
+                                    red
+                                    green
+                                    x
+
+                            newModel =
+                                { model
+                                    | color = newColor
+                                }
+                        in
+                            ( cohereModel newModel, Nothing )
+
+                    Nothing ->
+                        ( model, Nothing )
+
+
+
+-- INTERNAL HELPERS --
 
 
 setColorMaybe : Model -> ( Model, Maybe ExternalMessage )
