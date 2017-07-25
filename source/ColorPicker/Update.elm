@@ -1,9 +1,10 @@
 module ColorPicker.Update exposing (update)
 
 import ColorPicker.Types exposing (..)
+import ColorPicker.Util exposing (doesntHaveHue)
 import Mouse exposing (Position)
 import Palette.Types as Palette
-import Color
+import Color exposing (Color)
 import ParseInt
 
 
@@ -87,199 +88,78 @@ update message model =
 
         UpdateColorHexField hex ->
             let
-                newModel =
-                    { model
-                        | colorHexField = String.toUpper hex
-                    }
+                newHexField =
+                    String.toUpper hex
             in
-                setColorMaybe newModel
+                case Palette.toColor newHexField of
+                    Just color ->
+                        let
+                            newModel =
+                                { model
+                                    | color = color
+                                    , colorHexField = newHexField
+                                }
+                        in
+                            cohereAndSet newModel
+
+                    Nothing ->
+                        let
+                            newModel =
+                                { model
+                                    | colorHexField = newHexField
+                                }
+                        in
+                            ( newModel, Nothing )
 
         StealSubmit ->
             ( model, Nothing )
 
-        RedFieldUpdate red ->
-            case ParseInt.parseInt red of
-                Ok int ->
-                    let
-                        { green, blue } =
-                            Color.toRgb model.color
-
-                        newColor =
-                            Color.rgb int green blue
-
-                        newModel =
-                            { model
-                                | redField = red
-                                , color = newColor
-                            }
-                    in
-                        ( cohereModel newModel
-                        , Just (SetColor model.index newColor)
-                        )
-
-                Err _ ->
-                    let
-                        newModel =
-                            { model
-                                | redField = red
-                            }
-                    in
-                        ( newModel, Nothing )
-
-        GreenFieldUpdate green ->
-            case ParseInt.parseInt green of
-                Ok int ->
-                    let
-                        { red, blue } =
-                            Color.toRgb model.color
-
-                        newColor =
-                            Color.rgb red int blue
-
-                        newModel =
-                            { model
-                                | greenField = green
-                                , color = newColor
-                            }
-                    in
-                        ( cohereModel newModel
-                        , Just (SetColor model.index newColor)
-                        )
-
-                Err _ ->
-                    let
-                        newModel =
-                            { model
-                                | greenField = green
-                            }
-                    in
-                        ( newModel, Nothing )
-
-        BlueFieldUpdate blue ->
-            case ParseInt.parseInt blue of
-                Ok int ->
-                    let
-                        { red, green } =
-                            Color.toRgb model.color
-
-                        newColor =
-                            Color.rgb red green int
-
-                        newModel =
-                            { model
-                                | blueField = blue
-                                , color = newColor
-                            }
-                    in
-                        ( cohereModel newModel
-                        , Just (SetColor model.index newColor)
-                        )
-
-                Err _ ->
-                    let
-                        newModel =
-                            { model
-                                | blueField = blue
-                            }
-                    in
-                        ( newModel, Nothing )
-
-        HueFieldUpdate hue ->
-            case ParseInt.parseInt hue of
-                Ok int ->
-                    let
-                        { saturation, lightness } =
-                            Color.toHsl model.color
-
-                        newColor =
-                            Color.hsl
-                                (degrees (toFloat int))
-                                saturation
-                                lightness
-
-                        newModel =
-                            { model
-                                | hueField = hue
-                                , color = newColor
-                            }
-                    in
-                        ( cohereModel newModel
-                        , Just (SetColor model.index newColor)
-                        )
-
-                Err _ ->
-                    let
-                        newModel =
-                            { model
-                                | hueField = hue
-                            }
-                    in
-                        ( newModel, Nothing )
-
-        SaturationFieldUpdate saturation ->
-            case ParseInt.parseInt saturation of
-                Ok int ->
-                    let
-                        { hue, lightness } =
-                            Color.toHsl model.color
-
-                        newColor =
-                            Color.hsl
-                                hue
-                                ((toFloat int) / 255)
-                                lightness
-
-                        newModel =
-                            { model
-                                | saturationField = saturation
-                                , color = newColor
-                            }
-                    in
-                        ( cohereModel newModel
-                        , Just (SetColor model.index newColor)
-                        )
-
-                Err _ ->
-                    let
-                        newModel =
-                            { model
-                                | saturationField = saturation
-                            }
-                    in
-                        ( newModel, Nothing )
-
-        LightnessFieldUpdate lightness ->
-            case ParseInt.parseInt lightness of
-                Ok int ->
-                    let
-                        { hue, saturation } =
-                            Color.toHsl model.color
-
-                        newColor =
-                            Color.hsl
-                                hue
-                                saturation
-                                ((toFloat int) / 255)
-
-                        newModel =
-                            { model
-                                | lightnessField = lightness
-                                , color = newColor
-                            }
-                    in
-                        ( cohereModel newModel
-                        , Just (SetColor model.index newColor)
-                        )
-
-                Err _ ->
-                    let
-                        newModel =
-                            { model
-                                | lightnessField = lightness
-                            }
-                    in
-                        ( newModel, Nothing )
-
+        --RedFieldUpdate red ->
+        --    case ParseInt.parseInt red of
+        --        Ok int ->
+        --            let
+        --                { green, blue } =
+        --                    Color.toRgb model.color
+        --                newColor =
+        --                    Color.rgb int green blue
+        --                newModel =
+        --                    { model
+        --                        | redField = red
+        --                        , color = newColor
+        --                    }
+        --            in
+        --                cohereAndSet newModel
+        --        Err _ ->
+        --            let
+        --                newModel =
+        --                    { model
+        --                        | redField = red
+        --                    }
+        --            in
+        --                ( newModel, Nothing )
+        --GreenFieldUpdate green ->
+        --    case ParseInt.parseInt green of
+        --        Ok int ->
+        --            let
+        --                { red, blue } =
+        --                    Color.toRgb model.color
+        --                newColor =
+        --                    Color.rgb red int blue
+        --                newModel =
+        --                    { model
+        --                        | greenField = green
+        --                        , color = newColor
+        --                    }
+        --            in
+        --                cohereAndSet newModel
+        --        Err _ ->
+        --            let
+        --                newModel =
+        --                    { model
+        --                        | greenField = green
+        --                    }
+        --            in
+        --                ( newModel, Nothing )
         SetNoGradientClickedOn ->
             let
                 newModel =
@@ -305,139 +185,266 @@ update message model =
                         |> min 255
                         |> max 0
             in
-                case model.gradientClickedOn of
-                    Just Lightness ->
-                        let
-                            { hue, saturation } =
-                                Color.toHsl model.color
+                sliderHandler x gradient model
 
-                            newColor =
-                                Color.hsl
-                                    hue
-                                    saturation
-                                    (toFloat x / 255)
+        FieldUpdate gradient str ->
+            fieldHandler gradient str model
 
-                            newModel =
-                                { model
-                                    | color = newColor
-                                }
-                        in
-                            ( cohereModel newModel, Nothing )
 
-                    Just Saturation ->
-                        let
-                            { hue, lightness } =
-                                Color.toHsl model.color
 
-                            newColor =
-                                Color.hsl
-                                    hue
-                                    (toFloat x / 255)
-                                    lightness
+-- MESSAGE HANDLERS --
 
-                            newModel =
-                                { model
-                                    | color = newColor
-                                }
-                        in
-                            ( cohereModel newModel, Nothing )
 
-                    Just Hue ->
-                        let
-                            { saturation, lightness } =
-                                Color.toHsl model.color
+fieldHandler : Gradient -> String -> Model -> ( Model, Maybe ExternalMessage )
+fieldHandler gradient str model =
+    case ParseInt.parseInt str of
+        Ok int ->
+            fieldHandlerOk gradient str int model
 
-                            newColor =
-                                Color.hsl
-                                    (degrees ((toFloat x / 255) * 360))
-                                    saturation
-                                    lightness
+        Err _ ->
+            fieldHandlerErr gradient str model
 
-                            newModel =
-                                { model
-                                    | color = newColor
-                                }
-                        in
-                            ( cohereModel newModel, Nothing )
 
-                    Just Red ->
-                        let
-                            { green, blue } =
-                                Color.toRgb model.color
+fieldHandlerOk : Gradient -> String -> Int -> Model -> ( Model, Maybe ExternalMessage )
+fieldHandlerOk gradient str int model =
+    let
+        { hue, saturation, lightness } =
+            Color.toHsl model.color
 
-                            newColor =
-                                Color.rgb
-                                    x
-                                    green
-                                    blue
+        { red, green, blue } =
+            Color.toRgb model.color
+    in
+        case gradient of
+            Lightness ->
+                cohereAndSet
+                    { model
+                        | lightnessField = str
+                        , color =
+                            Color.hsl
+                                hue
+                                saturation
+                                (toFloat int / 255)
+                    }
 
-                            newModel =
-                                { model
-                                    | color = newColor
-                                }
-                        in
-                            ( cohereModel newModel, Nothing )
+            Saturation ->
+                cohereAndSet
+                    { model
+                        | saturationField = str
+                        , color =
+                            Color.hsl
+                                hue
+                                (toFloat int / 255)
+                                lightness
+                    }
 
-                    Just Green ->
-                        let
-                            { red, blue } =
-                                Color.toRgb model.color
+            Hue ->
+                cohereAndSet
+                    { model
+                        | hueField = str
+                        , color =
+                            Color.hsl
+                                (degrees (toFloat int))
+                                saturation
+                                lightness
+                    }
 
-                            newColor =
-                                Color.rgb
-                                    red
-                                    x
-                                    blue
+            Blue ->
+                cohereAndSet
+                    { model
+                        | blueField = str
+                        , color =
+                            validateHue
+                                model.color
+                                (Color.rgb red green int)
+                                int
+                    }
 
-                            newModel =
-                                { model
-                                    | color = newColor
-                                }
-                        in
-                            ( cohereModel newModel, Nothing )
+            Green ->
+                cohereAndSet
+                    { model
+                        | greenField = str
+                        , color =
+                            validateHue
+                                model.color
+                                (Color.rgb red int blue)
+                                int
+                    }
 
-                    Just Blue ->
-                        let
-                            { red, green } =
-                                Color.toRgb model.color
+            Red ->
+                cohereAndSet
+                    { model
+                        | redField = str
+                        , color =
+                            validateHue
+                                model.color
+                                (Color.rgb int green blue)
+                                int
+                    }
 
-                            newColor =
-                                Color.rgb
-                                    red
-                                    green
-                                    x
 
-                            newModel =
-                                { model
-                                    | color = newColor
-                                }
-                        in
-                            ( cohereModel newModel, Nothing )
+validateHue : Color -> Color -> Int -> Color
+validateHue oldColor newColor int =
+    if doesntHaveHue newColor then
+        let
+            { hue, lightness } =
+                Color.toHsl oldColor
+        in
+            Color.hsl
+                hue
+                (toFloat int / 255)
+                lightness
+    else
+        newColor
 
-                    Nothing ->
-                        ( model, Nothing )
+
+fieldHandlerErr : Gradient -> String -> Model -> ( Model, Maybe ExternalMessage )
+fieldHandlerErr gradient str model =
+    case gradient of
+        Lightness ->
+            ( { model | lightnessField = str }, Nothing )
+
+        Saturation ->
+            ( { model | saturationField = str }, Nothing )
+
+        Hue ->
+            ( { model | hueField = str }, Nothing )
+
+        Blue ->
+            ( { model | blueField = str }, Nothing )
+
+        Green ->
+            ( { model | greenField = str }, Nothing )
+
+        Red ->
+            ( { model | redField = str }, Nothing )
+
+
+sliderHandler : Int -> Gradient -> Model -> ( Model, Maybe ExternalMessage )
+sliderHandler x gradient model =
+    case gradient of
+        Lightness ->
+            let
+                { hue, saturation } =
+                    Color.toHsl model.color
+
+                newColor =
+                    Color.hsl
+                        hue
+                        saturation
+                        (toFloat x / 255)
+
+                newModel =
+                    { model
+                        | color = newColor
+                    }
+            in
+                cohereAndSet newModel
+
+        Saturation ->
+            let
+                { hue, lightness } =
+                    Color.toHsl model.color
+
+                newColor =
+                    Color.hsl
+                        hue
+                        (toFloat x / 255)
+                        lightness
+
+                newModel =
+                    { model
+                        | color = newColor
+                    }
+            in
+                cohereAndSet newModel
+
+        Hue ->
+            let
+                { saturation, lightness } =
+                    Color.toHsl model.color
+
+                newColor =
+                    Color.hsl
+                        (degrees ((toFloat x / 255) * 360))
+                        saturation
+                        lightness
+
+                newModel =
+                    { model
+                        | color = newColor
+                    }
+            in
+                cohereAndSet newModel
+
+        Red ->
+            let
+                { green, blue } =
+                    Color.toRgb model.color
+
+                newColor =
+                    Color.rgb
+                        x
+                        green
+                        blue
+
+                newModel =
+                    { model
+                        | color = newColor
+                    }
+            in
+                cohereAndSet newModel
+
+        Green ->
+            let
+                { red, blue } =
+                    Color.toRgb model.color
+
+                newColor =
+                    Color.rgb
+                        red
+                        x
+                        blue
+
+                newModel =
+                    { model
+                        | color = newColor
+                    }
+            in
+                cohereAndSet newModel
+
+        Blue ->
+            let
+                { red, green } =
+                    Color.toRgb model.color
+
+                newColor =
+                    Color.rgb
+                        red
+                        green
+                        x
+
+                newModel =
+                    { model
+                        | color = newColor
+                    }
+            in
+                cohereAndSet newModel
 
 
 
 -- INTERNAL HELPERS --
 
 
-setColorMaybe : Model -> ( Model, Maybe ExternalMessage )
-setColorMaybe model =
-    case Palette.toColor model.colorHexField of
-        Just color ->
-            let
-                newModel =
-                    { model
-                        | color = color
-                    }
-            in
-                ( cohereModel newModel
-                , Just (SetColor model.index color)
-                )
+cohereAndSet : Model -> ( Model, Maybe ExternalMessage )
+cohereAndSet =
+    cohereModel >> setColor
 
-        Nothing ->
-            ( model, Nothing )
+
+setColor : Model -> ( Model, Maybe ExternalMessage )
+setColor ({ index, color } as model) =
+    ( model
+    , Just (SetColor index color)
+    )
 
 
 cohereModel : Model -> Model

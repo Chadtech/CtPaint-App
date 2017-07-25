@@ -5,6 +5,7 @@ import Html.Attributes exposing (class, classList, style, spellcheck, value)
 import Html.Events exposing (onClick, onSubmit, onMouseDown, onMouseUp, onFocus, onBlur, onInput)
 import MouseEvents
 import ColorPicker.Types exposing (..)
+import ColorPicker.Util exposing (doesntHaveHue)
 import Util exposing ((:=), left, top, toPosition)
 import MouseEvents as Events
 import Palette.Types as Palette
@@ -58,23 +59,23 @@ body ({ colorHexField, color } as model) =
             ]
             []
         ]
-    , slider "H" model.hueField HueFieldUpdate (hueGradient model)
-    , slider "S" model.saturationField SaturationFieldUpdate (saturationGradient model)
-    , slider "L" model.lightnessField LightnessFieldUpdate (lightnessGradient model)
-    , slider "R" model.redField RedFieldUpdate (redGradient model)
-    , slider "G" model.greenField GreenFieldUpdate (greenGradient model)
-    , slider "B" model.blueField BlueFieldUpdate (blueGradient model)
+    , slider "H" model.hueField Hue (hueGradient model)
+    , slider "S" model.saturationField Saturation (saturationGradient model)
+    , slider "L" model.lightnessField Lightness (lightnessGradient model)
+    , slider "R" model.redField Red (redGradient model)
+    , slider "G" model.greenField Green (greenGradient model)
+    , slider "B" model.blueField Blue (blueGradient model)
     ]
 
 
-slider : String -> String -> (String -> Message) -> Html Message -> Html Message
-slider label fieldContent handler sliderGradient =
+slider : String -> String -> Gradient -> Html Message -> Html Message
+slider label fieldContent gradient sliderGradient =
     div
         [ class "slider-container" ]
         [ p [] [ text label ]
         , sliderGradient
         , input
-            [ onInput handler
+            [ onInput (FieldUpdate gradient)
             , value fieldContent
             ]
             []
@@ -364,19 +365,6 @@ gradientStyle colors =
     , ")"
     ]
         |> (String.concat >> (,) "background")
-
-
-doesntHaveHue : Color -> Bool
-doesntHaveHue color =
-    let
-        { red, green, blue } =
-            Color.toRgb color
-    in
-        Util.allTrue
-            [ red == green
-            , green == blue
-            , blue == red
-            ]
 
 
 toCssString : Color -> String

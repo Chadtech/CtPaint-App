@@ -22,16 +22,11 @@ type Message
     | SetColorScale ColorScale
     | HandleFocus Bool
     | StealSubmit
-    | RedFieldUpdate String
-    | GreenFieldUpdate String
-    | BlueFieldUpdate String
-    | HueFieldUpdate String
-    | SaturationFieldUpdate String
-    | LightnessFieldUpdate String
     | UpdateColorHexField String
     | MouseDownOnPointer Gradient
     | SetNoGradientClickedOn
     | MouseMoveInGradient Gradient MouseEvent
+    | FieldUpdate Gradient String
 
 
 type Gradient
@@ -103,7 +98,7 @@ init colors =
                 |> floor
                 |> toString
         , colorScale = Abs
-        , show = True
+        , show = False
         , colorHexField =
             String.dropLeft 1 (Palette.toHex color)
         , gradientClickedOn = Nothing
