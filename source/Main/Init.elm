@@ -12,6 +12,7 @@ import Mouse exposing (Position)
 import Color
 import Palette.Init
 import Util exposing (tbw)
+import History.Types exposing (HistoryOp(..))
 
 
 init : Value -> ( Model, Cmd Message )
@@ -45,6 +46,8 @@ init json =
         , colorPicker = ColorPicker.init Palette.Init.palette
         , ctrlDown = False
         , textInputFocused = False
+        , history = [ CanvasChange canvas ]
+        , future = []
         }
             ! []
 

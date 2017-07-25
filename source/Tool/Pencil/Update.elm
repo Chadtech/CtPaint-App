@@ -8,6 +8,7 @@ import Mouse exposing (Position)
 import Draw.Line as Line
 import Canvas exposing (DrawOp(..))
 import Util exposing (tbw)
+import History.Update as History
 
 
 update : Message -> Maybe Position -> Model -> Model
@@ -51,6 +52,7 @@ update message tool ({ canvasPosition } as model) =
             { model
                 | tool = Pencil Nothing
             }
+                |> History.addCanvas
 
         _ ->
             model

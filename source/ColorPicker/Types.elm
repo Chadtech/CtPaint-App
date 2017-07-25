@@ -11,6 +11,7 @@ import MouseEvents exposing (MouseEvent)
 type ExternalMessage
     = SetColor Int Color
     | SetFocus Bool
+    | UpdateHistory Int Color
 
 
 type Message
@@ -19,7 +20,6 @@ type Message
     | HeaderMouseUp Position
     | WakeUp Color Int
     | Close
-    | SetColorScale ColorScale
     | HandleFocus Bool
     | StealSubmit
     | UpdateColorHexField String
@@ -49,16 +49,42 @@ type alias Model =
     , hueField : String
     , saturationField : String
     , lightnessField : String
-    , colorScale : ColorScale
     , show : Bool
     , colorHexField : String
     , gradientClickedOn : Maybe Gradient
     }
 
 
-type ColorScale
-    = Abs
-    | Rel
+newFrom : Int -> Color -> Model -> Model
+newFrom index color model =
+    let
+        { red, green, blue } =
+            Color.toRgb color
+
+        { hue, saturation, lightness } =
+            Color.toHsl color
+    in
+        { model
+            | color = color
+            , index = index
+            , redField = toString red
+            , greenField = toString green
+            , blueField = toString blue
+            , hueField =
+                ((radians hue) / (2 * pi) * 360)
+                    |> floor
+                    |> toString
+            , saturationField =
+                (saturation * 255)
+                    |> floor
+                    |> toString
+            , lightnessField =
+                (lightness * 255)
+                    |> floor
+                    |> toString
+            , colorHexField =
+                String.dropLeft 1 (Palette.toHex color)
+        }
 
 
 init : Array Color -> Model
@@ -97,7 +123,6 @@ init colors =
             (lightness * 255)
                 |> floor
                 |> toString
-        , colorScale = Abs
         , show = False
         , colorHexField =
             String.dropLeft 1 (Palette.toHex color)

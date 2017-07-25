@@ -74,15 +74,6 @@ update message model =
             in
                 ( newModel, Nothing )
 
-        SetColorScale scale ->
-            let
-                newModel =
-                    { model
-                        | colorScale = scale
-                    }
-            in
-                ( newModel, Nothing )
-
         HandleFocus focused ->
             ( model, Just (SetFocus focused) )
 
@@ -114,52 +105,6 @@ update message model =
         StealSubmit ->
             ( model, Nothing )
 
-        --RedFieldUpdate red ->
-        --    case ParseInt.parseInt red of
-        --        Ok int ->
-        --            let
-        --                { green, blue } =
-        --                    Color.toRgb model.color
-        --                newColor =
-        --                    Color.rgb int green blue
-        --                newModel =
-        --                    { model
-        --                        | redField = red
-        --                        , color = newColor
-        --                    }
-        --            in
-        --                cohereAndSet newModel
-        --        Err _ ->
-        --            let
-        --                newModel =
-        --                    { model
-        --                        | redField = red
-        --                    }
-        --            in
-        --                ( newModel, Nothing )
-        --GreenFieldUpdate green ->
-        --    case ParseInt.parseInt green of
-        --        Ok int ->
-        --            let
-        --                { red, blue } =
-        --                    Color.toRgb model.color
-        --                newColor =
-        --                    Color.rgb red int blue
-        --                newModel =
-        --                    { model
-        --                        | greenField = green
-        --                        , color = newColor
-        --                    }
-        --            in
-        --                cohereAndSet newModel
-        --        Err _ ->
-        --            let
-        --                newModel =
-        --                    { model
-        --                        | greenField = green
-        --                    }
-        --            in
-        --                ( newModel, Nothing )
         SetNoGradientClickedOn ->
             let
                 newModel =
@@ -176,7 +121,9 @@ update message model =
                         | gradientClickedOn = Just gradient
                     }
             in
-                ( newModel, Nothing )
+                ( newModel
+                , Just (UpdateHistory model.index model.color)
+                )
 
         MouseMoveInGradient gradient { targetPos, clientPos } ->
             let

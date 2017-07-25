@@ -9,6 +9,7 @@ import Draw.Rectangle as Rectangle
 import Draw.Util exposing (makeRectParams)
 import Canvas exposing (Size)
 import Util exposing (tbw)
+import History.Update as History
 
 
 update : Message -> Maybe Position -> Model -> Model
@@ -63,6 +64,7 @@ update message toolModel model =
                                 drawPosition
                             ]
                 }
+                    |> History.addCanvas
 
         _ ->
             model

@@ -5,6 +5,7 @@ import Keyboard.Types exposing (Message(..), Direction(..))
 import Tool.Types exposing (Tool(..))
 import Tool.Zoom as Zoom
 import Keyboard exposing (KeyCode)
+import History.Update as History
 
 
 update : Message -> Model -> Model
@@ -149,6 +150,12 @@ handleKeyUp code model =
                     , keyIsDown = False
                     }
             }
+
+        90 ->
+            History.undo model
+
+        89 ->
+            History.redo model
 
         -- This is the plus sign
         187 ->

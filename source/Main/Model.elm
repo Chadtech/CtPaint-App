@@ -9,6 +9,7 @@ import Main.Message exposing (Message(..))
 import Mouse exposing (Position)
 import Palette.Types exposing (Swatches)
 import Array exposing (Array)
+import History.Types exposing (HistoryOp(..))
 
 
 type alias Model =
@@ -27,4 +28,6 @@ type alias Model =
     , colorPicker : ColorPicker.Model
     , ctrlDown : Bool
     , textInputFocused : Bool
+    , history : List HistoryOp
+    , future : List HistoryOp
     }
