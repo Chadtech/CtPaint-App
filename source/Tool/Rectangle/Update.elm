@@ -6,7 +6,9 @@ import Tool.Types exposing (Tool(..))
 import Tool.Util exposing (adjustPosition)
 import Mouse exposing (Position)
 import Draw.Rectangle as Rectangle
+import Draw.Util exposing (makeRectParams)
 import Canvas exposing (Size)
+import Util exposing (tbw)
 
 
 update : Message -> Maybe Position -> Model -> Model
@@ -29,36 +31,24 @@ update message toolModel model =
 
         ( SubMouseMove position, Just priorPosition ) ->
             let
-                adjustedPosition =
-                    adjustPosition model 29 position
-
-                size =
-                    Size
-                        (adjustedPosition.x - priorPosition.x)
-                        (adjustedPosition.y - priorPosition.y)
+                ( drawPosition, size ) =
+                    makeRectParams
+                        (adjustPosition model tbw position)
+                        priorPosition
             in
                 { model
                     | drawAtRender =
                         Rectangle.draw
                             model.swatches.primary
                             size
-                            priorPosition
+                            drawPosition
                 }
 
         ( SubMouseUp position, Just priorPosition ) ->
             let
-                adjustedPosition =
-                    adjustPosition model 29 position
-
-                size =
-                    Size
-                        (adjustedPosition.x - priorPosition.x)
-                        (adjustedPosition.y - priorPosition.y)
-
-                newDrawOp =
-                    Rectangle.draw
-                        model.swatches.primary
-                        size
+                ( drawPosition, size ) =
+                    makeRectParams
+                        (adjustPosition model tbw position)
                         priorPosition
             in
                 { model
@@ -67,7 +57,10 @@ update message toolModel model =
                     , pendingDraw =
                         Canvas.batch
                             [ model.pendingDraw
-                            , newDrawOp
+                            , Rectangle.draw
+                                model.swatches.primary
+                                size
+                                drawPosition
                             ]
                 }
 

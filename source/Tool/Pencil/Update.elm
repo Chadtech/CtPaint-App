@@ -7,6 +7,7 @@ import Main.Model exposing (Model)
 import Mouse exposing (Position)
 import Draw.Line as Line
 import Canvas exposing (DrawOp(..))
+import Util exposing (tbw)
 
 
 update : Message -> Maybe Position -> Model -> Model
@@ -32,7 +33,7 @@ update message tool ({ canvasPosition } as model) =
         ( SubMouseMove position, Just priorPosition ) ->
             let
                 adjustedPosition =
-                    adjustPosition model 29 position
+                    adjustPosition model tbw position
             in
                 { model
                     | tool = Pencil (Just adjustedPosition)

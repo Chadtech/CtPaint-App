@@ -4,6 +4,7 @@ import Main.Model exposing (Model)
 import Tool.Hand.Types exposing (Message(..))
 import Tool.Types exposing (Tool(..))
 import Mouse exposing (Position)
+import Util exposing (tbw)
 
 
 update : Message -> Maybe ( Position, Position ) -> Model -> Model
@@ -22,7 +23,7 @@ update message tool model =
                         [ canvasPosition.x
                         , position.x
                         , -originalClick.x
-                        , -29
+                        , -tbw
                         ]
 
                 y =

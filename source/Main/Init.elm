@@ -11,6 +11,7 @@ import Json.Decode as Decode exposing (Decoder)
 import Mouse exposing (Position)
 import Color
 import Palette.Init
+import Util exposing (tbw)
 
 
 init : Value -> ( Model, Cmd Message )
@@ -30,7 +31,7 @@ init json =
         , canvas = canvas
         , canvasPosition =
             Position
-                (((windowSize.width - 29) - canvasSize.width) // 2)
+                (((windowSize.width - tbw) - canvasSize.width) // 2)
                 ((windowSize.height - canvasSize.height) // 2)
         , pendingDraw = Canvas.batch []
         , drawAtRender = Canvas.batch []

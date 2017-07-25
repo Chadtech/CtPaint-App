@@ -4,6 +4,7 @@ import Mouse exposing (Position)
 import Main.Model exposing (Model)
 import Mouse exposing (Position)
 import Canvas exposing (Size)
+import Util exposing (tbw)
 
 
 adjust : Position -> Int -> Model -> Model
@@ -11,8 +12,8 @@ adjust { x, y } bias ({ zoom, windowSize, canvasPosition } as model) =
     let
         halfWindowSize =
             Size
-                ((windowSize.width - 29) // 2)
-                ((windowSize.height - 29) // 2)
+                ((windowSize.width - tbw) // 2)
+                ((windowSize.height - tbw) // 2)
 
         x_ =
             (x - halfWindowSize.width) // zoom
@@ -36,8 +37,8 @@ set zoom ({ canvas, canvasPosition, windowSize } as model) =
 
         halfWindowSize =
             Size
-                ((windowSize.width - 29) // 2)
-                ((windowSize.height - 29) // 2)
+                ((windowSize.width - tbw) // 2)
+                ((windowSize.height - tbw) // 2)
 
         relZoom : Int -> Int
         relZoom d =

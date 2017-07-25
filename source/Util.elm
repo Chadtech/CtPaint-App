@@ -55,6 +55,15 @@ height =
 
 
 
+-- Tool bar width, a constant used all over the place
+
+
+tbw : Int
+tbw =
+    29
+
+
+
 -- POSITION AND POINT --
 
 
