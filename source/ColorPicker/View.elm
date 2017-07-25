@@ -77,6 +77,8 @@ slider label fieldContent gradient sliderGradient =
         , input
             [ onInput (FieldUpdate gradient)
             , value fieldContent
+            , onFocus (HandleFocus True)
+            , onBlur (HandleFocus False)
             ]
             []
         ]
