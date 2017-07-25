@@ -1,7 +1,7 @@
-module Tool.Rectangle.Update exposing (update)
+module Tool.RectangleFilled.Update exposing (update)
 
 import Main.Model exposing (Model)
-import Tool.Rectangle.Types exposing (Message(..))
+import Tool.RectangleFilled.Types exposing (Message(..))
 import Tool.Types exposing (Tool(..))
 import Tool.Util exposing (adjustPosition)
 import Mouse exposing (Position)
@@ -19,9 +19,9 @@ update message toolModel model =
             in
                 { model
                     | tool =
-                        Rectangle (Just adjustedPosition)
+                        RectangleFilled (Just adjustedPosition)
                     , drawAtRender =
-                        Rectangle.draw
+                        Rectangle.fill
                             model.swatches.primary
                             (Size 1 1)
                             adjustedPosition
@@ -39,7 +39,7 @@ update message toolModel model =
             in
                 { model
                     | drawAtRender =
-                        Rectangle.draw
+                        Rectangle.fill
                             model.swatches.primary
                             size
                             priorPosition
@@ -56,13 +56,13 @@ update message toolModel model =
                         (adjustedPosition.y - priorPosition.y)
 
                 newDrawOp =
-                    Rectangle.draw
+                    Rectangle.fill
                         model.swatches.primary
                         size
                         priorPosition
             in
                 { model
-                    | tool = Rectangle Nothing
+                    | tool = RectangleFilled Nothing
                     , drawAtRender = Canvas.batch []
                     , pendingDraw =
                         Canvas.batch

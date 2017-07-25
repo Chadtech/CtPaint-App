@@ -8,6 +8,7 @@ import Tool.Pencil.Types as Pencil
 import Tool.ZoomIn.Types as ZoomIn
 import Tool.ZoomOut.Types as ZoomOut
 import Tool.Rectangle.Types as Rectangle
+import Tool.RectangleFilled.Types as RectangleFilled
 import ColorPicker.Types as ColorPicker
 import Keyboard.Types as Keyboard
 import Time exposing (Time)
@@ -23,5 +24,6 @@ type Message
     | ZoomInMessage ZoomIn.Message
     | ZoomOutMessage ZoomOut.Message
     | RectangleMessage Rectangle.Message
+    | RectangleFilledMessage RectangleFilled.Message
     | Tick Time
     | ColorPickerMessage ColorPicker.Message

@@ -8,6 +8,7 @@ import Tool.Pencil.Update as Pencil
 import Tool.ZoomIn.Update as ZoomIn
 import Tool.ZoomOut.Update as ZoomOut
 import Tool.Rectangle.Update as Rectangle
+import Tool.RectangleFilled.Update as RectangleFilled
 import ColorPicker.Update as ColorPicker
 import ColorPicker.Handle as ColorPicker
 import Tool.Types exposing (Tool(..))
@@ -76,6 +77,13 @@ update message model =
             let
                 newModel =
                     Rectangle.update subMessage subModel model
+            in
+                newModel ! []
+
+        ( RectangleFilledMessage subMessage, RectangleFilled subModel ) ->
+            let
+                newModel =
+                    RectangleFilled.update subMessage subModel model
             in
                 newModel ! []
 

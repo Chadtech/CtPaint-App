@@ -16,6 +16,7 @@ import Tool.Pencil.Mouse as Pencil
 import Tool.ZoomIn.Mouse as ZoomIn
 import Tool.ZoomOut.Mouse as ZoomOut
 import Tool.Rectangle.Mouse as Rectangle
+import Tool.RectangleFilled.Mouse as RectangleFilled
 
 
 -- VIEW --
@@ -92,6 +93,11 @@ addToolAttributes tool attributes =
                     List.map
                         (Attributes.map RectangleMessage)
                         Rectangle.attributes
+
+                RectangleFilled _ ->
+                    List.map
+                        (Attributes.map RectangleFilledMessage)
+                        RectangleFilled.attributes
 
                 ZoomIn ->
                     List.map

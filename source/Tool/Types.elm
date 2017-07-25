@@ -9,6 +9,7 @@ type Tool
     | ZoomOut
     | Pencil (Maybe Position)
     | Rectangle (Maybe Position)
+    | RectangleFilled (Maybe Position)
 
 
 
@@ -22,6 +23,7 @@ all =
     , Hand Nothing
     , Pencil Nothing
     , Rectangle Nothing
+    , RectangleFilled Nothing
     ]
 
 
@@ -36,6 +38,9 @@ icon tool =
 
         Rectangle _ ->
             "\xEA03"
+
+        RectangleFilled _ ->
+            "\xEA04"
 
         ZoomIn ->
             "\xEA17"
@@ -55,6 +60,9 @@ name tool =
 
         Rectangle _ ->
             "rectangle"
+
+        RectangleFilled _ ->
+            "rectangle-filled"
 
         ZoomIn ->
             "zoom-in"
