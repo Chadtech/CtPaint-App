@@ -30,6 +30,7 @@ update message tool ({ canvasPosition } as model) =
                                 adjustedPosition
                             ]
                 }
+                    |> History.addCanvas
 
         ( SubMouseMove position, Just priorPosition ) ->
             let
@@ -52,7 +53,6 @@ update message tool ({ canvasPosition } as model) =
             { model
                 | tool = Pencil Nothing
             }
-                |> History.addCanvas
 
         _ ->
             model

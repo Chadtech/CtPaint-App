@@ -29,6 +29,7 @@ update message toolModel model =
                             (Size 1 1)
                             adjustedPosition
                 }
+                    |> History.addCanvas
 
         ( SubMouseMove position, Just priorPosition ) ->
             let
@@ -64,7 +65,6 @@ update message toolModel model =
                                 drawPosition
                             ]
                 }
-                    |> History.addCanvas
 
         _ ->
             model
