@@ -8,6 +8,7 @@ import Tool.Hand.Mouse as Hand
 import Tool.Pencil.Mouse as Pencil
 import Tool.ZoomIn.Mouse as ZoomIn
 import Tool.ZoomOut.Mouse as ZoomOut
+import Tool.Rectangle.Mouse as Rectangle
 import ColorPicker.Mouse as ColorPicker
 import Mouse
 import Window
@@ -41,6 +42,9 @@ toolSubs { tool } =
 
         Pencil _ ->
             List.map (Sub.map PencilMessage) Pencil.subs
+
+        Rectangle _ ->
+            List.map (Sub.map RectangleMessage) Rectangle.subs
 
         ZoomIn ->
             List.map (Sub.map ZoomInMessage) ZoomIn.subs

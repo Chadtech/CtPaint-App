@@ -16,6 +16,7 @@ type alias Model =
     , canvas : Canvas
     , canvasPosition : Position
     , pendingDraw : DrawOp
+    , drawAtRender : DrawOp
     , swatches : Swatches
     , palette : Array Color
     , horizontalToolbarHeight : Int

@@ -15,6 +15,7 @@ import Tool.Hand.Mouse as Hand
 import Tool.Pencil.Mouse as Pencil
 import Tool.ZoomIn.Mouse as ZoomIn
 import Tool.ZoomOut.Mouse as ZoomOut
+import Tool.Rectangle.Mouse as Rectangle
 
 
 -- VIEW --
@@ -87,6 +88,11 @@ addToolAttributes tool attributes =
                         (Attributes.map PencilMessage)
                         Pencil.attributes
 
+                Rectangle _ ->
+                    List.map
+                        (Attributes.map RectangleMessage)
+                        Rectangle.attributes
+
                 ZoomIn ->
                     List.map
                         (Attributes.map ZoomInMessage)
@@ -115,7 +121,7 @@ canvasArea canvasAreaHeight model =
             [ class "main-canvas"
             , style (canvasStyles model)
             ]
-            model.canvas
+            (Canvas.draw model.drawAtRender model.canvas)
         ]
 
 

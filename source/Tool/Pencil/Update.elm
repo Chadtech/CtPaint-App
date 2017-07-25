@@ -2,6 +2,7 @@ module Tool.Pencil.Update exposing (..)
 
 import Tool.Pencil.Types exposing (Message(..))
 import Tool.Types exposing (Tool(..))
+import Tool.Util exposing (adjustPosition)
 import Main.Model exposing (Model)
 import Mouse exposing (Position)
 import Draw.Line as Line
@@ -52,23 +53,3 @@ update message tool ({ canvasPosition } as model) =
 
         _ ->
             model
-
-
-adjustPosition : Model -> Int -> Position -> Position
-adjustPosition { canvas, canvasPosition, zoom } offset { x, y } =
-    let
-        x_ =
-            List.sum
-                [ x
-                , -canvasPosition.x
-                , -offset
-                ]
-
-        y_ =
-            List.sum
-                [ y
-                , -canvasPosition.y
-                , -offset
-                ]
-    in
-        Position (x_ // zoom) (y_ // zoom)

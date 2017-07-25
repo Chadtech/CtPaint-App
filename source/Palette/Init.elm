@@ -11,6 +11,10 @@ palette =
     , Color.black
     , Color.white
     , Color.rgba 241 29 35 255
+    , Color.black
+    , Color.black
+    , Color.black
+    , Color.black
     ]
         |> Array.fromList
 

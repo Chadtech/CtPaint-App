@@ -33,6 +33,7 @@ init json =
                 (((windowSize.width - 29) - canvasSize.width) // 2)
                 ((windowSize.height - canvasSize.height) // 2)
         , pendingDraw = Canvas.batch []
+        , drawAtRender = Canvas.batch []
         , swatches = Palette.Init.swatches
         , palette = Palette.Init.palette
         , horizontalToolbarHeight = 58

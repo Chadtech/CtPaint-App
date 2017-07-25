@@ -1,7 +1,7 @@
 module Palette.View exposing (view)
 
 import Html exposing (Html, Attribute, div)
-import Html.Attributes exposing (class, style)
+import Html.Attributes exposing (class, classList, style)
 import Html.Events exposing (onClick, onDoubleClick)
 import Main.Model exposing (Model)
 import Toolbar.Horizontal.Types exposing (Message(..))
@@ -27,9 +27,15 @@ view model =
 palette : Model -> Html Message
 palette model =
     let
+        square : Int -> Color -> Html Message
+        square =
+            paletteSquare
+                model.colorPicker.show
+                model.colorPicker.index
+
         paletteSquares =
             model.palette
-                |> Array.indexedMap paletteSquare
+                |> Array.indexedMap square
                 |> Array.toList
     in
         div
@@ -40,13 +46,24 @@ palette model =
             paletteSquares
 
 
-paletteSquare : Int -> Color -> Html Message
-paletteSquare index color =
+paletteSquare : Bool -> Int -> Int -> Color -> Html Message
+paletteSquare show selectedIndex index color =
     div
         [ class "square"
         , background color
         , onClick (PaletteSquareClick color index)
         ]
+        (highLight (show && (index == selectedIndex)))
+
+
+highLight : Bool -> List (Html Message)
+highLight show =
+    if show then
+        [ div
+            [ class "high-light" ]
+            []
+        ]
+    else
         []
 
 

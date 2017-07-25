@@ -5,9 +5,10 @@ import Mouse exposing (Position)
 
 type Tool
     = Hand (Maybe ( Position, Position ))
-    | Pencil (Maybe Position)
     | ZoomIn
     | ZoomOut
+    | Pencil (Maybe Position)
+    | Rectangle (Maybe Position)
 
 
 
@@ -20,6 +21,7 @@ all =
     , ZoomOut
     , Hand Nothing
     , Pencil Nothing
+    , Rectangle Nothing
     ]
 
 
@@ -31,6 +33,9 @@ icon tool =
 
         Pencil _ ->
             "\xEA02"
+
+        Rectangle _ ->
+            "\xEA03"
 
         ZoomIn ->
             "\xEA17"
@@ -47,6 +52,9 @@ name tool =
 
         Pencil _ ->
             "pencil"
+
+        Rectangle _ ->
+            "rectangle"
 
         ZoomIn ->
             "zoom-in"

@@ -7,6 +7,7 @@ import Tool.Hand.Update as Hand
 import Tool.Pencil.Update as Pencil
 import Tool.ZoomIn.Update as ZoomIn
 import Tool.ZoomOut.Update as ZoomOut
+import Tool.Rectangle.Update as Rectangle
 import ColorPicker.Update as ColorPicker
 import ColorPicker.Handle as ColorPicker
 import Tool.Types exposing (Tool(..))
@@ -68,6 +69,13 @@ update message model =
             let
                 newModel =
                     ZoomOut.update subMessage model
+            in
+                newModel ! []
+
+        ( RectangleMessage subMessage, Rectangle subModel ) ->
+            let
+                newModel =
+                    Rectangle.update subMessage subModel model
             in
                 newModel ! []
 
