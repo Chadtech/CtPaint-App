@@ -48,6 +48,7 @@ init json =
         , textInputFocused = False
         , history = [ CanvasChange canvas ]
         , future = []
+        , mousePosition = Nothing
         }
             ! []
 

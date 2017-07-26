@@ -2,6 +2,8 @@ module Main.View exposing (view)
 
 import Html exposing (Html, Attribute, div, p, text)
 import Html.Attributes as Attributes exposing (class, style)
+import Html.Events exposing (onMouseLeave)
+import MouseEvents exposing (onMouseMove)
 import Main.Model exposing (Model)
 import Main.Message exposing (Message(..))
 import Toolbar.Vertical.View as ToolbarVertical
@@ -69,6 +71,8 @@ clickScreen canvasAreaHeight { tool } =
                 [ class ("screen " ++ (Tool.name tool))
                 , style
                     [ height canvasAreaHeight ]
+                , onMouseLeave ScreenMouseExit
+                , onMouseMove ScreenMouseMove
                 ]
     in
         div attributes []

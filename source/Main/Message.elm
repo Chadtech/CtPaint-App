@@ -12,6 +12,8 @@ import Tool.RectangleFilled.Types as RectangleFilled
 import ColorPicker.Types as ColorPicker
 import Keyboard.Types as Keyboard
 import Time exposing (Time)
+import Mouse exposing (Position)
+import MouseEvents exposing (MouseEvent)
 
 
 type Message
@@ -27,3 +29,5 @@ type Message
     | RectangleFilledMessage RectangleFilled.Message
     | Tick Time
     | ColorPickerMessage ColorPicker.Message
+    | ScreenMouseMove MouseEvent
+    | ScreenMouseExit

@@ -14,6 +14,7 @@ import ColorPicker.Handle as ColorPicker
 import Tool.Types exposing (Tool(..))
 import Canvas exposing (Size, DrawOp(..))
 import Keyboard.Update as Keyboard
+import Mouse exposing (Position)
 
 
 update : Message -> Model -> ( Model, Cmd Message )
@@ -109,6 +110,32 @@ update message model =
                     ColorPicker.update subMessage model.colorPicker
             in
                 (ColorPicker.handle colorPickerUpdate model) ! []
+
+        ( ScreenMouseMove { targetPos, clientPos }, _ ) ->
+            let
+                x =
+                    clientPos.x - targetPos.x - model.canvasPosition.x
+
+                y =
+                    clientPos.y - targetPos.y - model.canvasPosition.y
+
+                position =
+                    Position
+                        (x // model.zoom)
+                        (y // model.zoom)
+            in
+                { model
+                    | mousePosition =
+                        Just position
+                }
+                    ! []
+
+        ( ScreenMouseExit, _ ) ->
+            { model
+                | mousePosition =
+                    Nothing
+            }
+                ! []
 
         _ ->
             model ! []

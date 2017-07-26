@@ -30,4 +30,5 @@ type alias Model =
     , textInputFocused : Bool
     , history : List HistoryOp
     , future : List HistoryOp
+    , mousePosition : Maybe Position
     }
