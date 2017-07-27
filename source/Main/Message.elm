@@ -9,10 +9,10 @@ import Tool.ZoomIn.Types as ZoomIn
 import Tool.ZoomOut.Types as ZoomOut
 import Tool.Rectangle.Types as Rectangle
 import Tool.RectangleFilled.Types as RectangleFilled
+import Tool.Select.Types as Select
 import ColorPicker.Types as ColorPicker
 import Keyboard.Types as Keyboard
 import Time exposing (Time)
-import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
 
 
@@ -27,6 +27,7 @@ type Message
     | ZoomOutMessage ZoomOut.Message
     | RectangleMessage Rectangle.Message
     | RectangleFilledMessage RectangleFilled.Message
+    | SelectMessage Select.Message
     | Tick Time
     | ColorPickerMessage ColorPicker.Message
     | ScreenMouseMove MouseEvent

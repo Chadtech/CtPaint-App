@@ -10,6 +10,7 @@ import Tool.ZoomIn.Mouse as ZoomIn
 import Tool.ZoomOut.Mouse as ZoomOut
 import Tool.Rectangle.Mouse as Rectangle
 import Tool.RectangleFilled.Mouse as RectangleFilled
+import Tool.Select.Mouse as Select
 import ColorPicker.Mouse as ColorPicker
 import Mouse
 import Window
@@ -51,6 +52,9 @@ toolSubs { tool } =
             List.map
                 (Sub.map RectangleFilledMessage)
                 RectangleFilled.subs
+
+        Select _ ->
+            List.map (Sub.map SelectMessage) Select.subs
 
         ZoomIn ->
             List.map (Sub.map ZoomInMessage) ZoomIn.subs

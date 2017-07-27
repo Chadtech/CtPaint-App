@@ -1,10 +1,12 @@
 module Tool.Types exposing (..)
 
+import Tool.Select.Types as Select
 import Mouse exposing (Position)
 
 
 type Tool
     = Hand (Maybe ( Position, Position ))
+    | Select Select.Model
     | ZoomIn
     | ZoomOut
     | Pencil (Maybe Position)
@@ -18,7 +20,8 @@ type Tool
 
 all : List Tool
 all =
-    [ ZoomIn
+    [ Select Select.init
+    , ZoomIn
     , ZoomOut
     , Hand Nothing
     , Pencil Nothing
@@ -42,6 +45,9 @@ icon tool =
         RectangleFilled _ ->
             "\xEA04"
 
+        Select _ ->
+            "\xEA07"
+
         ZoomIn ->
             "\xEA17"
 
@@ -63,6 +69,9 @@ name tool =
 
         RectangleFilled _ ->
             "rectangle-filled"
+
+        Select _ ->
+            "select"
 
         ZoomIn ->
             "zoom-in"

@@ -11,10 +11,17 @@ update : Message -> Maybe ( Position, Position ) -> Model -> Model
 update message tool model =
     case ( message, tool ) of
         ( OnScreenMouseDown position, Nothing ) ->
-            { model
-                | tool =
-                    Hand (Just ( model.canvasPosition, position ))
-            }
+            let
+                y =
+                    position.y + 29
+            in
+                { model
+                    | tool =
+                        (Hand << Just)
+                            ( model.canvasPosition
+                            , Position position.x y
+                            )
+                }
 
         ( SubMouseMove position, Just ( canvasPosition, originalClick ) ) ->
             let
