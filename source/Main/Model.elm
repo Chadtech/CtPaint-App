@@ -31,4 +31,5 @@ type alias Model =
     , history : List HistoryOp
     , future : List HistoryOp
     , mousePosition : Maybe Position
+    , selection : Maybe ( Position, Canvas )
     }

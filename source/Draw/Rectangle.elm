@@ -8,9 +8,9 @@ import Color exposing (Color)
 import Draw.Pixel as Pixel
 
 
-draw : Color -> Size -> Position -> DrawOp
-draw color size position =
-    Shapes.rectangle size position
+draw : Color -> Position -> Position -> DrawOp
+draw color p q =
+    Shapes.rectangle2 p q
         |> List.map (toPoint >> Pixel.draw color)
         |> Canvas.batch
 

@@ -6,7 +6,6 @@ import Tool.Types exposing (Tool(..))
 import Tool.Util exposing (adjustPosition)
 import Mouse exposing (Position)
 import Draw.Rectangle as Rectangle
-import Draw.Util exposing (makeRectParams)
 import Canvas exposing (Size)
 import Util exposing (tbw)
 import History.Update as History
@@ -26,45 +25,33 @@ update message toolModel model =
                     , drawAtRender =
                         Rectangle.draw
                             model.swatches.primary
-                            (Size 1 1)
+                            adjustedPosition
                             adjustedPosition
                 }
                     |> History.addCanvas
 
         ( SubMouseMove position, Just priorPosition ) ->
-            let
-                ( drawPosition, size ) =
-                    makeRectParams
-                        (adjustPosition model tbw position)
+            { model
+                | drawAtRender =
+                    Rectangle.draw
+                        model.swatches.primary
                         priorPosition
-            in
-                { model
-                    | drawAtRender =
-                        Rectangle.draw
-                            model.swatches.primary
-                            size
-                            drawPosition
-                }
+                        (adjustPosition model tbw position)
+            }
 
         ( SubMouseUp position, Just priorPosition ) ->
-            let
-                ( drawPosition, size ) =
-                    makeRectParams
-                        (adjustPosition model tbw position)
-                        priorPosition
-            in
-                { model
-                    | tool = Rectangle Nothing
-                    , drawAtRender = Canvas.batch []
-                    , pendingDraw =
-                        Canvas.batch
-                            [ model.pendingDraw
-                            , Rectangle.draw
-                                model.swatches.primary
-                                size
-                                drawPosition
-                            ]
-                }
+            { model
+                | tool = Rectangle Nothing
+                , drawAtRender = Canvas.batch []
+                , pendingDraw =
+                    Canvas.batch
+                        [ model.pendingDraw
+                        , Rectangle.draw
+                            model.swatches.primary
+                            priorPosition
+                            (adjustPosition model tbw position)
+                        ]
+            }
 
         _ ->
             model

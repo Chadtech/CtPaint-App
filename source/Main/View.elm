@@ -11,7 +11,8 @@ import Toolbar.Horizontal.View as ToolbarHorizontal
 import Toolbar.Top.View as ToolbarTop
 import ColorPicker.View as ColorPicker
 import Util exposing ((:=), left, top, width, height)
-import Canvas
+import Canvas exposing (Canvas)
+import Mouse exposing (Position)
 import Tool.Types as Tool exposing (Tool(..))
 import Tool.Hand.Mouse as Hand
 import Tool.Pencil.Mouse as Pencil
@@ -138,6 +139,7 @@ canvasArea canvasAreaHeight model =
             , style (canvasStyles model)
             ]
             (Canvas.draw model.drawAtRender model.canvas)
+        , selection model
         ]
 
 
@@ -151,6 +153,36 @@ canvasStyles ({ zoom, canvasPosition, canvas } as model) =
         , top canvasPosition.y
         , width (canvasSize.width * zoom)
         , height (canvasSize.height * zoom)
+        ]
+
+
+selection : Model -> Html Message
+selection model =
+    case model.selection of
+        Just ( position, canvas ) ->
+            Canvas.toHtml
+                [ class "selection-canvas"
+                , style (selectionStyles model ( position, canvas ))
+                ]
+                canvas
+
+        Nothing ->
+            Html.text ""
+
+
+selectionStyles : Model -> ( Position, Canvas ) -> List ( String, String )
+selectionStyles ({ zoom, canvasPosition, canvas } as model) ( position, selection ) =
+    let
+        canvasSize =
+            Canvas.getSize canvas
+
+        selectionSize =
+            Canvas.getSize selection
+    in
+        [ left (canvasPosition.x + position.x * zoom)
+        , top (canvasPosition.y + position.y * zoom)
+        , width (selectionSize.width * zoom)
+        , height (selectionSize.height * zoom)
         ]
 
 

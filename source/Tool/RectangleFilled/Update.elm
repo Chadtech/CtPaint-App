@@ -22,7 +22,8 @@ update message toolModel model =
             in
                 { model
                     | tool =
-                        RectangleFilled (Just adjustedPosition)
+                        RectangleFilled
+                            (Just adjustedPosition)
                     , drawAtRender =
                         Rectangle.fill
                             model.swatches.primary

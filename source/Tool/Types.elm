@@ -1,12 +1,11 @@
 module Tool.Types exposing (..)
 
-import Tool.Select.Types as Select
 import Mouse exposing (Position)
 
 
 type Tool
     = Hand (Maybe ( Position, Position ))
-    | Select Select.Model
+    | Select (Maybe Position)
     | ZoomIn
     | ZoomOut
     | Pencil (Maybe Position)
@@ -20,7 +19,7 @@ type Tool
 
 all : List Tool
 all =
-    [ Select Select.init
+    [ Select Nothing
     , ZoomIn
     , ZoomOut
     , Hand Nothing

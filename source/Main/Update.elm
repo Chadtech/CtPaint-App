@@ -9,6 +9,7 @@ import Tool.ZoomIn.Update as ZoomIn
 import Tool.ZoomOut.Update as ZoomOut
 import Tool.Rectangle.Update as Rectangle
 import Tool.RectangleFilled.Update as RectangleFilled
+import Tool.Select.Update as Select
 import ColorPicker.Update as ColorPicker
 import ColorPicker.Handle as ColorPicker
 import Tool.Types exposing (Tool(..))
@@ -136,6 +137,13 @@ update message model =
                     Nothing
             }
                 ! []
+
+        ( SelectMessage subMessage, Select subModel ) ->
+            let
+                newModel =
+                    Select.update subMessage subModel model
+            in
+                newModel ! []
 
         _ ->
             model ! []

@@ -18,6 +18,6 @@ attributes =
 subs : List (Sub Message)
 subs =
     [ Mouse.moves SubMouseMove
-    , Mouse.ups (always SubMouseUp)
+    , Mouse.ups SubMouseUp
     , Time.every 500 Tick
     ]

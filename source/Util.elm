@@ -2,6 +2,7 @@ module Util exposing (..)
 
 import Canvas exposing (Point)
 import Mouse exposing (Position)
+import Window exposing (Size)
 
 
 (:=) : a -> b -> ( a, b )
@@ -65,6 +66,30 @@ tbw =
 
 
 -- POSITION AND POINT --
+
+
+toSize : Position -> Position -> Size
+toSize p q =
+    let
+        minPos =
+            positionMin p q
+
+        maxPos =
+            positionMax p q
+    in
+        Size
+            (maxPos.x - minPos.x + 1)
+            (maxPos.y - minPos.y + 1)
+
+
+positionMin : Position -> Position -> Position
+positionMin p q =
+    Position (min p.x q.x) (min p.y q.y)
+
+
+positionMax : Position -> Position -> Position
+positionMax p q =
+    Position (max p.x q.x) (max p.y q.y)
 
 
 toPosition : Point -> Position

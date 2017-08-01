@@ -49,6 +49,7 @@ init json =
         , history = [ CanvasChange canvas ]
         , future = []
         , mousePosition = Nothing
+        , selection = Nothing
         }
             ! []
 
