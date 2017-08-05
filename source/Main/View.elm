@@ -160,22 +160,22 @@ selection : Model -> Html Message
 selection model =
     case model.selection of
         Just ( position, canvas ) ->
-            Canvas.toHtml
-                [ class "selection-canvas"
-                , style (selectionStyles model ( position, canvas ))
+            div
+                [ style (selectionStyles model position canvas) ]
+                [ Canvas.toHtml
+                    [ class "selection-canvas"
+                    , style (selectionStyles model position canvas)
+                    ]
+                    canvas
                 ]
-                canvas
 
         Nothing ->
             Html.text ""
 
 
-selectionStyles : Model -> ( Position, Canvas ) -> List ( String, String )
-selectionStyles ({ zoom, canvasPosition, canvas } as model) ( position, selection ) =
+selectionStyles : Model -> Position -> Canvas -> List ( String, String )
+selectionStyles ({ zoom, canvasPosition, canvas } as model) position selection =
     let
-        canvasSize =
-            Canvas.getSize canvas
-
         selectionSize =
             Canvas.getSize selection
     in

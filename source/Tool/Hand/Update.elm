@@ -14,36 +14,55 @@ update message tool model =
             let
                 y =
                     position.y + 29
+
+                initialPosition =
+                    case model.selection of
+                        Just ( selectionPosition, _ ) ->
+                            selectionPosition
+
+                        Nothing ->
+                            model.canvasPosition
             in
                 { model
                     | tool =
                         (Hand << Just)
-                            ( model.canvasPosition
+                            ( initialPosition
                             , Position position.x y
                             )
                 }
 
-        ( SubMouseMove position, Just ( canvasPosition, originalClick ) ) ->
+        ( SubMouseMove movePosition, Just ( initialPosition, click ) ) ->
             let
                 x =
                     List.sum
-                        [ canvasPosition.x
-                        , position.x
-                        , -originalClick.x
+                        [ initialPosition.x
+                        , movePosition.x
+                        , -click.x
                         , -tbw
                         ]
 
                 y =
                     List.sum
-                        [ canvasPosition.y
-                        , position.y
-                        , -originalClick.y
+                        [ initialPosition.y
+                        , movePosition.y
+                        , -click.y
                         ]
             in
-                { model
-                    | canvasPosition =
-                        Position x y
-                }
+                case model.selection of
+                    Just ( _, selection ) ->
+                        { model
+                            | selection =
+                                Just
+                                    ( Position x y
+                                    , selection
+                                    )
+                        }
+
+                    Nothing ->
+                        { model
+                            | canvasPosition =
+                                Position x y
+                        }
 
         ( SubMouseUp, _ ) ->
             { model

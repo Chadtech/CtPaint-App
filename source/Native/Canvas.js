@@ -65,6 +65,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
 
     handleDrawOp(ctx, drawOp);
 
+
     return model;
   }
 
@@ -315,7 +316,6 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
       break;
 
     case "PutImageData" :
-      // console.log("PUT IMAGE DATA", drawOp._0);
 
       point = drawOp._2;
       size = drawOp._1;
@@ -350,7 +350,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
 
     case "DrawImage":
 
-      var srcCanvas = drawOp._0.canvas();
+      var srcCanvas = cloneModel(drawOp._0).canvas();
       var drawImageOp = drawOp._1;
       var srcPoint, srcSize, destPoint, destSize;
 
@@ -358,10 +358,11 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
       case "At":
 
         destPoint = drawImageOp._0;
+
         ctx.drawImage(
           srcCanvas,
-          destPoint._0,
-          destPoint._1
+          destPoint.x,
+          destPoint.y
         );
         break;
 
@@ -371,7 +372,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
         destSize = drawImageOp._1;
         ctx.drawImage(
           srcCanvas,
-          destPoint._0, destPoint._1,
+          destPoint.x, destPoint.y,
           destSize.width, destSize.height
         );
         break;
@@ -385,9 +386,9 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
 
         ctx.drawImage(
           srcCanvas,
-          srcPoint._0, srcPoint._1,
+          srcPoint.x, srcPoint.y,
           srcSize.width, srcSize.height,
-          destPoint._0, destPoint._1,
+          destPoint.x, destPoint.y,
           destSize.width, destSize.height
         );
         break;

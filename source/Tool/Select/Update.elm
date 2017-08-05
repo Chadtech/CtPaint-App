@@ -5,9 +5,9 @@ import Tool.Select.Types exposing (..)
 import Tool.Types exposing (..)
 import Tool.Util exposing (adjustPosition)
 import Draw.Rectangle as Rectangle
-import Draw.Crop exposing (crop)
+import Draw.Select as Select
 import Mouse exposing (Position)
-import Canvas exposing (Size)
+import Canvas exposing (Size, Point)
 import Util exposing (tbw, positionMin)
 
 
@@ -26,6 +26,16 @@ update message maybePosition model =
                             model.swatches.primary
                             adjustedPosition
                             adjustedPosition
+                    , drawAtRender =
+                        case model.selection of
+                            Just ( selectionPosition, selection ) ->
+                                Canvas.batch
+                                    [ model.drawAtRender
+                                    , Select.paste selectionPosition selection
+                                    ]
+
+                            Nothing ->
+                                model.drawAtRender
                     , selection = Nothing
                 }
 
@@ -43,21 +53,26 @@ update message maybePosition model =
                 adjustedPosition =
                     adjustPosition model tbw position
 
-                croppedSection =
-                    crop
+                ( newSelection, drawOp ) =
+                    Select.get
                         adjustedPosition
                         priorPosition
+                        model.swatches.second
                         model.canvas
             in
                 { model
                     | tool = Rectangle Nothing
-                    , drawAtRender = Canvas.batch []
+                    , drawAtRender =
+                        Canvas.batch
+                            [ model.drawAtRender
+                            , drawOp
+                            ]
                     , selection =
                         Just
                             ( positionMin
                                 priorPosition
                                 adjustedPosition
-                            , croppedSection
+                            , newSelection
                             )
                     , tool =
                         Select Nothing
