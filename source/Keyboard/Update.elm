@@ -96,6 +96,12 @@ handleKeyUp code model =
                 | tool = Hand Nothing
             }
 
+        -- S
+        83 ->
+            { model
+                | tool = Select Nothing
+            }
+
         88 ->
             { model
                 | swatches =

@@ -5,7 +5,6 @@ import ElementRelativeMouseEvents as Events
 import Tool.Select.Types exposing (Message(..))
 import Util exposing (toPosition)
 import Mouse
-import Time
 
 
 attributes : List (Attribute Message)
@@ -19,5 +18,4 @@ subs : List (Sub Message)
 subs =
     [ Mouse.moves SubMouseMove
     , Mouse.ups SubMouseUp
-    , Time.every 500 Tick
     ]

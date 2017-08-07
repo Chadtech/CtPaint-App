@@ -32,24 +32,23 @@ update message tool model =
                 }
 
         ( SubMouseMove movePosition, Just ( initialPosition, click ) ) ->
-            let
-                x =
-                    List.sum
-                        [ initialPosition.x
-                        , movePosition.x
-                        , -click.x
-                        , -tbw
-                        ]
+            case model.selection of
+                Just ( _, selection ) ->
+                    let
+                        x =
+                            List.sum
+                                [ initialPosition.x
+                                , (movePosition.x - click.x - tbw)
+                                    // model.zoom
+                                ]
 
-                y =
-                    List.sum
-                        [ initialPosition.y
-                        , movePosition.y
-                        , -click.y
-                        ]
-            in
-                case model.selection of
-                    Just ( _, selection ) ->
+                        y =
+                            List.sum
+                                [ initialPosition.y
+                                , (movePosition.y - click.y)
+                                    // model.zoom
+                                ]
+                    in
                         { model
                             | selection =
                                 Just
@@ -58,7 +57,23 @@ update message tool model =
                                     )
                         }
 
-                    Nothing ->
+                Nothing ->
+                    let
+                        x =
+                            List.sum
+                                [ initialPosition.x
+                                , movePosition.x
+                                , -click.x
+                                , -tbw
+                                ]
+
+                        y =
+                            List.sum
+                                [ initialPosition.y
+                                , movePosition.y
+                                , -click.y
+                                ]
+                    in
                         { model
                             | canvasPosition =
                                 Position x y

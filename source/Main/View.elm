@@ -179,8 +179,8 @@ selectionStyles ({ zoom, canvasPosition, canvas } as model) position selection =
         selectionSize =
             Canvas.getSize selection
     in
-        [ left (canvasPosition.x + position.x * zoom)
-        , top (canvasPosition.y + position.y * zoom)
+        [ left (canvasPosition.x + position.x * zoom + 1)
+        , top (canvasPosition.y + position.y * zoom + 1)
         , width (selectionSize.width * zoom)
         , height (selectionSize.height * zoom)
         ]

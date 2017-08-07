@@ -9,7 +9,6 @@ import Draw.Select as Select
 import Mouse exposing (Position)
 import Canvas exposing (Size, Point)
 import Util exposing (tbw, positionMin)
-import Debug exposing (log)
 
 
 update : Message -> Maybe Position -> Model -> Model
@@ -44,7 +43,7 @@ update message maybePosition model =
             { model
                 | drawAtRender =
                     Rectangle.draw
-                        model.swatches.primary
+                        model.swatches.second
                         priorPosition
                         (adjustPosition model tbw position)
             }
