@@ -28,6 +28,8 @@ makeFlags = (obj, attr) ->
 if user isnt null 
     user.getSession (err, session) ->
         if err
+            init (Elm.Main.fullscreen null)
+
             console.log err
             return 
 

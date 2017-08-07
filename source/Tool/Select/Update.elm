@@ -9,6 +9,7 @@ import Draw.Select as Select
 import Mouse exposing (Position)
 import Canvas exposing (Size, Point)
 import Util exposing (tbw, positionMin)
+import Debug exposing (log)
 
 
 update : Message -> Maybe Position -> Model -> Model
@@ -26,16 +27,16 @@ update message maybePosition model =
                             model.swatches.primary
                             adjustedPosition
                             adjustedPosition
-                    , drawAtRender =
+                    , pendingDraw =
                         case model.selection of
                             Just ( selectionPosition, selection ) ->
-                                Canvas.batch
-                                    [ model.drawAtRender
-                                    , Select.paste selectionPosition selection
-                                    ]
+                                [ model.pendingDraw
+                                , Select.paste selectionPosition selection
+                                ]
+                                    |> Canvas.batch
 
                             Nothing ->
-                                model.drawAtRender
+                                model.pendingDraw
                     , selection = Nothing
                 }
 
@@ -52,31 +53,37 @@ update message maybePosition model =
             let
                 adjustedPosition =
                     adjustPosition model tbw position
-
-                ( newSelection, drawOp ) =
-                    Select.get
-                        adjustedPosition
-                        priorPosition
-                        model.swatches.second
-                        model.canvas
             in
-                { model
-                    | tool = Rectangle Nothing
-                    , drawAtRender =
-                        Canvas.batch
-                            [ model.drawAtRender
-                            , drawOp
-                            ]
-                    , selection =
-                        Just
-                            ( positionMin
-                                priorPosition
+                if adjustedPosition == priorPosition then
+                    { model
+                        | tool = Select Nothing
+                        , drawAtRender = Canvas.batch []
+                    }
+                else
+                    let
+                        ( newSelection, drawOp ) =
+                            Select.get
                                 adjustedPosition
-                            , newSelection
-                            )
-                    , tool =
-                        Select Nothing
-                }
+                                priorPosition
+                                model.swatches.second
+                                model.canvas
+                    in
+                        { model
+                            | tool = Rectangle Nothing
+                            , pendingDraw =
+                                Canvas.batch
+                                    [ model.pendingDraw
+                                    , drawOp
+                                    ]
+                            , selection =
+                                Just
+                                    ( positionMin
+                                        priorPosition
+                                        adjustedPosition
+                                    , newSelection
+                                    )
+                            , tool = Select Nothing
+                        }
 
         _ ->
             model

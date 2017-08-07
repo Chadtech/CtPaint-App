@@ -349,6 +349,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
       break;
 
     case "DrawImage":
+      // console.log("DRAW IMAGE");
 
       var srcCanvas = cloneModel(drawOp._0).canvas();
       var drawImageOp = drawOp._1;
