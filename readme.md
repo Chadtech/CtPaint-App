@@ -43,3 +43,73 @@ Style/
 Types/
     Mouse.elm
     Session.elm         User session type definition
+ColorPicker/
+    Handle.elm          Handle result from colorpicker update function
+    Mouse.elm           Colorpicker mouse handling
+    Types.elm           
+    Update.elm          Colorpicker update function
+    Util.elm
+    View.elm
+Draw/                   Basic canvas drawing stuff
+    Line.elm
+    Pixel.elm
+    Rectangle.elm
+    Select.elm
+    Util.elm
+History/
+    Types.elm
+    Update.elm          Undo and redo stuff
+Keyboard/
+    Types.elm
+    Update.elm          Global keyboard event handling
+Palette/
+    Init.elm
+    Types.elm
+    View.elm            View for all color stuff in the bottom horizontal bar
+Tool/
+    Hand/
+        Mouse.elm
+        Types.elm
+        Update.elm
+    Pencil/
+        Mouse.elm
+        Types.elm
+        Update.elm
+    Rectangle/
+        Mouse.elm
+        Types.elm
+        Update.elm
+    RectangleFilled/
+        Mouse.elm
+        Types.elm
+        Update.elm
+    Sample/
+        Mouse.elm
+        Types.elm
+        Update.elm
+    Select/
+        Mouse.elm
+        Types.elm
+        Update.elm
+    ZoomIn/
+        Mouse.elm
+        Types.elm
+        Update.elm
+    ZoomOut/
+        Mouse.elm
+        Types.elm
+        Update.elm
+    Types.elm
+    Util.elm
+    Zoom.elm
+Toolbar/
+    Horizontal/
+        Types.elm
+        Update.elm      Mostly resizing the horizontal bar
+        View.elm
+    Top/
+        View.elm
+    Vertical/
+        View.elm
+```
+
