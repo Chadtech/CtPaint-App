@@ -21,6 +21,7 @@ import Tool.ZoomOut.Mouse as ZoomOut
 import Tool.Rectangle.Mouse as Rectangle
 import Tool.RectangleFilled.Mouse as RectangleFilled
 import Tool.Select.Mouse as Select
+import Tool.Sample.Mouse as Sample
 
 
 -- VIEW --
@@ -89,6 +90,11 @@ addToolAttributes tool attributes =
                     List.map
                         (Attributes.map HandMessage)
                         Hand.attributes
+
+                Sample ->
+                    List.map
+                        (Attributes.map SampleMessage)
+                        Sample.attributes
 
                 Pencil _ ->
                     List.map

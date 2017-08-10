@@ -11,6 +11,7 @@ import Tool.ZoomOut.Mouse as ZoomOut
 import Tool.Rectangle.Mouse as Rectangle
 import Tool.RectangleFilled.Mouse as RectangleFilled
 import Tool.Select.Mouse as Select
+import Tool.Sample.Mouse as Sample
 import ColorPicker.Mouse as ColorPicker
 import Mouse
 import Window
@@ -41,6 +42,9 @@ toolSubs { tool } =
     case tool of
         Hand _ ->
             List.map (Sub.map HandMessage) Hand.subs
+
+        Sample ->
+            List.map (Sub.map SampleMessage) Sample.subs
 
         Pencil _ ->
             List.map (Sub.map PencilMessage) Pencil.subs
