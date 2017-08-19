@@ -6,6 +6,7 @@ import Tool.Util exposing (adjustPosition)
 import Util exposing (tbw, toPoint, maybeCons)
 import Draw.Util
 import Canvas exposing (Size, Point, Canvas, DrawOp(..))
+import History.Update as History
 
 
 update : Message -> Model -> Model
@@ -31,5 +32,6 @@ update message model =
                                     (toPoint positonOnCanvas)
                                 ]
                     }
+                        |> History.addCanvas
                 else
                     model

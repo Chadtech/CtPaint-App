@@ -50,6 +50,7 @@ init json =
         , future = []
         , mousePosition = Nothing
         , selection = Nothing
+        , clipboard = Nothing
         }
             ! []
 

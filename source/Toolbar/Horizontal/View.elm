@@ -12,6 +12,7 @@ import Mouse exposing (Position)
 import Tool.Types exposing (Tool(..))
 import Draw.Util exposing (colorAt)
 import Palette.Types as Palette
+import Color
 
 
 view : Model -> Html Message
@@ -76,21 +77,30 @@ sampleColor model =
     case model.mousePosition of
         Just position ->
             let
-                color : String
                 color =
                     colorAt
                         position
                         model.canvas
-                        |> Palette.toHex
+
+                colorStr =
+                    Palette.toHex color
+
+                backgroundColor =
+                    if (Color.toHsl color).lightness > 0.5 then
+                        ""
+                    else
+                        "#ffffff"
             in
                 [ p
                     []
                     [ text "color("
                     , span
                         [ style
-                            [ "color" := color ]
+                            [ "color" := colorStr
+                            , "background" := backgroundColor
+                            ]
                         ]
-                        [ text color ]
+                        [ text colorStr ]
                     , text ")"
                     ]
                 ]
