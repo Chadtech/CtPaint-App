@@ -6,6 +6,7 @@ import Mouse exposing (Position)
 type Tool
     = Hand (Maybe ( Position, Position ))
     | Sample
+    | Fill
     | Select (Maybe Position)
     | ZoomIn
     | ZoomOut
@@ -25,6 +26,7 @@ all =
     , ZoomOut
     , Hand Nothing
     , Sample
+    , Fill
     , Pencil Nothing
     , Rectangle Nothing
     , RectangleFilled Nothing
@@ -39,6 +41,9 @@ icon tool =
 
         Sample ->
             "\xEA08"
+
+        Fill ->
+            "\xEA16"
 
         Pencil _ ->
             "\xEA02"
@@ -67,6 +72,9 @@ name tool =
 
         Sample ->
             "sample"
+
+        Fill ->
+            "fill"
 
         Pencil _ ->
             "pencil"

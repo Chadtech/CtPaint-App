@@ -3,6 +3,7 @@ module Util exposing (..)
 import Canvas exposing (Point)
 import Mouse exposing (Position)
 import Window exposing (Size)
+import Debug exposing (log)
 
 
 (:=) : a -> b -> ( a, b )
@@ -24,6 +25,34 @@ maybeCons maybe list =
 
         Nothing ->
             list
+
+
+contains : List a -> a -> Bool
+contains =
+    flip List.member
+
+
+groupsOfFour : List a -> List (List a)
+groupsOfFour list =
+    makeGroupsHelp list [] |> List.reverse
+
+
+makeGroupsHelp : List a -> List (List a) -> List (List a)
+makeGroupsHelp xs res =
+    case xs of
+        a :: b :: c :: d :: rest ->
+            makeGroupsHelp rest ([ a, b, c, d ] :: res)
+
+        [] ->
+            res
+
+        _ ->
+            xs :: res
+
+
+slice : Int -> Int -> List a -> List a
+slice start end =
+    List.drop start >> List.take (end - start)
 
 
 

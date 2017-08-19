@@ -68,7 +68,7 @@ fillBlackOp canvas =
     [ BeginPath
     , Rect (Point 0 0) (Canvas.getSize canvas)
     , FillStyle Color.black
-    , Fill
+    , Canvas.Fill
     ]
         |> Canvas.batch
 

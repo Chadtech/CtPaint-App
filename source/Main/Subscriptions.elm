@@ -12,6 +12,7 @@ import Tool.Rectangle.Mouse as Rectangle
 import Tool.RectangleFilled.Mouse as RectangleFilled
 import Tool.Select.Mouse as Select
 import Tool.Sample.Mouse as Sample
+import Tool.Fill.Mouse as Fill
 import ColorPicker.Mouse as ColorPicker
 import Mouse
 import Window
@@ -45,6 +46,9 @@ toolSubs { tool } =
 
         Sample ->
             List.map (Sub.map SampleMessage) Sample.subs
+
+        Fill ->
+            List.map (Sub.map FillMessage) Fill.subs
 
         Pencil _ ->
             List.map (Sub.map PencilMessage) Pencil.subs

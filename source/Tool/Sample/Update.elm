@@ -12,15 +12,18 @@ update message ({ swatches } as model) =
     case message of
         SubMouseUp position ->
             let
-                { x, y } =
-                    adjustPosition model tbw position
-
-                sampledColor =
-                    colorAt position model.canvas
+                newSwatches =
+                    let
+                        colorAtPosition =
+                            colorAt
+                                (adjustPosition model tbw position)
+                                model.canvas
+                    in
+                        { swatches
+                            | primary = colorAtPosition
+                        }
             in
                 { model
                     | swatches =
-                        { swatches
-                            | primary = sampledColor
-                        }
+                        newSwatches
                 }

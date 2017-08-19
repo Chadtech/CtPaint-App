@@ -22,6 +22,7 @@ import Tool.Rectangle.Mouse as Rectangle
 import Tool.RectangleFilled.Mouse as RectangleFilled
 import Tool.Select.Mouse as Select
 import Tool.Sample.Mouse as Sample
+import Tool.Fill.Mouse as Fill
 
 
 -- VIEW --
@@ -95,6 +96,11 @@ addToolAttributes tool attributes =
                     List.map
                         (Attributes.map SampleMessage)
                         Sample.attributes
+
+                Fill ->
+                    List.map
+                        (Attributes.map FillMessage)
+                        Fill.attributes
 
                 Pencil _ ->
                     List.map

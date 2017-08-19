@@ -4,6 +4,8 @@ import Mouse exposing (Position)
 import Canvas exposing (Size, Point, Canvas)
 import Util exposing (positionMin, toPoint)
 import Color exposing (Color)
+import Array exposing (Array)
+import List.Extra exposing (groupsOf)
 
 
 makeRectParams : Position -> Position -> ( Position, Size )
@@ -27,3 +29,18 @@ toColor values =
 
         _ ->
             Color.black
+
+
+toGrid : Canvas -> Array (Array Color)
+toGrid canvas =
+    let
+        size =
+            Canvas.getSize canvas
+    in
+        canvas
+            |> Canvas.getImageData (Point 0 0) size
+            |> groupsOf 4
+            |> List.map toColor
+            |> groupsOf size.width
+            |> List.map Array.fromList
+            |> Array.fromList

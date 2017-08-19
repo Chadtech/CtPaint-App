@@ -11,10 +11,11 @@ import Tool.Rectangle.Update as Rectangle
 import Tool.RectangleFilled.Update as RectangleFilled
 import Tool.Select.Update as Select
 import Tool.Sample.Update as Sample
+import Tool.Fill.Update as Fill
 import ColorPicker.Update as ColorPicker
 import ColorPicker.Handle as ColorPicker
 import Tool.Types exposing (Tool(..))
-import Canvas exposing (Size, DrawOp(..))
+import Canvas exposing (DrawOp(Batch))
 import Keyboard.Update as Keyboard
 import Mouse exposing (Position)
 
@@ -57,6 +58,9 @@ update message model =
 
         ( SampleMessage subMessage, Sample ) ->
             (Sample.update subMessage model) ! []
+
+        ( FillMessage subMessage, Fill ) ->
+            (Fill.update subMessage model) ! []
 
         ( PencilMessage subMessage, Pencil subModel ) ->
             let

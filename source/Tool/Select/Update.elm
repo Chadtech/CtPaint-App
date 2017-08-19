@@ -9,6 +9,7 @@ import Draw.Select as Select
 import Mouse exposing (Position)
 import Canvas exposing (Size, Point)
 import Util exposing (tbw, positionMin)
+import History.Update as History
 
 
 update : Message -> Maybe Position -> Model -> Model
@@ -26,18 +27,8 @@ update message maybePosition model =
                             model.swatches.primary
                             adjustedPosition
                             adjustedPosition
-                    , pendingDraw =
-                        case model.selection of
-                            Just ( selectionPosition, selection ) ->
-                                [ model.pendingDraw
-                                , Select.paste selectionPosition selection
-                                ]
-                                    |> Canvas.batch
-
-                            Nothing ->
-                                model.pendingDraw
-                    , selection = Nothing
                 }
+                    |> handleExistingSelection
 
         ( SubMouseMove position, Just priorPosition ) ->
             { model
@@ -85,4 +76,26 @@ update message maybePosition model =
                         }
 
         _ ->
+            model
+
+
+
+-- HELPER --
+
+
+handleExistingSelection : Model -> Model
+handleExistingSelection model =
+    case model.selection of
+        Just ( position, selection ) ->
+            { model
+                | pendingDraw =
+                    [ model.pendingDraw
+                    , Select.paste position selection
+                    ]
+                        |> Canvas.batch
+                , selection = Nothing
+            }
+                |> History.addCanvas
+
+        Nothing ->
             model

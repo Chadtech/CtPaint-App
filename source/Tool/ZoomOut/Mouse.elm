@@ -4,7 +4,6 @@ import Html exposing (Attribute)
 import ElementRelativeMouseEvents as Events
 import Tool.ZoomOut.Types exposing (Message(..))
 import Util exposing (toPosition)
-import Mouse
 
 
 attributes : List (Attribute Message)

@@ -11,6 +11,7 @@ import Tool.Rectangle.Types as Rectangle
 import Tool.RectangleFilled.Types as RectangleFilled
 import Tool.Select.Types as Select
 import Tool.Sample.Types as Sample
+import Tool.Fill.Types as Fill
 import ColorPicker.Types as ColorPicker
 import Keyboard.Types as Keyboard
 import Time exposing (Time)
@@ -30,6 +31,7 @@ type Message
     | RectangleFilledMessage RectangleFilled.Message
     | SelectMessage Select.Message
     | SampleMessage Sample.Message
+    | FillMessage Fill.Message
     | Tick Time
     | ColorPickerMessage ColorPicker.Message
     | ScreenMouseMove MouseEvent

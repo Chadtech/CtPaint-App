@@ -348,8 +348,11 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
       ctx.clearPath();
       break;
 
+    case "PixelFill" :
+      fill(drawOp._0, drawOp._1, ctx);
+      break;
+
     case "DrawImage":
-      // console.log("DRAW IMAGE");
 
       var srcCanvas = cloneModel(drawOp._0).canvas();
       var drawImageOp = drawOp._1;
@@ -397,6 +400,92 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
 
       break;
     }
+  }
+
+
+  function fill (color, point, ctx) {
+    var color = _elm_lang$core$Color$toRgb(color);
+
+    var canvas = ctx.canvas;
+    var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    var width = imageData.width;
+    var height = imageData.height;
+    
+    var i = 0;
+    var data = [];
+    while (i < imageData.data.length) {
+      data.push(imageData.data[i]);
+      i++;
+    }
+
+    var index = (point.x * 4) + (point.y * width * 4);
+    var targetColor = data.slice(index, index + 4);
+    
+    function setToColor (index) {
+      data[ index ] = color.red;
+      data[ index + 1 ] = color.green;
+      data[ index + 2 ] = color.blue;
+    }
+
+    var pixelsToCheck = [ index ];
+    setToColor(index);
+
+    function isTarget (index) {
+      var redSame = targetColor[ 0 ] === data[ index ];
+      var greenSame =  targetColor[ 1 ] === data[ index + 1 ];
+      var blueSame = targetColor[ 2 ] === data[ index + 2 ];
+      return redSame && greenSame && blueSame;
+    }
+
+    function checkAndSet (index) {
+      var left = index - 4;
+      var right = index + 4;
+      var up = index - (width * 4);
+      var down = index + (width * 4);
+
+      if ( left % (width * 4) !== ((width - 1) * 4) ) {
+        if ( isTarget(left) ) {
+          pixelsToCheck.push(left);
+          setToColor(left);
+        }
+      }
+
+      if ( right % (width * 4) !== 0 ) {
+        if ( isTarget(right) ) {
+          pixelsToCheck.push(right);
+          setToColor(right);
+        }
+      }
+
+      if ( 0 < up ) {
+        if ( isTarget(up) ) {
+          pixelsToCheck.push(up);
+          setToColor(up);
+        }
+      }
+
+      if (down < data.length) {
+        if ( isTarget(down) ) {
+          pixelsToCheck.push(down);
+          setToColor(down);
+        }
+      }
+    }
+
+    while (pixelsToCheck.length > 0) {
+      checkAndSet(pixelsToCheck[0]);
+      pixelsToCheck.shift();
+    }
+
+    var newImageData= ctx.createImageData(canvas.width, canvas.height);
+
+    index = 0;
+    while (index < data.length) {
+      newImageData.data[ index ] = data[ index ];
+      index++;
+    }
+
+    ctx.putImageData(newImageData,0,0);
   }
 
 

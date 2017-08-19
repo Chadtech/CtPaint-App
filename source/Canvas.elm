@@ -88,6 +88,7 @@ type DrawOp
     | ShadowOffsetY Float
     | Stroke
     | Fill
+    | PixelFill Color Point
     | FillRect Point Size
     | Rect Point Size
     | Rotate Float
