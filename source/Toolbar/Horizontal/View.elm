@@ -102,6 +102,38 @@ sampleColor model =
 toolContent : Model -> List String
 toolContent ({ tool } as model) =
     case tool of
+        Select maybePosition ->
+            case ( maybePosition, model.mousePosition ) of
+                ( Just origin, Just position ) ->
+                    let
+                        size =
+                            [ "rect("
+                            , (origin.x - position.x + 1)
+                                |> abs
+                                |> toString
+                            , ","
+                            , (origin.y - position.y + 1)
+                                |> abs
+                                |> toString
+                            , ")"
+                            ]
+
+                        originStr =
+                            [ "origin("
+                            , toString origin.x
+                            , ","
+                            , toString origin.y
+                            , ")"
+                            ]
+                    in
+                        [ size
+                        , originStr
+                        ]
+                            |> List.map String.concat
+
+                _ ->
+                    []
+
         Rectangle maybePosition ->
             case ( maybePosition, model.mousePosition ) of
                 ( Just origin, Just position ) ->
