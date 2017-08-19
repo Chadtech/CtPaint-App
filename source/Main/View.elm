@@ -16,6 +16,7 @@ import Mouse exposing (Position)
 import Tool.Types as Tool exposing (Tool(..))
 import Tool.Hand.Mouse as Hand
 import Tool.Pencil.Mouse as Pencil
+import Tool.Line.Mouse as Line
 import Tool.ZoomIn.Mouse as ZoomIn
 import Tool.ZoomOut.Mouse as ZoomOut
 import Tool.Rectangle.Mouse as Rectangle
@@ -106,6 +107,11 @@ addToolAttributes tool attributes =
                     List.map
                         (Attributes.map PencilMessage)
                         Pencil.attributes
+
+                Line _ ->
+                    List.map
+                        (Attributes.map LineMessage)
+                        Line.attributes
 
                 Rectangle _ ->
                     List.map

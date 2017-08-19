@@ -5,6 +5,7 @@ import Main.Model exposing (Model)
 import Toolbar.Horizontal.Update as HorizontalToolbar
 import Tool.Hand.Update as Hand
 import Tool.Pencil.Update as Pencil
+import Tool.Line.Update as Line
 import Tool.ZoomIn.Update as ZoomIn
 import Tool.ZoomOut.Update as ZoomOut
 import Tool.Rectangle.Update as Rectangle
@@ -66,6 +67,13 @@ update message model =
             let
                 newModel =
                     Pencil.update subMessage subModel model
+            in
+                newModel ! []
+
+        ( LineMessage subMessage, Line subModel ) ->
+            let
+                newModel =
+                    Line.update subMessage subModel model
             in
                 newModel ! []
 

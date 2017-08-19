@@ -11,7 +11,6 @@ import List.Extra
 import Array exposing (Array)
 import Color exposing (Color)
 import Mouse exposing (Position)
-import Debug exposing (log)
 
 
 update : Message -> Model -> Model

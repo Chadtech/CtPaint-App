@@ -6,6 +6,7 @@ import Util exposing (maybeCons)
 import Tool.Types exposing (Tool(..))
 import Tool.Hand.Mouse as Hand
 import Tool.Pencil.Mouse as Pencil
+import Tool.Line.Mouse as Line
 import Tool.ZoomIn.Mouse as ZoomIn
 import Tool.ZoomOut.Mouse as ZoomOut
 import Tool.Rectangle.Mouse as Rectangle
@@ -52,6 +53,9 @@ toolSubs { tool } =
 
         Pencil _ ->
             List.map (Sub.map PencilMessage) Pencil.subs
+
+        Line _ ->
+            List.map (Sub.map LineMessage) Line.subs
 
         Rectangle _ ->
             List.map (Sub.map RectangleMessage) Rectangle.subs
