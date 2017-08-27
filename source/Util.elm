@@ -3,7 +3,6 @@ module Util exposing (..)
 import Canvas exposing (Point)
 import Mouse exposing (Position)
 import Window exposing (Size)
-import Debug exposing (log)
 
 
 (:=) : a -> b -> ( a, b )

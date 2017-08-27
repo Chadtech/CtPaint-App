@@ -1,11 +1,19 @@
 module Keyboard.Update exposing (update)
 
 import Main.Model exposing (Model)
-import Keyboard.Types exposing (Message(..), Direction(..))
 import Tool.Types exposing (Tool(..))
 import Tool.Zoom as Zoom
 import Keyboard exposing (KeyCode)
 import History.Update as History
+import List.Unique exposing (UniqueList)
+import Dict
+import Keyboard.Types
+    exposing
+        ( Message(..)
+        , KeyCommand(..)
+        , Direction(..)
+        , Config
+        )
 
 
 update : Message -> Model -> Model
@@ -14,25 +22,43 @@ update message model =
         KeyEvent direction ->
             case direction of
                 Up code ->
-                    handleKeyUp code model
+                    let
+                        newModel =
+                            handleKeyUp model
+                    in
+                        { newModel
+                            | keysDown =
+                                List.Unique.remove
+                                    code
+                                    model.keysDown
+                        }
 
                 Down code ->
-                    handleKeyDown code model
+                    handleKeyDown
+                        { model
+                            | keysDown =
+                                List.Unique.cons
+                                    code
+                                    model.keysDown
+                        }
 
 
 
 -- KEY EVENTS --
 
 
-handleKeyDown : KeyCode -> Model -> Model
-handleKeyDown code model =
-    case code of
-        16 ->
-            { model
-                | ctrlDown = True
-            }
+getAction : UniqueList KeyCode -> Config -> Maybe KeyCommand
+getAction list config =
+    Dict.get (List.Unique.toList list) config
 
-        49 ->
+
+handleKeyDown : Model -> Model
+handleKeyDown ({ keysDown, keyboardDownConfig } as model) =
+    case getAction keysDown keyboardDownConfig of
+        Nothing ->
+            model
+
+        Just SwatchesOneTurn ->
             if not model.swatches.keyIsDown then
                 { model
                     | swatches =
@@ -46,7 +72,7 @@ handleKeyDown code model =
             else
                 model
 
-        50 ->
+        Just SwatchesTwoTurns ->
             if not model.swatches.keyIsDown then
                 { model
                     | swatches =
@@ -60,7 +86,7 @@ handleKeyDown code model =
             else
                 model
 
-        51 ->
+        Just SwatchesThreeTurns ->
             if not model.swatches.keyIsDown then
                 { model
                     | swatches =
@@ -78,53 +104,39 @@ handleKeyDown code model =
             model
 
 
-handleKeyUp : KeyCode -> Model -> Model
-handleKeyUp code model =
-    case code of
-        16 ->
-            { model
-                | ctrlDown = False
-            }
+handleKeyUp : Model -> Model
+handleKeyUp ({ keysDown, keyboardUpConfig } as model) =
+    case getAction keysDown keyboardUpConfig of
+        Nothing ->
+            model
 
-        80 ->
+        Just SetToolToPencil ->
             { model
                 | tool = Pencil Nothing
             }
 
-        72 ->
+        Just SetToolToHand ->
             { model
                 | tool = Hand Nothing
             }
 
-        -- S
-        83 ->
+        Just SetToolToSelect ->
             { model
-                | tool = Select Nothing
+                | tool = Tool.Types.Select Nothing
             }
 
-        88 ->
+        Just SwatchesOneTurn ->
             { model
                 | swatches =
                     { primary = model.swatches.first
                     , first = model.swatches.second
                     , second = model.swatches.third
                     , third = model.swatches.primary
-                    , keyIsDown = model.swatches.keyIsDown
+                    , keyIsDown = False
                     }
             }
 
-        65 ->
-            { model
-                | swatches =
-                    { primary = model.swatches.third
-                    , first = model.swatches.primary
-                    , second = model.swatches.first
-                    , third = model.swatches.second
-                    , keyIsDown = model.swatches.keyIsDown
-                    }
-            }
-
-        49 ->
+        Just SwatchesThreeTurns ->
             { model
                 | swatches =
                     { primary = model.swatches.third
@@ -135,7 +147,7 @@ handleKeyUp code model =
                     }
             }
 
-        50 ->
+        Just SwatchesTwoTurns ->
             { model
                 | swatches =
                     { primary = model.swatches.second
@@ -146,25 +158,13 @@ handleKeyUp code model =
                     }
             }
 
-        51 ->
-            { model
-                | swatches =
-                    { primary = model.swatches.first
-                    , first = model.swatches.second
-                    , second = model.swatches.third
-                    , third = model.swatches.primary
-                    , keyIsDown = False
-                    }
-            }
-
-        90 ->
+        Just Undo ->
             History.undo model
 
-        89 ->
+        Just Redo ->
             History.redo model
 
-        -- This is the plus sign
-        187 ->
+        Just (Keyboard.Types.ZoomIn) ->
             let
                 newZoom =
                     Zoom.next model.zoom
@@ -174,7 +174,7 @@ handleKeyUp code model =
                 else
                     Zoom.set newZoom model
 
-        189 ->
+        Just (Keyboard.Types.ZoomOut) ->
             let
                 newZoom =
                     Zoom.prev model.zoom
@@ -183,6 +183,3 @@ handleKeyUp code model =
                     model
                 else
                     Zoom.set newZoom model
-
-        _ ->
-            model

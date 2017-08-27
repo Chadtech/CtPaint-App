@@ -10,6 +10,9 @@ import Mouse exposing (Position)
 import Palette.Types exposing (Swatches)
 import Array exposing (Array)
 import History.Types exposing (HistoryOp(..))
+import List.Unique exposing (UniqueList)
+import Keyboard exposing (KeyCode)
+import Keyboard.Types as Keyboard
 
 
 type alias Model =
@@ -33,4 +36,7 @@ type alias Model =
     , mousePosition : Maybe Position
     , selection : Maybe ( Position, Canvas )
     , clipboard : Maybe ( Position, Canvas )
+    , keysDown : UniqueList KeyCode
+    , keyboardUpConfig : Keyboard.Config
+    , keyboardDownConfig : Keyboard.Config
     }

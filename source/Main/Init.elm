@@ -13,6 +13,8 @@ import Color
 import Palette.Init
 import Util exposing (tbw)
 import History.Types exposing (HistoryOp(..))
+import Keyboard.Types as Keyboard
+import List.Unique
 
 
 init : Value -> ( Model, Cmd Message )
@@ -51,6 +53,9 @@ init json =
         , mousePosition = Nothing
         , selection = Nothing
         , clipboard = Nothing
+        , keysDown = List.Unique.empty
+        , keyboardUpConfig = Keyboard.defaultKeyUpConfig
+        , keyboardDownConfig = Keyboard.defaultKeyDownConfig
         }
             ! []
 
