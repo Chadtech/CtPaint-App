@@ -15,18 +15,22 @@ import Util exposing (tbw)
 import History.Types exposing (HistoryOp(..))
 import Keyboard.Types as Keyboard
 import List.Unique
+import Toolbar.Top.Types as Taskbar
 
 
 init : Value -> ( Model, Cmd Message )
 init json =
     let
+        windowSize : Size
         windowSize =
             decodeWindow json
 
+        canvas : Canvas
         canvas =
             Canvas.initialize (Size 400 400)
                 |> fillBlack
 
+        canvasSize : Size
         canvasSize =
             Canvas.getSize canvas
     in
@@ -56,6 +60,7 @@ init json =
         , keysDown = List.Unique.empty
         , keyboardUpConfig = Keyboard.defaultKeyUpConfig
         , keyboardDownConfig = Keyboard.defaultKeyDownConfig
+        , taskbar = Taskbar.init
         }
             ! []
 

@@ -34,9 +34,9 @@ type alias Config =
 
 defaultKeyDownConfig : Config
 defaultKeyDownConfig =
-    [ [ Number1 ] := SwatchesOneTurn
-    , [ Number2 ] := SwatchesTwoTurns
-    , [ Number3 ] := SwatchesThreeTurns
+    [ [ Number2 ] := SwatchesOneTurn
+    , [ Number3 ] := SwatchesTwoTurns
+    , [ Number4 ] := SwatchesThreeTurns
     ]
         |> List.map keysToCodes
         |> Dict.fromList
@@ -44,9 +44,11 @@ defaultKeyDownConfig =
 
 defaultKeyUpConfig : Config
 defaultKeyUpConfig =
-    [ [ Number1 ] := SwatchesThreeTurns
-    , [ Number2 ] := SwatchesTwoTurns
-    , [ Number3 ] := SwatchesOneTurn
+    [ [ Number1 ] := SwatchesOneTurn
+    , [ Number2 ] := SwatchesThreeTurns
+    , [ Number3 ] := SwatchesTwoTurns
+    , [ Number4 ] := SwatchesOneTurn
+    , [ Number5 ] := SwatchesThreeTurns
     , [ CharP ] := SetToolToPencil
     , [ CharH ] := SetToolToHand
     , [ CharS ] := SetToolToSelect

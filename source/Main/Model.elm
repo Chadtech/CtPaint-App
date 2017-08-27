@@ -13,6 +13,7 @@ import History.Types exposing (HistoryOp(..))
 import List.Unique exposing (UniqueList)
 import Keyboard exposing (KeyCode)
 import Keyboard.Types as Keyboard
+import Toolbar.Top.Types as Taskbar
 
 
 type alias Model =
@@ -39,4 +40,5 @@ type alias Model =
     , keysDown : UniqueList KeyCode
     , keyboardUpConfig : Keyboard.Config
     , keyboardDownConfig : Keyboard.Config
+    , taskbar : Taskbar.Model
     }
