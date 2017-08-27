@@ -15,7 +15,7 @@ type Message
     = KeyEvent Direction
 
 
-type KeyCommand
+type QuickKey
     = SwatchesOneTurn
     | SwatchesThreeTurns
     | SwatchesTwoTurns
@@ -29,7 +29,7 @@ type KeyCommand
 
 
 type alias Config =
-    Dict (List KeyCode) KeyCommand
+    Dict (List KeyCode) QuickKey
 
 
 defaultKeyDownConfig : Config
@@ -59,6 +59,6 @@ defaultKeyUpConfig =
         |> Dict.fromList
 
 
-keysToCodes : ( List Key, KeyCommand ) -> ( List KeyCode, KeyCommand )
+keysToCodes : ( List Key, QuickKey ) -> ( List KeyCode, QuickKey )
 keysToCodes ( keys, cmds ) =
     ( List.map Keyboard.Extra.toCode keys, cmds )

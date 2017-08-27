@@ -10,7 +10,7 @@ import Dict
 import Keyboard.Types
     exposing
         ( Message(..)
-        , KeyCommand(..)
+        , QuickKey(..)
         , Direction(..)
         , Config
         )
@@ -47,7 +47,7 @@ update message model =
 -- KEY EVENTS --
 
 
-getAction : UniqueList KeyCode -> Config -> Maybe KeyCommand
+getAction : UniqueList KeyCode -> Config -> Maybe QuickKey
 getAction list config =
     Dict.get (List.Unique.toList list) config
 
