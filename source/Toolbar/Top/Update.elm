@@ -11,3 +11,19 @@ update message model =
             { model
                 | taskbarDropped = maybeOption
             }
+
+        HoverOnto option ->
+            case model.taskbarDropped of
+                Nothing ->
+                    model
+
+                Just currentOption ->
+                    if currentOption == option then
+                        model
+                    else
+                        { model
+                            | taskbarDropped = Just option
+                        }
+
+        NoOp ->
+            model

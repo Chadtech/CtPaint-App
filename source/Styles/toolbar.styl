@@ -42,6 +42,13 @@
             margin-right 11px
 
 
+.invisible-wall
+    width calc(100% + 29px)
+    height 100vh
+    position absolute
+    top 0px
+    left -29px
+    z-index 1
     
 .top-tool-bar
     background ignorable2
@@ -52,18 +59,20 @@
     border-bottom 1px ignorable3 solid
     
     .task-bar-button
+        z-index 2
+        &.current
+            z-index 3
         .seam
             background ignorable2
             height 2px
             left 0px
-            z-index 2
+            z-index 4
             width calc(100% + 2px)
             position absolute
 
         .options
             position absolute
             left -2px
-            z-index 1
             background ignorable2
             width 300px
             border-top 2px solid ignorable1
@@ -71,46 +80,66 @@
             border-right 2px solid ignorable3
             border-bottom 2px solid ignorable3
             
+            &.help
+                width 110px
+                .option
+                    width 104px
+                
+            &.view
+                width 200px
+                .option
+                    width 194px
+                        
+            &.edit
+                width 220px
+                .option
+                    width 214px
+                .divider
+                    .strike
+                        width 212px
+                        
+            &.file
+                width 220px
+                .option
+                    width 214px
+                .divider
+                    .strike
+                        width 212px
+                        
             &:hover
                 color pointColor
                 
             .divider
-
+                height 16px
+                position relative
+                &:hover
+                    background none
                     
-            
+                .strike
+                    position absolute
+                    top 6px
+                    left 4px
+                    height 0px
+                    width 292px
+                    border-top 2px solid ignorable3
+                    border-bottom 2px solid ignorable1
+
             .option
                 height 32px
                 width 296px
                 padding-left 4px
                 position relative
-                // display flex
-                // justify-content space-between
+                justify-content space-between
+                vertical-align middle
+
+                display flex
                     
-                &.divider
-                    position relative
-                    &:hover
-                        background none
-                        
-                    .strike
-                        position absolute
-                        top 15px
-                        left 4px
-                        height 0px
-                        width 292px
-                        border-top 2px solid ignorable1
-                        border-bottom 2px solid ignorable3
-                    
-                
-                
-                .cmd 
-                    position absolute
-                    left 140px
-                    top 6px
                 p
-                    vertical-align middle
                     height 32px
                     display table-cell
                     margin-left 4px
+                    margin-top 5px
+                    margin-right 4px
                     
 
                 &:hover 
