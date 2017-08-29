@@ -8,7 +8,7 @@ import Main.Model exposing (Model)
 import Main.Message exposing (Message(..))
 import Toolbar.Vertical.View as ToolbarVertical
 import Toolbar.Horizontal.View as ToolbarHorizontal
-import Toolbar.Top.View as ToolbarTop
+import Toolbar.Top.View as Taskbar
 import ColorPicker.View as ColorPicker
 import Util exposing ((:=), left, top, width, height)
 import Canvas exposing (Canvas)
@@ -41,7 +41,7 @@ view model =
         div
             [ class "main" ]
             [ ToolbarVertical.view model
-            , ToolbarTop.view
+            , Html.map TaskbarMessage (Taskbar.view model)
             , horizontalToolbar model
             , canvasArea canvasAreaHeight model
             , clickScreen canvasAreaHeight model

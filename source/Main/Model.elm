@@ -40,5 +40,5 @@ type alias Model =
     , keysDown : UniqueList KeyCode
     , keyboardUpConfig : Keyboard.Config
     , keyboardDownConfig : Keyboard.Config
-    , taskbar : Taskbar.Model
+    , taskbarDropped : Maybe Taskbar.Option
     }

@@ -15,6 +15,7 @@ import Tool.Sample.Update as Sample
 import Tool.Fill.Update as Fill
 import ColorPicker.Update as ColorPicker
 import ColorPicker.Handle as ColorPicker
+import Toolbar.Top.Update as Taskbar
 import Tool.Types exposing (Tool(..))
 import Canvas exposing (DrawOp(Batch))
 import Keyboard.Update as Keyboard
@@ -24,6 +25,9 @@ import Mouse exposing (Position)
 update : Message -> Model -> ( Model, Cmd Message )
 update message model =
     case ( message, model.tool ) of
+        ( TaskbarMessage subMessage, _ ) ->
+            ( Taskbar.update subMessage model, Cmd.none )
+
         ( HorizontalToolbarMessage subMessage, _ ) ->
             let
                 ( newModel, cmd ) =
