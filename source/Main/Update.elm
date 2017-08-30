@@ -15,6 +15,8 @@ import Tool.Sample.Update as Sample
 import Tool.Fill.Update as Fill
 import ColorPicker.Update as ColorPicker
 import ColorPicker.Handle as ColorPicker
+import Minimap.Update as Minimap
+import Minimap.Handle as Minimap
 import Toolbar.Top.Update as Taskbar
 import Tool.Types exposing (Tool(..))
 import Canvas exposing (DrawOp(Batch))
@@ -131,6 +133,18 @@ update message model =
                     ColorPicker.update subMessage model.colorPicker
             in
                 (ColorPicker.handle colorPickerUpdate model) ! []
+
+        ( MinimapMessage subMessage, _ ) ->
+            case model.minimap of
+                Just minimap ->
+                    let
+                        minimapUpdate =
+                            Minimap.update subMessage minimap
+                    in
+                        (Minimap.handle minimapUpdate model) ! []
+
+                Nothing ->
+                    model ! []
 
         ( ScreenMouseMove { targetPos, clientPos }, _ ) ->
             let

@@ -15,6 +15,7 @@ import Util exposing (tbw)
 import History.Types exposing (HistoryOp(..))
 import Keyboard.Types as Keyboard
 import List.Unique
+import Minimap.Types as Minimap
 
 
 init : Value -> ( Model, Cmd Message )
@@ -60,6 +61,7 @@ init json =
         , keyboardUpConfig = Keyboard.defaultKeyUpConfig
         , keyboardDownConfig = Keyboard.defaultKeyDownConfig
         , taskbarDropped = Nothing
+        , minimap = Just (Minimap.init windowSize)
         }
             ! []
 

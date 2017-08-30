@@ -14,6 +14,7 @@ import Tool.Select.Types as Select
 import Tool.Sample.Types as Sample
 import Tool.Fill.Types as Fill
 import ColorPicker.Types as ColorPicker
+import Minimap.Types as Minimap
 import Toolbar.Top.Types as Taskbar
 import Keyboard.Types as Keyboard
 import Time exposing (Time)
@@ -38,5 +39,6 @@ type Message
     | TaskbarMessage Taskbar.Message
     | Tick Time
     | ColorPickerMessage ColorPicker.Message
+    | MinimapMessage Minimap.Message
     | ScreenMouseMove MouseEvent
     | ScreenMouseExit
