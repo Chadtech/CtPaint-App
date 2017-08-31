@@ -9,7 +9,8 @@ import MouseEvents exposing (MouseEvent)
 
 
 type ExternalMessage
-    = SetColor Int Color
+    = DoNothing
+    | SetColor Int Color
     | SetFocus Bool
     | UpdateHistory Int Color
 

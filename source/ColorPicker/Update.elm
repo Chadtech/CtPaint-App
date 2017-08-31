@@ -8,7 +8,7 @@ import Color exposing (Color)
 import ParseInt
 
 
-update : Message -> Model -> ( Model, Maybe ExternalMessage )
+update : Message -> Model -> ( Model, ExternalMessage )
 update message model =
     case message of
         HeaderMouseDown { targetPos, clientPos } ->
@@ -22,12 +22,12 @@ update message model =
                                 |> Just
                     }
             in
-                ( newModel, Nothing )
+                ( newModel, DoNothing )
 
         HeaderMouseMove position ->
             case model.clickState of
                 Nothing ->
-                    ( model, Nothing )
+                    ( model, DoNothing )
 
                 Just originalClick ->
                     let
@@ -43,7 +43,7 @@ update message model =
                                     Position x y
                             }
                     in
-                        ( newModel, Nothing )
+                        ( newModel, DoNothing )
 
         HeaderMouseUp _ ->
             let
@@ -52,7 +52,7 @@ update message model =
                         | clickState = Nothing
                     }
             in
-                ( newModel, Nothing )
+                ( newModel, DoNothing )
 
         WakeUp color index ->
             let
@@ -63,7 +63,7 @@ update message model =
                         , show = True
                     }
             in
-                ( newModel, Nothing )
+                ( newModel, DoNothing )
 
         Close ->
             let
@@ -72,10 +72,10 @@ update message model =
                         | show = False
                     }
             in
-                ( newModel, Nothing )
+                ( newModel, DoNothing )
 
         HandleFocus focused ->
-            ( model, Just (SetFocus focused) )
+            ( model, SetFocus focused )
 
         UpdateColorHexField hex ->
             let
@@ -100,10 +100,10 @@ update message model =
                                     | colorHexField = newHexField
                                 }
                         in
-                            ( newModel, Nothing )
+                            ( newModel, DoNothing )
 
         StealSubmit ->
-            ( model, Nothing )
+            ( model, DoNothing )
 
         SetNoGradientClickedOn ->
             let
@@ -112,7 +112,7 @@ update message model =
                         | gradientClickedOn = Nothing
                     }
             in
-                ( newModel, Nothing )
+                ( newModel, DoNothing )
 
         MouseDownOnPointer gradient ->
             let
@@ -122,7 +122,7 @@ update message model =
                     }
             in
                 ( newModel
-                , Just (UpdateHistory model.index model.color)
+                , UpdateHistory model.index model.color
                 )
 
         MouseMoveInGradient gradient { targetPos, clientPos } ->
@@ -142,7 +142,7 @@ update message model =
 -- MESSAGE HANDLERS --
 
 
-fieldHandler : Gradient -> String -> Model -> ( Model, Maybe ExternalMessage )
+fieldHandler : Gradient -> String -> Model -> ( Model, ExternalMessage )
 fieldHandler gradient str model =
     case ParseInt.parseInt str of
         Ok int ->
@@ -152,7 +152,7 @@ fieldHandler gradient str model =
             fieldHandlerErr gradient str model
 
 
-fieldHandlerOk : Gradient -> String -> Int -> Model -> ( Model, Maybe ExternalMessage )
+fieldHandlerOk : Gradient -> String -> Int -> Model -> ( Model, ExternalMessage )
 fieldHandlerOk gradient str int model =
     let
         { hue, saturation, lightness } =
@@ -244,29 +244,29 @@ validateHue oldColor newColor int =
         newColor
 
 
-fieldHandlerErr : Gradient -> String -> Model -> ( Model, Maybe ExternalMessage )
+fieldHandlerErr : Gradient -> String -> Model -> ( Model, ExternalMessage )
 fieldHandlerErr gradient str model =
     case gradient of
         Lightness ->
-            ( { model | lightnessField = str }, Nothing )
+            ( { model | lightnessField = str }, DoNothing )
 
         Saturation ->
-            ( { model | saturationField = str }, Nothing )
+            ( { model | saturationField = str }, DoNothing )
 
         Hue ->
-            ( { model | hueField = str }, Nothing )
+            ( { model | hueField = str }, DoNothing )
 
         Blue ->
-            ( { model | blueField = str }, Nothing )
+            ( { model | blueField = str }, DoNothing )
 
         Green ->
-            ( { model | greenField = str }, Nothing )
+            ( { model | greenField = str }, DoNothing )
 
         Red ->
-            ( { model | redField = str }, Nothing )
+            ( { model | redField = str }, DoNothing )
 
 
-sliderHandler : Int -> Gradient -> Model -> ( Model, Maybe ExternalMessage )
+sliderHandler : Int -> Gradient -> Model -> ( Model, ExternalMessage )
 sliderHandler x gradient model =
     case gradient of
         Lightness ->
@@ -382,15 +382,15 @@ sliderHandler x gradient model =
 -- INTERNAL HELPERS --
 
 
-cohereAndSet : Model -> ( Model, Maybe ExternalMessage )
+cohereAndSet : Model -> ( Model, ExternalMessage )
 cohereAndSet =
     cohereModel >> setColor
 
 
-setColor : Model -> ( Model, Maybe ExternalMessage )
+setColor : Model -> ( Model, ExternalMessage )
 setColor ({ index, color } as model) =
     ( model
-    , Just (SetColor index color)
+    , SetColor index color
     )
 
 

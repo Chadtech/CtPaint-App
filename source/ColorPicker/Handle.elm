@@ -6,15 +6,15 @@ import Array
 import History.Update as History
 
 
-handle : ( ColorPicker.Model, Maybe ExternalMessage ) -> Model -> Model
+handle : ( ColorPicker.Model, ExternalMessage ) -> Model -> Model
 handle ( colorPicker, maybeMessage ) model =
     case maybeMessage of
-        Nothing ->
+        DoNothing ->
             { model
                 | colorPicker = colorPicker
             }
 
-        Just (SetColor index color) ->
+        SetColor index color ->
             { model
                 | colorPicker = colorPicker
                 , palette =
@@ -24,12 +24,12 @@ handle ( colorPicker, maybeMessage ) model =
                         model.palette
             }
 
-        Just (SetFocus focus) ->
+        SetFocus focus ->
             { model
                 | textInputFocused = focus
             }
 
-        Just (UpdateHistory index color) ->
+        UpdateHistory index color ->
             { model
                 | colorPicker = colorPicker
             }
