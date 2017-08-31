@@ -74,6 +74,6 @@ handleResize direction model =
             in
                 { model
                     | horizontalToolbarHeight =
-                        height - position.y
+                        height - position.y + 29
                 }
                     ! []

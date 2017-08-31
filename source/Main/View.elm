@@ -10,6 +10,7 @@ import Toolbar.Vertical.View as ToolbarVertical
 import Toolbar.Horizontal.View as ToolbarHorizontal
 import Toolbar.Top.View as Taskbar
 import ColorPicker.View as ColorPicker
+import Minimap.View as Minimap
 import Util exposing ((:=), left, top, width, height)
 import Canvas exposing (Canvas)
 import Mouse exposing (Position)
@@ -46,7 +47,24 @@ view model =
             , canvasArea canvasAreaHeight model
             , clickScreen canvasAreaHeight model
             , colorPicker model
+            , minimap model
             ]
+
+
+
+-- MINI MAP --
+
+
+minimap : Model -> Html Message
+minimap model =
+    case model.minimap of
+        Just minimapModel ->
+            Html.map
+                MinimapMessage
+                (Minimap.view minimapModel model.canvas)
+
+        Nothing ->
+            Html.text ""
 
 
 

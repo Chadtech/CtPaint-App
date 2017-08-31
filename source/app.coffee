@@ -3,6 +3,7 @@ AmazonCognitoIdentity = require 'amazon-cognito-identity-js'
 CognitoUserPool = AmazonCognitoIdentity.CognitoUserPool
 
 init = (app) ->
+
     # Do port stuff here
     0
 
@@ -25,6 +26,11 @@ makeFlags = (obj, attr) ->
     obj
 
 
+flags = {
+    windowHeight: window.innerHeight,
+    windowWidth: window.innerWidth
+}
+
 if user isnt null 
     user.getSession (err, session) ->
         if err
@@ -34,16 +40,12 @@ if user isnt null
             return 
 
         user.getUserAttributes (err, attributes) ->
-            flags = {}
-
             if err
                 console.log "Error getting attributes : ", err
                 return null
             else
                 flags = _.reduce attributes, makeFlags, flags
-                flags.windowHeight = window.innerHeight
-                flags.windowWidth = window.innerWidth
 
             init (Elm.Main.fullscreen flags)
 else
-    init (Elm.Main.fullscreen null)
+    init (Elm.Main.fullscreen flags)

@@ -1,20 +1,15 @@
 module ColorPicker.Mouse exposing (subscriptions)
 
-import ColorPicker.Types as ColorPicker exposing (Model)
-import Main.Message exposing (Message(..))
+import ColorPicker.Types exposing (Model, Message(..))
 import Mouse
 
 
 subscriptions : Model -> Sub Message
 subscriptions model =
-    if model.show && (model.clickState /= Nothing) then
+    if model.show && model.clickState /= Nothing then
         Sub.batch
-            [ ColorPicker.HeaderMouseMove
-                >> ColorPickerMessage
-                |> Mouse.moves
-            , ColorPicker.HeaderMouseUp
-                >> ColorPickerMessage
-                |> Mouse.ups
+            [ Mouse.moves HeaderMouseMove
+            , Mouse.ups HeaderMouseUp
             ]
     else
         Sub.none

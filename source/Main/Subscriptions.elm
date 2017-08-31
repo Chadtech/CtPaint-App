@@ -15,6 +15,7 @@ import Tool.Select.Mouse as Select
 import Tool.Sample.Mouse as Sample
 import Tool.Fill.Mouse as Fill
 import ColorPicker.Mouse as ColorPicker
+import Minimap.Mouse as Minimap
 import Mouse
 import Window
 import AnimationFrame
@@ -26,7 +27,12 @@ subscriptions : Model -> Sub Message
 subscriptions model =
     [ Window.resizes GetWindowSize
     , AnimationFrame.diffs Tick
-    , ColorPicker.subscriptions model.colorPicker
+    , Sub.map
+        ColorPickerMessage
+        (ColorPicker.subscriptions model.colorPicker)
+    , Sub.map
+        MinimapMessage
+        (Minimap.subscriptions model.minimap)
     , ifTheresAFocus model.textInputFocused keyboardUps
     , ifTheresAFocus model.textInputFocused keyboardDowns
     , Sub.batch (toolSubs model)

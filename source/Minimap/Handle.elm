@@ -4,15 +4,15 @@ import Main.Model exposing (Model)
 import Minimap.Types as Minimap exposing (ExternalMessage(..))
 
 
-handle : ( Minimap.Model, Maybe ExternalMessage ) -> Model -> Model
-handle ( minimap, maybeMessage ) model =
-    case maybeMessage of
-        Nothing ->
+handle : ( Minimap.Model, ExternalMessage ) -> Model -> Model
+handle ( minimap, message ) model =
+    case message of
+        DoNothing ->
             { model
                 | minimap = Just minimap
             }
 
-        Just Closed ->
+        Close ->
             { model
                 | minimap = Nothing
             }

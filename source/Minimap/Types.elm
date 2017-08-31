@@ -15,14 +15,15 @@ type alias Model =
 
 
 type ExternalMessage
-    = Closed
+    = Close
+    | DoNothing
 
 
 type Message
     = HeaderMouseDown MouseEvent
     | HeaderMouseMove Position
-    | HeaderMouseUp Position
-    | Close
+    | HeaderMouseUp
+    | CloseClick
 
 
 init : Size -> Model
@@ -36,8 +37,8 @@ init { width } =
         , y = 0
         }
     , size =
-        { width = 200
-        , height = 200
+        { width = 250
+        , height = 250
         }
     , zoom = 1
     , clickState = Nothing

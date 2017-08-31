@@ -54,10 +54,11 @@ defaultKeyUpConfig =
     , [ CharS ] := SetToolToSelect
     , [ Control, CharZ ] := Undo
     , [ Control, CharY ] := Redo
-    , [ Super, Equals ] := ZoomIn
-    , [ Super, Minus ] := ZoomOut
+    , [ Equals ] := ZoomIn
+    , [ Minus ] := ZoomOut
     ]
         |> List.map keysToCodes
+        |> (::) ([ 187 ] := ZoomIn)
         |> Dict.fromList
 
 
