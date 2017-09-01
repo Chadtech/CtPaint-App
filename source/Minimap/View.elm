@@ -2,10 +2,12 @@ module Minimap.View exposing (view)
 
 import Html exposing (Html, div, p, a, text)
 import Html.Attributes exposing (class, style)
+import Html.Events exposing (onClick)
 import Minimap.Types exposing (Model, Message(..))
 import Util exposing (top, left, height, width)
 import Canvas exposing (Canvas)
 import MouseEvents as Events
+import Tool.Types as Tool exposing (Tool(..))
 
 
 view : Model -> Canvas -> Html Message
@@ -15,7 +17,7 @@ view model canvas =
         , style
             [ top model.externalPosition.y
             , left model.externalPosition.x
-            , height (model.size.height + 25 + 12)
+            , height (model.size.height + 25 + 12 + 25 + 2)
             , width (model.size.width + 8)
             ]
         ]
@@ -23,11 +25,17 @@ view model canvas =
         , div
             [ class "canvas-container"
             , style
-                [ height model.size.height
+                [ height (model.size.height)
                 , width model.size.width
                 ]
             ]
             [ Canvas.toHtml [] canvas ]
+        , a
+            [ class "tool-button" ]
+            [ text (Tool.icon ZoomIn) ]
+        , a
+            [ class "tool-button" ]
+            [ text (Tool.icon ZoomOut) ]
         ]
 
 
@@ -39,5 +47,5 @@ header model =
         , Events.onMouseDown HeaderMouseDown
         ]
         [ p [] [ text "mini map" ]
-        , a [] [ text "x" ]
+        , a [ onClick CloseClick ] [ text "x" ]
         ]

@@ -50,7 +50,6 @@ init json =
         , tool = Hand Nothing
         , zoom = 1
         , colorPicker = ColorPicker.init Palette.Init.palette
-        , ctrlDown = False
         , textInputFocused = False
         , history = [ CanvasChange canvas ]
         , future = []

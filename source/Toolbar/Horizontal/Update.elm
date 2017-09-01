@@ -7,6 +7,8 @@ import Main.Message as MainMessage
 import ColorPicker.Update as ColorPicker
 import ColorPicker.Handle as ColorPicker
 import ColorPicker.Types as ColorPicker
+import List.Unique
+import Keyboard.Extra exposing (Key(..))
 
 
 update : Message -> Model -> ( Model, Cmd Message )
@@ -16,7 +18,7 @@ update message model =
             handleResize direction model
 
         PaletteSquareClick color index ->
-            if model.ctrlDown then
+            if ctrlIsDown model then
                 let
                     colorPickerUpdate =
                         ColorPicker.update
@@ -41,6 +43,13 @@ update message model =
                             }
                     }
                         ! []
+
+
+ctrlIsDown : Model -> Bool
+ctrlIsDown { keysDown } =
+    List.Unique.member
+        (Keyboard.Extra.toCode Control)
+        keysDown
 
 
 
