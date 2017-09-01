@@ -47,18 +47,23 @@ update message model =
 -- KEY EVENTS --
 
 
-getAction : UniqueList KeyCode -> Config -> Maybe QuickKey
+getAction : UniqueList KeyCode -> Config -> QuickKey
 getAction list config =
-    Dict.get (List.Unique.toList list) config
+    case Dict.get (List.Unique.toList list) config of
+        Nothing ->
+            NoCommand
+
+        Just cmd ->
+            cmd
 
 
 handleKeyDown : Model -> Model
 handleKeyDown ({ keysDown, keyboardDownConfig } as model) =
     case getAction keysDown keyboardDownConfig of
-        Nothing ->
+        NoCommand ->
             model
 
-        Just SwatchesOneTurn ->
+        SwatchesOneTurn ->
             if not model.swatches.keyIsDown then
                 { model
                     | swatches =
@@ -72,7 +77,7 @@ handleKeyDown ({ keysDown, keyboardDownConfig } as model) =
             else
                 model
 
-        Just SwatchesTwoTurns ->
+        SwatchesTwoTurns ->
             if not model.swatches.keyIsDown then
                 { model
                     | swatches =
@@ -86,7 +91,7 @@ handleKeyDown ({ keysDown, keyboardDownConfig } as model) =
             else
                 model
 
-        Just SwatchesThreeTurns ->
+        SwatchesThreeTurns ->
             if not model.swatches.keyIsDown then
                 { model
                     | swatches =
@@ -107,25 +112,25 @@ handleKeyDown ({ keysDown, keyboardDownConfig } as model) =
 handleKeyUp : Model -> Model
 handleKeyUp ({ keysDown, keyboardUpConfig } as model) =
     case getAction keysDown keyboardUpConfig of
-        Nothing ->
+        NoCommand ->
             model
 
-        Just SetToolToPencil ->
+        SetToolToPencil ->
             { model
                 | tool = Pencil Nothing
             }
 
-        Just SetToolToHand ->
+        SetToolToHand ->
             { model
                 | tool = Hand Nothing
             }
 
-        Just SetToolToSelect ->
+        SetToolToSelect ->
             { model
                 | tool = Tool.Types.Select Nothing
             }
 
-        Just SwatchesOneTurn ->
+        SwatchesOneTurn ->
             { model
                 | swatches =
                     { primary = model.swatches.first
@@ -136,7 +141,7 @@ handleKeyUp ({ keysDown, keyboardUpConfig } as model) =
                     }
             }
 
-        Just SwatchesThreeTurns ->
+        SwatchesThreeTurns ->
             { model
                 | swatches =
                     { primary = model.swatches.third
@@ -147,7 +152,7 @@ handleKeyUp ({ keysDown, keyboardUpConfig } as model) =
                     }
             }
 
-        Just SwatchesTwoTurns ->
+        SwatchesTwoTurns ->
             { model
                 | swatches =
                     { primary = model.swatches.second
@@ -158,13 +163,13 @@ handleKeyUp ({ keysDown, keyboardUpConfig } as model) =
                     }
             }
 
-        Just Undo ->
+        Undo ->
             History.undo model
 
-        Just Redo ->
+        Redo ->
             History.redo model
 
-        Just (Keyboard.Types.ZoomIn) ->
+        Keyboard.Types.ZoomIn ->
             let
                 newZoom =
                     Zoom.next model.zoom
@@ -174,7 +179,7 @@ handleKeyUp ({ keysDown, keyboardUpConfig } as model) =
                 else
                     Zoom.set newZoom model
 
-        Just (Keyboard.Types.ZoomOut) ->
+        Keyboard.Types.ZoomOut ->
             let
                 newZoom =
                     Zoom.prev model.zoom

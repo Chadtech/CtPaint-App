@@ -26,6 +26,7 @@ type QuickKey
     | Redo
     | ZoomIn
     | ZoomOut
+    | NoCommand
 
 
 type alias Config =
@@ -58,7 +59,9 @@ defaultKeyUpConfig =
     , [ Minus ] := ZoomOut
     ]
         |> List.map keysToCodes
-        |> (::) ([ 187 ] := ZoomIn)
+        -- ff and chrome have different codes for equals
+        |>
+            (::) ([ 187 ] := ZoomIn)
         |> Dict.fromList
 
 
