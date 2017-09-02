@@ -135,7 +135,7 @@ file maybeFile =
                     [ option ( "Save", "Cmd + S", NoOp )
                     , option ( "Auto Save", "On", NoOp )
                     , divider
-                    , option ( "Download", "Cmd + D", NoOp )
+                    , option ( "Download", "Cmd + D", Download )
                     , option ( "Import", "Cmd + I", NoOp )
                     , divider
                     , option ( "Imgur", "", NoOp )

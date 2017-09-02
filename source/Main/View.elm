@@ -1,7 +1,7 @@
 module Main.View exposing (view)
 
 import Html exposing (Html, Attribute, div, p, text)
-import Html.Attributes as Attributes exposing (class, style)
+import Html.Attributes as Attributes exposing (class, id, style)
 import Html.Events exposing (onMouseLeave)
 import MouseEvents exposing (onMouseMove)
 import Main.Model exposing (Model)
@@ -172,6 +172,7 @@ canvasArea canvasAreaHeight model =
         ]
         [ Canvas.toHtml
             [ class "main-canvas"
+            , id "main-canvas"
             , style (canvasStyles model)
             ]
             (Canvas.draw model.drawAtRender model.canvas)

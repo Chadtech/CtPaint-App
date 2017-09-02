@@ -15,6 +15,7 @@ import Keyboard exposing (KeyCode)
 import Keyboard.Types as Keyboard
 import Toolbar.Top.Types as Taskbar
 import Minimap.Types as Minimap
+import Types.Menu exposing (Menu(..))
 
 
 type alias Model =
@@ -42,4 +43,5 @@ type alias Model =
     , keyboardDownConfig : Keyboard.Config
     , taskbarDropped : Maybe Taskbar.Option
     , minimap : Maybe Minimap.Model
+    , menu : Maybe Menu
     }

@@ -61,6 +61,7 @@ init json =
         , keyboardDownConfig = Keyboard.defaultKeyDownConfig
         , taskbarDropped = Nothing
         , minimap = Just (Minimap.init windowSize)
+        , menu = Nothing
         }
             ! []
 

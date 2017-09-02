@@ -28,7 +28,11 @@ update : Message -> Model -> ( Model, Cmd Message )
 update message model =
     case ( message, model.tool ) of
         ( TaskbarMessage subMessage, _ ) ->
-            ( Taskbar.update subMessage model, Cmd.none )
+            let
+                ( newModel, cmd ) =
+                    Taskbar.update subMessage model
+            in
+                ( newModel, Cmd.map TaskbarMessage cmd )
 
         ( HorizontalToolbarMessage subMessage, _ ) ->
             let

@@ -3,8 +3,16 @@ AmazonCognitoIdentity = require 'amazon-cognito-identity-js'
 CognitoUserPool = AmazonCognitoIdentity.CognitoUserPool
 
 init = (app) ->
+    app.ports.download.subscribe (fn) ->
+        canvas = document.getElementById "main-canvas"
+        png = canvas.toDataURL()
 
-    # Do port stuff here
+        a = document.createElement "a"
+        a.href = png
+        a.download = fn + ".png"
+        a.click()
+
+        # console.log png
     0
 
 poolData =
