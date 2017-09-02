@@ -2,19 +2,22 @@ module Taskbar.Update exposing (update)
 
 import Main.Model exposing (Model)
 import Taskbar.Types as Taskbar exposing (Message(..))
-import Taskbar.Ports as Ports
+import Taskbar.Download.Types as Download
+import Taskbar.Download.Update as Download
+import Taskbar.Download.Handle as Download
+import Types.Menu exposing (Menu(..))
 
 
 update : Message -> Model -> ( Model, Cmd Message )
 update message model =
-    case message of
-        DropDown maybeOption ->
+    case ( message, model.menu ) of
+        ( DropDown maybeOption, _ ) ->
             { model
                 | taskbarDropped = maybeOption
             }
                 ! []
 
-        HoverOnto option ->
+        ( HoverOnto option, _ ) ->
             case model.taskbarDropped of
                 Nothing ->
                     model ! []
@@ -28,8 +31,39 @@ update message model =
                         }
                             ! []
 
-        InitDownload ->
-            ( model, Ports.download "untitled" )
+        ( DownloadMessage subMessage, Download subModel ) ->
+            let
+                ( newModel, cmd ) =
+                    subModel
+                        |> Download.update subMessage
+                        |> Download.handle model
+            in
+                ( newModel, Cmd.map DownloadMessage cmd )
 
-        NoOp ->
+        ( InitDownload, _ ) ->
+            case model.projectName of
+                Nothing ->
+                    let
+                        ( downloadModel, seed ) =
+                            Download.initFromSeed
+                                model.windowSize
+                                model.seed
+                    in
+                        { model
+                            | seed = seed
+                            , menu = Download downloadModel
+                        }
+                            ! []
+
+                Just projectName ->
+                    { model
+                        | menu =
+                            Download.initFromString
+                                model.windowSize
+                                projectName
+                                |> Download
+                    }
+                        ! []
+
+        _ ->
             model ! []

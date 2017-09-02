@@ -22,7 +22,7 @@ import Random exposing (Seed)
 type alias Model =
     { session : Maybe Session
     , canvas : Canvas
-    , projectName : String
+    , projectName : Maybe String
     , canvasPosition : Position
     , pendingDraw : DrawOp
     , drawAtRender : DrawOp
@@ -45,6 +45,6 @@ type alias Model =
     , keyboardDownConfig : Keyboard.Config
     , taskbarDropped : Maybe Taskbar.Option
     , minimap : Maybe Minimap.Model
-    , menu : Maybe Menu
+    , menu : Menu
     , seed : Seed
     }

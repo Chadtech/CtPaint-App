@@ -17,6 +17,7 @@ import Keyboard.Types as Keyboard
 import List.Unique
 import Minimap.Types as Minimap
 import Random
+import Types.Menu exposing (Menu(..))
 
 
 init : Value -> ( Model, Cmd Message )
@@ -37,7 +38,7 @@ init json =
     in
         { session = Session.decode json
         , canvas = canvas
-        , projectName = ""
+        , projectName = Nothing
         , canvasPosition =
             Position
                 (((windowSize.width - tbw) - canvasSize.width) // 2)
@@ -63,7 +64,7 @@ init json =
         , keyboardDownConfig = Keyboard.defaultKeyDownConfig
         , taskbarDropped = Nothing
         , minimap = Just (Minimap.init windowSize)
-        , menu = Nothing
+        , menu = None
         , seed = Random.initialSeed (decodeSeed json)
         }
             ! []

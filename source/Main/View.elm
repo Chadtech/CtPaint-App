@@ -9,6 +9,8 @@ import Main.Message exposing (Message(..))
 import Toolbar.View as Toolbar
 import Palette.View as Palette
 import Taskbar.View as Taskbar
+import Taskbar.Util as Taskbar
+import Taskbar.Download.View as Download
 import ColorPicker.View as ColorPicker
 import Minimap.View as Minimap
 import Util exposing ((:=), left, top, width, height)
@@ -25,6 +27,7 @@ import Tool.RectangleFilled.Mouse as RectangleFilled
 import Tool.Select.Mouse as Select
 import Tool.Sample.Mouse as Sample
 import Tool.Fill.Mouse as Fill
+import Types.Menu exposing (Menu(..))
 
 
 -- VIEW --
@@ -49,7 +52,25 @@ view model =
             , clickScreen canvasAreaHeight model
             , colorPicker model
             , minimap model
+            , menu model.menu
             ]
+
+
+
+-- MENU --
+
+
+menu : Menu -> Html Message
+menu m =
+    case m of
+        None ->
+            Html.text ""
+
+        Download model ->
+            Html.map Taskbar.download (Download.view model)
+
+        _ ->
+            Html.text ""
 
 
 

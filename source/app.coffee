@@ -9,9 +9,10 @@ init = (app) ->
 
         a = document.createElement "a"
         a.href = png
-        a.download = fn + ".png"
+        a.download = fn
         a.click()
-    0
+    
+    app
 
 poolData =
     UserPoolId: "us-east-2_xc2oQp2ju"
@@ -38,10 +39,11 @@ flags = {
     seed: Math.round (Math.random() * 999999999999)
 }
 
+
 if user isnt null 
     user.getSession (err, session) ->
         if err
-            init (Elm.Main.fullscreen null)
+            init (Elm.Main.fullscreen flags)
 
             console.log err
             return 
@@ -56,3 +58,4 @@ if user isnt null
             init (Elm.Main.fullscreen flags)
 else
     init (Elm.Main.fullscreen flags)
+
