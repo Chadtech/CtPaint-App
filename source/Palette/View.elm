@@ -1,11 +1,17 @@
-module Palette.View exposing (view)
+module Palette.View exposing (..)
 
-import Html exposing (Html, Attribute, div)
+import Html exposing (Html, Attribute, div, p, a, span, text)
 import Html.Attributes exposing (class, classList, style)
-import Html.Events exposing (onClick, onDoubleClick)
+import Html.Events exposing (onClick)
 import Main.Model exposing (Model)
-import Toolbar.Horizontal.Types exposing (Message(..))
-import Palette.Types as Palette exposing (Swatches)
+import ElementRelativeMouseEvents as Events
+import Palette.Types exposing (Message(..), Swatches)
+import Util exposing ((:=), tbw, height, maybeCons)
+import Types.Mouse exposing (Direction(..))
+import Mouse exposing (Position)
+import Tool.Types exposing (Tool(..))
+import Draw.Util exposing (colorAt)
+import Palette.Types as Palette
 import Color exposing (Color)
 import Util exposing ((:=), px, height)
 import Array
@@ -14,18 +20,26 @@ import Array
 view : Model -> Html Message
 view model =
     div
-        [ class "palette" ]
-        [ swatches model.swatches
-        , palette model
+        [ class "horizontal-tool-bar"
+        , style
+            [ height model.horizontalToolbarHeight ]
+        ]
+        [ edge
+        , div
+            [ class "palette" ]
+            [ swatches model.swatches
+            , generalPalette model
+            ]
+        , infoBox model
         ]
 
 
 
--- GENERAL PALETTE --
+-- PALETTE --
 
 
-palette : Model -> Html Message
-palette model =
+generalPalette : Model -> Html Message
+generalPalette model =
     let
         square : Int -> Color -> Html Message
         square =
@@ -92,6 +106,194 @@ swatch color quadrant =
 
 
 
+-- EDGE --
+
+
+edge : Html Message
+edge =
+    div
+        [ class "edge"
+        , Util.toPosition
+            >> Down
+            >> ResizeToolbar
+            |> Events.onMouseDown
+        , Util.toPosition
+            >> Up
+            >> ResizeToolbar
+            |> Events.onMouseUp
+        ]
+        []
+
+
+
+-- INFO BOX --
+
+
+infoBox : Model -> Html Message
+infoBox model =
+    div
+        [ class "info-box"
+        , style
+            [ height (model.horizontalToolbarHeight - 10) ]
+        ]
+        (infoBoxContent model)
+
+
+infoView : String -> Html Message
+infoView str =
+    p [] [ text str ]
+
+
+infoBoxContent : Model -> List (Html Message)
+infoBoxContent model =
+    [ List.map infoView (toolContent model)
+    , List.map infoView (generalContent model)
+    , sampleColor model
+    ]
+        |> List.concat
+
+
+sampleColor : Model -> List (Html Message)
+sampleColor model =
+    case model.mousePosition of
+        Just position ->
+            let
+                color =
+                    colorAt
+                        position
+                        model.canvas
+
+                colorStr =
+                    Palette.toHex color
+
+                backgroundColor =
+                    if (Color.toHsl color).lightness > 0.5 then
+                        ""
+                    else
+                        "#ffffff"
+            in
+                [ p
+                    []
+                    [ text "color("
+                    , span
+                        [ style
+                            [ "color" := colorStr
+                            , "background" := backgroundColor
+                            ]
+                        ]
+                        [ text colorStr ]
+                    , text ")"
+                    ]
+                ]
+
+        Nothing ->
+            []
+
+
+toolContent : Model -> List String
+toolContent ({ tool } as model) =
+    case tool of
+        Select maybePosition ->
+            case ( maybePosition, model.mousePosition ) of
+                ( Just origin, Just position ) ->
+                    let
+                        size =
+                            [ "rect("
+                            , (origin.x - position.x + 1)
+                                |> abs
+                                |> toString
+                            , ","
+                            , (origin.y - position.y + 1)
+                                |> abs
+                                |> toString
+                            , ")"
+                            ]
+
+                        originStr =
+                            [ "origin("
+                            , toString origin.x
+                            , ","
+                            , toString origin.y
+                            , ")"
+                            ]
+                    in
+                        [ size
+                        , originStr
+                        ]
+                            |> List.map String.concat
+
+                _ ->
+                    []
+
+        Rectangle maybePosition ->
+            case ( maybePosition, model.mousePosition ) of
+                ( Just origin, Just position ) ->
+                    let
+                        size =
+                            [ "rect("
+                            , (origin.x - position.x + 1)
+                                |> abs
+                                |> toString
+                            , ","
+                            , (origin.y - position.y + 1)
+                                |> abs
+                                |> toString
+                            , ")"
+                            ]
+
+                        originStr =
+                            [ "origin("
+                            , toString origin.x
+                            , ","
+                            , toString origin.y
+                            , ")"
+                            ]
+                    in
+                        [ size
+                        , originStr
+                        ]
+                            |> List.map String.concat
+
+                _ ->
+                    []
+
+        RectangleFilled maybePosition ->
+            case ( maybePosition, model.mousePosition ) of
+                ( Just origin, Just position ) ->
+                    let
+                        size =
+                            [ "rect("
+                            , (origin.x - position.x + 1)
+                                |> abs
+                                |> toString
+                            , ","
+                            , (origin.y - position.y + 1)
+                                |> abs
+                                |> toString
+                            , ")"
+                            ]
+
+                        originStr =
+                            [ "origin("
+                            , toString origin.x
+                            , ","
+                            , toString origin.y
+                            , ")"
+                            ]
+                    in
+                        [ size
+                        , originStr
+                        ]
+                            |> List.map String.concat
+
+                _ ->
+                    []
+
+        _ ->
+            []
+
+
+
 -- HELPERS --
 
 
@@ -101,3 +303,29 @@ background =
         >> (,) "background"
         >> List.singleton
         >> style
+
+
+generalContent : Model -> List String
+generalContent model =
+    [ zoom model.zoom ]
+        |> maybeCons (mouse model.mousePosition)
+
+
+mouse : Maybe Position -> Maybe String
+mouse maybePosition =
+    case maybePosition of
+        Just { x, y } ->
+            [ "mouse(" ++ (toString x)
+            , "," ++ (toString y)
+            , ")"
+            ]
+                |> String.concat
+                |> Just
+
+        Nothing ->
+            Nothing
+
+
+zoom : Int -> String
+zoom z =
+    "zoom(" ++ (toString (z * 100)) ++ "%)"

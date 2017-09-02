@@ -2,7 +2,7 @@ module Main.Update exposing (update)
 
 import Main.Message exposing (Message(..))
 import Main.Model exposing (Model)
-import Toolbar.Horizontal.Update as HorizontalToolbar
+import Palette.Update as Palette
 import Tool.Hand.Update as Hand
 import Tool.Pencil.Update as Pencil
 import Tool.Line.Update as Line
@@ -17,7 +17,7 @@ import ColorPicker.Update as ColorPicker
 import ColorPicker.Handle as ColorPicker
 import Minimap.Update as Minimap
 import Minimap.Handle as Minimap
-import Toolbar.Top.Update as Taskbar
+import Taskbar.Update as Taskbar
 import Tool.Types exposing (Tool(..))
 import Canvas exposing (DrawOp(Batch))
 import Keyboard.Update as Keyboard
@@ -34,12 +34,12 @@ update message model =
             in
                 ( newModel, Cmd.map TaskbarMessage cmd )
 
-        ( HorizontalToolbarMessage subMessage, _ ) ->
+        ( PaletteMessage subMessage, _ ) ->
             let
                 ( newModel, cmd ) =
-                    HorizontalToolbar.update subMessage model
+                    Palette.update subMessage model
             in
-                ( newModel, Cmd.map HorizontalToolbarMessage cmd )
+                ( newModel, Cmd.map PaletteMessage cmd )
 
         ( GetWindowSize size, _ ) ->
             { model

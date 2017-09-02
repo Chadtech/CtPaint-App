@@ -1,6 +1,6 @@
 module Main.Message exposing (Message(..))
 
-import Toolbar.Horizontal.Types as HorizontalToolbar
+import Palette.Types as Palette
 import Window exposing (Size)
 import Tool.Types exposing (Tool(..))
 import Tool.Hand.Types as Hand
@@ -15,14 +15,14 @@ import Tool.Sample.Types as Sample
 import Tool.Fill.Types as Fill
 import ColorPicker.Types as ColorPicker
 import Minimap.Types as Minimap
-import Toolbar.Top.Types as Taskbar
+import Taskbar.Types as Taskbar
 import Keyboard.Types as Keyboard
 import Time exposing (Time)
 import MouseEvents exposing (MouseEvent)
 
 
 type Message
-    = HorizontalToolbarMessage HorizontalToolbar.Message
+    = PaletteMessage Palette.Message
     | GetWindowSize Size
     | SetTool Tool
     | KeyboardMessage Keyboard.Message

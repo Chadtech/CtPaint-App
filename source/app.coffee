@@ -11,8 +11,6 @@ init = (app) ->
         a.href = png
         a.download = fn + ".png"
         a.click()
-
-        # console.log png
     0
 
 poolData =
@@ -36,7 +34,8 @@ makeFlags = (obj, attr) ->
 
 flags = {
     windowHeight: window.innerHeight,
-    windowWidth: window.innerWidth
+    windowWidth: window.innerWidth,
+    seed: Math.round (Math.random() * 999999999999)
 }
 
 if user isnt null 

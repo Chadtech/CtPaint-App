@@ -7,3 +7,4 @@ type Menu
     = Transform Transform.Menu
     | Preferences
     | Help
+    | Download

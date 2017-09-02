@@ -2,6 +2,12 @@ module Palette.Types exposing (..)
 
 import Color exposing (Color)
 import ParseInt
+import Types.Mouse exposing (Direction(..))
+
+
+type Message
+    = ResizeToolbar Direction
+    | PaletteSquareClick Color Int
 
 
 type alias Swatches =

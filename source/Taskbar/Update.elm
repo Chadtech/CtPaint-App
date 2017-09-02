@@ -1,8 +1,8 @@
-module Toolbar.Top.Update exposing (update)
+module Taskbar.Update exposing (update)
 
 import Main.Model exposing (Model)
-import Toolbar.Top.Types as Taskbar exposing (Message(..))
-import Toolbar.Top.Ports as Ports
+import Taskbar.Types as Taskbar exposing (Message(..))
+import Taskbar.Ports as Ports
 
 
 update : Message -> Model -> ( Model, Cmd Message )
@@ -28,7 +28,7 @@ update message model =
                         }
                             ! []
 
-        Download ->
+        InitDownload ->
             ( model, Ports.download "untitled" )
 
         NoOp ->

@@ -1,10 +1,10 @@
-module Toolbar.Top.Types exposing (..)
+module Taskbar.Types exposing (..)
 
 
 type Message
     = DropDown (Maybe Option)
     | HoverOnto Option
-    | Download
+    | InitDownload
     | NoOp
 
 

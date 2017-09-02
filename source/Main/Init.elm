@@ -16,6 +16,7 @@ import History.Types exposing (HistoryOp(..))
 import Keyboard.Types as Keyboard
 import List.Unique
 import Minimap.Types as Minimap
+import Random
 
 
 init : Value -> ( Model, Cmd Message )
@@ -36,6 +37,7 @@ init json =
     in
         { session = Session.decode json
         , canvas = canvas
+        , projectName = ""
         , canvasPosition =
             Position
                 (((windowSize.width - tbw) - canvasSize.width) // 2)
@@ -62,6 +64,7 @@ init json =
         , taskbarDropped = Nothing
         , minimap = Just (Minimap.init windowSize)
         , menu = Nothing
+        , seed = Random.initialSeed (decodeSeed json)
         }
             ! []
 
@@ -83,6 +86,25 @@ fillBlackOp canvas =
     , Canvas.Fill
     ]
         |> Canvas.batch
+
+
+
+-- SEED DECODER --
+
+
+decodeSeed : Value -> Int
+decodeSeed json =
+    case Decode.decodeValue seedDecoder json of
+        Ok seed ->
+            seed
+
+        Err _ ->
+            1776
+
+
+seedDecoder : Decoder Int
+seedDecoder =
+    Decode.field "seed" Decode.int
 
 
 

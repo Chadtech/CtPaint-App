@@ -13,14 +13,16 @@ import History.Types exposing (HistoryOp(..))
 import List.Unique exposing (UniqueList)
 import Keyboard exposing (KeyCode)
 import Keyboard.Types as Keyboard
-import Toolbar.Top.Types as Taskbar
+import Taskbar.Types as Taskbar
 import Minimap.Types as Minimap
 import Types.Menu exposing (Menu(..))
+import Random exposing (Seed)
 
 
 type alias Model =
     { session : Maybe Session
     , canvas : Canvas
+    , projectName : String
     , canvasPosition : Position
     , pendingDraw : DrawOp
     , drawAtRender : DrawOp
@@ -44,4 +46,5 @@ type alias Model =
     , taskbarDropped : Maybe Taskbar.Option
     , minimap : Maybe Minimap.Model
     , menu : Maybe Menu
+    , seed : Seed
     }

@@ -1,10 +1,10 @@
-module Toolbar.Top.View exposing (view)
+module Taskbar.View exposing (view)
 
 import Html exposing (Html, Attribute, div, a, p, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick, onMouseOver)
 import Main.Model exposing (Model)
-import Toolbar.Top.Types exposing (Option(..), Message(..))
+import Taskbar.Types exposing (Option(..), Message(..))
 
 
 view : Model -> Html Message
@@ -135,7 +135,7 @@ file maybeFile =
                     [ option ( "Save", "Cmd + S", NoOp )
                     , option ( "Auto Save", "On", NoOp )
                     , divider
-                    , option ( "Download", "Cmd + D", Download )
+                    , option ( "Download", "Cmd + D", InitDownload )
                     , option ( "Import", "Cmd + I", NoOp )
                     , divider
                     , option ( "Imgur", "", NoOp )

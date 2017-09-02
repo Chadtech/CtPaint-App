@@ -1,6 +1,6 @@
-module Toolbar.Horizontal.Update exposing (update)
+module Palette.Update exposing (update)
 
-import Toolbar.Horizontal.Types exposing (Message(..))
+import Palette.Types exposing (Message(..))
 import Types.Mouse exposing (Direction(..))
 import Main.Model exposing (Model)
 import Main.Message as MainMessage
@@ -64,7 +64,7 @@ handleResize direction model =
                 | subMouseMove =
                     Move
                         >> ResizeToolbar
-                        >> MainMessage.HorizontalToolbarMessage
+                        >> MainMessage.PaletteMessage
                         |> Just
             }
                 ! []

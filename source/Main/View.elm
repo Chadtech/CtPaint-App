@@ -6,9 +6,9 @@ import Html.Events exposing (onMouseLeave)
 import MouseEvents exposing (onMouseMove)
 import Main.Model exposing (Model)
 import Main.Message exposing (Message(..))
-import Toolbar.Vertical.View as ToolbarVertical
-import Toolbar.Horizontal.View as ToolbarHorizontal
-import Toolbar.Top.View as Taskbar
+import Toolbar.View as Toolbar
+import Palette.View as Palette
+import Taskbar.View as Taskbar
 import ColorPicker.View as ColorPicker
 import Minimap.View as Minimap
 import Util exposing ((:=), left, top, width, height)
@@ -33,17 +33,18 @@ import Tool.Fill.Mouse as Fill
 view : Model -> Html Message
 view model =
     let
-        { width, height } =
-            model.windowSize
-
         canvasAreaHeight =
-            height - model.horizontalToolbarHeight - 29
+            List.sum
+                [ model.windowSize.height
+                , -model.horizontalToolbarHeight
+                , -29
+                ]
     in
         div
             [ class "main" ]
-            [ ToolbarVertical.view model
+            [ Toolbar.view model
             , Html.map TaskbarMessage (Taskbar.view model)
-            , horizontalToolbar model
+            , Html.map PaletteMessage (Palette.view model)
             , canvasArea canvasAreaHeight model
             , clickScreen canvasAreaHeight model
             , colorPicker model
@@ -221,14 +222,3 @@ selectionStyles ({ zoom, canvasPosition, canvas } as model) position selection =
         , width (selectionSize.width * zoom)
         , height (selectionSize.height * zoom)
         ]
-
-
-
--- TOOL BARS --
-
-
-horizontalToolbar : Model -> Html Message
-horizontalToolbar model =
-    Html.map
-        HorizontalToolbarMessage
-        (ToolbarHorizontal.view model)
