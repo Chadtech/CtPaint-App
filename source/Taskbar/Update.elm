@@ -52,12 +52,14 @@ update message model =
                         { model
                             | seed = seed
                             , menu = Download downloadModel
+                            , listenForKeyCmds = False
                         }
                             ! []
 
                 Just projectName ->
                     { model
-                        | menu =
+                        | listenForKeyCmds = False
+                        , menu =
                             Download.initFromString
                                 model.windowSize
                                 projectName

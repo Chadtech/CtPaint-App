@@ -1,7 +1,7 @@
 module Tool.Fill.Types exposing (..)
 
-import Mouse exposing (Position)
+import MouseEvents exposing (MouseEvent)
 
 
 type Message
-    = SubMouseUp Position
+    = ScreenMouseUp MouseEvent

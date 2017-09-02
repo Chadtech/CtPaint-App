@@ -12,10 +12,10 @@ import History.Update as History
 update : Message -> Model -> Model
 update message model =
     case message of
-        SubMouseUp position ->
+        ScreenMouseUp { clientPos } ->
             let
                 positonOnCanvas =
-                    adjustPosition model tbw position
+                    adjustPosition model tbw clientPos
 
                 colorAtPosition =
                     Draw.Util.colorAt

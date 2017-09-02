@@ -26,7 +26,7 @@ handle ( colorPicker, maybeMessage ) model =
 
         SetFocus focus ->
             { model
-                | textInputFocused = focus
+                | listenForKeyCmds = focus
             }
 
         UpdateHistory index color ->

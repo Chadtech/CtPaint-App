@@ -50,7 +50,8 @@ initFromString size projectName =
 
 projectNameGenerator : Generator String
 projectNameGenerator =
-    Random.list 10 (Random.int 0 61)
+    Random.int 0 61
+        |> Random.list 10
         |> Random.map toString
 
 
@@ -72,6 +73,10 @@ toChar int =
 
 alphanumeric : Array Char
 alphanumeric =
-    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    [ "0123456789"
+    , "abcdefghijklmnopqrstuvwxyz"
+    , "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    ]
+        |> String.concat
         |> String.toList
         |> Array.fromList

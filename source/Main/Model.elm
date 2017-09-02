@@ -34,7 +34,7 @@ type alias Model =
     , tool : Tool
     , zoom : Int
     , colorPicker : ColorPicker.Model
-    , textInputFocused : Bool
+    , listenForKeyCmds : Bool
     , history : List HistoryOp
     , future : List HistoryOp
     , mousePosition : Maybe Position

@@ -36,8 +36,8 @@ subscriptions model =
     , Sub.map
         MinimapMessage
         (Minimap.subscriptions model.minimap)
-    , ifTheresAFocus model.textInputFocused keyboardUps
-    , ifTheresAFocus model.textInputFocused keyboardDowns
+    , ifTheresAFocus model.listenForKeyCmds keyboardUps
+    , ifTheresAFocus model.listenForKeyCmds keyboardDowns
     , Sub.batch (toolSubs model)
     , menu model
     ]
