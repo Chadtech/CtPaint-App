@@ -21,6 +21,9 @@ import Window
 import AnimationFrame
 import Keyboard
 import Keyboard.Types as Keyboard
+import Types.Menu exposing (Menu(..))
+import Taskbar.Util as Taskbar
+import Taskbar.Download.Mouse as Download
 
 
 subscriptions : Model -> Sub Message
@@ -36,9 +39,29 @@ subscriptions model =
     , ifTheresAFocus model.textInputFocused keyboardUps
     , ifTheresAFocus model.textInputFocused keyboardDowns
     , Sub.batch (toolSubs model)
+    , menu model
     ]
         |> maybeCons (Maybe.map Mouse.moves model.subMouseMove)
         |> Sub.batch
+
+
+
+-- MENU --
+
+
+menu : Model -> Sub Message
+menu model =
+    case model.menu of
+        None ->
+            Sub.none
+
+        Download subModel ->
+            Sub.map
+                Taskbar.download
+                Download.subscriptions
+
+        _ ->
+            Sub.none
 
 
 

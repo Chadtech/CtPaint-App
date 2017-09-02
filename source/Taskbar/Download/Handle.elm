@@ -1,26 +1,28 @@
 module Taskbar.Download.Handle exposing (handle)
 
 import Main.Model exposing (Model)
-import Main.Message as Main
 import Taskbar.Download.Types as Download exposing (Message(..), ExternalMessage(..))
 import Types.Menu exposing (Menu(..))
-import Taskbar.Util as Taskbar
+import Taskbar.Download.Ports as Ports
 
 
-handle :
-    Model
-    -> ( Download.Model, ExternalMessage, Cmd Message )
-    -> ( Model, Cmd Message )
-handle model ( downloadModel, externalmessage, cmd ) =
+handle : Model -> ( Download.Model, ExternalMessage ) -> ( Model, Cmd Message )
+handle model ( downloadModel, externalmessage ) =
     case externalmessage of
         DoNothing ->
             { model
                 | menu = Download downloadModel
             }
-                ! [ cmd ]
+                ! []
+
+        DownloadFile fileName ->
+            { model
+                | menu = None
+            }
+                ! [ Ports.download (fileName ++ ".png") ]
 
         Close ->
             { model
                 | menu = None
             }
-                ! [ cmd ]
+                ! []

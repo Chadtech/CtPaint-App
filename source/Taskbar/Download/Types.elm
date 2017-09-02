@@ -4,16 +4,21 @@ import Random exposing (Seed, Generator)
 import Array exposing (Array)
 import Window exposing (Size)
 import Mouse exposing (Position)
+import MouseEvents exposing (MouseEvent)
 
 
 type Message
     = UpdateField String
     | CloseClick
     | Submit
+    | HeaderMouseDown MouseEvent
+    | HeaderMouseMove Position
+    | HeaderMouseUp
 
 
 type ExternalMessage
     = DoNothing
+    | DownloadFile String
     | Close
 
 
@@ -21,6 +26,7 @@ type alias Model =
     { content : String
     , placeholder : String
     , position : Position
+    , clickState : Maybe Position
     }
 
 
@@ -34,7 +40,11 @@ initFromString : Size -> String -> Model
 initFromString size projectName =
     { content = ""
     , placeholder = projectName
-    , position = Position 50 50
+    , position =
+        { x = (size.width // 2) - 208
+        , y = (size.height // 2) - 50
+        }
+    , clickState = Nothing
     }
 
 

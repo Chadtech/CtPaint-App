@@ -5,6 +5,7 @@ import Html.Attributes exposing (class, style, placeholder, value)
 import Html.Events exposing (onSubmit, onClick, onInput)
 import Taskbar.Download.Types exposing (Model, Message(..))
 import Util exposing (top, left, px)
+import MouseEvents as Events
 
 
 view : Model -> Html Message
@@ -40,7 +41,9 @@ view model =
 header : Html Message
 header =
     div
-        [ class "header" ]
+        [ class "header"
+        , Events.onMouseDown HeaderMouseDown
+        ]
         [ p [] [ text "download" ]
         , a [ onClick CloseClick ] [ text "x" ]
         ]

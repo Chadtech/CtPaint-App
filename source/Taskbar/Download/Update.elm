@@ -1,7 +1,6 @@
 module Taskbar.Download.Update exposing (update)
 
-import Util
-import Taskbar.Download.Ports as Ports
+import Mouse exposing (Position)
 import Taskbar.Download.Types
     exposing
         ( Model
@@ -10,22 +9,23 @@ import Taskbar.Download.Types
         )
 
 
-update : Message -> Model -> ( Model, ExternalMessage, Cmd Message )
+pack : a -> b -> ( a, b )
+pack =
+    (,)
+
+
+update : Message -> Model -> ( Model, ExternalMessage )
 update message model =
     case message of
         UpdateField content ->
-            Util.pack
+            pack
                 { model
                     | content = content
                 }
                 DoNothing
-                Cmd.none
 
         CloseClick ->
-            Util.pack
-                model
-                Close
-                Cmd.none
+            pack model Close
 
         Submit ->
             let
@@ -37,7 +37,37 @@ update message model =
                         content ->
                             content
             in
-                Util.pack
-                    model
-                    Close
-                    (Ports.download (fileName ++ ".png"))
+                pack model (DownloadFile fileName)
+
+        HeaderMouseDown { targetPos, clientPos } ->
+            pack
+                { model
+                    | clickState =
+                        Position
+                            (clientPos.x - targetPos.x)
+                            (clientPos.y - targetPos.y)
+                            |> Just
+                }
+                DoNothing
+
+        HeaderMouseMove position ->
+            case model.clickState of
+                Nothing ->
+                    pack model DoNothing
+
+                Just originalClick ->
+                    pack
+                        { model
+                            | position =
+                                Position
+                                    (position.x - originalClick.x)
+                                    (position.y - originalClick.y)
+                        }
+                        DoNothing
+
+        HeaderMouseUp ->
+            pack
+                { model
+                    | clickState = Nothing
+                }
+                DoNothing
