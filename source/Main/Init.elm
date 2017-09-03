@@ -53,16 +53,17 @@ init json =
         , windowSize = windowSize
         , tool = Hand Nothing
         , zoom = 1
-        , colorPicker =
-            ColorPicker.init Palette.Init.palette
-            --, listenForKeyCmds = False
+        , colorPicker = ColorPicker.init Palette.Init.palette
         , history = [ CanvasChange canvas ]
         , future = []
         , mousePosition = Nothing
         , selection = Nothing
         , clipboard = Nothing
         , keysDown = List.Unique.empty
-        , keyboardUpConfig = Keyboard.defaultKeyUpConfig
+        , keyboardUpConfig =
+            Keyboard.initKeyUp
+                (decodeIsMac json)
+                Nothing
         , keyboardDownConfig = Keyboard.defaultKeyDownConfig
         , taskbarDropped = Nothing
         , minimap = Nothing
@@ -89,6 +90,25 @@ fillBlackOp canvas =
     , Canvas.Fill
     ]
         |> Canvas.batch
+
+
+
+-- MAC COMPUTER --
+
+
+decodeIsMac : Value -> Bool
+decodeIsMac json =
+    case Decode.decodeValue isMacDecoder json of
+        Ok isMac ->
+            isMac
+
+        Err _ ->
+            False
+
+
+isMacDecoder : Decoder Bool
+isMacDecoder =
+    Decode.field "isMac" Decode.bool
 
 
 

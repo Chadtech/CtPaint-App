@@ -8,7 +8,6 @@ import Taskbar.Import.Types
         , ExternalMessage(..)
         , Message(..)
         )
-import Debug exposing (log)
 
 
 update : Message -> Model -> ( Model, ExternalMessage )

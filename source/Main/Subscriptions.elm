@@ -26,7 +26,6 @@ import Types.Menu exposing (Menu(..))
 import Taskbar.Util as Taskbar
 import Taskbar.Download.Mouse as Download
 import Taskbar.Import.Mouse as Import
-import Debug exposing (log)
 
 
 subscriptions : Model -> Sub Message

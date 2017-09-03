@@ -37,6 +37,10 @@ type alias Config =
     Dict (List KeyCode) QuickKey
 
 
+
+-- KEY DOWN CONFIG --
+
+
 defaultKeyDownConfig : Config
 defaultKeyDownConfig =
     [ [ Number2 ] := SwatchesOneTurn
@@ -47,8 +51,29 @@ defaultKeyDownConfig =
         |> Dict.fromList
 
 
-defaultKeyUpConfig : Config
-defaultKeyUpConfig =
+
+-- KEY UP CONFIG --
+
+
+initKeyUp : Bool -> Maybe (Key -> Config) -> Config
+initKeyUp isMac customConfig =
+    let
+        cmdKey =
+            if isMac then
+                Super
+            else
+                Control
+    in
+        case customConfig of
+            Nothing ->
+                defaultKeyUpConfig cmdKey
+
+            Just config ->
+                config cmdKey
+
+
+defaultKeyUpConfig : Key -> Config
+defaultKeyUpConfig cmd =
     [ [ Number1 ] := SwatchesOneTurn
     , [ Number2 ] := SwatchesThreeTurns
     , [ Number3 ] := SwatchesTwoTurns
@@ -58,16 +83,13 @@ defaultKeyUpConfig =
     , [ CharH ] := SetToolToHand
     , [ CharS ] := SetToolToSelect
     , [ CharG ] := SetToolToFill
-    , [ CharZ, Control ] := Undo
-    , [ CharY, Control ] := Redo
+    , [ CharZ, cmd ] := Undo
+    , [ CharY, cmd ] := Redo
     , [ Equals ] := ZoomIn
     , [ Minus ] := ZoomOut
     , [ BackQuote ] := ShowMinimap
-      --, [ Control, CharD ] := Download
-    , [ CharD, Control ] := Download
-    , [ CharD, Super ] := Download
-    , [ CharI, Control ] := Download
-    , [ CharI, Super ] := Download
+    , [ CharD, Shift ] := Download
+    , [ CharI, cmd ] := Import
     ]
         |> List.map keysToCodes
         -- ff and chrome have different codes for equals

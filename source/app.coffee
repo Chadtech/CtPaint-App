@@ -50,6 +50,7 @@ flags = {
     windowHeight: window.innerHeight,
     windowWidth: window.innerWidth,
     seed: Math.round (Math.random() * 999999999999)
+    isMac: (window.navigator.userAgent.indexOf "Mac") isnt -1
 }
 
 

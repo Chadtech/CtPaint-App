@@ -44,7 +44,7 @@ gulp.task "stylus", ->
         .pipe (gulp.dest paths.development)
 
 
-gulp.task "elm", [ "elm-format", "elm-make" ]
+gulp.task "elm", [ "elm-make", "elm-format" ]
 
 
 gulp.task "elm-format", ->
