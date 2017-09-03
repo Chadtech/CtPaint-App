@@ -8,6 +8,9 @@ import History.Update as History
 import List.Unique exposing (UniqueList)
 import Dict
 import Minimap.Types as Minimap
+import Taskbar.Download.Types as Download
+import Taskbar.Import.Types as Import
+import Types.Menu as Menu exposing (Menu(..))
 import Keyboard.Types
     exposing
         ( Message(..)
@@ -199,3 +202,34 @@ handleKeyUp ({ keysDown, keyboardUpConfig } as model) =
 
                 Just _ ->
                     { model | minimap = Nothing }
+
+        Keyboard.Types.Download ->
+            case model.projectName of
+                Nothing ->
+                    let
+                        ( downloadModel, seed ) =
+                            Download.initFromSeed
+                                model.windowSize
+                                model.seed
+                    in
+                        { model
+                            | seed = seed
+                            , menu = Menu.Download downloadModel
+                        }
+
+                Just projectName ->
+                    { model
+                        | menu =
+                            Download.initFromString
+                                model.windowSize
+                                projectName
+                                |> Menu.Download
+                    }
+
+        Keyboard.Types.Import ->
+            { model
+                | menu =
+                    model.windowSize
+                        |> Import.init
+                        |> Menu.Import
+            }

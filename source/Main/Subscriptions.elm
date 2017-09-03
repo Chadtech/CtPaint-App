@@ -2,6 +2,7 @@ module Main.Subscriptions exposing (subscriptions)
 
 import Main.Model exposing (Model)
 import Main.Message exposing (Message(..))
+import Main.Ports as Ports
 import Util exposing (maybeCons)
 import Tool.Types exposing (Tool(..))
 import Tool.Hand.Mouse as Hand
@@ -25,6 +26,7 @@ import Types.Menu exposing (Menu(..))
 import Taskbar.Util as Taskbar
 import Taskbar.Download.Mouse as Download
 import Taskbar.Import.Mouse as Import
+import Debug exposing (log)
 
 
 subscriptions : Model -> Sub Message
@@ -41,6 +43,7 @@ subscriptions model =
     , listenForKeyCmds model keyboardDowns
     , Sub.batch (toolSubs model)
     , menu model
+    , Ports.windowFocus HandleWindowFocus
     ]
         |> maybeCons (Maybe.map Mouse.moves model.subMouseMove)
         |> Sub.batch

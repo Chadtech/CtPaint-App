@@ -11,6 +11,19 @@ init = (app) ->
         a.href = png
         a.download = fn
         a.click()
+
+
+    window.onFocus = ->
+        app.ports.windowFocused.send true
+
+    window.onBlur = ->
+        app.ports.windowFocused.send false
+
+    window.onkeydown = (event) ->
+        cmd = event.metaKey or event.ctrlKey
+
+        if cmd and (event.keyCode is 'D'.charCodeAt 0)
+            event.preventDefault()
     
     app
 

@@ -42,3 +42,4 @@ type Message
     | MinimapMessage Minimap.Message
     | ScreenMouseMove MouseEvent
     | ScreenMouseExit
+    | HandleWindowFocus Bool

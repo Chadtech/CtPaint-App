@@ -28,6 +28,8 @@ type QuickKey
     | ZoomIn
     | ZoomOut
     | ShowMinimap
+    | Download
+    | Import
     | NoCommand
 
 
@@ -56,11 +58,16 @@ defaultKeyUpConfig =
     , [ CharH ] := SetToolToHand
     , [ CharS ] := SetToolToSelect
     , [ CharG ] := SetToolToFill
-    , [ Control, CharZ ] := Undo
-    , [ Control, CharY ] := Redo
+    , [ CharZ, Control ] := Undo
+    , [ CharY, Control ] := Redo
     , [ Equals ] := ZoomIn
     , [ Minus ] := ZoomOut
     , [ BackQuote ] := ShowMinimap
+      --, [ Control, CharD ] := Download
+    , [ CharD, Control ] := Download
+    , [ CharD, Super ] := Download
+    , [ CharI, Control ] := Download
+    , [ CharI, Super ] := Download
     ]
         |> List.map keysToCodes
         -- ff and chrome have different codes for equals

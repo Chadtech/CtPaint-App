@@ -22,6 +22,7 @@ import Tool.Types exposing (Tool(..))
 import Canvas exposing (DrawOp(Batch))
 import Keyboard.Update as Keyboard
 import Mouse exposing (Position)
+import List.Unique
 
 
 update : Message -> Model -> ( Model, Cmd Message )
@@ -182,6 +183,15 @@ update message model =
                     Select.update subMessage subModel model
             in
                 newModel ! []
+
+        ( HandleWindowFocus focused, _ ) ->
+            if focused then
+                { model
+                    | keysDown = List.Unique.empty
+                }
+                    ! []
+            else
+                model ! []
 
         _ ->
             model ! []
