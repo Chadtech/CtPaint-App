@@ -27,19 +27,32 @@ type Message
 
 
 init : Size -> Model
-init { width } =
-    { externalPosition =
-        { x = width - 400
-        , y = 400
+init { width, height } =
+    let
+        minimapSize =
+            { width = 250 + extraWidth
+            , height = 250 + extraHeight
+            }
+    in
+        { externalPosition =
+            { x = (width - minimapSize.width) // 2
+            , y = (height - minimapSize.height) // 2
+            }
+        , internalPosition =
+            { x = 0
+            , y = 0
+            }
+        , size = minimapSize
+        , zoom = 1
+        , clickState = Nothing
         }
-    , internalPosition =
-        { x = 0
-        , y = 0
-        }
-    , size =
-        { width = 250
-        , height = 250
-        }
-    , zoom = 1
-    , clickState = Nothing
-    }
+
+
+extraHeight : Int
+extraHeight =
+    64
+
+
+extraWidth : Int
+extraWidth =
+    8

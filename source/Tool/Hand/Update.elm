@@ -4,17 +4,13 @@ import Main.Model exposing (Model)
 import Tool.Hand.Types exposing (Message(..))
 import Tool.Types exposing (Tool(..))
 import Mouse exposing (Position)
-import Util exposing (tbw)
 
 
 update : Message -> Maybe ( Position, Position ) -> Model -> Model
 update message tool model =
     case ( message, tool ) of
-        ( OnScreenMouseDown position, Nothing ) ->
+        ( ScreenMouseDown { clientPos }, Nothing ) ->
             let
-                y =
-                    position.y + 29
-
                 initialPosition =
                     case model.selection of
                         Just ( selectionPosition, _ ) ->
@@ -25,27 +21,28 @@ update message tool model =
             in
                 { model
                     | tool =
-                        (Hand << Just)
-                            ( initialPosition
-                            , Position position.x y
-                            )
+                        ( initialPosition
+                        , clientPos
+                        )
+                            |> Just
+                            |> Hand
                 }
 
-        ( SubMouseMove movePosition, Just ( initialPosition, click ) ) ->
+        ( SubMouseMove position, Just ( initialPosition, click ) ) ->
             case model.selection of
                 Just ( _, selection ) ->
                     let
                         x =
                             List.sum
                                 [ initialPosition.x
-                                , (movePosition.x - click.x - tbw)
+                                , (position.x - click.x)
                                     // model.zoom
                                 ]
 
                         y =
                             List.sum
                                 [ initialPosition.y
-                                , (movePosition.y - click.y)
+                                , (position.y - click.y)
                                     // model.zoom
                                 ]
                     in
@@ -58,26 +55,22 @@ update message tool model =
                         }
 
                 Nothing ->
-                    let
-                        x =
-                            List.sum
-                                [ initialPosition.x
-                                , movePosition.x
-                                , -click.x
-                                , -tbw
-                                ]
-
-                        y =
-                            List.sum
-                                [ initialPosition.y
-                                , movePosition.y
-                                , -click.y
-                                ]
-                    in
-                        { model
-                            | canvasPosition =
-                                Position x y
-                        }
+                    { model
+                        | canvasPosition =
+                            { x =
+                                List.sum
+                                    [ initialPosition.x
+                                    , position.x
+                                    , -click.x
+                                    ]
+                            , y =
+                                List.sum
+                                    [ initialPosition.y
+                                    , position.y
+                                    , -click.y
+                                    ]
+                            }
+                    }
 
         ( SubMouseUp, _ ) ->
             { model

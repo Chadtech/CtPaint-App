@@ -18,13 +18,8 @@ handle model ( downloadModel, externalmessage ) =
         DownloadFile fileName ->
             { model
                 | menu = None
-                , listenForKeyCmds = True
             }
                 ! [ Ports.download (fileName ++ ".png") ]
 
         Close ->
-            { model
-                | menu = None
-                , listenForKeyCmds = True
-            }
-                ! []
+            { model | menu = None } ! []

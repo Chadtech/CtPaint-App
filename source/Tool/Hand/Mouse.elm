@@ -1,17 +1,14 @@
 module Tool.Hand.Mouse exposing (..)
 
 import Html exposing (Attribute)
-import ElementRelativeMouseEvents as Events
+import MouseEvents
 import Tool.Hand.Types exposing (Message(..))
-import Util exposing (toPosition)
 import Mouse
 
 
 attributes : List (Attribute Message)
 attributes =
-    [ Events.onMouseDown
-        (OnScreenMouseDown << toPosition)
-    ]
+    [ MouseEvents.onMouseDown ScreenMouseDown ]
 
 
 subs : List (Sub Message)

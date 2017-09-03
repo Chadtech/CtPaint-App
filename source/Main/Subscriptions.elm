@@ -24,6 +24,7 @@ import Keyboard.Types as Keyboard
 import Types.Menu exposing (Menu(..))
 import Taskbar.Util as Taskbar
 import Taskbar.Download.Mouse as Download
+import Taskbar.Import.Mouse as Import
 
 
 subscriptions : Model -> Sub Message
@@ -36,8 +37,8 @@ subscriptions model =
     , Sub.map
         MinimapMessage
         (Minimap.subscriptions model.minimap)
-    , ifTheresAFocus model.listenForKeyCmds keyboardUps
-    , ifTheresAFocus model.listenForKeyCmds keyboardDowns
+    , listenForKeyCmds model keyboardUps
+    , listenForKeyCmds model keyboardDowns
     , Sub.batch (toolSubs model)
     , menu model
     ]
@@ -55,10 +56,15 @@ menu model =
         None ->
             Sub.none
 
-        Download subModel ->
+        Download _ ->
             Sub.map
                 Taskbar.download
                 Download.subscriptions
+
+        Import _ ->
+            Sub.map
+                Taskbar.import_
+                Import.subscriptions
 
         _ ->
             Sub.none
@@ -120,9 +126,11 @@ keyboardDowns =
 -- HELPERS --
 
 
-ifTheresAFocus : Bool -> Sub Message -> Sub Message
-ifTheresAFocus isAFocus sub =
-    if isAFocus then
-        Sub.none
-    else
-        sub
+listenForKeyCmds : Model -> Sub Message -> Sub Message
+listenForKeyCmds { menu, colorPicker } sub =
+    case ( menu, colorPicker.focusedOn ) of
+        ( None, False ) ->
+            sub
+
+        _ ->
+            Sub.none

@@ -8,13 +8,13 @@ import Taskbar.Types exposing (Option(..), Message(..))
 
 
 view : Model -> Html Message
-view { taskbarDropped } =
+view ({ taskbarDropped } as model) =
     div
         [ class "top-tool-bar" ]
         [ file taskbarDropped
         , edit taskbarDropped
         , transform taskbarDropped
-        , view_ taskbarDropped
+        , view_ model
         , help taskbarDropped
         , invisibleWall taskbarDropped
         ]
@@ -53,9 +53,9 @@ help maybeHelp =
             taskbarButtonClose Help
 
 
-view_ : Maybe Option -> Html Message
-view_ maybeView =
-    case maybeView of
+view_ : Model -> Html Message
+view_ model =
+    case model.taskbarDropped of
         Just View ->
             taskbarButtonOpen
                 [ text "View"
@@ -63,12 +63,30 @@ view_ maybeView =
                 , div
                     [ class "options view" ]
                     [ option ( "Gallery view", "tab", NoOp )
-                    , option ( "Mini view", "on", NoOp )
+                    , minimap model
                     ]
                 ]
 
         _ ->
             taskbarButtonClose View
+
+
+minimap : Model -> Html Message
+minimap model =
+    case model.minimap of
+        Just _ ->
+            option
+                ( "Hide Mini Map"
+                , "`"
+                , SwitchMinimap False
+                )
+
+        Nothing ->
+            option
+                ( "Show Mini Map"
+                , "`"
+                , SwitchMinimap True
+                )
 
 
 transform : Maybe Option -> Html Message
@@ -136,7 +154,7 @@ file maybeFile =
                     , option ( "Auto Save", "On", NoOp )
                     , divider
                     , option ( "Download", "Cmd + D", InitDownload )
-                    , option ( "Import", "Cmd + I", NoOp )
+                    , option ( "Import", "Cmd + I", InitImport )
                     , divider
                     , option ( "Imgur", "", NoOp )
                     , option ( "Twitter", "", NoOp )

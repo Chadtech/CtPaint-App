@@ -16,9 +16,9 @@ meaning you can use it at the end of a pipeline and have the precedence work out
 infixl 0 :=
 
 
-pack : a -> b -> c -> ( a, b, c )
+pack : a -> b -> ( a, b )
 pack =
-    (,,)
+    (,)
 
 
 maybeCons : Maybe a -> List a -> List a

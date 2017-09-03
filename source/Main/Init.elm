@@ -8,14 +8,12 @@ import Types.Session as Session
 import Tool.Types exposing (Tool(..))
 import ColorPicker.Types as ColorPicker
 import Json.Decode as Decode exposing (Decoder)
-import Mouse exposing (Position)
 import Color
 import Palette.Init
 import Util exposing (tbw)
 import History.Types exposing (HistoryOp(..))
 import Keyboard.Types as Keyboard
 import List.Unique
-import Minimap.Types as Minimap
 import Random
 import Types.Menu exposing (Menu(..))
 
@@ -29,7 +27,8 @@ init json =
 
         canvas : Canvas
         canvas =
-            Canvas.initialize (Size 400 400)
+            Size 400 400
+                |> Canvas.initialize
                 |> fillBlack
 
         canvasSize : Size
@@ -40,9 +39,11 @@ init json =
         , canvas = canvas
         , projectName = Nothing
         , canvasPosition =
-            Position
-                (((windowSize.width - tbw) - canvasSize.width) // 2)
-                ((windowSize.height - canvasSize.height) // 2)
+            { x =
+                ((windowSize.width - tbw) - canvasSize.width) // 2
+            , y =
+                (windowSize.height - canvasSize.height) // 2
+            }
         , pendingDraw = Canvas.batch []
         , drawAtRender = Canvas.batch []
         , swatches = Palette.Init.swatches
@@ -52,8 +53,9 @@ init json =
         , windowSize = windowSize
         , tool = Hand Nothing
         , zoom = 1
-        , colorPicker = ColorPicker.init Palette.Init.palette
-        , listenForKeyCmds = False
+        , colorPicker =
+            ColorPicker.init Palette.Init.palette
+            --, listenForKeyCmds = False
         , history = [ CanvasChange canvas ]
         , future = []
         , mousePosition = Nothing
@@ -63,7 +65,7 @@ init json =
         , keyboardUpConfig = Keyboard.defaultKeyUpConfig
         , keyboardDownConfig = Keyboard.defaultKeyDownConfig
         , taskbarDropped = Nothing
-        , minimap = Just (Minimap.init windowSize)
+        , minimap = Nothing
         , menu = None
         , seed = Random.initialSeed (decodeSeed json)
         }

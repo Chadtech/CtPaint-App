@@ -24,11 +24,6 @@ handle ( colorPicker, maybeMessage ) model =
                         model.palette
             }
 
-        SetFocus focus ->
-            { model
-                | listenForKeyCmds = focus
-            }
-
         UpdateHistory index color ->
             { model
                 | colorPicker = colorPicker

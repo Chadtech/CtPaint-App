@@ -7,6 +7,7 @@ import Keyboard exposing (KeyCode)
 import History.Update as History
 import List.Unique exposing (UniqueList)
 import Dict
+import Minimap.Types as Minimap
 import Keyboard.Types
     exposing
         ( Message(..)
@@ -116,19 +117,16 @@ handleKeyUp ({ keysDown, keyboardUpConfig } as model) =
             model
 
         SetToolToPencil ->
-            { model
-                | tool = Pencil Nothing
-            }
+            { model | tool = Pencil Nothing }
 
         SetToolToHand ->
-            { model
-                | tool = Hand Nothing
-            }
+            { model | tool = Hand Nothing }
 
         SetToolToSelect ->
-            { model
-                | tool = Tool.Types.Select Nothing
-            }
+            { model | tool = Select Nothing }
+
+        SetToolToFill ->
+            { model | tool = Fill }
 
         SwatchesOneTurn ->
             { model
@@ -188,3 +186,16 @@ handleKeyUp ({ keysDown, keyboardUpConfig } as model) =
                     model
                 else
                     Zoom.set newZoom model
+
+        ShowMinimap ->
+            case model.minimap of
+                Nothing ->
+                    { model
+                        | minimap =
+                            model.windowSize
+                                |> Minimap.init
+                                |> Just
+                    }
+
+                Just _ ->
+                    { model | minimap = Nothing }

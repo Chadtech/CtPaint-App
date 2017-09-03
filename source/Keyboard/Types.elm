@@ -22,10 +22,12 @@ type QuickKey
     | SetToolToPencil
     | SetToolToHand
     | SetToolToSelect
+    | SetToolToFill
     | Undo
     | Redo
     | ZoomIn
     | ZoomOut
+    | ShowMinimap
     | NoCommand
 
 
@@ -53,10 +55,12 @@ defaultKeyUpConfig =
     , [ CharP ] := SetToolToPencil
     , [ CharH ] := SetToolToHand
     , [ CharS ] := SetToolToSelect
+    , [ CharG ] := SetToolToFill
     , [ Control, CharZ ] := Undo
     , [ Control, CharY ] := Redo
     , [ Equals ] := ZoomIn
     , [ Minus ] := ZoomOut
+    , [ BackQuote ] := ShowMinimap
     ]
         |> List.map keysToCodes
         -- ff and chrome have different codes for equals

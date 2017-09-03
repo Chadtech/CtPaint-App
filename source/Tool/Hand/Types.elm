@@ -1,9 +1,10 @@
 module Tool.Hand.Types exposing (Message(..))
 
 import Mouse exposing (Position)
+import MouseEvents exposing (MouseEvent)
 
 
 type Message
-    = OnScreenMouseDown Position
+    = ScreenMouseDown MouseEvent
     | SubMouseMove Position
     | SubMouseUp

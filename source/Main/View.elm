@@ -11,6 +11,7 @@ import Palette.View as Palette
 import Taskbar.View as Taskbar
 import Taskbar.Util as Taskbar
 import Taskbar.Download.View as Download
+import Taskbar.Import.View as Import
 import ColorPicker.View as ColorPicker
 import Minimap.View as Minimap
 import Util exposing ((:=), left, top, width, height)
@@ -68,6 +69,9 @@ menu m =
 
         Download model ->
             Html.map Taskbar.download (Download.view model)
+
+        Import model ->
+            Html.map Taskbar.import_ (Import.view model)
 
         _ ->
             Html.text ""

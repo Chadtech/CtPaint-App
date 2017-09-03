@@ -1,39 +1,35 @@
-module Taskbar.Download.Update exposing (update)
+module Taskbar.Import.Update exposing (update)
 
 import Mouse exposing (Position)
 import Util exposing (pack)
-import Taskbar.Download.Types
+import Taskbar.Import.Types
     exposing
         ( Model
         , ExternalMessage(..)
         , Message(..)
         )
+import Debug exposing (log)
 
 
 update : Message -> Model -> ( Model, ExternalMessage )
 update message model =
     case message of
-        UpdateField content ->
+        UpdateField url ->
             pack
-                { model
-                    | content = content
-                }
+                { model | url = url }
                 DoNothing
 
         CloseClick ->
             pack model Close
 
-        Submit ->
-            let
-                fileName =
-                    case model.content of
-                        "" ->
-                            model.placeholder
+        AttemptLoad ->
+            pack model LoadImage
 
-                        content ->
-                            content
-            in
-                pack model (DownloadFile fileName)
+        ImageLoaded (Ok canvas) ->
+            pack model (IncorporateImage canvas)
+
+        ImageLoaded (Err err) ->
+            pack model DoNothing
 
         HeaderMouseDown { targetPos, clientPos } ->
             pack

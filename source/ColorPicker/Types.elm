@@ -11,7 +11,6 @@ import MouseEvents exposing (MouseEvent)
 type ExternalMessage
     = DoNothing
     | SetColor Int Color
-    | SetFocus Bool
     | UpdateHistory Int Color
 
 
@@ -21,7 +20,7 @@ type Message
     | HeaderMouseUp Position
     | WakeUp Color Int
     | Close
-    | HandleFocus Bool
+    | SetFocus Bool
     | StealSubmit
     | UpdateColorHexField String
     | MouseDownOnPointer Gradient
@@ -53,6 +52,7 @@ type alias Model =
     , show : Bool
     , colorHexField : String
     , gradientClickedOn : Maybe Gradient
+    , focusedOn : Bool
     }
 
 
@@ -128,4 +128,5 @@ init colors =
         , colorHexField =
             String.dropLeft 1 (Palette.toHex color)
         , gradientClickedOn = Nothing
+        , focusedOn = False
         }

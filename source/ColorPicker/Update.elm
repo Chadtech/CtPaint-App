@@ -74,8 +74,10 @@ update message model =
             in
                 ( newModel, DoNothing )
 
-        HandleFocus focused ->
-            ( model, SetFocus focused )
+        SetFocus focused ->
+            ( { model | focusedOn = focused }
+            , DoNothing
+            )
 
         UpdateColorHexField hex ->
             let

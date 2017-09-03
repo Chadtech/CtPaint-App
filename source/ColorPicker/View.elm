@@ -52,8 +52,8 @@ body ({ colorHexField, color } as model) =
         [ onSubmit StealSubmit ]
         [ input
             [ spellcheck False
-            , onFocus (HandleFocus True)
-            , onBlur (HandleFocus False)
+            , onFocus (SetFocus True)
+            , onBlur (SetFocus False)
             , onInput UpdateColorHexField
             , value colorHexField
             ]
@@ -77,8 +77,8 @@ slider label fieldContent gradient sliderGradient =
         , input
             [ onInput (FieldUpdate gradient)
             , value fieldContent
-            , onFocus (HandleFocus True)
-            , onBlur (HandleFocus False)
+            , onFocus (SetFocus True)
+            , onBlur (SetFocus False)
             ]
             []
         ]

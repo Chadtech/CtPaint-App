@@ -33,8 +33,9 @@ type alias Model =
     , windowSize : Size
     , tool : Tool
     , zoom : Int
-    , colorPicker : ColorPicker.Model
-    , listenForKeyCmds : Bool
+    , colorPicker :
+        ColorPicker.Model
+        --, listenForKeyCmds : Bool
     , history : List HistoryOp
     , future : List HistoryOp
     , mousePosition : Maybe Position
