@@ -5,6 +5,8 @@ import Html.Attributes exposing (class)
 import Html.Events exposing (onClick, onMouseOver)
 import Main.Model exposing (Model)
 import Taskbar.Types exposing (Option(..), Message(..))
+import Keyboard.Types exposing (QuickKey(..))
+import Dict exposing (Dict)
 
 
 view : Model -> Html Message
@@ -12,7 +14,7 @@ view ({ taskbarDropped } as model) =
     div
         [ class "top-tool-bar" ]
         [ file taskbarDropped
-        , edit taskbarDropped
+        , edit model
         , transform taskbarDropped
         , view_ model
         , help taskbarDropped
@@ -53,6 +55,10 @@ help maybeHelp =
             taskbarButtonClose Help
 
 
+
+-- VIEW --
+
+
 view_ : Model -> Html Message
 view_ model =
     case model.taskbarDropped of
@@ -89,6 +95,10 @@ minimap model =
                 )
 
 
+
+-- TRANSFORM --
+
+
 transform : Maybe Option -> Html Message
 transform maybeTransform =
     case maybeTransform of
@@ -115,16 +125,16 @@ transform maybeTransform =
             taskbarButtonClose Transform
 
 
-edit : Maybe Option -> Html Message
-edit maybeEdit =
-    case maybeEdit of
+edit : Model -> Html Message
+edit model =
+    case model.taskbarDropped of
         Just Edit ->
             taskbarButtonOpen
                 [ text "Edit"
                 , seam
                 , div
                     [ class "options edit" ]
-                    [ option ( "Undo", "Cmd + Z", NoOp )
+                    [ option ( "Undo", getCmdStr model.keyboardUpLookUp Undo, NoOp )
                     , option ( "Redo", "Cmd + Y", NoOp )
                     , divider
                     , option ( "Cut", "Cmd + X", NoOp )
@@ -168,6 +178,21 @@ file maybeFile =
 
 
 -- HELPERS --
+
+
+getCmdStr : Dict String (List String) -> QuickKey -> String
+getCmdStr cmdLookUp cmd =
+    case Dict.get (toString cmd) cmdLookUp of
+        Just keys ->
+            toKeyCmdStr keys
+
+        Nothing ->
+            ""
+
+
+toKeyCmdStr : List String -> String
+toKeyCmdStr =
+    String.join " + "
 
 
 taskbarButtonClose : Option -> Html Message

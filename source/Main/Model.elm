@@ -17,6 +17,7 @@ import Taskbar.Types as Taskbar
 import Minimap.Types as Minimap
 import Types.Menu exposing (Menu(..))
 import Random exposing (Seed)
+import Dict exposing (Dict)
 
 
 type alias Model =
@@ -33,9 +34,7 @@ type alias Model =
     , windowSize : Size
     , tool : Tool
     , zoom : Int
-    , colorPicker :
-        ColorPicker.Model
-        --, listenForKeyCmds : Bool
+    , colorPicker : ColorPicker.Model
     , history : List HistoryOp
     , future : List HistoryOp
     , mousePosition : Maybe Position
@@ -43,7 +42,9 @@ type alias Model =
     , clipboard : Maybe ( Position, Canvas )
     , keysDown : UniqueList KeyCode
     , keyboardUpConfig : Keyboard.Config
+    , keyboardUpLookUp : Dict String (List String)
     , keyboardDownConfig : Keyboard.Config
+    , keyboardDownLookUp : Dict String (List String)
     , taskbarDropped : Maybe Taskbar.Option
     , minimap : Maybe Minimap.Model
     , menu : Menu

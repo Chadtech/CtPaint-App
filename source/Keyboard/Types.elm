@@ -101,3 +101,75 @@ defaultKeyUpConfig cmd =
 keysToCodes : ( List Key, QuickKey ) -> ( List KeyCode, QuickKey )
 keysToCodes ( keys, cmds ) =
     ( List.map Keyboard.Extra.toCode keys, cmds )
+
+
+
+-- REVERSE CONFIG --
+
+
+reverseConfig : Config -> Dict String (List String)
+reverseConfig =
+    Dict.toList
+        >> List.map pairToStrings
+        >> Dict.fromList
+
+
+swap : ( a, b ) -> ( b, a )
+swap ( a, b ) =
+    ( b, a )
+
+
+pairToStrings : ( List Int, QuickKey ) -> ( String, List String )
+pairToStrings =
+    swap
+        >> Tuple.mapFirst toString
+        >> Tuple.mapSecond (List.map keyToString >> List.reverse)
+
+
+keyToString : KeyCode -> String
+keyToString key =
+    case Keyboard.Extra.fromCode key of
+        Control ->
+            "Ctrl"
+
+        QuestionMark ->
+            "?"
+
+        Equals ->
+            "="
+
+        Semicolon ->
+            ";"
+
+        Super ->
+            "Cmd"
+
+        Asterisk ->
+            "*"
+
+        Comma ->
+            ","
+
+        Dollar ->
+            "$"
+
+        other ->
+            let
+                otherAsStr =
+                    toString other
+
+                isChar =
+                    String.left 4 otherAsStr == "Char"
+
+                isNumber =
+                    String.left 6 otherAsStr == "Number"
+            in
+                case ( isChar, isNumber ) of
+                    ( True, _ ) ->
+                        String.right 1 otherAsStr
+
+                    ( _, True ) ->
+                        String.right 1 otherAsStr
+
+                    _ ->
+                        otherAsStr

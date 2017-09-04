@@ -12,7 +12,7 @@ import Color
 import Palette.Init
 import Util exposing (tbw)
 import History.Types exposing (HistoryOp(..))
-import Keyboard.Types as Keyboard
+import Keyboard.Types as Keyboard exposing (Config)
 import List.Unique
 import Random
 import Types.Menu exposing (Menu(..))
@@ -34,6 +34,13 @@ init json =
         canvasSize : Size
         canvasSize =
             Canvas.getSize canvas
+
+        keyUpConfig : Config
+        keyUpConfig =
+            Keyboard.initKeyUp
+                (decodeIsMac json)
+                (decodeIsChrome json)
+                Nothing
     in
         { session = Session.decode json
         , canvas = canvas
@@ -60,12 +67,12 @@ init json =
         , selection = Nothing
         , clipboard = Nothing
         , keysDown = List.Unique.empty
-        , keyboardUpConfig =
-            Keyboard.initKeyUp
-                (decodeIsMac json)
-                (decodeIsChrome json)
-                Nothing
+        , keyboardUpConfig = keyUpConfig
+        , keyboardUpLookUp = Keyboard.reverseConfig keyUpConfig
         , keyboardDownConfig = Keyboard.defaultKeyDownConfig
+        , keyboardDownLookUp =
+            Keyboard.reverseConfig
+                Keyboard.defaultKeyDownConfig
         , taskbarDropped = Nothing
         , minimap = Nothing
         , menu = None
