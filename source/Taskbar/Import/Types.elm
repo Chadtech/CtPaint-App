@@ -34,8 +34,8 @@ init : Size -> Model
 init { width, height } =
     { url = ""
     , position =
-        { x = (width // 2)
-        , y = height // 2
+        { x = (width // 2) - 208
+        , y = (height // 2) - 106
         }
     , clickState = Nothing
     }

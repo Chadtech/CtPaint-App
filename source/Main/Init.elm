@@ -63,6 +63,7 @@ init json =
         , keyboardUpConfig =
             Keyboard.initKeyUp
                 (decodeIsMac json)
+                (decodeIsChrome json)
                 Nothing
         , keyboardDownConfig = Keyboard.defaultKeyDownConfig
         , taskbarDropped = Nothing
@@ -93,7 +94,22 @@ fillBlackOp canvas =
 
 
 
--- MAC COMPUTER --
+-- PLATFORM DECODERS --
+
+
+decodeIsChrome : Value -> Bool
+decodeIsChrome json =
+    case Decode.decodeValue isChromeDecoder json of
+        Ok isChrome ->
+            isChrome
+
+        Err _ ->
+            True
+
+
+isChromeDecoder : Decoder Bool
+isChromeDecoder =
+    Decode.field "isChrome" Decode.bool
 
 
 decodeIsMac : Value -> Bool

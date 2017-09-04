@@ -55,8 +55,8 @@ defaultKeyDownConfig =
 -- KEY UP CONFIG --
 
 
-initKeyUp : Bool -> Maybe (Key -> Config) -> Config
-initKeyUp isMac customConfig =
+initKeyUp : Bool -> Bool -> Maybe (Key -> Config) -> Config
+initKeyUp isMac isChrome customConfig =
     let
         cmdKey =
             if isMac then
