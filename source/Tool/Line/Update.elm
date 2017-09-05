@@ -1,14 +1,14 @@
 module Tool.Line.Update exposing (update)
 
+import Canvas exposing (Size)
+import Draw.Line as Line
+import History.Update as History
 import Main.Model exposing (Model)
+import Mouse exposing (Position)
 import Tool.Line.Types exposing (Message(..))
 import Tool.Types exposing (Tool(..))
 import Tool.Util exposing (adjustPosition)
-import Mouse exposing (Position)
-import Draw.Line as Line
-import Canvas exposing (Size)
 import Util exposing (tbw)
-import History.Update as History
 
 
 update : Message -> Maybe Position -> Model -> Model
@@ -19,16 +19,16 @@ update message toolModel model =
                 adjustedPosition =
                     adjustPosition model 0 position
             in
-                { model
-                    | tool =
-                        Line (Just adjustedPosition)
-                    , drawAtRender =
-                        Line.draw
-                            model.swatches.primary
-                            adjustedPosition
-                            adjustedPosition
-                }
-                    |> History.addCanvas
+            { model
+                | tool =
+                    Line (Just adjustedPosition)
+                , drawAtRender =
+                    Line.draw
+                        model.swatches.primary
+                        adjustedPosition
+                        adjustedPosition
+            }
+                |> History.addCanvas
 
         ( SubMouseMove position, Just priorPosition ) ->
             { model

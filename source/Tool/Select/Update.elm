@@ -1,15 +1,15 @@
 module Tool.Select.Update exposing (update)
 
+import Canvas exposing (Point, Size)
+import Draw.Rectangle as Rectangle
+import Draw.Select as Select
+import History.Update as History
 import Main.Model exposing (Model)
+import Mouse exposing (Position)
 import Tool.Select.Types exposing (..)
 import Tool.Types exposing (..)
 import Tool.Util exposing (adjustPosition)
-import Draw.Rectangle as Rectangle
-import Draw.Select as Select
-import Mouse exposing (Position)
-import Canvas exposing (Size, Point)
-import Util exposing (tbw, positionMin)
-import History.Update as History
+import Util exposing (positionMin, tbw)
 
 
 update : Message -> Maybe Position -> Model -> Model
@@ -20,15 +20,15 @@ update message maybePosition model =
                 adjustedPosition =
                     adjustPosition model 0 position
             in
-                { model
-                    | tool = Select (Just adjustedPosition)
-                    , drawAtRender =
-                        Rectangle.draw
-                            model.swatches.primary
-                            adjustedPosition
-                            adjustedPosition
-                }
-                    |> handleExistingSelection
+            { model
+                | tool = Select (Just adjustedPosition)
+                , drawAtRender =
+                    Rectangle.draw
+                        model.swatches.primary
+                        adjustedPosition
+                        adjustedPosition
+            }
+                |> handleExistingSelection
 
         ( SubMouseMove position, Just priorPosition ) ->
             { model
@@ -44,36 +44,36 @@ update message maybePosition model =
                 adjustedPosition =
                     adjustPosition model tbw position
             in
-                if adjustedPosition == priorPosition then
-                    { model
-                        | tool = Select Nothing
-                        , drawAtRender = Canvas.batch []
-                    }
-                else
-                    let
-                        ( newSelection, drawOp ) =
-                            Select.get
-                                adjustedPosition
+            if adjustedPosition == priorPosition then
+                { model
+                    | tool = Select Nothing
+                    , drawAtRender = Canvas.batch []
+                }
+            else
+                let
+                    ( newSelection, drawOp ) =
+                        Select.get
+                            adjustedPosition
+                            priorPosition
+                            model.swatches.second
+                            model.canvas
+                in
+                { model
+                    | tool = Rectangle Nothing
+                    , pendingDraw =
+                        Canvas.batch
+                            [ model.pendingDraw
+                            , drawOp
+                            ]
+                    , selection =
+                        Just
+                            ( positionMin
                                 priorPosition
-                                model.swatches.second
-                                model.canvas
-                    in
-                        { model
-                            | tool = Rectangle Nothing
-                            , pendingDraw =
-                                Canvas.batch
-                                    [ model.pendingDraw
-                                    , drawOp
-                                    ]
-                            , selection =
-                                Just
-                                    ( positionMin
-                                        priorPosition
-                                        adjustedPosition
-                                    , newSelection
-                                    )
-                            , tool = Select Nothing
-                        }
+                                adjustedPosition
+                            , newSelection
+                            )
+                    , tool = Select Nothing
+                }
 
         _ ->
             model

@@ -1,45 +1,55 @@
 module Canvas
     exposing
         ( Canvas
+        , DrawImageParams(..)
+        , DrawOp(..)
         , Error
         , Point
         , Size
-        , DrawOp(..)
-        , DrawImageParams(..)
-        , initialize
-        , toHtml
-        , draw
         , batch
-        , loadImage
+        , draw
         , getImageData
         , getSize
+        , initialize
+        , loadImage
         , setSize
         , toDataUrl
+        , toHtml
         )
 
 {-| The canvas html element is a very simple way to render 2D graphics. Check out these examples, and get an explanation of the canvas element [here](https://github.com/elm-community/canvas). Furthermore, If you havent heard of [Elm-Graphics](http://package.elm-lang.org/packages/evancz/elm-graphics/latest), I recommend checking that out first, because its probably what you need. Elm-Canvas is for when you need unusually direct and low level access to the canvas element.
 
+
 # Main Types
+
 @docs Canvas, Point, Size, DrawOp, DrawImageParams
 
+
 # Basics
+
 @docs initialize, toHtml, draw, batch
 
+
 # Loading Images
+
 @docs loadImage, Error
 
+
 # Image Data
+
 @docs getImageData, toDataUrl
 
+
 # Sizing
+
 @docs getSize, setSize
 
 -}
 
-import Html exposing (Html, Attribute)
-import Task exposing (Task)
 import Color exposing (Color)
+import Html exposing (Attribute, Html)
 import Native.Canvas
+import Task exposing (Task)
 
 
 {-| A `Canvas` contains image data, and can be rendered as html with `toHtml`. It is the primary type of this package.
@@ -126,6 +136,7 @@ type DrawImageParams
     squareCanvas : Int -> Canvas
     squareCanvas length =
         initialize (Size length length)
+
 -}
 initialize : Size -> Canvas
 initialize =
@@ -137,6 +148,7 @@ initialize =
     pixelatedRender : Canvas -> Html Msg
     pixelatedRender canvas =
         canvas |> toHtml [ class "pixelated" ]
+
 -}
 toHtml : List (Attribute msg) -> Canvas -> Html msg
 toHtml =
@@ -154,6 +166,7 @@ toHtml =
             , LineTo p1
             , Stroke
             ]
+
 -}
 draw : DrawOp -> Canvas -> Canvas
 draw =
@@ -171,6 +184,7 @@ draw =
             , LineTo p1
             , Stroke
             ]
+
 -}
 batch : List DrawOp -> DrawOp
 batch =
@@ -194,6 +208,7 @@ batch =
                     Nothing ->
                         -- ..
         -- ..
+
 -}
 loadImage : String -> Task Error Canvas
 loadImage =
@@ -216,6 +231,7 @@ loadImage =
         [ 0, 0, 0, 255,      255, 0, 0, 255
         , 0, 0, 0, 255,      255, 255, 255, 255
         ]
+
 -}
 getImageData : Point -> Size -> Canvas -> List Int
 getImageData =

@@ -1,9 +1,9 @@
 module Taskbar.Download.Handle exposing (handle)
 
 import Main.Model exposing (Model)
-import Taskbar.Download.Types as Download exposing (Message(..), ExternalMessage(..))
-import Types.Menu exposing (Menu(..))
 import Taskbar.Download.Ports as Ports
+import Taskbar.Download.Types as Download exposing (ExternalMessage(..), Message(..))
+import Types.Menu exposing (Menu(..))
 
 
 handle : Model -> ( Download.Model, ExternalMessage ) -> ( Model, Cmd Message )

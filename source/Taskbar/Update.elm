@@ -1,15 +1,15 @@
 module Taskbar.Update exposing (update)
 
 import Main.Model exposing (Model)
-import Taskbar.Types as Taskbar exposing (Message(..))
+import Minimap.Types as Minimap
+import Taskbar.Download.Handle as Download
 import Taskbar.Download.Types as Download
 import Taskbar.Download.Update as Download
-import Taskbar.Download.Handle as Download
+import Taskbar.Import.Handle as Import
 import Taskbar.Import.Types as Import
 import Taskbar.Import.Update as Import
-import Taskbar.Import.Handle as Import
+import Taskbar.Types as Taskbar exposing (Message(..))
 import Types.Menu exposing (Menu(..))
-import Minimap.Types as Minimap
 
 
 update : Message -> Model -> ( Model, Cmd Message )
@@ -42,7 +42,7 @@ update message model =
                         |> Download.update subMessage
                         |> Download.handle model
             in
-                ( newModel, Cmd.map DownloadMessage cmd )
+            ( newModel, Cmd.map DownloadMessage cmd )
 
         ( ImportMessage subMessage, Import subModel ) ->
             let
@@ -51,7 +51,7 @@ update message model =
                         |> Import.update subMessage
                         |> Import.handle model
             in
-                ( newModel, Cmd.map ImportMessage cmd )
+            ( newModel, Cmd.map ImportMessage cmd )
 
         ( SwitchMinimap turnOn, _ ) ->
             if turnOn then
@@ -74,11 +74,11 @@ update message model =
                                 model.windowSize
                                 model.seed
                     in
-                        { model
-                            | seed = seed
-                            , menu = Download downloadModel
-                        }
-                            ! []
+                    { model
+                        | seed = seed
+                        , menu = Download downloadModel
+                    }
+                        ! []
 
                 Just projectName ->
                     { model

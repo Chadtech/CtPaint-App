@@ -1,11 +1,11 @@
 module Taskbar.Import.View exposing (view)
 
-import Html exposing (Html, div, p, a, form, input, text)
-import Html.Attributes exposing (class, style, placeholder, value)
-import Html.Events exposing (onSubmit, onClick, onInput)
-import Taskbar.Import.Types exposing (Model, Message(..))
-import Util exposing (top, left, px)
+import Html exposing (Html, a, div, form, input, p, text)
+import Html.Attributes exposing (class, placeholder, style, value)
+import Html.Events exposing (onClick, onInput, onSubmit)
 import MouseEvents as Events
+import Taskbar.Import.Types exposing (Message(..), Model)
+import Util exposing (left, px, top)
 
 
 view : Model -> Html Message

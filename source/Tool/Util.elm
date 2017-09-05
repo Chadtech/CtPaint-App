@@ -21,4 +21,4 @@ adjustPosition { canvas, canvasPosition, zoom } offset { x, y } =
                 , -offset
                 ]
     in
-        Position (x_ // zoom) (y_ // zoom)
+    Position (x_ // zoom) (y_ // zoom)

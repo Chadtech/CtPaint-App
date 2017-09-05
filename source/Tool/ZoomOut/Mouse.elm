@@ -1,7 +1,7 @@
 module Tool.ZoomOut.Mouse exposing (..)
 
-import Html exposing (Attribute)
 import ElementRelativeMouseEvents as Events
+import Html exposing (Attribute)
 import Tool.ZoomOut.Types exposing (Message(..))
 import Util exposing (toPosition)
 

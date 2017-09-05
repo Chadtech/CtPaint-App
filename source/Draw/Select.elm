@@ -1,17 +1,17 @@
 module Draw.Select exposing (..)
 
-import Mouse exposing (Position)
-import Util exposing (toSize, toPoint, positionMin)
-import Draw.Rectangle as Rectangle
-import Color exposing (Color)
 import Canvas
     exposing
         ( Canvas
+        , DrawImageParams(..)
+        , DrawOp(..)
         , Point
         , Size
-        , DrawOp(..)
-        , DrawImageParams(..)
         )
+import Color exposing (Color)
+import Draw.Rectangle as Rectangle
+import Mouse exposing (Position)
+import Util exposing (positionMin, toPoint, toSize)
 
 
 paste : Position -> Canvas -> DrawOp
@@ -39,11 +39,11 @@ get p q color canvas =
                 size
                 |> DrawImage canvas
     in
-        ( Canvas.draw
-            cropOp
-            (Canvas.initialize size)
-        , Rectangle.fill color size origin
-        )
+    ( Canvas.draw
+        cropOp
+        (Canvas.initialize size)
+    , Rectangle.fill color size origin
+    )
 
 
 crop : Position -> Position -> Canvas -> Canvas
@@ -66,6 +66,6 @@ crop p q canvas =
                 size
                 |> DrawImage canvas
     in
-        Canvas.draw
-            cropOp
-            (Canvas.initialize size)
+    Canvas.draw
+        cropOp
+        (Canvas.initialize size)

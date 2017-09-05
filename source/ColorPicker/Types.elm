@@ -1,11 +1,10 @@
 module ColorPicker.Types exposing (..)
 
-import Mouse exposing (Position)
-import Color exposing (Color)
-import MouseEvents exposing (MouseEvent)
 import Array exposing (Array)
-import Palette.Types as Palette
+import Color exposing (Color)
+import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
+import Palette.Types as Palette
 
 
 type ExternalMessage
@@ -65,27 +64,27 @@ newFrom index color model =
         { hue, saturation, lightness } =
             Color.toHsl color
     in
-        { model
-            | color = color
-            , index = index
-            , redField = toString red
-            , greenField = toString green
-            , blueField = toString blue
-            , hueField =
-                ((radians hue) / (2 * pi) * 360)
-                    |> floor
-                    |> toString
-            , saturationField =
-                (saturation * 255)
-                    |> floor
-                    |> toString
-            , lightnessField =
-                (lightness * 255)
-                    |> floor
-                    |> toString
-            , colorHexField =
-                String.dropLeft 1 (Palette.toHex color)
-        }
+    { model
+        | color = color
+        , index = index
+        , redField = toString red
+        , greenField = toString green
+        , blueField = toString blue
+        , hueField =
+            (radians hue / (2 * pi) * 360)
+                |> floor
+                |> toString
+        , saturationField =
+            (saturation * 255)
+                |> floor
+                |> toString
+        , lightnessField =
+            (lightness * 255)
+                |> floor
+                |> toString
+        , colorHexField =
+            String.dropLeft 1 (Palette.toHex color)
+    }
 
 
 init : Array Color -> Model
@@ -105,28 +104,28 @@ init colors =
         { hue, saturation, lightness } =
             Color.toHsl color
     in
-        { position = Position 50 350
-        , clickState = Nothing
-        , color = color
-        , index = 0
-        , redField = toString red
-        , greenField = toString green
-        , blueField = toString blue
-        , hueField =
-            ((radians hue) / (2 * pi) * 360)
-                |> floor
-                |> toString
-        , saturationField =
-            (saturation * 255)
-                |> floor
-                |> toString
-        , lightnessField =
-            (lightness * 255)
-                |> floor
-                |> toString
-        , show = False
-        , colorHexField =
-            String.dropLeft 1 (Palette.toHex color)
-        , gradientClickedOn = Nothing
-        , focusedOn = False
-        }
+    { position = Position 50 350
+    , clickState = Nothing
+    , color = color
+    , index = 0
+    , redField = toString red
+    , greenField = toString green
+    , blueField = toString blue
+    , hueField =
+        (radians hue / (2 * pi) * 360)
+            |> floor
+            |> toString
+    , saturationField =
+        (saturation * 255)
+            |> floor
+            |> toString
+    , lightnessField =
+        (lightness * 255)
+            |> floor
+            |> toString
+    , show = False
+    , colorHexField =
+        String.dropLeft 1 (Palette.toHex color)
+    , gradientClickedOn = Nothing
+    , focusedOn = False
+    }

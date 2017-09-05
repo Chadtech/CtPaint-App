@@ -1,13 +1,13 @@
 module Taskbar.Download.Update exposing (update)
 
 import Mouse exposing (Position)
-import Util exposing (pack)
 import Taskbar.Download.Types
     exposing
-        ( Model
-        , ExternalMessage(..)
+        ( ExternalMessage(..)
         , Message(..)
+        , Model
         )
+import Util exposing (pack)
 
 
 update : Message -> Model -> ( Model, ExternalMessage )
@@ -33,7 +33,7 @@ update message model =
                         content ->
                             content
             in
-                pack model (DownloadFile fileName)
+            pack model (DownloadFile fileName)
 
         HeaderMouseDown { targetPos, clientPos } ->
             pack

@@ -10,8 +10,8 @@ doesntHaveHue color =
         { red, green, blue } =
             Color.toRgb color
     in
-        Util.allTrue
-            [ red == green
-            , green == blue
-            , blue == red
-            ]
+    Util.allTrue
+        [ red == green
+        , green == blue
+        , blue == red
+        ]

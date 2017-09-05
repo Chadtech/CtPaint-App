@@ -1,13 +1,13 @@
 module Taskbar.Import.Update exposing (update)
 
 import Mouse exposing (Position)
-import Util exposing (pack)
 import Taskbar.Import.Types
     exposing
-        ( Model
-        , ExternalMessage(..)
+        ( ExternalMessage(..)
         , Message(..)
+        , Model
         )
+import Util exposing (pack)
 
 
 update : Message -> Model -> ( Model, ExternalMessage )

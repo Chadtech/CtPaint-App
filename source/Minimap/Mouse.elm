@@ -1,6 +1,6 @@
 module Minimap.Mouse exposing (subscriptions)
 
-import Minimap.Types exposing (Model, Message(..))
+import Minimap.Types exposing (Message(..), Model)
 import Mouse
 
 

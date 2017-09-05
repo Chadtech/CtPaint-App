@@ -1,15 +1,15 @@
 module Tool.RectangleFilled.Update exposing (update)
 
+import Canvas exposing (Size)
+import Draw.Rectangle as Rectangle
+import Draw.Util exposing (makeRectParams)
+import History.Update as History
 import Main.Model exposing (Model)
+import Mouse exposing (Position)
 import Tool.RectangleFilled.Types exposing (Message(..))
 import Tool.Types exposing (Tool(..))
 import Tool.Util exposing (adjustPosition)
-import Mouse exposing (Position)
-import Draw.Rectangle as Rectangle
-import Draw.Util exposing (makeRectParams)
-import Canvas exposing (Size)
 import Util exposing (tbw)
-import History.Update as History
 
 
 update : Message -> Maybe Position -> Model -> Model
@@ -20,17 +20,17 @@ update message toolModel model =
                 adjustedPosition =
                     adjustPosition model 0 position
             in
-                { model
-                    | tool =
-                        RectangleFilled
-                            (Just adjustedPosition)
-                    , drawAtRender =
-                        Rectangle.fill
-                            model.swatches.primary
-                            (Size 1 1)
-                            adjustedPosition
-                }
-                    |> History.addCanvas
+            { model
+                | tool =
+                    RectangleFilled
+                        (Just adjustedPosition)
+                , drawAtRender =
+                    Rectangle.fill
+                        model.swatches.primary
+                        (Size 1 1)
+                        adjustedPosition
+            }
+                |> History.addCanvas
 
         ( SubMouseMove position, Just priorPosition ) ->
             let
@@ -39,13 +39,13 @@ update message toolModel model =
                         (adjustPosition model tbw position)
                         priorPosition
             in
-                { model
-                    | drawAtRender =
-                        Rectangle.fill
-                            model.swatches.primary
-                            size
-                            drawPosition
-                }
+            { model
+                | drawAtRender =
+                    Rectangle.fill
+                        model.swatches.primary
+                        size
+                        drawPosition
+            }
 
         ( SubMouseUp position, Just priorPosition ) ->
             let
@@ -54,18 +54,18 @@ update message toolModel model =
                         (adjustPosition model tbw position)
                         priorPosition
             in
-                { model
-                    | tool = RectangleFilled Nothing
-                    , drawAtRender = Canvas.batch []
-                    , pendingDraw =
-                        Canvas.batch
-                            [ model.pendingDraw
-                            , Rectangle.fill
-                                model.swatches.primary
-                                size
-                                drawPosition
-                            ]
-                }
+            { model
+                | tool = RectangleFilled Nothing
+                , drawAtRender = Canvas.batch []
+                , pendingDraw =
+                    Canvas.batch
+                        [ model.pendingDraw
+                        , Rectangle.fill
+                            model.swatches.primary
+                            size
+                            drawPosition
+                        ]
+            }
 
         _ ->
             model

@@ -1,31 +1,31 @@
 module Main.Subscriptions exposing (subscriptions)
 
-import Main.Model exposing (Model)
-import Main.Message exposing (Message(..))
-import Main.Ports as Ports
-import Util exposing (maybeCons)
-import Tool.Types exposing (Tool(..))
-import Tool.Hand.Mouse as Hand
-import Tool.Pencil.Mouse as Pencil
-import Tool.Line.Mouse as Line
-import Tool.ZoomIn.Mouse as ZoomIn
-import Tool.ZoomOut.Mouse as ZoomOut
-import Tool.Rectangle.Mouse as Rectangle
-import Tool.RectangleFilled.Mouse as RectangleFilled
-import Tool.Select.Mouse as Select
-import Tool.Sample.Mouse as Sample
-import Tool.Fill.Mouse as Fill
+import AnimationFrame
 import ColorPicker.Mouse as ColorPicker
+import Keyboard.Subscriptions as Keyboard
+import Keyboard.Types as Keyboard
+import Main.Message exposing (Message(..))
+import Main.Model exposing (Model)
+import Main.Ports as Ports
 import Minimap.Mouse as Minimap
 import Mouse
-import Window
-import AnimationFrame
-import Keyboard
-import Keyboard.Types as Keyboard
-import Types.Menu exposing (Menu(..))
-import Taskbar.Util as Taskbar
 import Taskbar.Download.Mouse as Download
 import Taskbar.Import.Mouse as Import
+import Taskbar.Util as Taskbar
+import Tool.Fill.Mouse as Fill
+import Tool.Hand.Mouse as Hand
+import Tool.Line.Mouse as Line
+import Tool.Pencil.Mouse as Pencil
+import Tool.Rectangle.Mouse as Rectangle
+import Tool.RectangleFilled.Mouse as RectangleFilled
+import Tool.Sample.Mouse as Sample
+import Tool.Select.Mouse as Select
+import Tool.Types exposing (Tool(..))
+import Tool.ZoomIn.Mouse as ZoomIn
+import Tool.ZoomOut.Mouse as ZoomOut
+import Types.Menu exposing (Menu(..))
+import Util exposing (maybeCons)
+import Window
 
 
 subscriptions : Model -> Sub Message
@@ -114,13 +114,13 @@ toolSubs { tool } =
 
 keyboardUps : Sub Message
 keyboardUps =
-    Keyboard.ups
+    Keyboard.keyUp
         (KeyboardMessage << Keyboard.KeyEvent << Keyboard.Up)
 
 
 keyboardDowns : Sub Message
 keyboardDowns =
-    Keyboard.downs
+    Keyboard.keyDown
         (KeyboardMessage << Keyboard.KeyEvent << Keyboard.Down)
 
 

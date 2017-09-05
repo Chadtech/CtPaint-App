@@ -1,9 +1,8 @@
 module Tool.Zoom exposing (..)
 
-import Mouse exposing (Position)
+import Canvas exposing (Size)
 import Main.Model exposing (Model)
 import Mouse exposing (Position)
-import Canvas exposing (Size)
 import Util exposing (tbw)
 
 
@@ -21,12 +20,12 @@ adjust { x, y } bias ({ zoom, windowSize, canvasPosition } as model) =
         y_ =
             (y - halfWindowSize.height) // zoom
     in
-        { model
-            | canvasPosition =
-                Position
-                    (canvasPosition.x + (x_ * bias))
-                    (canvasPosition.y + (y_ * bias))
-        }
+    { model
+        | canvasPosition =
+            Position
+                (canvasPosition.x + (x_ * bias))
+                (canvasPosition.y + (y_ * bias))
+    }
 
 
 set : Int -> Model -> Model
@@ -56,11 +55,11 @@ set zoom ({ canvas, canvasPosition, windowSize } as model) =
                 |> relZoom
                 |> (+) halfWindowSize.height
     in
-        { model
-            | zoom = zoom
-            , canvasPosition =
-                Position x y
-        }
+    { model
+        | zoom = zoom
+        , canvasPosition =
+            Position x y
+    }
 
 
 next : Int -> Int

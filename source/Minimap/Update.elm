@@ -1,6 +1,6 @@
 module Minimap.Update exposing (update)
 
-import Minimap.Types exposing (Model, Message(..), ExternalMessage(..))
+import Minimap.Types exposing (ExternalMessage(..), Message(..), Model)
 import Mouse exposing (Position)
 
 
@@ -18,7 +18,7 @@ update message model =
                                 |> Just
                     }
             in
-                ( newModel, DoNothing )
+            ( newModel, DoNothing )
 
         HeaderMouseMove position ->
             case model.clickState of
@@ -39,7 +39,7 @@ update message model =
                                     Position x y
                             }
                     in
-                        ( newModel, DoNothing )
+                    ( newModel, DoNothing )
 
         HeaderMouseUp ->
             let
@@ -48,7 +48,7 @@ update message model =
                         | clickState = Nothing
                     }
             in
-                ( newModel, DoNothing )
+            ( newModel, DoNothing )
 
         CloseClick ->
             ( model, Close )

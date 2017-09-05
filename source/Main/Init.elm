@@ -1,21 +1,20 @@
 module Main.Init exposing (..)
 
-import Main.Model exposing (Model)
-import Main.Message exposing (Message(..))
-import Json.Decode exposing (Value)
-import Canvas exposing (Canvas, Size, DrawOp(..), Point)
-import Types.Session as Session
-import Tool.Types exposing (Tool(..))
-import ColorPicker.Types as ColorPicker
-import Json.Decode as Decode exposing (Decoder)
+import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Color
-import Palette.Init
-import Util exposing (tbw)
+import ColorPicker.Types as ColorPicker
 import History.Types exposing (HistoryOp(..))
+import Json.Decode as Decode exposing (Decoder, Value)
 import Keyboard.Types as Keyboard exposing (Config)
 import List.Unique
+import Main.Message exposing (Message(..))
+import Main.Model exposing (Model)
+import Palette.Init
 import Random
+import Tool.Types exposing (Tool(..))
 import Types.Menu exposing (Menu(..))
+import Types.Session as Session
+import Util exposing (tbw)
 
 
 init : Value -> ( Model, Cmd Message )
@@ -42,43 +41,43 @@ init json =
                 (decodeIsChrome json)
                 Nothing
     in
-        { session = Session.decode json
-        , canvas = canvas
-        , projectName = Nothing
-        , canvasPosition =
-            { x =
-                ((windowSize.width - tbw) - canvasSize.width) // 2
-            , y =
-                (windowSize.height - canvasSize.height) // 2
-            }
-        , pendingDraw = Canvas.batch []
-        , drawAtRender = Canvas.batch []
-        , swatches = Palette.Init.swatches
-        , palette = Palette.Init.palette
-        , horizontalToolbarHeight = 58
-        , subMouseMove = Nothing
-        , windowSize = windowSize
-        , tool = Hand Nothing
-        , zoom = 1
-        , colorPicker = ColorPicker.init Palette.Init.palette
-        , history = [ CanvasChange canvas ]
-        , future = []
-        , mousePosition = Nothing
-        , selection = Nothing
-        , clipboard = Nothing
-        , keysDown = List.Unique.empty
-        , keyboardUpConfig = keyUpConfig
-        , keyboardUpLookUp = Keyboard.reverseConfig keyUpConfig
-        , keyboardDownConfig = Keyboard.defaultKeyDownConfig
-        , keyboardDownLookUp =
-            Keyboard.reverseConfig
-                Keyboard.defaultKeyDownConfig
-        , taskbarDropped = Nothing
-        , minimap = Nothing
-        , menu = None
-        , seed = Random.initialSeed (decodeSeed json)
+    { session = Session.decode json
+    , canvas = canvas
+    , projectName = Nothing
+    , canvasPosition =
+        { x =
+            ((windowSize.width - tbw) - canvasSize.width) // 2
+        , y =
+            (windowSize.height - canvasSize.height) // 2
         }
-            ! []
+    , pendingDraw = Canvas.batch []
+    , drawAtRender = Canvas.batch []
+    , swatches = Palette.Init.swatches
+    , palette = Palette.Init.palette
+    , horizontalToolbarHeight = 58
+    , subMouseMove = Nothing
+    , windowSize = windowSize
+    , tool = Hand Nothing
+    , zoom = 1
+    , colorPicker = ColorPicker.init Palette.Init.palette
+    , history = [ CanvasChange canvas ]
+    , future = []
+    , mousePosition = Nothing
+    , selection = Nothing
+    , clipboard = Nothing
+    , keysDown = List.Unique.empty
+    , keyboardUpConfig = keyUpConfig
+    , keyboardUpLookUp = Keyboard.reverseConfig keyUpConfig
+    , keyboardDownConfig = Keyboard.defaultKeyDownConfig
+    , keyboardDownLookUp =
+        Keyboard.reverseConfig
+            Keyboard.defaultKeyDownConfig
+    , taskbarDropped = Nothing
+    , minimap = Nothing
+    , menu = None
+    , seed = Random.initialSeed (decodeSeed json)
+    }
+        ! []
 
 
 

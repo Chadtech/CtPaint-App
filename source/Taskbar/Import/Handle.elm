@@ -1,10 +1,10 @@
 module Taskbar.Import.Handle exposing (handle)
 
-import Main.Model exposing (Model)
-import Taskbar.Import.Types as Import exposing (Message(..), ExternalMessage(..))
-import Types.Menu exposing (Menu(..))
-import Task
 import Canvas
+import Main.Model exposing (Model)
+import Task
+import Taskbar.Import.Types as Import exposing (ExternalMessage(..), Message(..))
+import Types.Menu exposing (Menu(..))
 
 
 handle : Model -> ( Import.Model, ExternalMessage ) -> ( Model, Cmd Message )
@@ -40,11 +40,11 @@ handle model ( downloadModel, externalmessage ) =
                         (canvas.height - size.height) // 2
                     }
             in
-                { model
-                    | selection = Just ( imagePosition, image )
-                    , menu = None
-                }
-                    ! []
+            { model
+                | selection = Just ( imagePosition, image )
+                , menu = None
+            }
+                ! []
 
 
 loadCmd : String -> Cmd Message

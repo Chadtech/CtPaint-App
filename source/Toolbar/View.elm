@@ -1,6 +1,6 @@
 module Toolbar.View exposing (view)
 
-import Html exposing (Html, div, a, text)
+import Html exposing (Html, a, div, text)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 import Main.Message exposing (Message(..))

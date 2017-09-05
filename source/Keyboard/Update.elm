@@ -1,23 +1,23 @@
 module Keyboard.Update exposing (update)
 
-import Main.Model exposing (Model)
-import Tool.Types exposing (Tool(..))
-import Tool.Zoom as Zoom
-import Keyboard exposing (KeyCode)
-import History.Update as History
-import List.Unique exposing (UniqueList)
 import Dict
+import History.Update as History
+import Keyboard exposing (KeyCode)
+import Keyboard.Types
+    exposing
+        ( Config
+        , Direction(..)
+        , Message(..)
+        , QuickKey(..)
+        )
+import List.Unique exposing (UniqueList)
+import Main.Model exposing (Model)
 import Minimap.Types as Minimap
 import Taskbar.Download.Types as Download
 import Taskbar.Import.Types as Import
+import Tool.Types exposing (Tool(..))
+import Tool.Zoom as Zoom
 import Types.Menu as Menu exposing (Menu(..))
-import Keyboard.Types
-    exposing
-        ( Message(..)
-        , QuickKey(..)
-        , Direction(..)
-        , Config
-        )
 
 
 update : Message -> Model -> Model
@@ -30,12 +30,12 @@ update message model =
                         newModel =
                             handleKeyUp model
                     in
-                        { newModel
-                            | keysDown =
-                                List.Unique.remove
-                                    code
-                                    model.keysDown
-                        }
+                    { newModel
+                        | keysDown =
+                            List.Unique.remove
+                                code
+                                model.keysDown
+                    }
 
                 Down code ->
                     handleKeyDown
@@ -175,20 +175,20 @@ handleKeyUp ({ keysDown, keyboardUpConfig } as model) =
                 newZoom =
                     Zoom.next model.zoom
             in
-                if model.zoom == newZoom then
-                    model
-                else
-                    Zoom.set newZoom model
+            if model.zoom == newZoom then
+                model
+            else
+                Zoom.set newZoom model
 
         Keyboard.Types.ZoomOut ->
             let
                 newZoom =
                     Zoom.prev model.zoom
             in
-                if model.zoom == newZoom then
-                    model
-                else
-                    Zoom.set newZoom model
+            if model.zoom == newZoom then
+                model
+            else
+                Zoom.set newZoom model
 
         ShowMinimap ->
             case model.minimap of
@@ -212,10 +212,10 @@ handleKeyUp ({ keysDown, keyboardUpConfig } as model) =
                                 model.windowSize
                                 model.seed
                     in
-                        { model
-                            | seed = seed
-                            , menu = Menu.Download downloadModel
-                        }
+                    { model
+                        | seed = seed
+                        , menu = Menu.Download downloadModel
+                    }
 
                 Just projectName ->
                     { model

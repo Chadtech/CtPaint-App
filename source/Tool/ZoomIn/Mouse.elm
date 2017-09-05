@@ -1,7 +1,7 @@
 module Tool.ZoomIn.Mouse exposing (..)
 
-import Html exposing (Attribute)
 import ElementRelativeMouseEvents as Events
+import Html exposing (Attribute)
 import Tool.ZoomIn.Types exposing (Message(..))
 import Util exposing (toPosition)
 

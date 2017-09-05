@@ -1,12 +1,12 @@
 module Tool.Fill.Update exposing (update)
 
+import Canvas exposing (Canvas, DrawOp(..), Point, Size)
+import Draw.Util
+import History.Update as History
 import Main.Model exposing (Model)
 import Tool.Fill.Types exposing (Message(..))
 import Tool.Util exposing (adjustPosition)
-import Util exposing (tbw, toPoint, maybeCons)
-import Draw.Util
-import Canvas exposing (Size, Point, Canvas, DrawOp(..))
-import History.Update as History
+import Util exposing (maybeCons, tbw, toPoint)
 
 
 update : Message -> Model -> Model
@@ -22,16 +22,16 @@ update message model =
                         positonOnCanvas
                         model.canvas
             in
-                if colorAtPosition /= model.swatches.primary then
-                    { model
-                        | pendingDraw =
-                            Canvas.batch
-                                [ model.pendingDraw
-                                , PixelFill
-                                    model.swatches.primary
-                                    (toPoint positonOnCanvas)
-                                ]
-                    }
-                        |> History.addCanvas
-                else
-                    model
+            if colorAtPosition /= model.swatches.primary then
+                { model
+                    | pendingDraw =
+                        Canvas.batch
+                            [ model.pendingDraw
+                            , PixelFill
+                                model.swatches.primary
+                                (toPoint positonOnCanvas)
+                            ]
+                }
+                    |> History.addCanvas
+            else
+                model

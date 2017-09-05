@@ -1,9 +1,9 @@
 module Taskbar.Import.Types exposing (..)
 
+import Canvas exposing (Canvas, Error)
 import Mouse exposing (Position)
-import Window exposing (Size)
 import MouseEvents exposing (MouseEvent)
-import Canvas exposing (Error, Canvas)
+import Window exposing (Size)
 
 
 type Message

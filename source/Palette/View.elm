@@ -1,20 +1,18 @@
 module Palette.View exposing (..)
 
-import Html exposing (Html, Attribute, div, p, a, span, text)
+import Array
+import Color exposing (Color)
+import Draw.Util exposing (colorAt)
+import ElementRelativeMouseEvents as Events
+import Html exposing (Attribute, Html, a, div, p, span, text)
 import Html.Attributes exposing (class, classList, style)
 import Html.Events exposing (onClick)
 import Main.Model exposing (Model)
-import ElementRelativeMouseEvents as Events
-import Palette.Types exposing (Message(..), Swatches)
-import Util exposing ((:=), tbw, height, maybeCons)
-import Types.Mouse exposing (Direction(..))
 import Mouse exposing (Position)
+import Palette.Types as Palette exposing (Message(..), Swatches)
 import Tool.Types exposing (Tool(..))
-import Draw.Util exposing (colorAt)
-import Palette.Types as Palette
-import Color exposing (Color)
-import Util exposing ((:=), px, height)
-import Array
+import Types.Mouse exposing (Direction(..))
+import Util exposing ((:=), height, maybeCons, px, tbw)
 
 
 view : Model -> Html Message
@@ -52,12 +50,12 @@ generalPalette model =
                 |> Array.indexedMap square
                 |> Array.toList
     in
-        div
-            [ class "general"
-            , style
-                [ height (model.horizontalToolbarHeight - 10) ]
-            ]
-            paletteSquares
+    div
+        [ class "general"
+        , style
+            [ height (model.horizontalToolbarHeight - 10) ]
+        ]
+        paletteSquares
 
 
 paletteSquare : Bool -> Int -> Int -> Color -> Html Message
@@ -172,19 +170,19 @@ sampleColor model =
                     else
                         "#ffffff"
             in
-                [ p
-                    []
-                    [ text "color("
-                    , span
-                        [ style
-                            [ "color" := colorStr
-                            , "background" := backgroundColor
-                            ]
+            [ p
+                []
+                [ text "color("
+                , span
+                    [ style
+                        [ "color" := colorStr
+                        , "background" := backgroundColor
                         ]
-                        [ text colorStr ]
-                    , text ")"
                     ]
+                    [ text colorStr ]
+                , text ")"
                 ]
+            ]
 
         Nothing ->
             []
@@ -217,10 +215,10 @@ toolContent ({ tool } as model) =
                             , ")"
                             ]
                     in
-                        [ size
-                        , originStr
-                        ]
-                            |> List.map String.concat
+                    [ size
+                    , originStr
+                    ]
+                        |> List.map String.concat
 
                 _ ->
                     []
@@ -249,10 +247,10 @@ toolContent ({ tool } as model) =
                             , ")"
                             ]
                     in
-                        [ size
-                        , originStr
-                        ]
-                            |> List.map String.concat
+                    [ size
+                    , originStr
+                    ]
+                        |> List.map String.concat
 
                 _ ->
                     []
@@ -281,10 +279,10 @@ toolContent ({ tool } as model) =
                             , ")"
                             ]
                     in
-                        [ size
-                        , originStr
-                        ]
-                            |> List.map String.concat
+                    [ size
+                    , originStr
+                    ]
+                        |> List.map String.concat
 
                 _ ->
                     []
@@ -315,8 +313,8 @@ mouse : Maybe Position -> Maybe String
 mouse maybePosition =
     case maybePosition of
         Just { x, y } ->
-            [ "mouse(" ++ (toString x)
-            , "," ++ (toString y)
+            [ "mouse(" ++ toString x
+            , "," ++ toString y
             , ")"
             ]
                 |> String.concat
@@ -328,4 +326,4 @@ mouse maybePosition =
 
 zoom : Int -> String
 zoom z =
-    "zoom(" ++ (toString (z * 100)) ++ "%)"
+    "zoom(" ++ toString (z * 100) ++ "%)"

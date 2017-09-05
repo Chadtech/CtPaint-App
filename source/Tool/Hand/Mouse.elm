@@ -1,9 +1,9 @@
 module Tool.Hand.Mouse exposing (..)
 
 import Html exposing (Attribute)
+import Mouse
 import MouseEvents
 import Tool.Hand.Types exposing (Message(..))
-import Mouse
 
 
 attributes : List (Attribute Message)

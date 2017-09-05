@@ -29,12 +29,12 @@ toHex color =
         { red, green, blue } =
             Color.toRgb color
     in
-        [ "#"
-        , toHexHelper <| ParseInt.toHex red
-        , toHexHelper <| ParseInt.toHex green
-        , toHexHelper <| ParseInt.toHex blue
-        ]
-            |> String.concat
+    [ "#"
+    , toHexHelper <| ParseInt.toHex red
+    , toHexHelper <| ParseInt.toHex green
+    , toHexHelper <| ParseInt.toHex blue
+    ]
+        |> String.concat
 
 
 toHexHelper : String -> String
@@ -61,12 +61,12 @@ toColor colorMaybe =
                 String.slice 4 6 colorMaybe
                     |> ParseInt.parseIntHex
         in
-            case ( r, g, b ) of
-                ( Ok red, Ok green, Ok blue ) ->
-                    Just (Color.rgb red green blue)
+        case ( r, g, b ) of
+            ( Ok red, Ok green, Ok blue ) ->
+                Just (Color.rgb red green blue)
 
-                _ ->
-                    Nothing
+            _ ->
+                Nothing
     else
         Nothing
 

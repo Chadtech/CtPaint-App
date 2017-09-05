@@ -1,8 +1,8 @@
 module Tool.Sample.Mouse exposing (..)
 
 import Html exposing (Attribute)
-import Tool.Sample.Types exposing (Message(..))
 import Mouse
+import Tool.Sample.Types exposing (Message(..))
 
 
 attributes : List (Attribute Message)

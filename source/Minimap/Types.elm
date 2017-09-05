@@ -1,8 +1,8 @@
 module Minimap.Types exposing (..)
 
 import Mouse exposing (Position)
-import Window exposing (Size)
 import MouseEvents exposing (MouseEvent)
+import Window exposing (Size)
 
 
 type alias Model =
@@ -34,18 +34,18 @@ init { width, height } =
             , height = 250 + extraHeight
             }
     in
-        { externalPosition =
-            { x = (width - minimapSize.width) // 2
-            , y = (height - minimapSize.height) // 2
-            }
-        , internalPosition =
-            { x = 0
-            , y = 0
-            }
-        , size = minimapSize
-        , zoom = 1
-        , clickState = Nothing
+    { externalPosition =
+        { x = (width - minimapSize.width) // 2
+        , y = (height - minimapSize.height) // 2
         }
+    , internalPosition =
+        { x = 0
+        , y = 0
+        }
+    , size = minimapSize
+    , zoom = 1
+    , clickState = Nothing
+    }
 
 
 extraHeight : Int

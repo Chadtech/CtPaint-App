@@ -1,9 +1,9 @@
 module ColorPicker.Handle exposing (handle)
 
-import Main.Model exposing (Model)
-import ColorPicker.Types as ColorPicker exposing (ExternalMessage(..))
 import Array
+import ColorPicker.Types as ColorPicker exposing (ExternalMessage(..))
 import History.Update as History
+import Main.Model exposing (Model)
 
 
 handle : ( ColorPicker.Model, ExternalMessage ) -> Model -> Model

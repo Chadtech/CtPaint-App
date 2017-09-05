@@ -65,7 +65,7 @@ slice start end =
 
 px : Int -> String
 px int =
-    (toString int) ++ "px"
+    toString int ++ "px"
 
 
 left : Int -> ( String, String )
@@ -110,9 +110,9 @@ toSize p q =
         maxPos =
             positionMax p q
     in
-        Size
-            (maxPos.x - minPos.x + 1)
-            (maxPos.y - minPos.y + 1)
+    Size
+        (maxPos.x - minPos.x + 1)
+        (maxPos.y - minPos.y + 1)
 
 
 positionMin : Position -> Position -> Position

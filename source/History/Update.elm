@@ -1,9 +1,9 @@
 module History.Update exposing (..)
 
-import Main.Model exposing (Model)
-import History.Types exposing (HistoryOp(..))
-import Color exposing (Color)
 import Array
+import Color exposing (Color)
+import History.Types exposing (HistoryOp(..))
+import Main.Model exposing (Model)
 
 
 -- HISTORY --

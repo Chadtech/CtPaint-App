@@ -1,9 +1,9 @@
 module Taskbar.Util exposing (..)
 
-import Taskbar.Types as Taskbar
+import Main.Message as Main
 import Taskbar.Download.Types as Download
 import Taskbar.Import.Types as Import
-import Main.Message as Main
+import Taskbar.Types as Taskbar
 
 
 download : Download.Message -> Main.Message

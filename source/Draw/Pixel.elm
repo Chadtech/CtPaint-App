@@ -1,6 +1,6 @@
 module Draw.Pixel exposing (draw)
 
-import Canvas exposing (Point, Size, DrawOp(..))
+import Canvas exposing (DrawOp(..), Point, Size)
 import Color exposing (Color)
 
 
@@ -18,8 +18,8 @@ fromColor color =
         { red, green, blue, alpha } =
             Color.toRgb color
     in
-        [ red
-        , green
-        , blue
-        , round (alpha * 255)
-        ]
+    [ red
+    , green
+    , blue
+    , round (alpha * 255)
+    ]

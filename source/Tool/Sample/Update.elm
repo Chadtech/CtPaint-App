@@ -1,10 +1,10 @@
 module Tool.Sample.Update exposing (update)
 
+import Draw.Util exposing (colorAt)
 import Main.Model exposing (Model)
 import Tool.Sample.Types exposing (Message(..))
 import Tool.Util exposing (adjustPosition)
 import Util exposing (tbw)
-import Draw.Util exposing (colorAt)
 
 
 update : Message -> Model -> Model
@@ -19,11 +19,11 @@ update message ({ swatches } as model) =
                                 (adjustPosition model tbw position)
                                 model.canvas
                     in
-                        { swatches
-                            | primary = colorAtPosition
-                        }
+                    { swatches
+                        | primary = colorAtPosition
+                    }
             in
-                { model
-                    | swatches =
-                        newSwatches
-                }
+            { model
+                | swatches =
+                    newSwatches
+            }

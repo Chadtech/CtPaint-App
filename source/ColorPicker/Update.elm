@@ -1,10 +1,10 @@
 module ColorPicker.Update exposing (update)
 
+import Color exposing (Color)
 import ColorPicker.Types exposing (..)
 import ColorPicker.Util exposing (doesntHaveHue)
 import Mouse exposing (Position)
 import Palette.Types as Palette
-import Color exposing (Color)
 import ParseInt
 
 
@@ -22,7 +22,7 @@ update message model =
                                 |> Just
                     }
             in
-                ( newModel, DoNothing )
+            ( newModel, DoNothing )
 
         HeaderMouseMove position ->
             case model.clickState of
@@ -43,7 +43,7 @@ update message model =
                                     Position x y
                             }
                     in
-                        ( newModel, DoNothing )
+                    ( newModel, DoNothing )
 
         HeaderMouseUp _ ->
             let
@@ -52,7 +52,7 @@ update message model =
                         | clickState = Nothing
                     }
             in
-                ( newModel, DoNothing )
+            ( newModel, DoNothing )
 
         WakeUp color index ->
             let
@@ -63,7 +63,7 @@ update message model =
                         , show = True
                     }
             in
-                ( newModel, DoNothing )
+            ( newModel, DoNothing )
 
         Close ->
             let
@@ -72,7 +72,7 @@ update message model =
                         | show = False
                     }
             in
-                ( newModel, DoNothing )
+            ( newModel, DoNothing )
 
         SetFocus focused ->
             ( { model | focusedOn = focused }
@@ -84,25 +84,25 @@ update message model =
                 newHexField =
                     String.toUpper hex
             in
-                case Palette.toColor newHexField of
-                    Just color ->
-                        let
-                            newModel =
-                                { model
-                                    | color = color
-                                    , colorHexField = newHexField
-                                }
-                        in
-                            cohereAndSet newModel
+            case Palette.toColor newHexField of
+                Just color ->
+                    let
+                        newModel =
+                            { model
+                                | color = color
+                                , colorHexField = newHexField
+                            }
+                    in
+                    cohereAndSet newModel
 
-                    Nothing ->
-                        let
-                            newModel =
-                                { model
-                                    | colorHexField = newHexField
-                                }
-                        in
-                            ( newModel, DoNothing )
+                Nothing ->
+                    let
+                        newModel =
+                            { model
+                                | colorHexField = newHexField
+                            }
+                    in
+                    ( newModel, DoNothing )
 
         StealSubmit ->
             ( model, DoNothing )
@@ -114,7 +114,7 @@ update message model =
                         | gradientClickedOn = Nothing
                     }
             in
-                ( newModel, DoNothing )
+            ( newModel, DoNothing )
 
         MouseDownOnPointer gradient ->
             let
@@ -123,9 +123,9 @@ update message model =
                         | gradientClickedOn = Just gradient
                     }
             in
-                ( newModel
-                , UpdateHistory model.index model.color
-                )
+            ( newModel
+            , UpdateHistory model.index model.color
+            )
 
         MouseMoveInGradient gradient { targetPos, clientPos } ->
             let
@@ -134,7 +134,7 @@ update message model =
                         |> min 255
                         |> max 0
             in
-                sliderHandler x gradient model
+            sliderHandler x gradient model
 
         FieldUpdate gradient str ->
             fieldHandler gradient str model
@@ -163,72 +163,72 @@ fieldHandlerOk gradient str int model =
         { red, green, blue } =
             Color.toRgb model.color
     in
-        case gradient of
-            Lightness ->
-                cohereAndSet
-                    { model
-                        | lightnessField = str
-                        , color =
-                            Color.hsl
-                                hue
-                                saturation
-                                (toFloat int / 255)
-                    }
+    case gradient of
+        Lightness ->
+            cohereAndSet
+                { model
+                    | lightnessField = str
+                    , color =
+                        Color.hsl
+                            hue
+                            saturation
+                            (toFloat int / 255)
+                }
 
-            Saturation ->
-                cohereAndSet
-                    { model
-                        | saturationField = str
-                        , color =
-                            Color.hsl
-                                hue
-                                (toFloat int / 255)
-                                lightness
-                    }
+        Saturation ->
+            cohereAndSet
+                { model
+                    | saturationField = str
+                    , color =
+                        Color.hsl
+                            hue
+                            (toFloat int / 255)
+                            lightness
+                }
 
-            Hue ->
-                cohereAndSet
-                    { model
-                        | hueField = str
-                        , color =
-                            Color.hsl
-                                (degrees (toFloat int))
-                                saturation
-                                lightness
-                    }
+        Hue ->
+            cohereAndSet
+                { model
+                    | hueField = str
+                    , color =
+                        Color.hsl
+                            (degrees (toFloat int))
+                            saturation
+                            lightness
+                }
 
-            Blue ->
-                cohereAndSet
-                    { model
-                        | blueField = str
-                        , color =
-                            validateHue
-                                model.color
-                                (Color.rgb red green int)
-                                int
-                    }
+        Blue ->
+            cohereAndSet
+                { model
+                    | blueField = str
+                    , color =
+                        validateHue
+                            model.color
+                            (Color.rgb red green int)
+                            int
+                }
 
-            Green ->
-                cohereAndSet
-                    { model
-                        | greenField = str
-                        , color =
-                            validateHue
-                                model.color
-                                (Color.rgb red int blue)
-                                int
-                    }
+        Green ->
+            cohereAndSet
+                { model
+                    | greenField = str
+                    , color =
+                        validateHue
+                            model.color
+                            (Color.rgb red int blue)
+                            int
+                }
 
-            Red ->
-                cohereAndSet
-                    { model
-                        | redField = str
-                        , color =
-                            validateHue
-                                model.color
-                                (Color.rgb int green blue)
-                                int
-                    }
+        Red ->
+            cohereAndSet
+                { model
+                    | redField = str
+                    , color =
+                        validateHue
+                            model.color
+                            (Color.rgb int green blue)
+                            int
+                }
 
 
 validateHue : Color -> Color -> Int -> Color
@@ -238,10 +238,10 @@ validateHue oldColor newColor int =
             { hue, lightness } =
                 Color.toHsl oldColor
         in
-            Color.hsl
-                hue
-                (toFloat int / 255)
-                lightness
+        Color.hsl
+            hue
+            (toFloat int / 255)
+            lightness
     else
         newColor
 
@@ -287,7 +287,7 @@ sliderHandler x gradient model =
                         | color = newColor
                     }
             in
-                cohereAndSet newModel
+            cohereAndSet newModel
 
         Saturation ->
             let
@@ -305,7 +305,7 @@ sliderHandler x gradient model =
                         | color = newColor
                     }
             in
-                cohereAndSet newModel
+            cohereAndSet newModel
 
         Hue ->
             let
@@ -323,7 +323,7 @@ sliderHandler x gradient model =
                         | color = newColor
                     }
             in
-                cohereAndSet newModel
+            cohereAndSet newModel
 
         Red ->
             let
@@ -341,7 +341,7 @@ sliderHandler x gradient model =
                         | color = newColor
                     }
             in
-                cohereAndSet newModel
+            cohereAndSet newModel
 
         Green ->
             let
@@ -359,7 +359,7 @@ sliderHandler x gradient model =
                         | color = newColor
                     }
             in
-                cohereAndSet newModel
+            cohereAndSet newModel
 
         Blue ->
             let
@@ -377,7 +377,7 @@ sliderHandler x gradient model =
                         | color = newColor
                     }
             in
-                cohereAndSet newModel
+            cohereAndSet newModel
 
 
 
@@ -405,22 +405,22 @@ cohereModel model =
         { hue, saturation, lightness } =
             Color.toHsl model.color
     in
-        { model
-            | redField = toString red
-            , greenField = toString green
-            , blueField = toString blue
-            , hueField =
-                ((radians hue) / (2 * pi) * 360)
-                    |> floor
-                    |> toString
-            , saturationField =
-                (saturation * 255)
-                    |> floor
-                    |> toString
-            , lightnessField =
-                (lightness * 255)
-                    |> floor
-                    |> toString
-            , colorHexField =
-                String.dropLeft 1 (Palette.toHex model.color)
-        }
+    { model
+        | redField = toString red
+        , greenField = toString green
+        , blueField = toString blue
+        , hueField =
+            (radians hue / (2 * pi) * 360)
+                |> floor
+                |> toString
+        , saturationField =
+            (saturation * 255)
+                |> floor
+                |> toString
+        , lightnessField =
+            (lightness * 255)
+                |> floor
+                |> toString
+        , colorHexField =
+            String.dropLeft 1 (Palette.toHex model.color)
+    }

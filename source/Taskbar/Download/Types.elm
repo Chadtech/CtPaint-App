@@ -1,10 +1,10 @@
 module Taskbar.Download.Types exposing (..)
 
-import Random exposing (Seed, Generator)
 import Array exposing (Array)
-import Window exposing (Size)
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
+import Random exposing (Generator, Seed)
+import Window exposing (Size)
 
 
 type Message

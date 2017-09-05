@@ -1,11 +1,11 @@
 module Draw.Rectangle exposing (draw, fill)
 
-import Mouse exposing (Position)
 import Canvas exposing (DrawOp(..), Size)
-import RasterShapes as Shapes
-import Util exposing (toPoint)
 import Color exposing (Color)
 import Draw.Pixel as Pixel
+import Mouse exposing (Position)
+import RasterShapes as Shapes
+import Util exposing (toPoint)
 
 
 draw : Color -> Position -> Position -> DrawOp

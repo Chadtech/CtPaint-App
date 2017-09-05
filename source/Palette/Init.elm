@@ -1,8 +1,8 @@
 module Palette.Init exposing (..)
 
+import Array exposing (Array)
 import Color exposing (Color)
 import Palette.Types exposing (Swatches)
-import Array exposing (Array)
 
 
 palette : Array Color

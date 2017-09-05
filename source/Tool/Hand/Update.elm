@@ -1,9 +1,9 @@
 module Tool.Hand.Update exposing (..)
 
 import Main.Model exposing (Model)
+import Mouse exposing (Position)
 import Tool.Hand.Types exposing (Message(..))
 import Tool.Types exposing (Tool(..))
-import Mouse exposing (Position)
 
 
 update : Message -> Maybe ( Position, Position ) -> Model -> Model
@@ -19,14 +19,14 @@ update message tool model =
                         Nothing ->
                             model.canvasPosition
             in
-                { model
-                    | tool =
-                        ( initialPosition
-                        , clientPos
-                        )
-                            |> Just
-                            |> Hand
-                }
+            { model
+                | tool =
+                    ( initialPosition
+                    , clientPos
+                    )
+                        |> Just
+                        |> Hand
+            }
 
         ( SubMouseMove position, Just ( initialPosition, click ) ) ->
             case model.selection of
@@ -46,13 +46,13 @@ update message tool model =
                                     // model.zoom
                                 ]
                     in
-                        { model
-                            | selection =
-                                Just
-                                    ( Position x y
-                                    , selection
-                                    )
-                        }
+                    { model
+                        | selection =
+                            Just
+                                ( Position x y
+                                , selection
+                                )
+                    }
 
                 Nothing ->
                     { model

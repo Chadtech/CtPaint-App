@@ -1,34 +1,34 @@
 module Main.View exposing (view)
 
-import Html exposing (Html, Attribute, div, p, text)
+import Canvas exposing (Canvas)
+import ColorPicker.View as ColorPicker
+import Html exposing (Attribute, Html, div, p, text)
 import Html.Attributes as Attributes exposing (class, id, style)
 import Html.Events exposing (onMouseLeave)
-import MouseEvents exposing (onMouseMove)
-import Main.Model exposing (Model)
 import Main.Message exposing (Message(..))
-import Toolbar.View as Toolbar
+import Main.Model exposing (Model)
+import Minimap.View as Minimap
+import Mouse exposing (Position)
+import MouseEvents exposing (onMouseMove)
 import Palette.View as Palette
-import Taskbar.View as Taskbar
-import Taskbar.Util as Taskbar
 import Taskbar.Download.View as Download
 import Taskbar.Import.View as Import
-import ColorPicker.View as ColorPicker
-import Minimap.View as Minimap
-import Util exposing ((:=), left, top, width, height)
-import Canvas exposing (Canvas)
-import Mouse exposing (Position)
-import Tool.Types as Tool exposing (Tool(..))
+import Taskbar.Util as Taskbar
+import Taskbar.View as Taskbar
+import Tool.Fill.Mouse as Fill
 import Tool.Hand.Mouse as Hand
-import Tool.Pencil.Mouse as Pencil
 import Tool.Line.Mouse as Line
-import Tool.ZoomIn.Mouse as ZoomIn
-import Tool.ZoomOut.Mouse as ZoomOut
+import Tool.Pencil.Mouse as Pencil
 import Tool.Rectangle.Mouse as Rectangle
 import Tool.RectangleFilled.Mouse as RectangleFilled
-import Tool.Select.Mouse as Select
 import Tool.Sample.Mouse as Sample
-import Tool.Fill.Mouse as Fill
+import Tool.Select.Mouse as Select
+import Tool.Types as Tool exposing (Tool(..))
+import Tool.ZoomIn.Mouse as ZoomIn
+import Tool.ZoomOut.Mouse as ZoomOut
+import Toolbar.View as Toolbar
 import Types.Menu exposing (Menu(..))
+import Util exposing ((:=), height, left, top, width)
 
 
 -- VIEW --
@@ -44,17 +44,17 @@ view model =
                 , -29
                 ]
     in
-        div
-            [ class "main" ]
-            [ Toolbar.view model
-            , Html.map TaskbarMessage (Taskbar.view model)
-            , Html.map PaletteMessage (Palette.view model)
-            , canvasArea canvasAreaHeight model
-            , clickScreen canvasAreaHeight model
-            , colorPicker model
-            , minimap model
-            , menu model.menu
-            ]
+    div
+        [ class "main" ]
+        [ Toolbar.view model
+        , Html.map TaskbarMessage (Taskbar.view model)
+        , Html.map PaletteMessage (Palette.view model)
+        , canvasArea canvasAreaHeight model
+        , clickScreen canvasAreaHeight model
+        , colorPicker model
+        , minimap model
+        , menu model.menu
+        ]
 
 
 
@@ -117,14 +117,14 @@ clickScreen canvasAreaHeight { tool } =
         attributes =
             addToolAttributes
                 tool
-                [ class ("screen " ++ (Tool.name tool))
+                [ class ("screen " ++ Tool.name tool)
                 , style
                     [ height canvasAreaHeight ]
                 , onMouseLeave ScreenMouseExit
                 , onMouseMove ScreenMouseMove
                 ]
     in
-        div attributes []
+    div attributes []
 
 
 addToolAttributes : Tool -> List (Attribute Message) -> List (Attribute Message)
@@ -182,7 +182,7 @@ addToolAttributes tool attributes =
                         (Attributes.map ZoomOutMessage)
                         ZoomOut.attributes
     in
-        toolAttributes ++ attributes
+    toolAttributes ++ attributes
 
 
 
@@ -212,11 +212,11 @@ canvasStyles ({ zoom, canvasPosition, canvas } as model) =
         canvasSize =
             Canvas.getSize canvas
     in
-        [ left canvasPosition.x
-        , top canvasPosition.y
-        , width (canvasSize.width * zoom)
-        , height (canvasSize.height * zoom)
-        ]
+    [ left canvasPosition.x
+    , top canvasPosition.y
+    , width (canvasSize.width * zoom)
+    , height (canvasSize.height * zoom)
+    ]
 
 
 selection : Model -> Html Message
@@ -242,8 +242,8 @@ selectionStyles ({ zoom, canvasPosition, canvas } as model) position selection =
         selectionSize =
             Canvas.getSize selection
     in
-        [ left (canvasPosition.x + position.x * zoom + 1)
-        , top (canvasPosition.y + position.y * zoom + 1)
-        , width (selectionSize.width * zoom)
-        , height (selectionSize.height * zoom)
-        ]
+    [ left (canvasPosition.x + position.x * zoom + 1)
+    , top (canvasPosition.y + position.y * zoom + 1)
+    , width (selectionSize.width * zoom)
+    , height (selectionSize.height * zoom)
+    ]

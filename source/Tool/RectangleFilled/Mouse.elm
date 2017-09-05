@@ -1,10 +1,10 @@
 module Tool.RectangleFilled.Mouse exposing (..)
 
-import Html exposing (Attribute)
 import ElementRelativeMouseEvents as Events
+import Html exposing (Attribute)
+import Mouse
 import Tool.RectangleFilled.Types exposing (Message(..))
 import Util exposing (toPosition)
-import Mouse
 
 
 attributes : List (Attribute Message)

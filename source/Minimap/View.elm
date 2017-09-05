@@ -1,19 +1,19 @@
 module Minimap.View exposing (view)
 
-import Html exposing (Html, div, p, a, text)
+import Canvas exposing (Canvas)
+import Html exposing (Html, a, div, p, text)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
-import Util exposing (top, left, height, width)
-import Canvas exposing (Canvas)
-import MouseEvents as Events
-import Tool.Types as Tool exposing (Tool(..))
 import Minimap.Types
     exposing
-        ( Model
-        , Message(..)
-        , extraWidth
+        ( Message(..)
+        , Model
         , extraHeight
+        , extraWidth
         )
+import MouseEvents as Events
+import Tool.Types as Tool exposing (Tool(..))
+import Util exposing (height, left, top, width)
 
 
 view : Model -> Canvas -> Html Message

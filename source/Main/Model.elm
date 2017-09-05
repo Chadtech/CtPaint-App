@@ -1,23 +1,23 @@
 module Main.Model exposing (Model)
 
-import Types.Session as Session exposing (Session)
-import Tool.Types exposing (Tool(..))
-import ColorPicker.Types as ColorPicker
-import Canvas exposing (Canvas, Size, DrawOp(..))
-import Color exposing (Color)
-import Main.Message exposing (Message(..))
-import Mouse exposing (Position)
-import Palette.Types exposing (Swatches)
 import Array exposing (Array)
+import Canvas exposing (Canvas, DrawOp(..), Size)
+import Color exposing (Color)
+import ColorPicker.Types as ColorPicker
+import Dict exposing (Dict)
 import History.Types exposing (HistoryOp(..))
-import List.Unique exposing (UniqueList)
 import Keyboard exposing (KeyCode)
 import Keyboard.Types as Keyboard
-import Taskbar.Types as Taskbar
+import List.Unique exposing (UniqueList)
+import Main.Message exposing (Message(..))
 import Minimap.Types as Minimap
-import Types.Menu exposing (Menu(..))
+import Mouse exposing (Position)
+import Palette.Types exposing (Swatches)
 import Random exposing (Seed)
-import Dict exposing (Dict)
+import Taskbar.Types as Taskbar
+import Tool.Types exposing (Tool(..))
+import Types.Menu exposing (Menu(..))
+import Types.Session as Session exposing (Session)
 
 
 type alias Model =

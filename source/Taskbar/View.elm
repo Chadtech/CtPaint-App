@@ -1,12 +1,12 @@
 module Taskbar.View exposing (view)
 
-import Html exposing (Html, Attribute, div, a, p, text)
+import Dict exposing (Dict)
+import Html exposing (Attribute, Html, a, div, p, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick, onMouseOver)
-import Main.Model exposing (Model)
-import Taskbar.Types exposing (Option(..), Message(..))
 import Keyboard.Types exposing (QuickKey(..))
-import Dict exposing (Dict)
+import Main.Model exposing (Model)
+import Taskbar.Types exposing (Message(..), Option(..))
 
 
 view : Model -> Html Message
@@ -134,8 +134,16 @@ edit model =
                 , seam
                 , div
                     [ class "options edit" ]
-                    [ option ( "Undo", getCmdStr model.keyboardUpLookUp Undo, NoOp )
-                    , option ( "Redo", "Cmd + Y", NoOp )
+                    [ option
+                        ( "Undo"
+                        , getCmdStr model.keyboardUpLookUp Undo
+                        , NoOp
+                        )
+                    , option
+                        ( "Redo"
+                        , getCmdStr model.keyboardUpLookUp Redo
+                        , NoOp
+                        )
                     , divider
                     , option ( "Cut", "Cmd + X", NoOp )
                     , option ( "Copy", "Cmd + C", NoOp )

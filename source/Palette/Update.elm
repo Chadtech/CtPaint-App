@@ -1,14 +1,14 @@
 module Palette.Update exposing (update)
 
-import Palette.Types exposing (Message(..))
-import Types.Mouse exposing (Direction(..))
-import Main.Model exposing (Model)
-import Main.Message as MainMessage
-import ColorPicker.Update as ColorPicker
 import ColorPicker.Handle as ColorPicker
 import ColorPicker.Types as ColorPicker
-import List.Unique
+import ColorPicker.Update as ColorPicker
 import Keyboard.Extra exposing (Key(..))
+import List.Unique
+import Main.Message as MainMessage
+import Main.Model exposing (Model)
+import Palette.Types exposing (Message(..))
+import Types.Mouse exposing (Direction(..))
 
 
 update : Message -> Model -> ( Model, Cmd Message )
@@ -30,19 +30,19 @@ update message model =
                             colorPickerUpdate
                             model
                 in
-                    ( newModel, Cmd.none )
+                ( newModel, Cmd.none )
             else
                 let
                     { swatches } =
                         model
                 in
-                    { model
-                        | swatches =
-                            { swatches
-                                | primary = color
-                            }
-                    }
-                        ! []
+                { model
+                    | swatches =
+                        { swatches
+                            | primary = color
+                        }
+                }
+                    ! []
 
 
 ctrlIsDown : Model -> Bool
@@ -81,8 +81,8 @@ handleResize direction model =
                 { width, height } =
                     model.windowSize
             in
-                { model
-                    | horizontalToolbarHeight =
-                        height - position.y + 29
-                }
-                    ! []
+            { model
+                | horizontalToolbarHeight =
+                    height - position.y + 29
+            }
+                ! []

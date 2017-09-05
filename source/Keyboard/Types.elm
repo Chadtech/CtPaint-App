@@ -1,8 +1,8 @@
 module Keyboard.Types exposing (..)
 
+import Dict exposing (Dict)
 import Keyboard exposing (KeyCode)
 import Keyboard.Extra exposing (Key(..))
-import Dict exposing (Dict)
 import Util exposing ((:=))
 
 
@@ -64,12 +64,12 @@ initKeyUp isMac isChrome customConfig =
             else
                 Control
     in
-        case customConfig of
-            Nothing ->
-                defaultKeyUpConfig cmdKey
+    case customConfig of
+        Nothing ->
+            defaultKeyUpConfig cmdKey
 
-            Just config ->
-                config cmdKey
+        Just config ->
+            config cmdKey
 
 
 defaultKeyUpConfig : Key -> Config
@@ -93,8 +93,7 @@ defaultKeyUpConfig cmd =
     ]
         |> List.map keysToCodes
         -- ff and chrome have different codes for equals
-        |>
-            (::) ([ 187 ] := ZoomIn)
+        |> (::) ([ 187 ] := ZoomIn)
         |> Dict.fromList
 
 
@@ -164,12 +163,12 @@ keyToString key =
                 isNumber =
                     String.left 6 otherAsStr == "Number"
             in
-                case ( isChar, isNumber ) of
-                    ( True, _ ) ->
-                        String.right 1 otherAsStr
+            case ( isChar, isNumber ) of
+                ( True, _ ) ->
+                    String.right 1 otherAsStr
 
-                    ( _, True ) ->
-                        String.right 1 otherAsStr
+                ( _, True ) ->
+                    String.right 1 otherAsStr
 
-                    _ ->
-                        otherAsStr
+                _ ->
+                    otherAsStr

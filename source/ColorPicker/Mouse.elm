@@ -1,6 +1,6 @@
 module ColorPicker.Mouse exposing (subscriptions)
 
-import ColorPicker.Types exposing (Model, Message(..))
+import ColorPicker.Types exposing (Message(..), Model)
 import Mouse
 
 
