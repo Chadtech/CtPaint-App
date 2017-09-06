@@ -2,15 +2,6 @@ _ = require "lodash"
 AmazonCognitoIdentity = require 'amazon-cognito-identity-js'
 CognitoUserPool = AmazonCognitoIdentity.CognitoUserPool
 
-
-cmdKeysToIgnore = [
-    'D'
-    'Y'
-].map (k) -> k.charCodeAt 0
-
-# console.log cmdKeysToIgnore
-
-
 init = (app) ->
     app.ports.download.subscribe (fn) ->
         canvas = document.getElementById "main-canvas"
@@ -29,10 +20,12 @@ init = (app) ->
         app.ports.windowFocused.send false
 
     window.onkeydown = (event) ->
+        console.log "app, is down", event.keyCode
         event.preventDefault()
         app.ports.keyDown.send event.keyCode
 
     window.onkeyup = (event) ->
+        console.log "app, is up", event.keyCode
         event.preventDefault()
         app.ports.keyUp.send event.keyCode
 

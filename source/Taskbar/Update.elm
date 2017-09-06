@@ -1,5 +1,6 @@
 module Taskbar.Update exposing (update)
 
+import Keyboard.Update as Keyboard
 import Main.Model exposing (Model)
 import Minimap.Types as Minimap
 import Taskbar.Download.Handle as Download
@@ -99,5 +100,9 @@ update message model =
             }
                 ! []
 
+        ( Command cmd, _ ) ->
+            Keyboard.keyUp model cmd ! []
+
+        --Command.handle quickKey model
         _ ->
             model ! []

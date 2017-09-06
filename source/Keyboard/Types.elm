@@ -15,7 +15,7 @@ type Message
     = KeyEvent Direction
 
 
-type QuickKey
+type Command
     = SwatchesOneTurn
     | SwatchesThreeTurns
     | SwatchesTwoTurns
@@ -25,6 +25,9 @@ type QuickKey
     | SetToolToFill
     | Undo
     | Redo
+    | Cut
+    | Copy
+    | Paste
     | ZoomIn
     | ZoomOut
     | ShowMinimap
@@ -34,7 +37,7 @@ type QuickKey
 
 
 type alias Config =
-    Dict (List KeyCode) QuickKey
+    Dict (List KeyCode) Command
 
 
 
@@ -85,6 +88,9 @@ defaultKeyUpConfig cmd =
     , [ CharG ] := SetToolToFill
     , [ CharZ, cmd ] := Undo
     , [ CharY, cmd ] := Redo
+    , [ CharC, cmd ] := Copy
+    , [ CharX, cmd ] := Cut
+    , [ CharV, cmd ] := Paste
     , [ Equals ] := ZoomIn
     , [ Minus ] := ZoomOut
     , [ BackQuote ] := ShowMinimap
@@ -97,7 +103,7 @@ defaultKeyUpConfig cmd =
         |> Dict.fromList
 
 
-keysToCodes : ( List Key, QuickKey ) -> ( List KeyCode, QuickKey )
+keysToCodes : ( List Key, Command ) -> ( List KeyCode, Command )
 keysToCodes ( keys, cmds ) =
     ( List.map Keyboard.Extra.toCode keys, cmds )
 
@@ -118,7 +124,7 @@ swap ( a, b ) =
     ( b, a )
 
 
-pairToStrings : ( List Int, QuickKey ) -> ( String, List String )
+pairToStrings : ( List Int, Command ) -> ( String, List String )
 pairToStrings =
     swap
         >> Tuple.mapFirst toString

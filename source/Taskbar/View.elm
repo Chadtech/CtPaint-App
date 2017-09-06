@@ -4,7 +4,7 @@ import Dict exposing (Dict)
 import Html exposing (Attribute, Html, a, div, p, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick, onMouseOver)
-import Keyboard.Types exposing (QuickKey(..))
+import Keyboard.Types exposing (Command(..))
 import Main.Model exposing (Model)
 import Taskbar.Types exposing (Message(..), Option(..))
 
@@ -137,15 +137,19 @@ edit model =
                     [ option
                         ( "Undo"
                         , getCmdStr model.keyboardUpLookUp Undo
-                        , NoOp
+                        , Command Undo
                         )
                     , option
                         ( "Redo"
                         , getCmdStr model.keyboardUpLookUp Redo
-                        , NoOp
+                        , Command Redo
                         )
                     , divider
-                    , option ( "Cut", "Cmd + X", NoOp )
+                    , option
+                        ( "Cut"
+                        , getCmdStr model.keyboardUpLookUp Cut
+                        , Command Cut
+                        )
                     , option ( "Copy", "Cmd + C", NoOp )
                     , option ( "Paste", "Cmd + V", NoOp )
                     , divider
@@ -188,7 +192,7 @@ file maybeFile =
 -- HELPERS --
 
 
-getCmdStr : Dict String (List String) -> QuickKey -> String
+getCmdStr : Dict String (List String) -> Command -> String
 getCmdStr cmdLookUp cmd =
     case Dict.get (toString cmd) cmdLookUp of
         Just keys ->

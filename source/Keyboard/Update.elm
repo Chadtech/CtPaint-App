@@ -1,14 +1,15 @@
-module Keyboard.Update exposing (update)
+module Keyboard.Update exposing (keyDown, keyUp, update)
 
+import Clipboard.Update as Clipboard
 import Dict
 import History.Update as History
 import Keyboard exposing (KeyCode)
 import Keyboard.Types
     exposing
-        ( Config
+        ( Command(..)
+        , Config
         , Direction(..)
         , Message(..)
-        , QuickKey(..)
         )
 import List.Unique exposing (UniqueList)
 import Main.Model exposing (Model)
@@ -23,36 +24,37 @@ import Types.Menu as Menu exposing (Menu(..))
 update : Message -> Model -> Model
 update message model =
     case message of
-        KeyEvent direction ->
-            case direction of
-                Up code ->
-                    let
-                        newModel =
-                            handleKeyUp model
-                    in
-                    { newModel
-                        | keysDown =
-                            List.Unique.remove
-                                code
-                                model.keysDown
-                    }
+        KeyEvent (Up code) ->
+            let
+                newModel =
+                    model.keyboardUpConfig
+                        |> getCmd model.keysDown
+                        |> keyUp model
+            in
+            { newModel
+                | keysDown =
+                    List.Unique.remove
+                        code
+                        model.keysDown
+            }
 
-                Down code ->
-                    handleKeyDown
-                        { model
-                            | keysDown =
-                                List.Unique.cons
-                                    code
-                                    model.keysDown
-                        }
+        KeyEvent (Down code) ->
+            keyDown
+                { model
+                    | keysDown =
+                        List.Unique.cons
+                            code
+                            model.keysDown
+                }
+                (getCmd model.keysDown model.keyboardDownConfig)
 
 
 
 -- KEY EVENTS --
 
 
-getAction : UniqueList KeyCode -> Config -> QuickKey
-getAction list config =
+getCmd : UniqueList KeyCode -> Config -> Command
+getCmd list config =
     case Dict.get (List.Unique.toList list) config of
         Nothing ->
             NoCommand
@@ -61,9 +63,9 @@ getAction list config =
             cmd
 
 
-handleKeyDown : Model -> Model
-handleKeyDown ({ keysDown, keyboardDownConfig } as model) =
-    case getAction keysDown keyboardDownConfig of
+keyDown : Model -> Command -> Model
+keyDown model quickKey =
+    case quickKey of
         NoCommand ->
             model
 
@@ -113,9 +115,9 @@ handleKeyDown ({ keysDown, keyboardDownConfig } as model) =
             model
 
 
-handleKeyUp : Model -> Model
-handleKeyUp ({ keysDown, keyboardUpConfig } as model) =
-    case getAction keysDown keyboardUpConfig of
+keyUp : Model -> Command -> Model
+keyUp model quickKey =
+    case quickKey of
         NoCommand ->
             model
 
@@ -169,6 +171,15 @@ handleKeyUp ({ keysDown, keyboardUpConfig } as model) =
 
         Redo ->
             History.redo model
+
+        Copy ->
+            Clipboard.copy model
+
+        Cut ->
+            Clipboard.cut model
+
+        Paste ->
+            Clipboard.paste model
 
         Keyboard.Types.ZoomIn ->
             let
