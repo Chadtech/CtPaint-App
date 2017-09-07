@@ -28,7 +28,11 @@ update message model =
             pack model (IncorporateImage canvas)
 
         ImageLoaded (Err err) ->
-            pack model DoNothing
+            pack
+                { model
+                    | error = True
+                }
+                DoNothing
 
         HeaderMouseDown { targetPos, clientPos } ->
             pack

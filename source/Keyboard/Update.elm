@@ -1,6 +1,7 @@
 module Keyboard.Update exposing (keyDown, keyUp, update)
 
 import Clipboard.Update as Clipboard
+import Debug exposing (log)
 import Dict
 import History.Update as History
 import Keyboard exposing (KeyCode)
@@ -26,6 +27,8 @@ update message model =
     case message of
         KeyEvent (Up code) ->
             let
+                --_ =
+                --    log "Code Up" code
                 newModel =
                     model.keyboardUpConfig
                         |> getCmd model.keysDown
@@ -39,6 +42,10 @@ update message model =
             }
 
         KeyEvent (Down code) ->
+            --let
+            --    _ =
+            --        log "Code Down" code
+            --in
             keyDown
                 { model
                     | keysDown =

@@ -19,15 +19,17 @@ init = (app) ->
     window.onBlur = ->
         app.ports.windowFocused.send false
 
-    window.onkeydown = (event) ->
-        console.log "app, is down", event.keyCode
-        event.preventDefault()
+    window.addEventListener 'keydown', (event) ->
+        console.log "key is down", event.keyCode
         app.ports.keyDown.send event.keyCode
-
-    window.onkeyup = (event) ->
-        console.log "app, is up", event.keyCode
         event.preventDefault()
+
+
+    window.addEventListener 'keyup', (event) ->
+        console.log "key is up", event.keyCode
         app.ports.keyUp.send event.keyCode
+        event.preventDefault()
+
 
     
     app

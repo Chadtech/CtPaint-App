@@ -27,6 +27,7 @@ type alias Model =
     { url : String
     , position : Position
     , clickState : Maybe Position
+    , error : Bool
     }
 
 
@@ -38,4 +39,5 @@ init { width, height } =
         , y = (height // 2) - 106
         }
     , clickState = Nothing
+    , error = False
     }

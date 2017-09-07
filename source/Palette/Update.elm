@@ -1,6 +1,6 @@
 module Palette.Update exposing (update)
 
-import ColorPicker.Handle as ColorPicker
+import ColorPicker.Incorporate as ColorPicker
 import ColorPicker.Types as ColorPicker
 import ColorPicker.Update as ColorPicker
 import Keyboard.Extra exposing (Key(..))
@@ -26,11 +26,11 @@ update message model =
                             model.colorPicker
 
                     newModel =
-                        ColorPicker.handle
+                        ColorPicker.incorporate
                             colorPickerUpdate
                             model
                 in
-                ( newModel, Cmd.none )
+                newModel ! []
             else
                 let
                     { swatches } =

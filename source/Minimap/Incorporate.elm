@@ -1,11 +1,11 @@
-module Minimap.Handle exposing (..)
+module Minimap.Incorporate exposing (..)
 
 import Main.Model exposing (Model)
 import Minimap.Types as Minimap exposing (ExternalMessage(..))
 
 
-handle : ( Minimap.Model, ExternalMessage ) -> Model -> Model
-handle ( minimap, message ) model =
+incorporate : ( Minimap.Model, ExternalMessage ) -> Model -> Model
+incorporate ( minimap, message ) model =
     case message of
         DoNothing ->
             { model

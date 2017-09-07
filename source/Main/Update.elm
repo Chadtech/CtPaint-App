@@ -1,13 +1,13 @@
 module Main.Update exposing (update)
 
 import Canvas exposing (DrawOp(Batch))
-import ColorPicker.Handle as ColorPicker
+import ColorPicker.Incorporate as ColorPicker
 import ColorPicker.Update as ColorPicker
 import Keyboard.Update as Keyboard
 import List.Unique
 import Main.Message exposing (Message(..))
 import Main.Model exposing (Model)
-import Minimap.Handle as Minimap
+import Minimap.Incorporate as Minimap
 import Minimap.Update as Minimap
 import Mouse exposing (Position)
 import Palette.Update as Palette
@@ -137,7 +137,7 @@ update message model =
                 colorPickerUpdate =
                     ColorPicker.update subMessage model.colorPicker
             in
-            ColorPicker.handle colorPickerUpdate model ! []
+            ColorPicker.incorporate colorPickerUpdate model ! []
 
         ( MinimapMessage subMessage, _ ) ->
             case model.minimap of
@@ -146,7 +146,7 @@ update message model =
                         minimapUpdate =
                             Minimap.update subMessage minimap
                     in
-                    Minimap.handle minimapUpdate model ! []
+                    Minimap.incorporate minimapUpdate model ! []
 
                 Nothing ->
                     model ! []

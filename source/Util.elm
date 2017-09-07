@@ -1,6 +1,7 @@
 module Util exposing (..)
 
 import Canvas exposing (Point)
+import Html exposing (Html)
 import Mouse exposing (Position)
 import Window exposing (Size)
 
@@ -61,6 +62,14 @@ slice start end =
 
 
 -- HTML STYLE --
+
+
+viewIf : Bool -> Html msg -> Html msg
+viewIf condition html =
+    if condition then
+        html
+    else
+        Html.text ""
 
 
 px : Int -> String

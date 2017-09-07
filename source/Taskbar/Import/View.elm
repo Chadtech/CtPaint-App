@@ -5,7 +5,7 @@ import Html.Attributes exposing (class, placeholder, style, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import MouseEvents as Events
 import Taskbar.Import.Types exposing (Message(..), Model)
-import Util exposing (left, px, top)
+import Util exposing (left, px, top, viewIf)
 
 
 view : Model -> Html Message
@@ -29,6 +29,9 @@ view model =
                 , placeholder "http://"
                 ]
                 []
+            , viewIf
+                model.error
+                (p [] [ text " Error ! " ])
             ]
         , a
             [ class "submit-button"
