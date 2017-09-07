@@ -20,17 +20,12 @@ init = (app) ->
         app.ports.windowFocused.send false
 
     window.addEventListener 'keydown', (event) ->
-        console.log "key is down", event.keyCode
         app.ports.keyDown.send event.keyCode
         event.preventDefault()
 
-
     window.addEventListener 'keyup', (event) ->
-        console.log "key is up", event.keyCode
         app.ports.keyUp.send event.keyCode
         event.preventDefault()
-
-
     
     app
 
