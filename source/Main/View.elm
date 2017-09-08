@@ -36,17 +36,17 @@ import Util exposing ((:=), height, left, top, width)
 
 view : Model -> Html Message
 view model =
-    let
-        canvasAreaHeight =
-            List.sum
-                [ model.windowSize.height
-                , -model.horizontalToolbarHeight
-                , -29
-                ]
-    in
     if model.galleryView then
         galleryView model
     else
+        let
+            canvasAreaHeight =
+                List.sum
+                    [ model.windowSize.height
+                    , -model.horizontalToolbarHeight
+                    , -29
+                    ]
+        in
         div
             [ class "main" ]
             [ Toolbar.view model

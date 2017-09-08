@@ -68,7 +68,10 @@ view_ model =
                 , seam
                 , div
                     [ class "options view" ]
-                    [ option ( "Gallery view", "tab", NoOp )
+                    [ option_
+                        "Gallery view"
+                        "tab"
+                        (Command SwitchGalleryView)
                     , minimap model
                     ]
                 ]
@@ -81,18 +84,10 @@ minimap : Model -> Html Message
 minimap model =
     case model.minimap of
         Just _ ->
-            option
-                ( "Hide Mini Map"
-                , "`"
-                , SwitchMinimap False
-                )
+            option_ "Hide Mini Map" "`" (SwitchMinimap False)
 
         Nothing ->
-            option
-                ( "Show Mini Map"
-                , "`"
-                , SwitchMinimap True
-                )
+            option_ "Show Mini Map" "`" (SwitchMinimap True)
 
 
 
@@ -134,38 +129,32 @@ edit model =
                 , seam
                 , div
                     [ class "options edit" ]
-                    [ option
-                        ( "Undo"
-                        , getCmdStr model.keyboardUpLookUp Undo
-                        , Command Undo
-                        )
-                    , option
-                        ( "Redo"
-                        , getCmdStr model.keyboardUpLookUp Redo
-                        , Command Redo
-                        )
+                    [ option_
+                        "Undo"
+                        (getCmdStr model.keyboardUpLookUp Undo)
+                        (Command Undo)
+                    , option_
+                        "Redo"
+                        (getCmdStr model.keyboardUpLookUp Redo)
+                        (Command Redo)
                     , divider
-                    , option
-                        ( "Cut"
-                        , getCmdStr model.keyboardUpLookUp Cut
-                        , Command Cut
-                        )
-                    , option
-                        ( "Copy"
-                        , getCmdStr model.keyboardUpLookUp Copy
-                        , Command Copy
-                        )
-                    , option
-                        ( "Paste"
-                        , getCmdStr model.keyboardUpLookUp Paste
-                        , Command Paste
-                        )
+                    , option_
+                        "Cut"
+                        (getCmdStr model.keyboardUpLookUp Cut)
+                        (Command Cut)
+                    , option_
+                        "Copy"
+                        (getCmdStr model.keyboardUpLookUp Copy)
+                        (Command Copy)
+                    , option_
+                        "Paste"
+                        (getCmdStr model.keyboardUpLookUp Paste)
+                        (Command Paste)
                     , divider
-                    , option
-                        ( "Select all"
-                        , getCmdStr model.keyboardUpLookUp SelectAll
-                        , Command SelectAll
-                        )
+                    , option_
+                        "Select all"
+                        (getCmdStr model.keyboardUpLookUp SelectAll)
+                        (Command SelectAll)
                     , divider
                     , option ( "Preferences", "", NoOp )
                     ]
@@ -187,8 +176,8 @@ file maybeFile =
                     [ option ( "Save", "Cmd + S", NoOp )
                     , option ( "Auto Save", "On", NoOp )
                     , divider
-                    , option ( "Download", "Cmd + D", InitDownload )
-                    , option ( "Import", "Cmd + I", InitImport )
+                    , option_ "Download" "Cmd + D" InitDownload
+                    , option_ "Import" "Cmd + I" InitImport
                     , divider
                     , option ( "Imgur", "", NoOp )
                     , option ( "Twitter", "", NoOp )
@@ -242,6 +231,17 @@ divider =
     div
         [ class "divider" ]
         [ div [ class "strike" ] [] ]
+
+
+option_ : String -> String -> Message -> Html Message
+option_ label cmdKeys message =
+    div
+        [ onClick message
+        , class "option"
+        ]
+        [ p_ label
+        , p_ cmdKeys
+        ]
 
 
 option : ( String, String, Message ) -> Html Message
