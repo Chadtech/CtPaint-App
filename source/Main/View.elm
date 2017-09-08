@@ -44,17 +44,27 @@ view model =
                 , -29
                 ]
     in
+    if model.galleryView then
+        galleryView model
+    else
+        div
+            [ class "main" ]
+            [ Toolbar.view model
+            , Html.map TaskbarMessage (Taskbar.view model)
+            , Html.map PaletteMessage (Palette.view model)
+            , canvasArea canvasAreaHeight model
+            , clickScreen canvasAreaHeight model
+            , colorPicker model
+            , minimap model
+            , menu model.menu
+            ]
+
+
+galleryView : Model -> Html Message
+galleryView model =
     div
-        [ class "main" ]
-        [ Toolbar.view model
-        , Html.map TaskbarMessage (Taskbar.view model)
-        , Html.map PaletteMessage (Palette.view model)
-        , canvasArea canvasAreaHeight model
-        , clickScreen canvasAreaHeight model
-        , colorPicker model
-        , minimap model
-        , menu model.menu
-        ]
+        [ class "main gallery" ]
+        [ Canvas.toHtml [] model.canvas ]
 
 
 

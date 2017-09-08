@@ -34,6 +34,7 @@ type Command
     | ShowMinimap
     | Download
     | Import
+    | SwitchGalleryView
     | NoCommand
 
 
@@ -98,6 +99,7 @@ defaultKeyUpConfig cmd =
     , [ BackQuote ] := ShowMinimap
     , [ CharD, Shift ] := Download
     , [ CharI, cmd ] := Import
+    , [ Tab ] := SwitchGalleryView
     ]
         |> List.map keysToCodes
         -- ff and chrome have different codes for equals
@@ -159,6 +161,9 @@ keyToString key =
 
         Dollar ->
             "$"
+
+        BackQuote ->
+            "`"
 
         other ->
             let

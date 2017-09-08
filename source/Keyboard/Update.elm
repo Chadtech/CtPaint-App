@@ -263,3 +263,6 @@ keyUp model quickKey =
                         |> Import.init
                         |> Menu.Import
             }
+
+        SwitchGalleryView ->
+            { model | galleryView = not model.galleryView }

@@ -34,6 +34,7 @@ type alias Model =
     , windowSize : Size
     , tool : Tool
     , zoom : Int
+    , galleryView : Bool
     , colorPicker : ColorPicker.Model
     , history : List HistoryOp
     , future : List HistoryOp

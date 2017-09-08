@@ -13,11 +13,11 @@ init = (app) ->
         a.click()
 
 
-    window.onFocus = ->
-        app.ports.windowFocused.send true
+    window.addEventListener 'focus', ->
+        app.ports.windowFocus.send true
 
-    window.onBlur = ->
-        app.ports.windowFocused.send false
+    window.addEventListener 'blur', ->
+        app.ports.windowFocus.send false
 
     window.addEventListener 'keydown', (event) ->
         app.ports.keyDown.send event.keyCode

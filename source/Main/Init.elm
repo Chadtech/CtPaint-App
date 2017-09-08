@@ -59,6 +59,7 @@ init json =
     , windowSize = windowSize
     , tool = Hand Nothing
     , zoom = 1
+    , galleryView = False
     , colorPicker = ColorPicker.init Palette.Init.palette
     , history = [ CanvasChange canvas ]
     , future = []
