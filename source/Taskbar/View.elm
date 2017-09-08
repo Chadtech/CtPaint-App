@@ -150,10 +150,22 @@ edit model =
                         , getCmdStr model.keyboardUpLookUp Cut
                         , Command Cut
                         )
-                    , option ( "Copy", "Cmd + C", NoOp )
-                    , option ( "Paste", "Cmd + V", NoOp )
+                    , option
+                        ( "Copy"
+                        , getCmdStr model.keyboardUpLookUp Copy
+                        , Command Copy
+                        )
+                    , option
+                        ( "Paste"
+                        , getCmdStr model.keyboardUpLookUp Paste
+                        , Command Paste
+                        )
                     , divider
-                    , option ( "Select all", "Cmd + A", NoOp )
+                    , option
+                        ( "Select all"
+                        , getCmdStr model.keyboardUpLookUp SelectAll
+                        , Command SelectAll
+                        )
                     , divider
                     , option ( "Preferences", "", NoOp )
                     ]

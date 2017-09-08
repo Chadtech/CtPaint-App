@@ -27,6 +27,7 @@ type Command
     | Redo
     | Cut
     | Copy
+    | SelectAll
     | Paste
     | ZoomIn
     | ZoomOut
@@ -91,6 +92,7 @@ defaultKeyUpConfig cmd =
     , [ CharC, cmd ] := Copy
     , [ CharX, cmd ] := Cut
     , [ CharV, cmd ] := Paste
+    , [ CharA, cmd ] := SelectAll
     , [ Equals ] := ZoomIn
     , [ Minus ] := ZoomOut
     , [ BackQuote ] := ShowMinimap

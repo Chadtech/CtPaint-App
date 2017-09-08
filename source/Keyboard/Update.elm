@@ -1,8 +1,9 @@
 module Keyboard.Update exposing (keyDown, keyUp, update)
 
+import Canvas
 import Clipboard.Update as Clipboard
-import Debug exposing (log)
 import Dict
+import Draw.Rectangle as Rectangle
 import History.Update as History
 import Keyboard exposing (KeyCode)
 import Keyboard.Types
@@ -15,6 +16,7 @@ import Keyboard.Types
 import List.Unique exposing (UniqueList)
 import Main.Model exposing (Model)
 import Minimap.Types as Minimap
+import Mouse exposing (Position)
 import Taskbar.Download.Types as Download
 import Taskbar.Import.Types as Import
 import Tool.Types exposing (Tool(..))
@@ -27,8 +29,6 @@ update message model =
     case message of
         KeyEvent (Up code) ->
             let
-                --_ =
-                --    log "Code Up" code
                 newModel =
                     model.keyboardUpConfig
                         |> getCmd model.keysDown
@@ -42,10 +42,6 @@ update message model =
             }
 
         KeyEvent (Down code) ->
-            --let
-            --    _ =
-            --        log "Code Down" code
-            --in
             keyDown
                 { model
                     | keysDown =
@@ -187,6 +183,22 @@ keyUp model quickKey =
 
         Paste ->
             Clipboard.paste model
+
+        SelectAll ->
+            { model
+                | selection = Just ( Position 0 0, model.canvas )
+                , canvas =
+                    let
+                        drawOp =
+                            Rectangle.fill
+                                model.swatches.second
+                                (Canvas.getSize model.canvas)
+                                (Position 0 0)
+                    in
+                    Canvas.getSize model.canvas
+                        |> Canvas.initialize
+                        |> Canvas.draw drawOp
+            }
 
         Keyboard.Types.ZoomIn ->
             let

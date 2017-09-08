@@ -3,6 +3,7 @@ module Main.Update exposing (update)
 import Canvas exposing (DrawOp(Batch))
 import ColorPicker.Incorporate as ColorPicker
 import ColorPicker.Update as ColorPicker
+import Debug exposing (log)
 import Keyboard.Update as Keyboard
 import List.Unique
 import Main.Message exposing (Message(..))
@@ -58,6 +59,9 @@ update message model =
             let
                 newModel =
                     Keyboard.update subMessage model
+
+                _ =
+                    log "keys down" newModel.keysDown
             in
             newModel ! []
 
