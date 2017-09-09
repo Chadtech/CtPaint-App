@@ -7,13 +7,13 @@ import Html.Attributes as Attributes exposing (class, id, style)
 import Html.Events exposing (onMouseLeave)
 import Main.Message exposing (Message(..))
 import Main.Model exposing (Model)
+import Menu.Download.View as Download
+import Menu.Import.View as Import
 import Menu.Types exposing (Menu(..))
 import Minimap.View as Minimap
 import Mouse exposing (Position)
 import MouseEvents exposing (onMouseMove)
 import Palette.View as Palette
-import Taskbar.Download.View as Download
-import Taskbar.Import.View as Import
 import Taskbar.Util as Taskbar
 import Taskbar.View as Taskbar
 import Tool.Fill.Mouse as Fill

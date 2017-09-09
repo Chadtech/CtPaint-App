@@ -7,11 +7,11 @@ import Keyboard.Types as Keyboard
 import Main.Message exposing (Message(..))
 import Main.Model exposing (Model)
 import Main.Ports as Ports
+import Menu.Download.Mouse as Download
+import Menu.Import.Mouse as Import
 import Menu.Types exposing (Menu(..))
 import Minimap.Mouse as Minimap
 import Mouse
-import Taskbar.Download.Mouse as Download
-import Taskbar.Import.Mouse as Import
 import Taskbar.Util as Taskbar
 import Tool.Fill.Mouse as Fill
 import Tool.Hand.Mouse as Hand

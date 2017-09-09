@@ -1,7 +1,7 @@
-module Taskbar.Download.Mouse exposing (subscriptions)
+module Menu.Import.Mouse exposing (subscriptions)
 
+import Menu.Import.Types exposing (Message(..), Model)
 import Mouse
-import Taskbar.Download.Types exposing (Message(..), Model)
 
 
 subscriptions : Sub Message

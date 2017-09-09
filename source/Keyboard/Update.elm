@@ -15,11 +15,11 @@ import Keyboard.Types
         )
 import List.Unique exposing (UniqueList)
 import Main.Model exposing (Model)
+import Menu.Download.Types as Download
+import Menu.Import.Types as Import
 import Menu.Types as Menu exposing (Menu(..))
 import Minimap.Types as Minimap
 import Mouse exposing (Position)
-import Taskbar.Download.Types as Download
-import Taskbar.Import.Types as Import
 import Tool.Types exposing (Tool(..))
 import Tool.Zoom as Zoom
 

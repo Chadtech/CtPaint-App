@@ -1,10 +1,10 @@
-module Taskbar.Import.View exposing (view)
+module Menu.Import.View exposing (view)
 
 import Html exposing (Html, a, div, form, input, p, text)
 import Html.Attributes exposing (class, placeholder, style, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
+import Menu.Import.Types exposing (Message(..), Model)
 import MouseEvents as Events
-import Taskbar.Import.Types exposing (Message(..), Model)
 import Util exposing (left, px, top, viewIf)
 
 

@@ -1,4 +1,4 @@
-module Taskbar.Download.Types exposing (..)
+module Menu.Download.Types exposing (..)
 
 import Array exposing (Array)
 import Mouse exposing (Position)

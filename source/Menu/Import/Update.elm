@@ -1,12 +1,12 @@
-module Taskbar.Import.Update exposing (update)
+module Menu.Import.Update exposing (update)
 
-import Mouse exposing (Position)
-import Taskbar.Import.Types
+import Menu.Import.Types
     exposing
         ( ExternalMessage(..)
         , Message(..)
         , Model
         )
+import Mouse exposing (Position)
 import Util exposing (pack)
 
 

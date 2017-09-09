@@ -1,10 +1,10 @@
-module Taskbar.Import.Incorporate exposing (incorporate)
+module Menu.Import.Incorporate exposing (incorporate)
 
 import Canvas
 import Main.Model exposing (Model)
+import Menu.Import.Types as Import exposing (ExternalMessage(..), Message(..))
 import Menu.Types exposing (Menu(..))
 import Task
-import Taskbar.Import.Types as Import exposing (ExternalMessage(..), Message(..))
 
 
 incorporate : Model -> ( Import.Model, ExternalMessage ) -> ( Model, Cmd Message )

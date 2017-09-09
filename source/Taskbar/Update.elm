@@ -2,14 +2,14 @@ module Taskbar.Update exposing (update)
 
 import Keyboard.Update as Keyboard
 import Main.Model exposing (Model)
+import Menu.Download.Incorporate as Download
+import Menu.Download.Types as Download
+import Menu.Download.Update as Download
+import Menu.Import.Incorporate as Import
+import Menu.Import.Types as Import
+import Menu.Import.Update as Import
 import Menu.Types exposing (Menu(..))
 import Minimap.Types as Minimap
-import Taskbar.Download.Incorporate as Download
-import Taskbar.Download.Types as Download
-import Taskbar.Download.Update as Download
-import Taskbar.Import.Incorporate as Import
-import Taskbar.Import.Types as Import
-import Taskbar.Import.Update as Import
 import Taskbar.Types as Taskbar exposing (Message(..))
 
 

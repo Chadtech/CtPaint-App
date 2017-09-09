@@ -1,4 +1,4 @@
-module Taskbar.Import.Types exposing (..)
+module Menu.Import.Types exposing (..)
 
 import Canvas exposing (Canvas, Error)
 import Mouse exposing (Position)

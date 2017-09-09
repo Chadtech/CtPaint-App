@@ -1,9 +1,9 @@
-module Taskbar.Download.Incorporate exposing (incorporate)
+module Menu.Download.Incorporate exposing (incorporate)
 
 import Main.Model exposing (Model)
+import Menu.Download.Ports as Ports
+import Menu.Download.Types as Download exposing (ExternalMessage(..), Message(..))
 import Menu.Types exposing (Menu(..))
-import Taskbar.Download.Ports as Ports
-import Taskbar.Download.Types as Download exposing (ExternalMessage(..), Message(..))
 
 
 incorporate : Model -> ( Download.Model, ExternalMessage ) -> ( Model, Cmd Message )
