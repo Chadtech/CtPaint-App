@@ -17,6 +17,7 @@ import List.Unique exposing (UniqueList)
 import Main.Model exposing (Model)
 import Menu.Download.Types as Download
 import Menu.Import.Types as Import
+import Menu.Scale.Types as Scale
 import Menu.Types as Menu exposing (Menu(..))
 import Minimap.Types as Minimap
 import Mouse exposing (Position)
@@ -234,27 +235,17 @@ keyUp model quickKey =
                     { model | minimap = Nothing }
 
         Keyboard.Types.Download ->
-            case model.projectName of
-                Nothing ->
-                    let
-                        ( downloadModel, seed ) =
-                            Download.initFromSeed
-                                model.windowSize
-                                model.seed
-                    in
-                    { model
-                        | seed = seed
-                        , menu = Menu.Download downloadModel
-                    }
-
-                Just projectName ->
-                    { model
-                        | menu =
-                            Download.initFromString
-                                model.windowSize
-                                projectName
-                                |> Menu.Download
-                    }
+            let
+                ( downloadModel, seed ) =
+                    Download.init
+                        model.projectName
+                        model.seed
+                        model.windowSize
+            in
+            { model
+                | seed = seed
+                , menu = Menu.Download downloadModel
+            }
 
         Keyboard.Types.Import ->
             { model
@@ -262,6 +253,23 @@ keyUp model quickKey =
                     model.windowSize
                         |> Import.init
                         |> Menu.Import
+            }
+
+        Keyboard.Types.Scale ->
+            { model
+                | menu =
+                    case model.selection of
+                        Just ( position, canvas ) ->
+                            Scale.init
+                                model.windowSize
+                                (Canvas.getSize canvas)
+                                |> Menu.Scale
+
+                        Nothing ->
+                            Scale.init
+                                model.windowSize
+                                (Canvas.getSize model.canvas)
+                                |> Menu.Scale
             }
 
         SwitchGalleryView ->

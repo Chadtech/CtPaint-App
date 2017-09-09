@@ -9,6 +9,7 @@ import Main.Message exposing (Message(..))
 import Main.Model exposing (Model)
 import Menu.Download.View as Download
 import Menu.Import.View as Import
+import Menu.Scale.View as Scale
 import Menu.Types exposing (Menu(..))
 import Minimap.View as Minimap
 import Mouse exposing (Position)
@@ -82,6 +83,9 @@ menu m =
 
         Import model ->
             Html.map Taskbar.import_ (Import.view model)
+
+        Scale model ->
+            Html.map Taskbar.scale (Scale.view model)
 
         _ ->
             Html.text ""

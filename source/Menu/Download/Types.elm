@@ -30,14 +30,24 @@ type alias Model =
     }
 
 
-initFromSeed : Size -> Seed -> ( Model, Seed )
-initFromSeed size =
+init : Maybe String -> Seed -> Size -> ( Model, Seed )
+init maybeProjectName seed size =
+    case maybeProjectName of
+        Just projectName ->
+            ( fromString size projectName, seed )
+
+        Nothing ->
+            fromSeed size seed
+
+
+fromSeed : Size -> Seed -> ( Model, Seed )
+fromSeed size =
     Random.step projectNameGenerator
-        >> Tuple.mapFirst (initFromString size)
+        >> Tuple.mapFirst (fromString size)
 
 
-initFromString : Size -> String -> Model
-initFromString size projectName =
+fromString : Size -> String -> Model
+fromString size projectName =
     { content = ""
     , placeholder = projectName
     , position =

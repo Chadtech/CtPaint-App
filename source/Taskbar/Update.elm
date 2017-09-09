@@ -3,10 +3,8 @@ module Taskbar.Update exposing (update)
 import Keyboard.Update as Keyboard
 import Main.Model exposing (Model)
 import Menu.Download.Incorporate as Download
-import Menu.Download.Types as Download
 import Menu.Download.Update as Download
 import Menu.Import.Incorporate as Import
-import Menu.Import.Types as Import
 import Menu.Import.Update as Import
 import Menu.Types exposing (Menu(..))
 import Minimap.Types as Minimap
@@ -65,40 +63,6 @@ update message model =
                     ! []
             else
                 { model | minimap = Nothing } ! []
-
-        ( InitDownload, _ ) ->
-            case model.projectName of
-                Nothing ->
-                    let
-                        ( downloadModel, seed ) =
-                            Download.initFromSeed
-                                model.windowSize
-                                model.seed
-                    in
-                    { model
-                        | seed = seed
-                        , menu = Download downloadModel
-                    }
-                        ! []
-
-                Just projectName ->
-                    { model
-                        | menu =
-                            Download.initFromString
-                                model.windowSize
-                                projectName
-                                |> Download
-                    }
-                        ! []
-
-        ( InitImport, _ ) ->
-            { model
-                | menu =
-                    model.windowSize
-                        |> Import.init
-                        |> Import
-            }
-                ! []
 
         ( Command cmd, _ ) ->
             Keyboard.keyUp model cmd ! []

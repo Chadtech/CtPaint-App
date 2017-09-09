@@ -34,6 +34,7 @@ type Command
     | ShowMinimap
     | Download
     | Import
+    | Scale
     | SwitchGalleryView
     | NoCommand
 
@@ -99,6 +100,7 @@ defaultKeyUpConfig cmd =
     , [ BackQuote ] := ShowMinimap
     , [ CharD, Shift ] := Download
     , [ CharI, cmd ] := Import
+    , [ CharW, cmd ] := Scale
     , [ Tab ] := SwitchGalleryView
     ]
         |> List.map keysToCodes

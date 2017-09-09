@@ -13,9 +13,9 @@ view : Model -> Html Message
 view ({ taskbarDropped } as model) =
     div
         [ class "top-tool-bar" ]
-        [ file taskbarDropped
+        [ file model
         , edit model
-        , transform taskbarDropped
+        , transform model
         , view_ model
         , help taskbarDropped
         , invisibleWall taskbarDropped
@@ -94,9 +94,9 @@ minimap model =
 -- TRANSFORM --
 
 
-transform : Maybe Option -> Html Message
-transform maybeTransform =
-    case maybeTransform of
+transform : Model -> Html Message
+transform model =
+    case model.taskbarDropped of
         Just Transform ->
             taskbarButtonOpen
                 [ text "Transform"
@@ -110,7 +110,10 @@ transform maybeTransform =
                     , option ( "Rotate 180", "Shift + E", NoOp )
                     , option ( "Rotate 270", "Shift + D", NoOp )
                     , divider
-                    , option ( "Scale", "Cmd + W", NoOp )
+                    , option_
+                        "Scale"
+                        (getCmdStr model.keyboardUpLookUp Scale)
+                        (Command Scale)
                     , option ( "Replace Color", "Cmd + R", NoOp )
                     , option ( "Invert", "Cmd + I", NoOp )
                     ]
@@ -164,9 +167,9 @@ edit model =
             taskbarButtonClose Edit
 
 
-file : Maybe Option -> Html Message
-file maybeFile =
-    case maybeFile of
+file : Model -> Html Message
+file model =
+    case model.taskbarDropped of
         Just File ->
             taskbarButtonOpen
                 [ text "File"
@@ -176,8 +179,14 @@ file maybeFile =
                     [ option ( "Save", "Cmd + S", NoOp )
                     , option ( "Auto Save", "On", NoOp )
                     , divider
-                    , option_ "Download" "Cmd + D" InitDownload
-                    , option_ "Import" "Cmd + I" InitImport
+                    , option_
+                        "Download"
+                        (getCmdStr model.keyboardUpLookUp Download)
+                        (Command Download)
+                    , option_
+                        "Import"
+                        (getCmdStr model.keyboardUpLookUp Import)
+                        (Command Import)
                     , divider
                     , option ( "Imgur", "", NoOp )
                     , option ( "Twitter", "", NoOp )
