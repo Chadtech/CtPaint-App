@@ -1,14 +1,14 @@
-module Taskbar.Import.Handle exposing (handle)
+module Taskbar.Import.Incorporate exposing (incorporate)
 
 import Canvas
 import Main.Model exposing (Model)
+import Menu.Types exposing (Menu(..))
 import Task
 import Taskbar.Import.Types as Import exposing (ExternalMessage(..), Message(..))
-import Types.Menu exposing (Menu(..))
 
 
-handle : Model -> ( Import.Model, ExternalMessage ) -> ( Model, Cmd Message )
-handle model ( downloadModel, externalmessage ) =
+incorporate : Model -> ( Import.Model, ExternalMessage ) -> ( Model, Cmd Message )
+incorporate model ( downloadModel, externalmessage ) =
     case externalmessage of
         DoNothing ->
             { model

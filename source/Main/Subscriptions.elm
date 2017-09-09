@@ -7,6 +7,7 @@ import Keyboard.Types as Keyboard
 import Main.Message exposing (Message(..))
 import Main.Model exposing (Model)
 import Main.Ports as Ports
+import Menu.Types exposing (Menu(..))
 import Minimap.Mouse as Minimap
 import Mouse
 import Taskbar.Download.Mouse as Download
@@ -23,7 +24,6 @@ import Tool.Select.Mouse as Select
 import Tool.Types exposing (Tool(..))
 import Tool.ZoomIn.Mouse as ZoomIn
 import Tool.ZoomOut.Mouse as ZoomOut
-import Types.Menu exposing (Menu(..))
 import Util exposing (maybeCons)
 import Window
 

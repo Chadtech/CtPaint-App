@@ -1,13 +1,13 @@
-module Taskbar.Download.Handle exposing (handle)
+module Taskbar.Download.Incorporate exposing (incorporate)
 
 import Main.Model exposing (Model)
+import Menu.Types exposing (Menu(..))
 import Taskbar.Download.Ports as Ports
 import Taskbar.Download.Types as Download exposing (ExternalMessage(..), Message(..))
-import Types.Menu exposing (Menu(..))
 
 
-handle : Model -> ( Download.Model, ExternalMessage ) -> ( Model, Cmd Message )
-handle model ( downloadModel, externalmessage ) =
+incorporate : Model -> ( Download.Model, ExternalMessage ) -> ( Model, Cmd Message )
+incorporate model ( downloadModel, externalmessage ) =
     case externalmessage of
         DoNothing ->
             { model

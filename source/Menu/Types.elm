@@ -1,13 +1,13 @@
-module Types.Menu exposing (Menu(..))
+module Menu.Types exposing (Menu(..))
 
 import Taskbar.Download.Types as Download
 import Taskbar.Import.Types as Import
-import Transform.Types as Transform
 
 
 type Menu
     = None
-    | Transform Transform.Menu
+    | Scale
+    | ReplaceColor
     | Preferences
     | Help
     | Download Download.Model

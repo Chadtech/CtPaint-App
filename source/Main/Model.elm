@@ -10,13 +10,13 @@ import Keyboard exposing (KeyCode)
 import Keyboard.Types as Keyboard
 import List.Unique exposing (UniqueList)
 import Main.Message exposing (Message(..))
+import Menu.Types exposing (Menu(..))
 import Minimap.Types as Minimap
 import Mouse exposing (Position)
 import Palette.Types exposing (Swatches)
 import Random exposing (Seed)
 import Taskbar.Types as Taskbar
 import Tool.Types exposing (Tool(..))
-import Types.Menu exposing (Menu(..))
 import Types.Session as Session exposing (Session)
 
 

@@ -7,6 +7,7 @@ import Html.Attributes as Attributes exposing (class, id, style)
 import Html.Events exposing (onMouseLeave)
 import Main.Message exposing (Message(..))
 import Main.Model exposing (Model)
+import Menu.Types exposing (Menu(..))
 import Minimap.View as Minimap
 import Mouse exposing (Position)
 import MouseEvents exposing (onMouseMove)
@@ -27,7 +28,6 @@ import Tool.Types as Tool exposing (Tool(..))
 import Tool.ZoomIn.Mouse as ZoomIn
 import Tool.ZoomOut.Mouse as ZoomOut
 import Toolbar.View as Toolbar
-import Types.Menu exposing (Menu(..))
 import Util exposing ((:=), height, left, top, width)
 
 

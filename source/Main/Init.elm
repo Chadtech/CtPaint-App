@@ -9,10 +9,10 @@ import Keyboard.Types as Keyboard exposing (Config)
 import List.Unique
 import Main.Message exposing (Message(..))
 import Main.Model exposing (Model)
+import Menu.Types exposing (Menu(..))
 import Palette.Init
 import Random
 import Tool.Types exposing (Tool(..))
-import Types.Menu exposing (Menu(..))
 import Types.Session as Session
 import Util exposing (tbw)
 

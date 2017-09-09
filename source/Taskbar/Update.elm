@@ -2,15 +2,15 @@ module Taskbar.Update exposing (update)
 
 import Keyboard.Update as Keyboard
 import Main.Model exposing (Model)
+import Menu.Types exposing (Menu(..))
 import Minimap.Types as Minimap
-import Taskbar.Download.Handle as Download
+import Taskbar.Download.Incorporate as Download
 import Taskbar.Download.Types as Download
 import Taskbar.Download.Update as Download
-import Taskbar.Import.Handle as Import
+import Taskbar.Import.Incorporate as Import
 import Taskbar.Import.Types as Import
 import Taskbar.Import.Update as Import
 import Taskbar.Types as Taskbar exposing (Message(..))
-import Types.Menu exposing (Menu(..))
 
 
 update : Message -> Model -> ( Model, Cmd Message )
@@ -41,7 +41,7 @@ update message model =
                 ( newModel, cmd ) =
                     subModel
                         |> Download.update subMessage
-                        |> Download.handle model
+                        |> Download.incorporate model
             in
             ( newModel, Cmd.map DownloadMessage cmd )
 
@@ -50,7 +50,7 @@ update message model =
                 ( newModel, cmd ) =
                     subModel
                         |> Import.update subMessage
-                        |> Import.handle model
+                        |> Import.incorporate model
             in
             ( newModel, Cmd.map ImportMessage cmd )
 
@@ -103,6 +103,5 @@ update message model =
         ( Command cmd, _ ) ->
             Keyboard.keyUp model cmd ! []
 
-        --Command.handle quickKey model
         _ ->
             model ! []
