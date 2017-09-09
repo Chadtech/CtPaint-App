@@ -8,6 +8,7 @@ import Keyboard.Update as Keyboard
 import List.Unique
 import Main.Message exposing (Message(..))
 import Main.Model exposing (Model)
+import Menu.Update as Menu
 import Minimap.Incorporate as Minimap
 import Minimap.Update as Minimap
 import Mouse exposing (Position)
@@ -35,6 +36,10 @@ update message model =
                     Taskbar.update subMessage model
             in
             ( newModel, Cmd.map TaskbarMessage cmd )
+
+        ( MenuMessage subMessage, _ ) ->
+            Menu.update subMessage model
+                |> Tuple.mapSecond (Cmd.map MenuMessage)
 
         ( PaletteMessage subMessage, _ ) ->
             let

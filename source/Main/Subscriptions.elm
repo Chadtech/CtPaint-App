@@ -9,10 +9,11 @@ import Main.Model exposing (Model)
 import Main.Ports as Ports
 import Menu.Download.Mouse as Download
 import Menu.Import.Mouse as Import
+import Menu.MessageMap
+import Menu.Scale.Mouse as Scale
 import Menu.Types exposing (Menu(..))
 import Minimap.Mouse as Minimap
 import Mouse
-import Taskbar.Util as Taskbar
 import Tool.Fill.Mouse as Fill
 import Tool.Hand.Mouse as Hand
 import Tool.Line.Mouse as Line
@@ -60,13 +61,18 @@ menu model =
 
         Download _ ->
             Sub.map
-                Taskbar.download
+                Menu.MessageMap.download
                 Download.subscriptions
 
         Import _ ->
             Sub.map
-                Taskbar.import_
+                Menu.MessageMap.import_
                 Import.subscriptions
+
+        Scale _ ->
+            Sub.map
+                Menu.MessageMap.scale
+                Scale.subscriptions
 
         _ ->
             Sub.none

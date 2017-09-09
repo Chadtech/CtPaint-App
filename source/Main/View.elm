@@ -9,13 +9,13 @@ import Main.Message exposing (Message(..))
 import Main.Model exposing (Model)
 import Menu.Download.View as Download
 import Menu.Import.View as Import
+import Menu.MessageMap
 import Menu.Scale.View as Scale
 import Menu.Types exposing (Menu(..))
 import Minimap.View as Minimap
 import Mouse exposing (Position)
 import MouseEvents exposing (onMouseMove)
 import Palette.View as Palette
-import Taskbar.Util as Taskbar
 import Taskbar.View as Taskbar
 import Tool.Fill.Mouse as Fill
 import Tool.Hand.Mouse as Hand
@@ -79,13 +79,19 @@ menu m =
             Html.text ""
 
         Download model ->
-            Html.map Taskbar.download (Download.view model)
+            Html.map
+                Menu.MessageMap.download
+                (Download.view model)
 
         Import model ->
-            Html.map Taskbar.import_ (Import.view model)
+            Html.map
+                Menu.MessageMap.import_
+                (Import.view model)
 
         Scale model ->
-            Html.map Taskbar.scale (Scale.view model)
+            Html.map
+                Menu.MessageMap.scale
+                (Scale.view model)
 
         _ ->
             Html.text ""

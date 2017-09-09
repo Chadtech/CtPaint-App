@@ -2,6 +2,7 @@ module Main.Message exposing (Message(..))
 
 import ColorPicker.Types as ColorPicker
 import Keyboard.Types as Keyboard
+import Menu.Types as Menu
 import Minimap.Types as Minimap
 import MouseEvents exposing (MouseEvent)
 import Palette.Types as Palette
@@ -37,6 +38,7 @@ type Message
     | SampleMessage Sample.Message
     | FillMessage Fill.Message
     | TaskbarMessage Taskbar.Message
+    | MenuMessage Menu.Message
     | Tick Time
     | ColorPickerMessage ColorPicker.Message
     | MinimapMessage Minimap.Message

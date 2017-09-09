@@ -1,6 +1,6 @@
-module Menu.Download.Mouse exposing (subscriptions)
+module Menu.Scale.Mouse exposing (subscriptions)
 
-import Menu.Download.Types exposing (Message(..))
+import Menu.Scale.Types exposing (Message(..))
 import Mouse
 
 

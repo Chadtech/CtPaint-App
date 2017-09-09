@@ -1,22 +1,22 @@
-module Taskbar.Util exposing (..)
+module Menu.MessageMap exposing (..)
 
 import Main.Message as Main
 import Menu.Download.Types as Download
 import Menu.Import.Types as Import
 import Menu.Scale.Types as Scale
-import Taskbar.Types as Taskbar
+import Menu.Types as Menu
 
 
 download : Download.Message -> Main.Message
 download =
-    Taskbar.DownloadMessage >> Main.TaskbarMessage
+    Menu.DownloadMessage >> Main.MenuMessage
 
 
 import_ : Import.Message -> Main.Message
 import_ =
-    Taskbar.ImportMessage >> Main.TaskbarMessage
+    Menu.ImportMessage >> Main.MenuMessage
 
 
 scale : Scale.Message -> Main.Message
 scale =
-    Taskbar.ScaleMessage >> Main.TaskbarMessage
+    Menu.ScaleMessage >> Main.MenuMessage

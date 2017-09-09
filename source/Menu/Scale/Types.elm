@@ -15,6 +15,11 @@ type alias Model =
     }
 
 
+type ExternalMessage
+    = DoNothing
+    | Close
+
+
 type Message
     = UpdateField Field String
     | CloseClick

@@ -8,11 +8,11 @@ import Task
 
 
 incorporate : Model -> ( Import.Model, ExternalMessage ) -> ( Model, Cmd Message )
-incorporate model ( downloadModel, externalmessage ) =
+incorporate model ( importModel, externalmessage ) =
     case externalmessage of
         DoNothing ->
             { model
-                | menu = Import downloadModel
+                | menu = Import importModel
             }
                 ! []
 
@@ -21,9 +21,9 @@ incorporate model ( downloadModel, externalmessage ) =
 
         LoadImage ->
             { model
-                | menu = Import downloadModel
+                | menu = Import importModel
             }
-                ! [ loadCmd downloadModel.url ]
+                ! [ loadCmd importModel.url ]
 
         IncorporateImage image ->
             let

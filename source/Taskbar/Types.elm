@@ -9,9 +9,6 @@ import Menu.Scale.Types as Scale
 type Message
     = DropDown (Maybe Option)
     | HoverOnto Option
-    | DownloadMessage Download.Message
-    | ImportMessage Import.Message
-    | ScaleMessage Scale.Message
     | SwitchMinimap Bool
     | Command Command
     | NoOp
