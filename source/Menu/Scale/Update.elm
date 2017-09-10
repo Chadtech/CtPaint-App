@@ -17,6 +17,9 @@ update message model =
         UpdateField field string ->
             pack model DoNothing
 
+        OkayClick ->
+            pack model Finish
+
         CloseClick ->
             pack model Close
 
@@ -24,9 +27,9 @@ update message model =
             pack
                 { model
                     | clickState =
-                        Position
-                            (clientPos.x - targetPos.x)
-                            (clientPos.y - targetPos.y)
+                        { x = clientPos.x - targetPos.x
+                        , y = clientPos.y - targetPos.y
+                        }
                             |> Just
                 }
                 DoNothing
@@ -52,6 +55,42 @@ update message model =
                     | clickState = Nothing
                 }
                 DoNothing
+
+
+updateField : Field -> String -> Model -> ( Model, ExternalMessage )
+updateField field str model =
+    case field of
+        FixedWidth ->
+            case String.toInt str of
+                Ok fixedWidth ->
+                    handleFixedWidth fixedWidth model
+
+                Err err ->
+                    pack model DoNothing
+
+        FixedHeight ->
+            case String.toInt str of
+                Ok fixedHeight ->
+                    handleFixedHeight fixedHeight model
+
+                Err err ->
+                    pack model DoNothing
+
+        PercentWidth ->
+            case String.toFloat str of
+                Ok percentWidth ->
+                    handlePercentWidth percentWidth model
+
+                Err err ->
+                    pack model DoNothing
+
+        PercentHeight ->
+            case String.toFloat str of
+                Ok percentHeight ->
+                    handlePercentHeight percentHeight model
+
+                Err err ->
+                    pack model DoNothing
 
 
 handleFixedWidth : Int -> Model -> ( Model, ExternalMessage )
@@ -118,39 +157,3 @@ handlePercentHeight percentHeight model =
                 round (initialHeight * (percentHeight / 100))
         }
         DoNothing
-
-
-updateField : Field -> String -> Model -> ( Model, ExternalMessage )
-updateField field str model =
-    case field of
-        FixedWidth ->
-            case String.toInt str of
-                Ok fixedWidth ->
-                    handleFixedWidth fixedWidth model
-
-                Err err ->
-                    pack model DoNothing
-
-        FixedHeight ->
-            case String.toInt str of
-                Ok fixedHeight ->
-                    handleFixedHeight fixedHeight model
-
-                Err err ->
-                    pack model DoNothing
-
-        PercentWidth ->
-            case String.toFloat str of
-                Ok percentWidth ->
-                    handlePercentWidth percentWidth model
-
-                Err err ->
-                    pack model DoNothing
-
-        PercentHeight ->
-            case String.toFloat str of
-                Ok percentHeight ->
-                    handlePercentHeight percentHeight model
-
-                Err err ->
-                    pack model DoNothing

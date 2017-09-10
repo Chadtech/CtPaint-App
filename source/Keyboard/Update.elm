@@ -17,6 +17,7 @@ import List.Unique exposing (UniqueList)
 import Main.Model exposing (Model)
 import Menu.Download.Types as Download
 import Menu.Import.Types as Import
+import Menu.Ports
 import Menu.Scale.Types as Scale
 import Menu.Types as Menu exposing (Menu(..))
 import Minimap.Types as Minimap
@@ -25,12 +26,12 @@ import Tool.Types exposing (Tool(..))
 import Tool.Zoom as Zoom
 
 
-update : Message -> Model -> Model
+update : Message -> Model -> ( Model, Cmd message )
 update message model =
     case message of
         KeyEvent (Up code) ->
             let
-                newModel =
+                ( newModel, cmd ) =
                     model.keyboardUpConfig
                         |> getCmd model.keysDown
                         |> keyUp model
@@ -41,16 +42,26 @@ update message model =
                         code
                         model.keysDown
             }
+                ! [ cmd ]
 
         KeyEvent (Down code) ->
-            keyDown
-                { model
-                    | keysDown =
-                        List.Unique.cons
-                            code
-                            model.keysDown
-                }
-                (getCmd model.keysDown model.keyboardDownConfig)
+            let
+                keyCmd =
+                    getCmd
+                        model.keysDown
+                        model.keyboardDownConfig
+
+                newModel =
+                    keyDown
+                        { model
+                            | keysDown =
+                                List.Unique.cons
+                                    code
+                                    model.keysDown
+                        }
+                        keyCmd
+            in
+            ( newModel, Cmd.none )
 
 
 
@@ -119,23 +130,23 @@ keyDown model quickKey =
             model
 
 
-keyUp : Model -> Command -> Model
+keyUp : Model -> Command -> ( Model, Cmd message )
 keyUp model quickKey =
     case quickKey of
         NoCommand ->
-            model
+            model ! []
 
         SetToolToPencil ->
-            { model | tool = Pencil Nothing }
+            { model | tool = Pencil Nothing } ! []
 
         SetToolToHand ->
-            { model | tool = Hand Nothing }
+            { model | tool = Hand Nothing } ! []
 
         SetToolToSelect ->
-            { model | tool = Select Nothing }
+            { model | tool = Select Nothing } ! []
 
         SetToolToFill ->
-            { model | tool = Fill }
+            { model | tool = Fill } ! []
 
         SwatchesOneTurn ->
             { model
@@ -147,6 +158,7 @@ keyUp model quickKey =
                     , keyIsDown = False
                     }
             }
+                ! []
 
         SwatchesThreeTurns ->
             { model
@@ -158,6 +170,7 @@ keyUp model quickKey =
                     , keyIsDown = False
                     }
             }
+                ! []
 
         SwatchesTwoTurns ->
             { model
@@ -169,21 +182,22 @@ keyUp model quickKey =
                     , keyIsDown = False
                     }
             }
+                ! []
 
         Undo ->
-            History.undo model
+            History.undo model ! []
 
         Redo ->
-            History.redo model
+            History.redo model ! []
 
         Copy ->
-            Clipboard.copy model
+            Clipboard.copy model ! []
 
         Cut ->
-            Clipboard.cut model
+            Clipboard.cut model ! []
 
         Paste ->
-            Clipboard.paste model
+            Clipboard.paste model ! []
 
         SelectAll ->
             { model
@@ -200,6 +214,7 @@ keyUp model quickKey =
                         |> Canvas.initialize
                         |> Canvas.draw drawOp
             }
+                ! []
 
         Keyboard.Types.ZoomIn ->
             let
@@ -207,9 +222,9 @@ keyUp model quickKey =
                     Zoom.next model.zoom
             in
             if model.zoom == newZoom then
-                model
+                model ! []
             else
-                Zoom.set newZoom model
+                Zoom.set newZoom model ! []
 
         Keyboard.Types.ZoomOut ->
             let
@@ -217,9 +232,9 @@ keyUp model quickKey =
                     Zoom.prev model.zoom
             in
             if model.zoom == newZoom then
-                model
+                model ! []
             else
-                Zoom.set newZoom model
+                Zoom.set newZoom model ! []
 
         ShowMinimap ->
             case model.minimap of
@@ -230,9 +245,10 @@ keyUp model quickKey =
                                 |> Minimap.init
                                 |> Just
                     }
+                        ! []
 
                 Just _ ->
-                    { model | minimap = Nothing }
+                    { model | minimap = Nothing } ! []
 
         Keyboard.Types.Download ->
             let
@@ -246,6 +262,7 @@ keyUp model quickKey =
                 | seed = seed
                 , menu = Menu.Download downloadModel
             }
+                ! [ Menu.Ports.stealFocus () ]
 
         Keyboard.Types.Import ->
             { model
@@ -254,6 +271,7 @@ keyUp model quickKey =
                         |> Import.init
                         |> Menu.Import
             }
+                ! [ Menu.Ports.stealFocus () ]
 
         Keyboard.Types.Scale ->
             { model
@@ -271,6 +289,10 @@ keyUp model quickKey =
                                 (Canvas.getSize model.canvas)
                                 |> Menu.Scale
             }
+                ! [ Menu.Ports.stealFocus () ]
 
         SwitchGalleryView ->
-            { model | galleryView = not model.galleryView }
+            { model
+                | galleryView = not model.galleryView
+            }
+                ! []

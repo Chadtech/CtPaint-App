@@ -2,6 +2,17 @@ _ = require "lodash"
 AmazonCognitoIdentity = require 'amazon-cognito-identity-js'
 CognitoUserPool = AmazonCognitoIdentity.CognitoUserPool
 
+
+listenToKeyEvents = (app, keydown, keyup) ->
+    window.addEventListener 'keydown', keydown
+    window.addEventListener 'keyup', keyup
+
+
+ignoreKeyEvents = (app, keydown, keyup) ->
+    window.removeEventListener 'keydown', keydown
+    window.removeEventListener 'keyup', keyup
+
+
 init = (app) ->
     app.ports.download.subscribe (fn) ->
         canvas = document.getElementById "main-canvas"
@@ -12,21 +23,28 @@ init = (app) ->
         a.download = fn
         a.click()
 
-
     window.addEventListener 'focus', ->
         app.ports.windowFocus.send true
 
     window.addEventListener 'blur', ->
         app.ports.windowFocus.send false
 
-    window.addEventListener 'keydown', (event) ->
+    keyDownListener = (event) ->
         app.ports.keyDown.send event.keyCode
         event.preventDefault()
 
-    window.addEventListener 'keyup', (event) ->
+    keyUpListener = (event) ->
         app.ports.keyUp.send event.keyCode
         event.preventDefault()
-    
+
+    listenToKeyEvents app, keyDownListener, keyUpListener
+
+    app.ports.stealFocus.subscribe ->
+        ignoreKeyEvents app, keyDownListener, keyUpListener
+
+    app.ports.returnFocus.subscribe ->
+        listenToKeyEvents app, keyDownListener, keyUpListener
+
     app
 
 

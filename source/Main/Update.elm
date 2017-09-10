@@ -62,13 +62,13 @@ update message model =
 
         ( KeyboardMessage subMessage, _ ) ->
             let
-                newModel =
+                ( newModel, cmd ) =
                     Keyboard.update subMessage model
 
                 _ =
                     log "keys down" newModel.keysDown
             in
-            newModel ! []
+            newModel ! [ cmd ]
 
         ( HandMessage subMessage, Hand subModel ) ->
             let

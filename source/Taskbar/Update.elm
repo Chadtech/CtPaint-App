@@ -42,7 +42,7 @@ update message model =
                 { model | minimap = Nothing } ! []
 
         Command cmd ->
-            Keyboard.keyUp model cmd ! []
+            Keyboard.keyUp model cmd
 
         NoOp ->
             model ! []

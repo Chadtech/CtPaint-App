@@ -19,11 +19,13 @@ type alias Model =
 type ExternalMessage
     = DoNothing
     | Close
+    | Finish
 
 
 type Message
     = UpdateField Field String
     | CloseClick
+    | OkayClick
     | HeaderMouseDown MouseEvent
     | HeaderMouseMove Position
     | HeaderMouseUp

@@ -3,6 +3,7 @@ module Menu.Import.Incorporate exposing (incorporate)
 import Canvas
 import Main.Model exposing (Model)
 import Menu.Import.Types as Import exposing (ExternalMessage(..), Message(..))
+import Menu.Ports as Ports
 import Menu.Types exposing (Menu(..))
 import Task
 
@@ -17,7 +18,7 @@ incorporate model ( importModel, externalmessage ) =
                 ! []
 
         Close ->
-            { model | menu = None } ! []
+            { model | menu = None } ! [ Ports.returnFocus () ]
 
         LoadImage ->
             { model
@@ -44,7 +45,7 @@ incorporate model ( importModel, externalmessage ) =
                 | selection = Just ( imagePosition, image )
                 , menu = None
             }
-                ! []
+                ! [ Ports.returnFocus () ]
 
 
 loadCmd : String -> Cmd Message

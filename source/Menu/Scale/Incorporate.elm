@@ -1,6 +1,7 @@
 module Menu.Scale.Incorporate exposing (incorporate)
 
 import Main.Model exposing (Model)
+import Menu.Ports as Ports
 import Menu.Scale.Types as Scale exposing (ExternalMessage(..), Message(..))
 import Menu.Types exposing (Menu(..))
 
@@ -14,5 +15,8 @@ incorporate model ( scaleModel, externalMessage ) =
             }
                 ! []
 
+        Finish ->
+            model ! []
+
         Close ->
-            { model | menu = None } ! []
+            ( { model | menu = None }, Ports.returnFocus () )
