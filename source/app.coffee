@@ -13,15 +13,21 @@ ignoreKeyEvents = (app, keydown, keyup) ->
     window.removeEventListener 'keyup', keyup
 
 
-init = (app) ->
-    app.ports.download.subscribe (fn) ->
-        canvas = document.getElementById "main-canvas"
-        png = canvas.toDataURL()
+downloadCanvas = (fn) ->
+    canvas = document.getElementById "main-canvas"
+    png = canvas.toDataURL()
 
-        a = document.createElement "a"
-        a.href = png
-        a.download = fn
-        a.click()
+    a = document.createElement "a"
+    a.href = png
+    a.download = fn
+    a.click()
+
+
+window.onbeforeunload = (event) -> ""
+
+
+init = (app) ->
+    app.ports.download.subscribe downloadCanvas
 
     window.addEventListener 'focus', ->
         app.ports.windowFocus.send true

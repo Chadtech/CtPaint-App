@@ -100,7 +100,7 @@ defaultKeyUpConfig cmd =
     , [ BackQuote ] := ShowMinimap
     , [ CharD, Shift ] := Download
     , [ CharI, cmd ] := Import
-    , [ CharW, cmd ] := Scale
+    , [ CharD, Shift, cmd ] := Scale
     , [ Tab ] := SwitchGalleryView
     ]
         |> List.map keysToCodes

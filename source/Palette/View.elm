@@ -1,7 +1,5 @@
 module Palette.View exposing (..)
 
---import Html.Events exposing (onClick)
-
 import Array
 import Color exposing (Color)
 import Draw.Util exposing (colorAt)

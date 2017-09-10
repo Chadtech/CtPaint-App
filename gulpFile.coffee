@@ -44,7 +44,7 @@ gulp.task "stylus", ->
         .pipe (gulp.dest paths.development)
 
 
-gulp.task "elm", [ "elm-make", "elm-format" ]
+gulp.task "elm", [ "elm-make" ]
 
 
 gulp.task "elm-format", ->
@@ -70,6 +70,9 @@ gulp.task "elm-make", ->
             stderr = stderr.slice 0, stderr.length - 1
             (stderr.split "\n").forEach (line) ->
                 util.log (util.colors.yellow (String line))
+
+            formatCmd = "elm-format ./source --yes"
+            cp.exec formatCmd, ->
 
         stdout = stdout.slice 0, stdout.length - 1
         (stdout.split "\n").forEach (line) ->

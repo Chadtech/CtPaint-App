@@ -11,6 +11,7 @@ type Message
     | CloseClick
     | AttemptLoad
     | ImageLoaded (Result Error Canvas)
+    | TryAgain
     | HeaderMouseDown MouseEvent
     | HeaderMouseMove Position
     | HeaderMouseUp

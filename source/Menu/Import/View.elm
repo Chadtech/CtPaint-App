@@ -17,28 +17,61 @@ view model =
             , left model.position.x
             ]
         ]
-        [ header
-        , form
-            [ class "field"
-            , onSubmit AttemptLoad
-            ]
-            [ p [] [ text "url" ]
-            , input
-                [ onInput UpdateField
-                , value model.url
-                , placeholder "http://"
-                ]
-                []
-            , viewIf
-                model.error
-                (p [] [ text " Error ! " ])
-            ]
-        , a
-            [ class "submit-button"
-            , onClick AttemptLoad
-            ]
-            [ text "import" ]
+        (determineView model)
+
+
+determineView : Model -> List (Html Message)
+determineView model =
+    if model.error then
+        errorView model
+    else
+        normalView model
+
+
+errorView : Model -> List (Html Message)
+errorView model =
+    [ header
+    , div
+        [ class "text-container" ]
+        [ p
+            []
+            [ text "Sorry, we couldnt load that image" ]
         ]
+    , div
+        [ class "buttons-container" ]
+        [ a
+            [ onClick TryAgain
+            ]
+            [ text "Try Again" ]
+        , a
+            [ onClick CloseClick
+            ]
+            [ text "Close" ]
+        ]
+    ]
+
+
+normalView : Model -> List (Html Message)
+normalView model =
+    [ header
+    , form
+        [ class "field"
+        , onSubmit AttemptLoad
+        ]
+        [ p [] [ text "url" ]
+        , input
+            [ onInput UpdateField
+            , value model.url
+            , placeholder "http://"
+            ]
+            []
+        ]
+    , a
+        [ class "submit-button"
+        , onClick AttemptLoad
+        ]
+        [ text "import" ]
+    ]
 
 
 header : Html Message

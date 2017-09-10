@@ -21,6 +21,11 @@ update message model =
         CloseClick ->
             pack model Close
 
+        TryAgain ->
+            pack
+                { model | error = False }
+                DoNothing
+
         AttemptLoad ->
             pack model LoadImage
 
