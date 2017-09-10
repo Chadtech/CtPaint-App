@@ -146,7 +146,7 @@ update message model =
                 colorPickerUpdate =
                     ColorPicker.update subMessage model.colorPicker
             in
-            ColorPicker.incorporate colorPickerUpdate model ! []
+            ColorPicker.incorporate colorPickerUpdate model
 
         ( MinimapMessage subMessage, _ ) ->
             case model.minimap of

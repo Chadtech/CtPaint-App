@@ -1,7 +1,9 @@
 module Util exposing (..)
 
 import Canvas exposing (Point)
-import Html exposing (Html)
+import Html exposing (Attribute, Html)
+import Html.Events
+import Json.Decode as Json
 import Mouse exposing (Position)
 import Window exposing (Size)
 
@@ -61,7 +63,17 @@ slice start end =
 
 
 
--- HTML STYLE --
+-- HTML
+
+
+onContextMenu : msg -> Attribute msg
+onContextMenu msg =
+    Html.Events.onWithOptions
+        "contextmenu"
+        { stopPropagation = False
+        , preventDefault = True
+        }
+        (Json.succeed msg)
 
 
 viewIf : Bool -> Html msg -> Html msg

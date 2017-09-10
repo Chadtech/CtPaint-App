@@ -3,7 +3,7 @@ module Main.Subscriptions exposing (subscriptions)
 import AnimationFrame
 import ColorPicker.Mouse as ColorPicker
 import Keyboard.Subscriptions as Keyboard
-import Keyboard.Types as Keyboard
+import Keyboard.Types
 import Main.Message exposing (Message(..))
 import Main.Model exposing (Model)
 import Main.Ports as Ports
@@ -39,8 +39,8 @@ subscriptions model =
     , Sub.map
         MinimapMessage
         (Minimap.subscriptions model.minimap)
-    , listenForKeyCmds model keyboardUps
-    , listenForKeyCmds model keyboardDowns
+    , keyboardUps
+    , keyboardDowns
     , Sub.batch (toolSubs model)
     , menu model
     , Ports.windowFocus HandleWindowFocus
@@ -118,27 +118,21 @@ toolSubs { tool } =
             List.map (Sub.map ZoomOutMessage) ZoomOut.subs
 
 
+
+-- KEYBOARD --
+
+
 keyboardUps : Sub Message
 keyboardUps =
-    Keyboard.keyUp
-        (KeyboardMessage << Keyboard.KeyEvent << Keyboard.Up)
+    Keyboard.keyUp <|
+        Keyboard.Types.Up
+            >> Keyboard.Types.KeyEvent
+            >> KeyboardMessage
 
 
 keyboardDowns : Sub Message
 keyboardDowns =
-    Keyboard.keyDown
-        (KeyboardMessage << Keyboard.KeyEvent << Keyboard.Down)
-
-
-
--- HELPERS --
-
-
-listenForKeyCmds : Model -> Sub Message -> Sub Message
-listenForKeyCmds { menu, colorPicker } sub =
-    case ( menu, colorPicker.focusedOn ) of
-        ( None, False ) ->
-            sub
-
-        _ ->
-            Sub.none
+    Keyboard.keyDown <|
+        Keyboard.Types.Down
+            >> Keyboard.Types.KeyEvent
+            >> KeyboardMessage

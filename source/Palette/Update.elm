@@ -1,8 +1,6 @@
 module Palette.Update exposing (update)
 
-import ColorPicker.Incorporate as ColorPicker
-import ColorPicker.Types as ColorPicker
-import ColorPicker.Update as ColorPicker
+import ColorPicker.Util as ColorPicker
 import Keyboard.Extra exposing (Key(..))
 import List.Unique
 import Main.Message as MainMessage
@@ -17,38 +15,34 @@ update message model =
         ResizeToolbar direction ->
             handleResize direction model
 
-        PaletteSquareClick color index ->
-            if ctrlIsDown model then
-                let
-                    colorPickerUpdate =
-                        ColorPicker.update
-                            (ColorPicker.WakeUp color index)
-                            model.colorPicker
-
-                    newModel =
-                        ColorPicker.incorporate
-                            colorPickerUpdate
-                            model
-                in
-                newModel ! []
-            else
-                let
-                    { swatches } =
+        WakeUpColorPicker color index ->
+            let
+                newModel =
+                    ColorPicker.wakeUp
+                        index
+                        color
                         model
-                in
-                { model
-                    | swatches =
-                        { swatches
-                            | primary = color
-                        }
-                }
-                    ! []
+            in
+            newModel ! []
+
+        PaletteSquareClick color ->
+            let
+                { swatches } =
+                    model
+            in
+            { model
+                | swatches =
+                    { swatches
+                        | primary = color
+                    }
+            }
+                ! []
 
 
-ctrlIsDown : Model -> Bool
-ctrlIsDown { keysDown } =
+shiftIsDown : Model -> Bool
+shiftIsDown { keysDown } =
     List.Unique.member
-        (Keyboard.Extra.toCode Control)
+        (Keyboard.Extra.toCode Shift)
         keysDown
 
 

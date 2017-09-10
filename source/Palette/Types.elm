@@ -7,7 +7,8 @@ import Types.Mouse exposing (Direction(..))
 
 type Message
     = ResizeToolbar Direction
-    | PaletteSquareClick Color Int
+    | PaletteSquareClick Color
+    | WakeUpColorPicker Color Int
 
 
 type alias Swatches =

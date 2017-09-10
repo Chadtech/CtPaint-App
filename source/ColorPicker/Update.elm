@@ -1,7 +1,13 @@
 module ColorPicker.Update exposing (update)
 
 import Color exposing (Color)
-import ColorPicker.Types exposing (..)
+import ColorPicker.Types
+    exposing
+        ( ExternalMessage(..)
+        , Gradient(..)
+        , Message(..)
+        , Model
+        )
 import ColorPicker.Util exposing (doesntHaveHue)
 import Mouse exposing (Position)
 import Palette.Types as Palette
@@ -53,17 +59,6 @@ update message model =
             in
             ( newModel, DoNothing )
 
-        WakeUp color index ->
-            let
-                newModel =
-                    { model
-                        | color = color
-                        , index = index
-                        , show = True
-                    }
-            in
-            ( newModel, DoNothing )
-
         Close ->
             let
                 newModel =
@@ -74,9 +69,10 @@ update message model =
             ( newModel, DoNothing )
 
         SetFocus focused ->
-            ( { model | focusedOn = focused }
-            , DoNothing
-            )
+            if focused then
+                ( model, StealFocus )
+            else
+                ( model, ReturnFocus )
 
         UpdateColorHexField hex ->
             let

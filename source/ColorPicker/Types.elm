@@ -11,13 +11,14 @@ type ExternalMessage
     = DoNothing
     | SetColor Int Color
     | UpdateHistory Int Color
+    | StealFocus
+    | ReturnFocus
 
 
 type Message
     = HeaderMouseDown MouseEvent
     | HeaderMouseMove Position
     | HeaderMouseUp Position
-    | WakeUp Color Int
     | Close
     | SetFocus Bool
     | StealSubmit

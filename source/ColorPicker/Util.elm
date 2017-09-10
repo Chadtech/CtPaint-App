@@ -1,6 +1,7 @@
-module ColorPicker.Util exposing (doesntHaveHue)
+module ColorPicker.Util exposing (doesntHaveHue, wakeUp)
 
 import Color exposing (Color)
+import Main.Model exposing (Model)
 import Util
 
 
@@ -15,3 +16,15 @@ doesntHaveHue color =
         , green == blue
         , blue == red
         ]
+
+
+wakeUp : Int -> Color -> Model -> Model
+wakeUp index color ({ colorPicker } as model) =
+    { model
+        | colorPicker =
+            { colorPicker
+                | color = color
+                , index = index
+                , show = True
+            }
+    }

@@ -1,5 +1,7 @@
 module Palette.View exposing (..)
 
+--import Html.Events exposing (onClick)
+
 import Array
 import Color exposing (Color)
 import Draw.Util exposing (colorAt)
@@ -63,7 +65,9 @@ paletteSquare show selectedIndex index color =
     div
         [ class "square"
         , background color
-        , onClick (PaletteSquareClick color index)
+        , WakeUpColorPicker color index
+            |> Util.onContextMenu
+        , onClick (PaletteSquareClick color)
         ]
         (highLight (show && (index == selectedIndex)))
 
