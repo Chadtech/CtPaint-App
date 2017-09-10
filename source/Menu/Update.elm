@@ -7,6 +7,8 @@ import Menu.Import.Incorporate as Import
 import Menu.Import.Update as Import
 import Menu.Scale.Incorporate as Scale
 import Menu.Scale.Update as Scale
+import Menu.Text.Incorporate as Text
+import Menu.Text.Update as Text
 import Menu.Types exposing (Menu(..), Message(..))
 
 
@@ -30,6 +32,12 @@ update message model =
                 |> Scale.update subMsg
                 |> Scale.incorporate model
                 |> Tuple.mapSecond (Cmd.map ScaleMessage)
+
+        ( TextMessage subMsg, Text subModel ) ->
+            subModel
+                |> Text.update subMsg
+                |> Text.incorporate model
+                |> Tuple.mapSecond (Cmd.map TextMessage)
 
         _ ->
             model ! []

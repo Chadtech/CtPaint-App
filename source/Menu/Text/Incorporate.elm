@@ -1,8 +1,8 @@
-module Menu.Scale.Incorporate exposing (incorporate)
+module Menu.Text.Incorporate exposing (incorporate)
 
 import Main.Model exposing (Model)
 import Menu.Ports as Ports
-import Menu.Scale.Types as Scale
+import Menu.Text.Types as Text
     exposing
         ( ExternalMessage(..)
         , Message(..)
@@ -10,16 +10,16 @@ import Menu.Scale.Types as Scale
 import Menu.Types exposing (Menu(..))
 
 
-incorporate : Model -> ( Scale.Model, ExternalMessage ) -> ( Model, Cmd Message )
-incorporate model ( scaleModel, externalMessage ) =
+incorporate : Model -> ( Text.Model, ExternalMessage ) -> ( Model, Cmd Message )
+incorporate model ( textModel, externalMessage ) =
     case externalMessage of
         DoNothing ->
             { model
-                | menu = Scale scaleModel
+                | menu = Text textModel
             }
                 ! []
 
-        Finish ->
+        AddText ->
             model ! []
 
         Close ->

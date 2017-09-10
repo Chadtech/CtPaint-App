@@ -11,6 +11,7 @@ import Menu.Download.View as Download
 import Menu.Import.View as Import
 import Menu.MessageMap
 import Menu.Scale.View as Scale
+import Menu.Text.View as Text
 import Menu.Types exposing (Menu(..))
 import Minimap.View as Minimap
 import Mouse exposing (Position)
@@ -93,8 +94,10 @@ menu m =
                 Menu.MessageMap.scale
                 (Scale.view model)
 
-        _ ->
-            Html.text ""
+        Text model ->
+            Html.map
+                Menu.MessageMap.text
+                (Text.view model)
 
 
 

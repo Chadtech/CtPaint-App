@@ -4,6 +4,7 @@ import Main.Message as Main
 import Menu.Download.Types as Download
 import Menu.Import.Types as Import
 import Menu.Scale.Types as Scale
+import Menu.Text.Types as Text
 import Menu.Types as Menu
 
 
@@ -20,3 +21,8 @@ import_ =
 scale : Scale.Message -> Main.Message
 scale =
     Menu.ScaleMessage >> Main.MenuMessage
+
+
+text : Text.Message -> Main.Message
+text =
+    Menu.TextMessage >> Main.MenuMessage
