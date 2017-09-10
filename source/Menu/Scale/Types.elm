@@ -8,10 +8,11 @@ import Window exposing (Size)
 type alias Model =
     { position : Position
     , clickState : Maybe Position
-    , fixedWidthField : String
-    , fixedHeightField : String
-    , percentWidthField : String
-    , percentHeightField : String
+    , fixedWidth : Int
+    , fixedHeight : Int
+    , percentWidth : Float
+    , percentHeight : Float
+    , initialSize : Size
     }
 
 
@@ -42,8 +43,9 @@ init windowSize canvasSize =
         , y = windowSize.height // 2
         }
     , clickState = Nothing
-    , fixedWidthField = toString windowSize.width
-    , fixedHeightField = toString windowSize.height
-    , percentWidthField = "100"
-    , percentHeightField = "100"
+    , fixedWidth = windowSize.width
+    , fixedHeight = windowSize.height
+    , percentWidth = 100
+    , percentHeight = 100
+    , initialSize = canvasSize
     }

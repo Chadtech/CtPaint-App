@@ -5,7 +5,6 @@ import ColorPicker.Types exposing (..)
 import ColorPicker.Util exposing (doesntHaveHue)
 import Mouse exposing (Position)
 import Palette.Types as Palette
-import ParseInt
 
 
 update : Message -> Model -> ( Model, ExternalMessage )
@@ -146,7 +145,7 @@ update message model =
 
 fieldHandler : Gradient -> String -> Model -> ( Model, ExternalMessage )
 fieldHandler gradient str model =
-    case ParseInt.parseInt str of
+    case String.toInt str of
         Ok int ->
             fieldHandlerOk gradient str int model
 

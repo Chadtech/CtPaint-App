@@ -8,14 +8,14 @@ import Taskbar.Types as Taskbar exposing (Message(..))
 
 update : Message -> Model -> ( Model, Cmd Message )
 update message model =
-    case ( message, model.menu ) of
-        ( DropDown maybeOption, _ ) ->
+    case message of
+        DropDown maybeOption ->
             { model
                 | taskbarDropped = maybeOption
             }
                 ! []
 
-        ( HoverOnto option, _ ) ->
+        HoverOnto option ->
             case model.taskbarDropped of
                 Nothing ->
                     model ! []
@@ -29,7 +29,7 @@ update message model =
                         }
                             ! []
 
-        ( SwitchMinimap turnOn, _ ) ->
+        SwitchMinimap turnOn ->
             if turnOn then
                 { model
                     | minimap =
@@ -41,8 +41,8 @@ update message model =
             else
                 { model | minimap = Nothing } ! []
 
-        ( Command cmd, _ ) ->
+        Command cmd ->
             Keyboard.keyUp model cmd ! []
 
-        _ ->
+        NoOp ->
             model ! []
