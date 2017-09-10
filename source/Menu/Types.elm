@@ -13,6 +13,7 @@ type Menu
     | Help
     | Download Download.Model
     | Import Import.Model
+    | Text
 
 
 type Message

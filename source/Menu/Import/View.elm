@@ -40,12 +40,10 @@ errorView model =
     , div
         [ class "buttons-container" ]
         [ a
-            [ onClick TryAgain
-            ]
+            [ onClick TryAgain ]
             [ text "Try Again" ]
         , a
-            [ onClick CloseClick
-            ]
+            [ onClick CloseClick ]
             [ text "Close" ]
         ]
     ]

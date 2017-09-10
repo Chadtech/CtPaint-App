@@ -21,10 +21,19 @@ incorporate model ( importModel, externalmessage ) =
             { model | menu = None } ! [ Ports.returnFocus () ]
 
         LoadImage ->
+            let
+                cmd =
+                    [ "https://cors-anywhere.herokuapp.com/"
+                    , importModel.url
+                    ]
+                        |> String.concat
+                        |> Canvas.loadImage
+                        |> Task.attempt ImageLoaded
+            in
             { model
                 | menu = Import importModel
             }
-                ! [ loadCmd importModel.url ]
+                ! [ cmd ]
 
         IncorporateImage image ->
             let
@@ -46,10 +55,3 @@ incorporate model ( importModel, externalmessage ) =
                 , menu = None
             }
                 ! [ Ports.returnFocus () ]
-
-
-loadCmd : String -> Cmd Message
-loadCmd url =
-    Task.attempt
-        ImageLoaded
-        (Canvas.loadImage url)

@@ -13,6 +13,7 @@ type alias Model =
     , percentWidth : Float
     , percentHeight : Float
     , initialSize : Size
+    , lockRatio : Bool
     }
 
 
@@ -29,6 +30,7 @@ type Message
     | HeaderMouseDown MouseEvent
     | HeaderMouseMove Position
     | HeaderMouseUp
+    | SetSize
 
 
 type Field
@@ -50,4 +52,5 @@ init windowSize canvasSize =
     , percentWidth = 100
     , percentHeight = 100
     , initialSize = canvasSize
+    , lockRatio = False
     }

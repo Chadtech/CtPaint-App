@@ -56,6 +56,9 @@ update message model =
                 }
                 DoNothing
 
+        SetSize ->
+            pack model DoNothing
+
 
 updateField : Field -> String -> Model -> ( Model, ExternalMessage )
 updateField field str model =
