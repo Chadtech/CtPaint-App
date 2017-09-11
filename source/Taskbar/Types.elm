@@ -15,5 +15,6 @@ type Option
     = File
     | Edit
     | Transform
+    | Tools
     | View
     | Help

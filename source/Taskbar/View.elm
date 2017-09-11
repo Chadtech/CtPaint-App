@@ -16,6 +16,7 @@ view ({ taskbarDropped } as model) =
         [ file model
         , edit model
         , transform model
+        , tools model
         , view_ model
         , help taskbarDropped
         , invisibleWall taskbarDropped
@@ -121,6 +122,43 @@ transform model =
 
         _ ->
             taskbarButtonClose Transform
+
+
+
+-- TOOLS --
+
+
+tools : Model -> Html Message
+tools model =
+    case model.taskbarDropped of
+        Just Tools ->
+            taskbarButtonOpen
+                [ text "Tools"
+                , seam
+                , div
+                    [ class "options tools" ]
+                    [ option ( "Flip Horiztonal", "Shift + H", NoOp )
+                    , option ( "Flip Vertical", "Shift + V", NoOp )
+                    , divider
+                    , option ( "Rotate 90", "Shift + R", NoOp )
+                    , option ( "Rotate 180", "Shift + E", NoOp )
+                    , option ( "Rotate 270", "Shift + D", NoOp )
+                    , divider
+                    , option_
+                        "Scale"
+                        (getCmdStr model.keyboardUpLookUp Scale)
+                        (Command Scale)
+                    , option ( "Replace Color", "Cmd + R", NoOp )
+                    , option ( "Invert", "Cmd + I", NoOp )
+                    ]
+                ]
+
+        _ ->
+            taskbarButtonClose Tools
+
+
+
+-- EDIT --
 
 
 edit : Model -> Html Message
