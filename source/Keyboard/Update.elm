@@ -5,6 +5,7 @@ import Clipboard.Update as Clipboard
 import Dict
 import Draw.Rectangle as Rectangle
 import History.Update as History
+import Json.Decode exposing (decodeValue)
 import Keyboard exposing (KeyCode)
 import Keyboard.Types
     exposing
@@ -12,6 +13,7 @@ import Keyboard.Types
         , Config
         , Direction(..)
         , Message(..)
+        , keyPayloadDecoder
         )
 import List.Unique exposing (UniqueList)
 import Main.Model exposing (Model)
@@ -29,39 +31,49 @@ import Tool.Zoom as Zoom
 update : Message -> Model -> ( Model, Cmd message )
 update message model =
     case message of
-        KeyEvent (Up code) ->
-            let
-                ( newModel, cmd ) =
-                    model.keyboardUpConfig
-                        |> getCmd model.keysDown
-                        |> keyUp model
-            in
-            { newModel
-                | keysDown =
-                    List.Unique.remove
-                        code
-                        model.keysDown
-            }
-                ! [ cmd ]
+        KeyEvent (Up json) ->
+            case decodeValue keyPayloadDecoder json of
+                Ok payload ->
+                    let
+                        ( newModel, cmd ) =
+                            model.keyboardUpConfig
+                                |> getCmd model.keysDown
+                                |> keyUp model
+                    in
+                    { newModel
+                        | keysDown =
+                            List.Unique.remove
+                                payload.code
+                                model.keysDown
+                    }
+                        ! [ cmd ]
 
-        KeyEvent (Down code) ->
-            let
-                keyCmd =
-                    getCmd
-                        model.keysDown
-                        model.keyboardDownConfig
+                Err err ->
+                    model ! []
 
-                newModel =
-                    keyDown
-                        { model
-                            | keysDown =
-                                List.Unique.cons
-                                    code
-                                    model.keysDown
-                        }
-                        keyCmd
-            in
-            ( newModel, Cmd.none )
+        KeyEvent (Down json) ->
+            case decodeValue keyPayloadDecoder json of
+                Ok payload ->
+                    let
+                        keyCmd =
+                            getCmd
+                                model.keysDown
+                                model.keyboardDownConfig
+
+                        newModel =
+                            keyDown
+                                { model
+                                    | keysDown =
+                                        List.Unique.cons
+                                            payload.code
+                                            model.keysDown
+                                }
+                                keyCmd
+                    in
+                    ( newModel, Cmd.none )
+
+                Err err ->
+                    model ! []
 
 
 

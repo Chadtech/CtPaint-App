@@ -1,7 +1,9 @@
 port module Keyboard.Subscriptions exposing (..)
 
+import Json.Decode exposing (Value)
 
-port keyDown : (Int -> msg) -> Sub msg
+
+port keyDown : (Value -> msg) -> Sub msg
 
 
-port keyUp : (Int -> msg) -> Sub msg
+port keyUp : (Value -> msg) -> Sub msg

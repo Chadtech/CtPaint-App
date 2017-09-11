@@ -36,11 +36,23 @@ init = (app) ->
         app.ports.windowFocus.send false
 
     keyDownListener = (event) ->
-        app.ports.keyDown.send event.keyCode
+        payload =
+            keyCode: event.keyCode
+            shift: event.shiftKey
+            cmd: event.metaKey
+            ctrl: event.ctrlKey
+
+        app.ports.keyDown.send payload
         event.preventDefault()
 
     keyUpListener = (event) ->
-        app.ports.keyUp.send event.keyCode
+        payload =
+            keyCode: event.keyCode
+            shift: event.shiftKey
+            cmd: event.metaKey
+            ctrl: event.ctrlKey
+
+        app.ports.keyUp.send payload
         event.preventDefault()
 
     listenToKeyEvents app, keyDownListener, keyUpListener

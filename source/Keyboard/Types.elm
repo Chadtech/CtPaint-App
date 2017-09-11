@@ -1,14 +1,16 @@
 module Keyboard.Types exposing (..)
 
 import Dict exposing (Dict)
+import Json.Decode as Decode exposing (Decoder)
+import Json.Decode.Pipeline as Pipeline exposing (decode, required)
 import Keyboard exposing (KeyCode)
 import Keyboard.Extra exposing (Key(..))
 import Util exposing ((:=))
 
 
 type Direction
-    = Up KeyCode
-    | Down KeyCode
+    = Up Decode.Value
+    | Down Decode.Value
 
 
 type Message
@@ -41,6 +43,23 @@ type Command
 
 type alias Config =
     Dict (List KeyCode) Command
+
+
+type alias KeyPayload =
+    { code : Int
+    , cmd : Bool
+    , ctrl : Bool
+    , shift : Bool
+    }
+
+
+keyPayloadDecoder : Decoder KeyPayload
+keyPayloadDecoder =
+    decode KeyPayload
+        |> required "keyCode" Decode.int
+        |> required "cmd" Decode.bool
+        |> required "ctrl" Decode.bool
+        |> required "shift" Decode.bool
 
 
 
