@@ -2,15 +2,15 @@ module Menu.Download.Update exposing (update)
 
 import Menu.Download.Types
     exposing
-        ( ExternalMessage(..)
-        , Message(..)
+        ( ExternalMsg(..)
         , Model
+        , Msg(..)
         )
 import Mouse exposing (Position)
 import Util exposing (pack)
 
 
-update : Message -> Model -> ( Model, ExternalMessage )
+update : Msg -> Model -> ( Model, ExternalMsg )
 update message model =
     case message of
         UpdateField content ->

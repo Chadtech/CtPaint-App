@@ -1,6 +1,6 @@
 module Tool.Util exposing (adjustPosition)
 
-import Main.Model exposing (Model)
+import Model exposing (Model)
 import Mouse exposing (Position)
 
 

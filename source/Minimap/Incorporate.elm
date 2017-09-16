@@ -1,10 +1,10 @@
 module Minimap.Incorporate exposing (..)
 
-import Main.Model exposing (Model)
-import Minimap.Types as Minimap exposing (ExternalMessage(..))
+import Minimap.Types as Minimap exposing (ExternalMsg(..))
+import Model exposing (Model)
 
 
-incorporate : ( Minimap.Model, ExternalMessage ) -> Model -> Model
+incorporate : ( Minimap.Model, ExternalMsg ) -> Model -> Model
 incorporate ( minimap, message ) model =
     case message of
         DoNothing ->

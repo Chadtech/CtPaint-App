@@ -1,23 +1,31 @@
-module Main.Init exposing (..)
+module Model exposing (..)
 
+import Array exposing (Array)
 import Canvas exposing (Canvas, DrawOp(..), Point, Size)
-import Color
+import Color exposing (Color)
 import ColorPicker.Types as ColorPicker
+import Dict exposing (Dict)
 import History.Types exposing (HistoryOp(..))
 import Json.Decode as Decode exposing (Decoder, Value)
+import Keyboard exposing (KeyCode)
 import Keyboard.Types as Keyboard exposing (Config)
-import List.Unique
-import Main.Message exposing (Message(..))
-import Main.Model exposing (Model)
+import List.Unique exposing (UniqueList)
 import Menu.Types exposing (Menu(..))
+import Minimap.Types as Minimap
+import Mouse exposing (Position)
+import Msg exposing (Msg(..))
 import Palette.Init
-import Random
+import Palette.Types exposing (Swatches)
+import Random exposing (Seed)
+import Taskbar.Types as Taskbar
 import Tool.Types exposing (Tool(..))
-import Types.Session as Session
 import Util exposing (tbw)
 
 
-init : Value -> ( Model, Cmd Message )
+-- INIT --
+
+
+init : Value -> ( Model, Cmd Msg )
 init json =
     let
         windowSize : Size
@@ -41,7 +49,7 @@ init json =
                 (decodeIsChrome json)
                 Nothing
     in
-    { session = Session.decode json
+    { session = decodeSession json
     , canvas = canvas
     , projectName = Nothing
     , canvasPosition =
@@ -79,6 +87,39 @@ init json =
     , seed = Random.initialSeed (decodeSeed json)
     }
         ! []
+
+
+type alias Model =
+    { session : Maybe Session
+    , canvas : Canvas
+    , projectName : Maybe String
+    , canvasPosition : Position
+    , pendingDraw : DrawOp
+    , drawAtRender : DrawOp
+    , swatches : Swatches
+    , palette : Array Color
+    , horizontalToolbarHeight : Int
+    , subMouseMove : Maybe (Position -> Msg)
+    , windowSize : Size
+    , tool : Tool
+    , zoom : Int
+    , galleryView : Bool
+    , colorPicker : ColorPicker.Model
+    , history : List HistoryOp
+    , future : List HistoryOp
+    , mousePosition : Maybe Position
+    , selection : Maybe ( Position, Canvas )
+    , clipboard : Maybe ( Position, Canvas )
+    , keysDown : UniqueList KeyCode
+    , keyboardUpConfig : Keyboard.Config
+    , keyboardUpLookUp : Dict String (List String)
+    , keyboardDownConfig : Keyboard.Config
+    , keyboardDownLookUp : Dict String (List String)
+    , taskbarDropped : Maybe Taskbar.Option
+    , minimap : Maybe Minimap.Model
+    , menu : Menu
+    , seed : Seed
+    }
 
 
 
@@ -172,3 +213,22 @@ windowDecoder =
     Decode.map2 (,)
         (Decode.field "windowWidth" Decode.int)
         (Decode.field "windowHeight" Decode.int)
+
+
+
+-- SESSION --
+
+
+type alias Session =
+    { email : String }
+
+
+sessionDecoder : Decoder Session
+sessionDecoder =
+    Decode.field "email" Decode.string
+        |> Decode.map Session
+
+
+decodeSession : Value -> Maybe Session
+decodeSession =
+    Decode.decodeValue sessionDecoder >> Result.toMaybe

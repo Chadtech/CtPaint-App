@@ -6,7 +6,7 @@ import MouseEvents exposing (MouseEvent)
 import Window exposing (Size)
 
 
-type Message
+type Msg
     = UpdateField String
     | CloseClick
     | AttemptLoad
@@ -17,7 +17,7 @@ type Message
     | HeaderMouseUp
 
 
-type ExternalMessage
+type ExternalMsg
     = DoNothing
     | Close
     | LoadImage

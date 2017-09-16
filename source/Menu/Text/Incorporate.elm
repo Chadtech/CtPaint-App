@@ -1,18 +1,18 @@
 module Menu.Text.Incorporate exposing (incorporate)
 
-import Main.Model exposing (Model)
 import Menu.Ports as Ports
 import Menu.Text.Types as Text
     exposing
-        ( ExternalMessage(..)
-        , Message(..)
+        ( ExternalMsg(..)
+        , Msg(..)
         )
 import Menu.Types exposing (Menu(..))
+import Model exposing (Model)
 
 
-incorporate : Model -> ( Text.Model, ExternalMessage ) -> ( Model, Cmd Message )
-incorporate model ( textModel, externalMessage ) =
-    case externalMessage of
+incorporate : Model -> ( Text.Model, ExternalMsg ) -> ( Model, Cmd Msg )
+incorporate model ( textModel, externalMsg ) =
+    case externalMsg of
         DoNothing ->
             { model
                 | menu = Text textModel

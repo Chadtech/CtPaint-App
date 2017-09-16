@@ -3,13 +3,13 @@ module Toolbar.View exposing (view)
 import Html exposing (Html, a, div, text)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
-import Main.Message exposing (Message(..))
-import Main.Model exposing (Model)
+import Model exposing (Model)
+import Msg exposing (Msg(..))
 import Tool.Types as Tool exposing (Tool(..))
 import Util exposing ((:=))
 
 
-view : Model -> Html Message
+view : Model -> Html Msg
 view model =
     div
         [ class "vertical-tool-bar" ]
@@ -20,7 +20,7 @@ view model =
 -- COMPONENTS --
 
 
-buttonView : Tool -> Tool -> Html Message
+buttonView : Tool -> Tool -> Html Msg
 buttonView currentTool thisButtonsTool =
     a
         [ classList

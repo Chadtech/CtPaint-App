@@ -3,7 +3,7 @@ module Tool.RectangleFilled.Types exposing (..)
 import Mouse exposing (Position)
 
 
-type Message
+type Msg
     = OnScreenMouseDown Position
     | SubMouseMove Position
     | SubMouseUp Position

@@ -1,21 +1,21 @@
-module Main.View exposing (view)
+module View exposing (view)
 
 import Canvas exposing (Canvas)
 import ColorPicker.View as ColorPicker
 import Html exposing (Attribute, Html, div, p, text)
 import Html.Attributes as Attributes exposing (class, id, style)
 import Html.Events exposing (onMouseLeave)
-import Main.Message exposing (Message(..))
-import Main.Model exposing (Model)
 import Menu.Download.View as Download
 import Menu.Import.View as Import
-import Menu.MessageMap
+import Menu.MsgMap
 import Menu.Scale.View as Scale
 import Menu.Text.View as Text
 import Menu.Types exposing (Menu(..))
 import Minimap.View as Minimap
+import Model exposing (Model)
 import Mouse exposing (Position)
 import MouseEvents exposing (onMouseMove)
+import Msg exposing (Msg(..))
 import Palette.View as Palette
 import Taskbar.View as Taskbar
 import Tool.Fill.Mouse as Fill
@@ -36,7 +36,7 @@ import Util exposing ((:=), height, left, top, width)
 -- VIEW --
 
 
-view : Model -> Html Message
+view : Model -> Html Msg
 view model =
     if model.galleryView then
         galleryView model
@@ -52,8 +52,8 @@ view model =
         div
             [ class "main" ]
             [ Toolbar.view model
-            , Html.map TaskbarMessage (Taskbar.view model)
-            , Html.map PaletteMessage (Palette.view model)
+            , Html.map TaskbarMsg (Taskbar.view model)
+            , Html.map PaletteMsg (Palette.view model)
             , canvasArea canvasAreaHeight model
             , clickScreen canvasAreaHeight model
             , colorPicker model
@@ -62,7 +62,7 @@ view model =
             ]
 
 
-galleryView : Model -> Html Message
+galleryView : Model -> Html Msg
 galleryView model =
     div
         [ class "main gallery" ]
@@ -73,7 +73,7 @@ galleryView model =
 -- MENU --
 
 
-menu : Menu -> Html Message
+menu : Menu -> Html Msg
 menu m =
     case m of
         None ->
@@ -81,22 +81,22 @@ menu m =
 
         Download model ->
             Html.map
-                Menu.MessageMap.download
+                Menu.MsgMap.download
                 (Download.view model)
 
         Import model ->
             Html.map
-                Menu.MessageMap.import_
+                Menu.MsgMap.import_
                 (Import.view model)
 
         Scale model ->
             Html.map
-                Menu.MessageMap.scale
+                Menu.MsgMap.scale
                 (Scale.view model)
 
         Text model ->
             Html.map
-                Menu.MessageMap.text
+                Menu.MsgMap.text
                 (Text.view model)
 
 
@@ -104,12 +104,12 @@ menu m =
 -- MINI MAP --
 
 
-minimap : Model -> Html Message
+minimap : Model -> Html Msg
 minimap model =
     case model.minimap of
         Just minimapModel ->
             Html.map
-                MinimapMessage
+                MinimapMsg
                 (Minimap.view minimapModel model.canvas)
 
         Nothing ->
@@ -120,11 +120,11 @@ minimap model =
 -- COLOR PICKER --
 
 
-colorPicker : Model -> Html Message
+colorPicker : Model -> Html Msg
 colorPicker { colorPicker } =
     if colorPicker.show then
         Html.map
-            ColorPickerMessage
+            ColorPickerMsg
             (ColorPicker.view colorPicker)
     else
         Html.text ""
@@ -134,7 +134,7 @@ colorPicker { colorPicker } =
 -- CLICK SCREEN --
 
 
-clickScreen : Int -> Model -> Html Message
+clickScreen : Int -> Model -> Html Msg
 clickScreen canvasAreaHeight { tool } =
     let
         attributes =
@@ -150,59 +150,59 @@ clickScreen canvasAreaHeight { tool } =
     div attributes []
 
 
-addToolAttributes : Tool -> List (Attribute Message) -> List (Attribute Message)
+addToolAttributes : Tool -> List (Attribute Msg) -> List (Attribute Msg)
 addToolAttributes tool attributes =
     let
         toolAttributes =
             case tool of
                 Hand _ ->
                     List.map
-                        (Attributes.map HandMessage)
+                        (Attributes.map HandMsg)
                         Hand.attributes
 
                 Sample ->
                     List.map
-                        (Attributes.map SampleMessage)
+                        (Attributes.map SampleMsg)
                         Sample.attributes
 
                 Fill ->
                     List.map
-                        (Attributes.map FillMessage)
+                        (Attributes.map FillMsg)
                         Fill.attributes
 
                 Pencil _ ->
                     List.map
-                        (Attributes.map PencilMessage)
+                        (Attributes.map PencilMsg)
                         Pencil.attributes
 
                 Line _ ->
                     List.map
-                        (Attributes.map LineMessage)
+                        (Attributes.map LineMsg)
                         Line.attributes
 
                 Rectangle _ ->
                     List.map
-                        (Attributes.map RectangleMessage)
+                        (Attributes.map RectangleMsg)
                         Rectangle.attributes
 
                 RectangleFilled _ ->
                     List.map
-                        (Attributes.map RectangleFilledMessage)
+                        (Attributes.map RectangleFilledMsg)
                         RectangleFilled.attributes
 
                 Select _ ->
                     List.map
-                        (Attributes.map SelectMessage)
+                        (Attributes.map SelectMsg)
                         Select.attributes
 
                 ZoomIn ->
                     List.map
-                        (Attributes.map ZoomInMessage)
+                        (Attributes.map ZoomInMsg)
                         ZoomIn.attributes
 
                 ZoomOut ->
                     List.map
-                        (Attributes.map ZoomOutMessage)
+                        (Attributes.map ZoomOutMsg)
                         ZoomOut.attributes
     in
     toolAttributes ++ attributes
@@ -212,7 +212,7 @@ addToolAttributes tool attributes =
 -- CANVAS --
 
 
-canvasArea : Int -> Model -> Html Message
+canvasArea : Int -> Model -> Html Msg
 canvasArea canvasAreaHeight model =
     div
         [ class "canvas-area"
@@ -242,7 +242,7 @@ canvasStyles ({ zoom, canvasPosition, canvas } as model) =
     ]
 
 
-selection : Model -> Html Message
+selection : Model -> Html Msg
 selection model =
     case model.selection of
         Just ( position, canvas ) ->

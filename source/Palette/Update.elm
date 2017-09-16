@@ -3,13 +3,13 @@ module Palette.Update exposing (update)
 import ColorPicker.Util as ColorPicker
 import Keyboard.Extra exposing (Key(..))
 import List.Unique
-import Main.Message as MainMessage
-import Main.Model exposing (Model)
-import Palette.Types exposing (Message(..))
+import Model exposing (Model)
+import Msg as MainMsg
+import Palette.Types exposing (Msg(..))
 import Types.Mouse exposing (Direction(..))
 
 
-update : Message -> Model -> ( Model, Cmd Message )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
         ResizeToolbar direction ->
@@ -50,7 +50,7 @@ shiftIsDown { keysDown } =
 -- RESIZE TOOL BAR --
 
 
-handleResize : Direction -> Model -> ( Model, Cmd Message )
+handleResize : Direction -> Model -> ( Model, Cmd Msg )
 handleResize direction model =
     case direction of
         Down _ ->
@@ -58,7 +58,7 @@ handleResize direction model =
                 | subMouseMove =
                     Move
                         >> ResizeToolbar
-                        >> MainMessage.PaletteMessage
+                        >> MainMsg.PaletteMsg
                         |> Just
             }
                 ! []

@@ -5,7 +5,7 @@ import MouseEvents exposing (MouseEvent)
 import Window exposing (Size)
 
 
-type Message
+type Msg
     = UpdateField String
     | CloseClick
     | Finished
@@ -14,7 +14,7 @@ type Message
     | HeaderMouseUp
 
 
-type ExternalMessage
+type ExternalMsg
     = DoNothing
     | AddText
     | Close

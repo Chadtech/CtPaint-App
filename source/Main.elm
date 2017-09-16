@@ -1,19 +1,20 @@
 module Main exposing (..)
 
+--import Init exposing (init)
+
 import Html
 import Json.Decode exposing (Value)
-import Main.Init exposing (init)
-import Main.Message exposing (Message(..))
-import Main.Model exposing (Model)
-import Main.Subscriptions exposing (subscriptions)
-import Main.Update exposing (update)
-import Main.View exposing (view)
+import Model exposing (Model, init)
+import Msg exposing (Msg(..))
+import Subscriptions exposing (subscriptions)
+import Update exposing (update)
+import View exposing (view)
 
 
 -- MAIN --
 
 
-main : Program Value Model Message
+main : Program Value Model Msg
 main =
     Html.programWithFlags
         { init = init

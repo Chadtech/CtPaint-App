@@ -12,23 +12,23 @@ import Keyboard.Types
         ( Command(..)
         , Config
         , Direction(..)
-        , Message(..)
+        , Msg(..)
         , keyPayloadDecoder
         )
 import List.Unique exposing (UniqueList)
-import Main.Model exposing (Model)
 import Menu.Download.Types as Download
 import Menu.Import.Types as Import
 import Menu.Ports
 import Menu.Scale.Types as Scale
 import Menu.Types as Menu exposing (Menu(..))
 import Minimap.Types as Minimap
+import Model exposing (Model)
 import Mouse exposing (Position)
 import Tool.Types exposing (Tool(..))
 import Tool.Zoom as Zoom
 
 
-update : Message -> Model -> ( Model, Cmd message )
+update : Msg -> Model -> ( Model, Cmd message )
 update message model =
     case message of
         KeyEvent (Up json) ->

@@ -3,13 +3,13 @@ module Tool.Fill.Update exposing (update)
 import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Draw.Util
 import History.Update as History
-import Main.Model exposing (Model)
-import Tool.Fill.Types exposing (Message(..))
+import Model exposing (Model)
+import Tool.Fill.Types exposing (Msg(..))
 import Tool.Util exposing (adjustPosition)
 import Util exposing (maybeCons, tbw, toPoint)
 
 
-update : Message -> Model -> Model
+update : Msg -> Model -> Model
 update message model =
     case message of
         ScreenMouseUp { clientPos } ->

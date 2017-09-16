@@ -1,10 +1,10 @@
 module Minimap.Update exposing (update)
 
-import Minimap.Types exposing (ExternalMessage(..), Message(..), Model)
+import Minimap.Types exposing (ExternalMsg(..), Model, Msg(..))
 import Mouse exposing (Position)
 
 
-update : Message -> Model -> ( Model, ExternalMessage )
+update : Msg -> Model -> ( Model, ExternalMsg )
 update message model =
     case message of
         HeaderMouseDown { targetPos, clientPos } ->

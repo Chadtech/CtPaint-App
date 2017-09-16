@@ -13,7 +13,7 @@ type Direction
     | Down Decode.Value
 
 
-type Message
+type Msg
     = KeyEvent Direction
 
 

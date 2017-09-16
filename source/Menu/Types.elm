@@ -1,4 +1,4 @@
-module Menu.Types exposing (Menu(..), Message(..))
+module Menu.Types exposing (Menu(..), Msg(..))
 
 import Menu.Download.Types as Download
 import Menu.Import.Types as Import
@@ -14,8 +14,8 @@ type Menu
     | Text Text.Model
 
 
-type Message
-    = DownloadMessage Download.Message
-    | ImportMessage Import.Message
-    | ScaleMessage Scale.Message
-    | TextMessage Text.Message
+type Msg
+    = DownloadMsg Download.Msg
+    | ImportMsg Import.Msg
+    | ScaleMsg Scale.Msg
+    | TextMsg Text.Msg

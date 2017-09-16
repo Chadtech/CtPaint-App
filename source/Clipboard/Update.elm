@@ -1,6 +1,6 @@
 module Clipboard.Update exposing (..)
 
-import Main.Model exposing (Model)
+import Model exposing (Model)
 
 
 copy : Model -> Model

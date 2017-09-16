@@ -1,4 +1,4 @@
-module Main.Update exposing (update)
+module Update exposing (update)
 
 import Canvas exposing (DrawOp(Batch))
 import ColorPicker.Incorporate as ColorPicker
@@ -6,12 +6,12 @@ import ColorPicker.Update as ColorPicker
 import Debug exposing (log)
 import Keyboard.Update as Keyboard
 import List.Unique
-import Main.Message exposing (Message(..))
-import Main.Model exposing (Model)
 import Menu.Update as Menu
 import Minimap.Incorporate as Minimap
 import Minimap.Update as Minimap
+import Model exposing (Model)
 import Mouse exposing (Position)
+import Msg exposing (Msg(..))
 import Palette.Update as Palette
 import Taskbar.Update as Taskbar
 import Tool.Fill.Update as Fill
@@ -27,26 +27,26 @@ import Tool.ZoomIn.Update as ZoomIn
 import Tool.ZoomOut.Update as ZoomOut
 
 
-update : Message -> Model -> ( Model, Cmd Message )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case ( message, model.tool ) of
-        ( TaskbarMessage subMessage, _ ) ->
+        ( TaskbarMsg subMsg, _ ) ->
             let
                 ( newModel, cmd ) =
-                    Taskbar.update subMessage model
+                    Taskbar.update subMsg model
             in
-            ( newModel, Cmd.map TaskbarMessage cmd )
+            ( newModel, Cmd.map TaskbarMsg cmd )
 
-        ( MenuMessage subMessage, _ ) ->
-            Menu.update subMessage model
-                |> Tuple.mapSecond (Cmd.map MenuMessage)
+        ( MenuMsg subMsg, _ ) ->
+            Menu.update subMsg model
+                |> Tuple.mapSecond (Cmd.map MenuMsg)
 
-        ( PaletteMessage subMessage, _ ) ->
+        ( PaletteMsg subMsg, _ ) ->
             let
                 ( newModel, cmd ) =
-                    Palette.update subMessage model
+                    Palette.update subMsg model
             in
-            ( newModel, Cmd.map PaletteMessage cmd )
+            ( newModel, Cmd.map PaletteMsg cmd )
 
         ( GetWindowSize size, _ ) ->
             { model
@@ -60,68 +60,68 @@ update message model =
             }
                 ! []
 
-        ( KeyboardMessage subMessage, _ ) ->
+        ( KeyboardMsg subMsg, _ ) ->
             let
                 ( newModel, cmd ) =
-                    Keyboard.update subMessage model
+                    Keyboard.update subMsg model
 
                 _ =
                     log "keys down" newModel.keysDown
             in
             newModel ! [ cmd ]
 
-        ( HandMessage subMessage, Hand subModel ) ->
+        ( HandMsg subMsg, Hand subModel ) ->
             let
                 newModel =
-                    Hand.update subMessage subModel model
+                    Hand.update subMsg subModel model
             in
             newModel ! []
 
-        ( SampleMessage subMessage, Sample ) ->
-            Sample.update subMessage model ! []
+        ( SampleMsg subMsg, Sample ) ->
+            Sample.update subMsg model ! []
 
-        ( FillMessage subMessage, Fill ) ->
-            Fill.update subMessage model ! []
+        ( FillMsg subMsg, Fill ) ->
+            Fill.update subMsg model ! []
 
-        ( PencilMessage subMessage, Pencil subModel ) ->
+        ( PencilMsg subMsg, Pencil subModel ) ->
             let
                 newModel =
-                    Pencil.update subMessage subModel model
+                    Pencil.update subMsg subModel model
             in
             newModel ! []
 
-        ( LineMessage subMessage, Line subModel ) ->
+        ( LineMsg subMsg, Line subModel ) ->
             let
                 newModel =
-                    Line.update subMessage subModel model
+                    Line.update subMsg subModel model
             in
             newModel ! []
 
-        ( ZoomInMessage subMessage, ZoomIn ) ->
+        ( ZoomInMsg subMsg, ZoomIn ) ->
             let
                 newModel =
-                    ZoomIn.update subMessage model
+                    ZoomIn.update subMsg model
             in
             newModel ! []
 
-        ( ZoomOutMessage subMessage, ZoomOut ) ->
+        ( ZoomOutMsg subMsg, ZoomOut ) ->
             let
                 newModel =
-                    ZoomOut.update subMessage model
+                    ZoomOut.update subMsg model
             in
             newModel ! []
 
-        ( RectangleMessage subMessage, Rectangle subModel ) ->
+        ( RectangleMsg subMsg, Rectangle subModel ) ->
             let
                 newModel =
-                    Rectangle.update subMessage subModel model
+                    Rectangle.update subMsg subModel model
             in
             newModel ! []
 
-        ( RectangleFilledMessage subMessage, RectangleFilled subModel ) ->
+        ( RectangleFilledMsg subMsg, RectangleFilled subModel ) ->
             let
                 newModel =
-                    RectangleFilled.update subMessage subModel model
+                    RectangleFilled.update subMsg subModel model
             in
             newModel ! []
 
@@ -141,19 +141,19 @@ update message model =
                     }
                         ! []
 
-        ( ColorPickerMessage subMessage, _ ) ->
+        ( ColorPickerMsg subMsg, _ ) ->
             let
                 colorPickerUpdate =
-                    ColorPicker.update subMessage model.colorPicker
+                    ColorPicker.update subMsg model.colorPicker
             in
             ColorPicker.incorporate colorPickerUpdate model
 
-        ( MinimapMessage subMessage, _ ) ->
+        ( MinimapMsg subMsg, _ ) ->
             case model.minimap of
                 Just minimap ->
                     let
                         minimapUpdate =
-                            Minimap.update subMessage minimap
+                            Minimap.update subMsg minimap
                     in
                     Minimap.incorporate minimapUpdate model ! []
 
@@ -186,10 +186,10 @@ update message model =
             }
                 ! []
 
-        ( SelectMessage subMessage, Select subModel ) ->
+        ( SelectMsg subMsg, Select subModel ) ->
             let
                 newModel =
-                    Select.update subMessage subModel model
+                    Select.update subMsg subModel model
             in
             newModel ! []
 

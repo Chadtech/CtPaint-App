@@ -1,10 +1,10 @@
 module ColorPicker.Mouse exposing (subscriptions)
 
-import ColorPicker.Types exposing (Message(..), Model)
+import ColorPicker.Types exposing (Model, Msg(..))
 import Mouse
 
 
-subscriptions : Model -> Sub Message
+subscriptions : Model -> Sub Msg
 subscriptions model =
     if model.show && model.clickState /= Nothing then
         Sub.batch

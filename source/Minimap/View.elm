@@ -6,8 +6,8 @@ import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
 import Minimap.Types
     exposing
-        ( Message(..)
-        , Model
+        ( Model
+        , Msg(..)
         , extraHeight
         , extraWidth
         )
@@ -16,7 +16,7 @@ import Tool.Types as Tool exposing (Tool(..))
 import Util exposing (height, left, top, width)
 
 
-view : Model -> Canvas -> Html Message
+view : Model -> Canvas -> Html Msg
 view model canvas =
     div
         [ class "card mini-map"
@@ -45,7 +45,7 @@ view model canvas =
         ]
 
 
-header : Model -> Html Message
+header : Model -> Html Msg
 header model =
     div
         [ class "header"

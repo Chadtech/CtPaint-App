@@ -7,7 +7,7 @@ import MouseEvents exposing (MouseEvent)
 import Palette.Types as Palette
 
 
-type ExternalMessage
+type ExternalMsg
     = DoNothing
     | SetColor Int Color
     | UpdateHistory Int Color
@@ -15,7 +15,7 @@ type ExternalMessage
     | ReturnFocus
 
 
-type Message
+type Msg
     = HeaderMouseDown MouseEvent
     | HeaderMouseMove Position
     | HeaderMouseUp Position

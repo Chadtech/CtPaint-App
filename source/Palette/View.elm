@@ -7,15 +7,15 @@ import ElementRelativeMouseEvents as Events
 import Html exposing (Attribute, Html, a, div, p, span, text)
 import Html.Attributes exposing (class, classList, style)
 import Html.Events exposing (onClick)
-import Main.Model exposing (Model)
+import Model exposing (Model)
 import Mouse exposing (Position)
-import Palette.Types as Palette exposing (Message(..), Swatches)
+import Palette.Types as Palette exposing (Msg(..), Swatches)
 import Tool.Types exposing (Tool(..))
 import Types.Mouse exposing (Direction(..))
 import Util exposing ((:=), height, maybeCons, px, tbw)
 
 
-view : Model -> Html Message
+view : Model -> Html Msg
 view model =
     div
         [ class "horizontal-tool-bar"
@@ -36,10 +36,10 @@ view model =
 -- PALETTE --
 
 
-generalPalette : Model -> Html Message
+generalPalette : Model -> Html Msg
 generalPalette model =
     let
-        square : Int -> Color -> Html Message
+        square : Int -> Color -> Html Msg
         square =
             paletteSquare
                 model.colorPicker.show
@@ -58,7 +58,7 @@ generalPalette model =
         paletteSquares
 
 
-paletteSquare : Bool -> Int -> Int -> Color -> Html Message
+paletteSquare : Bool -> Int -> Int -> Color -> Html Msg
 paletteSquare show selectedIndex index color =
     div
         [ class "square"
@@ -70,7 +70,7 @@ paletteSquare show selectedIndex index color =
         (highLight (show && (index == selectedIndex)))
 
 
-highLight : Bool -> List (Html Message)
+highLight : Bool -> List (Html Msg)
 highLight show =
     if show then
         [ div
@@ -85,7 +85,7 @@ highLight show =
 -- SWATCHES --
 
 
-swatches : Swatches -> Html Message
+swatches : Swatches -> Html Msg
 swatches { primary, first, second, third } =
     div
         [ class "swatches" ]
@@ -96,7 +96,7 @@ swatches { primary, first, second, third } =
         ]
 
 
-swatch : Color -> String -> Html Message
+swatch : Color -> String -> Html Msg
 swatch color quadrant =
     div
         [ class ("swatch " ++ quadrant)
@@ -109,7 +109,7 @@ swatch color quadrant =
 -- EDGE --
 
 
-edge : Html Message
+edge : Html Msg
 edge =
     div
         [ class "edge"
@@ -129,7 +129,7 @@ edge =
 -- INFO BOX --
 
 
-infoBox : Model -> Html Message
+infoBox : Model -> Html Msg
 infoBox model =
     div
         [ class "info-box"
@@ -139,12 +139,12 @@ infoBox model =
         (infoBoxContent model)
 
 
-infoView : String -> Html Message
+infoView : String -> Html Msg
 infoView str =
     p [] [ text str ]
 
 
-infoBoxContent : Model -> List (Html Message)
+infoBoxContent : Model -> List (Html Msg)
 infoBoxContent model =
     [ List.map infoView (toolContent model)
     , List.map infoView (generalContent model)
@@ -153,7 +153,7 @@ infoBoxContent model =
         |> List.concat
 
 
-sampleColor : Model -> List (Html Message)
+sampleColor : Model -> List (Html Msg)
 sampleColor model =
     case model.mousePosition of
         Just position ->
@@ -297,7 +297,7 @@ toolContent ({ tool } as model) =
 -- HELPERS --
 
 
-background : Color -> Attribute Message
+background : Color -> Attribute Msg
 background =
     Palette.toHex
         >> (,) "background"

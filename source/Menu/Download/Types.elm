@@ -7,7 +7,7 @@ import Random exposing (Generator, Seed)
 import Window exposing (Size)
 
 
-type Message
+type Msg
     = UpdateField String
     | CloseClick
     | Submit
@@ -16,7 +16,7 @@ type Message
     | HeaderMouseUp
 
 
-type ExternalMessage
+type ExternalMsg
     = DoNothing
     | DownloadFile String
     | Close

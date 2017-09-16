@@ -2,16 +2,16 @@ module Menu.Scale.Update exposing (update)
 
 import Menu.Scale.Types
     exposing
-        ( ExternalMessage(..)
+        ( ExternalMsg(..)
         , Field(..)
-        , Message(..)
         , Model
+        , Msg(..)
         )
 import Mouse exposing (Position)
 import Util exposing (pack)
 
 
-update : Message -> Model -> ( Model, ExternalMessage )
+update : Msg -> Model -> ( Model, ExternalMsg )
 update message model =
     case message of
         UpdateField field string ->
@@ -60,7 +60,7 @@ update message model =
             pack model DoNothing
 
 
-updateField : Field -> String -> Model -> ( Model, ExternalMessage )
+updateField : Field -> String -> Model -> ( Model, ExternalMsg )
 updateField field str model =
     case field of
         FixedWidth ->
@@ -96,7 +96,7 @@ updateField field str model =
                     pack model DoNothing
 
 
-handleFixedWidth : Int -> Model -> ( Model, ExternalMessage )
+handleFixedWidth : Int -> Model -> ( Model, ExternalMsg )
 handleFixedWidth fixedWidth model =
     pack
         { model
@@ -114,7 +114,7 @@ handleFixedWidth fixedWidth model =
         DoNothing
 
 
-handleFixedHeight : Int -> Model -> ( Model, ExternalMessage )
+handleFixedHeight : Int -> Model -> ( Model, ExternalMsg )
 handleFixedHeight fixedHeight model =
     pack
         { model
@@ -132,7 +132,7 @@ handleFixedHeight fixedHeight model =
         DoNothing
 
 
-handlePercentWidth : Float -> Model -> ( Model, ExternalMessage )
+handlePercentWidth : Float -> Model -> ( Model, ExternalMsg )
 handlePercentWidth percentWidth model =
     pack
         { model
@@ -147,7 +147,7 @@ handlePercentWidth percentWidth model =
         DoNothing
 
 
-handlePercentHeight : Float -> Model -> ( Model, ExternalMessage )
+handlePercentHeight : Float -> Model -> ( Model, ExternalMsg )
 handlePercentHeight percentHeight model =
     pack
         { model

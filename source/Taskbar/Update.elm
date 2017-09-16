@@ -1,12 +1,12 @@
 module Taskbar.Update exposing (update)
 
 import Keyboard.Update as Keyboard
-import Main.Model exposing (Model)
 import Minimap.Types as Minimap
-import Taskbar.Types as Taskbar exposing (Message(..))
+import Model exposing (Model)
+import Taskbar.Types as Taskbar exposing (Msg(..))
 
 
-update : Message -> Model -> ( Model, Cmd Message )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
         DropDown maybeOption ->

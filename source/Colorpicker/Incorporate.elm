@@ -1,15 +1,15 @@
 module ColorPicker.Incorporate exposing (incorporate)
 
 import Array
-import ColorPicker.Types as ColorPicker exposing (ExternalMessage(..))
+import ColorPicker.Types as ColorPicker exposing (ExternalMsg(..))
 import History.Update as History
-import Main.Model exposing (Model)
 import Menu.Ports
+import Model exposing (Model)
 
 
-incorporate : ( ColorPicker.Model, ExternalMessage ) -> Model -> ( Model, Cmd message )
-incorporate ( colorPicker, maybeMessage ) model =
-    case maybeMessage of
+incorporate : ( ColorPicker.Model, ExternalMsg ) -> Model -> ( Model, Cmd message )
+incorporate ( colorPicker, maybeMsg ) model =
+    case maybeMsg of
         DoNothing ->
             { model
                 | colorPicker = colorPicker

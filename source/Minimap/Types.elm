@@ -14,12 +14,12 @@ type alias Model =
     }
 
 
-type ExternalMessage
+type ExternalMsg
     = Close
     | DoNothing
 
 
-type Message
+type Msg
     = HeaderMouseDown MouseEvent
     | HeaderMouseMove Position
     | HeaderMouseUp

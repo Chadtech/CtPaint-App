@@ -1,7 +1,7 @@
 module Tool.Zoom exposing (..)
 
 import Canvas exposing (Size)
-import Main.Model exposing (Model)
+import Model exposing (Model)
 import Mouse exposing (Position)
 import Util exposing (tbw)
 

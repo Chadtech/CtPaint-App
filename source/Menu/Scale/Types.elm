@@ -17,13 +17,13 @@ type alias Model =
     }
 
 
-type ExternalMessage
+type ExternalMsg
     = DoNothing
     | Close
     | Finish
 
 
-type Message
+type Msg
     = UpdateField Field String
     | CloseClick
     | OkayClick

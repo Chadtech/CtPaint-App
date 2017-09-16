@@ -1,10 +1,10 @@
 module Minimap.Mouse exposing (subscriptions)
 
-import Minimap.Types exposing (Message(..), Model)
+import Minimap.Types exposing (Model, Msg(..))
 import Mouse
 
 
-subscriptions : Maybe Model -> Sub Message
+subscriptions : Maybe Model -> Sub Msg
 subscriptions maybeModel =
     case maybeModel of
         Nothing ->

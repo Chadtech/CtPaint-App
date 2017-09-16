@@ -4,7 +4,7 @@ import Canvas exposing (Point, Size)
 import Draw.Rectangle as Rectangle
 import Draw.Select as Select
 import History.Update as History
-import Main.Model exposing (Model)
+import Model exposing (Model)
 import Mouse exposing (Position)
 import Tool.Select.Types exposing (..)
 import Tool.Types exposing (..)
@@ -12,7 +12,7 @@ import Tool.Util exposing (adjustPosition)
 import Util exposing (positionMin, tbw)
 
 
-update : Message -> Maybe Position -> Model -> Model
+update : Msg -> Maybe Position -> Model -> Model
 update message maybePosition model =
     case ( message, maybePosition ) of
         ( OnScreenMouseDown position, Nothing ) ->

@@ -1,10 +1,10 @@
 module Menu.Import.Mouse exposing (subscriptions)
 
-import Menu.Import.Types exposing (Message(..), Model)
+import Menu.Import.Types exposing (Model, Msg(..))
 import Mouse
 
 
-subscriptions : Sub Message
+subscriptions : Sub Msg
 subscriptions =
     Sub.batch
         [ Mouse.moves HeaderMouseMove

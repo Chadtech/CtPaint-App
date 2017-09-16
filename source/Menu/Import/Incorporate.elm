@@ -1,14 +1,14 @@
 module Menu.Import.Incorporate exposing (incorporate)
 
 import Canvas
-import Main.Model exposing (Model)
-import Menu.Import.Types as Import exposing (ExternalMessage(..), Message(..))
+import Menu.Import.Types as Import exposing (ExternalMsg(..), Msg(..))
 import Menu.Ports as Ports
 import Menu.Types exposing (Menu(..))
+import Model exposing (Model)
 import Task
 
 
-incorporate : Model -> ( Import.Model, ExternalMessage ) -> ( Model, Cmd Message )
+incorporate : Model -> ( Import.Model, ExternalMsg ) -> ( Model, Cmd Msg )
 incorporate model ( importModel, externalmessage ) =
     case externalmessage of
         DoNothing ->

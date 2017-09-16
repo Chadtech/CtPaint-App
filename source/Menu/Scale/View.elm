@@ -3,12 +3,12 @@ module Menu.Scale.View exposing (..)
 import Html exposing (Html, a, br, div, form, input, p, text)
 import Html.Attributes exposing (class, placeholder, style)
 import Html.Events exposing (onClick, onSubmit)
-import Menu.Scale.Types exposing (Message(..), Model)
+import Menu.Scale.Types exposing (Model, Msg(..))
 import MouseEvents as Events
 import Util exposing (left, px, top)
 
 
-view : Model -> Html Message
+view : Model -> Html Msg
 view model =
     div
         [ class "card scale"
@@ -40,7 +40,7 @@ view model =
         ]
 
 
-rightSide : Model -> Html Message
+rightSide : Model -> Html Msg
 rightSide { initialSize } =
     div
         [ class "column" ]
@@ -60,7 +60,7 @@ rightSide { initialSize } =
         ]
 
 
-leftSide : Model -> Html Message
+leftSide : Model -> Html Msg
 leftSide { initialSize } =
     div
         [ class "column" ]
@@ -84,12 +84,12 @@ leftSide { initialSize } =
         ]
 
 
-field : List (Html Message) -> Html Message
+field : List (Html Msg) -> Html Msg
 field =
     form [ class "field", onSubmit SetSize ]
 
 
-header : Html Message
+header : Html Msg
 header =
     div
         [ class "header"

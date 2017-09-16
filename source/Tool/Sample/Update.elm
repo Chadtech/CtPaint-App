@@ -1,13 +1,13 @@
 module Tool.Sample.Update exposing (update)
 
 import Draw.Util exposing (colorAt)
-import Main.Model exposing (Model)
-import Tool.Sample.Types exposing (Message(..))
+import Model exposing (Model)
+import Tool.Sample.Types exposing (Msg(..))
 import Tool.Util exposing (adjustPosition)
 import Util exposing (tbw)
 
 
-update : Message -> Model -> Model
+update : Msg -> Model -> Model
 update message ({ swatches } as model) =
     case message of
         SubMouseUp position ->

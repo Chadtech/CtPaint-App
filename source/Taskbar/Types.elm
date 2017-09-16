@@ -3,7 +3,7 @@ module Taskbar.Types exposing (..)
 import Keyboard.Types exposing (Command(..))
 
 
-type Message
+type Msg
     = DropDown (Maybe Option)
     | HoverOnto Option
     | SwitchMinimap Bool

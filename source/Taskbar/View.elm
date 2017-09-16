@@ -5,11 +5,11 @@ import Html exposing (Attribute, Html, a, div, p, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick, onMouseOver)
 import Keyboard.Types exposing (Command(..))
-import Main.Model exposing (Model)
-import Taskbar.Types exposing (Message(..), Option(..))
+import Model exposing (Model)
+import Taskbar.Types exposing (Msg(..), Option(..))
 
 
-view : Model -> Html Message
+view : Model -> Html Msg
 view ({ taskbarDropped } as model) =
     div
         [ class "top-tool-bar" ]
@@ -23,7 +23,7 @@ view ({ taskbarDropped } as model) =
         ]
 
 
-invisibleWall : Maybe Option -> Html Message
+invisibleWall : Maybe Option -> Html Msg
 invisibleWall maybeOption =
     case maybeOption of
         Just _ ->
@@ -37,7 +37,7 @@ invisibleWall maybeOption =
             text ""
 
 
-help : Maybe Option -> Html Message
+help : Maybe Option -> Html Msg
 help maybeHelp =
     case maybeHelp of
         Just Help ->
@@ -60,7 +60,7 @@ help maybeHelp =
 -- VIEW --
 
 
-view_ : Model -> Html Message
+view_ : Model -> Html Msg
 view_ model =
     case model.taskbarDropped of
         Just View ->
@@ -81,7 +81,7 @@ view_ model =
             taskbarButtonClose View
 
 
-minimap : Model -> Html Message
+minimap : Model -> Html Msg
 minimap model =
     case model.minimap of
         Just _ ->
@@ -95,7 +95,7 @@ minimap model =
 -- TRANSFORM --
 
 
-transform : Model -> Html Message
+transform : Model -> Html Msg
 transform model =
     case model.taskbarDropped of
         Just Transform ->
@@ -128,7 +128,7 @@ transform model =
 -- TOOLS --
 
 
-tools : Model -> Html Message
+tools : Model -> Html Msg
 tools model =
     case model.taskbarDropped of
         Just Tools ->
@@ -161,7 +161,7 @@ tools model =
 -- EDIT --
 
 
-edit : Model -> Html Message
+edit : Model -> Html Msg
 edit model =
     case model.taskbarDropped of
         Just Edit ->
@@ -205,7 +205,7 @@ edit model =
             taskbarButtonClose Edit
 
 
-file : Model -> Html Message
+file : Model -> Html Msg
 file model =
     case model.taskbarDropped of
         Just File ->
@@ -255,7 +255,7 @@ toKeyCmdStr =
     String.join " + "
 
 
-taskbarButtonClose : Option -> Html Message
+taskbarButtonClose : Option -> Html Msg
 taskbarButtonClose option =
     a
         [ class "task-bar-button"
@@ -265,7 +265,7 @@ taskbarButtonClose option =
         [ text (toString option) ]
 
 
-taskbarButtonOpen : List (Html Message) -> Html Message
+taskbarButtonOpen : List (Html Msg) -> Html Msg
 taskbarButtonOpen =
     a
         [ class "task-bar-button current"
@@ -273,14 +273,14 @@ taskbarButtonOpen =
         ]
 
 
-divider : Html Message
+divider : Html Msg
 divider =
     div
         [ class "divider" ]
         [ div [ class "strike" ] [] ]
 
 
-option_ : String -> String -> Message -> Html Message
+option_ : String -> String -> Msg -> Html Msg
 option_ label cmdKeys message =
     div
         [ onClick message
@@ -291,7 +291,7 @@ option_ label cmdKeys message =
         ]
 
 
-option : ( String, String, Message ) -> Html Message
+option : ( String, String, Msg ) -> Html Msg
 option ( label, cmdText, message ) =
     div
         [ onClick message
@@ -302,11 +302,11 @@ option ( label, cmdText, message ) =
         ]
 
 
-seam : Html Message
+seam : Html Msg
 seam =
     div [ class "seam" ] []
 
 
-p_ : String -> Html Message
+p_ : String -> Html Msg
 p_ =
     text >> List.singleton >> p []

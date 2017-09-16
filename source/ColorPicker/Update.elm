@@ -3,17 +3,17 @@ module ColorPicker.Update exposing (update)
 import Color exposing (Color)
 import ColorPicker.Types
     exposing
-        ( ExternalMessage(..)
+        ( ExternalMsg(..)
         , Gradient(..)
-        , Message(..)
         , Model
+        , Msg(..)
         )
 import ColorPicker.Util exposing (doesntHaveHue)
 import Mouse exposing (Position)
 import Palette.Types as Palette
 
 
-update : Message -> Model -> ( Model, ExternalMessage )
+update : Msg -> Model -> ( Model, ExternalMsg )
 update message model =
     case message of
         HeaderMouseDown { targetPos, clientPos } ->
@@ -139,7 +139,7 @@ update message model =
 -- MESSAGE HANDLERS --
 
 
-fieldHandler : Gradient -> String -> Model -> ( Model, ExternalMessage )
+fieldHandler : Gradient -> String -> Model -> ( Model, ExternalMsg )
 fieldHandler gradient str model =
     case String.toInt str of
         Ok int ->
@@ -149,7 +149,7 @@ fieldHandler gradient str model =
             fieldHandlerErr gradient str model
 
 
-fieldHandlerOk : Gradient -> String -> Int -> Model -> ( Model, ExternalMessage )
+fieldHandlerOk : Gradient -> String -> Int -> Model -> ( Model, ExternalMsg )
 fieldHandlerOk gradient str int model =
     let
         { hue, saturation, lightness } =
@@ -241,7 +241,7 @@ validateHue oldColor newColor int =
         newColor
 
 
-fieldHandlerErr : Gradient -> String -> Model -> ( Model, ExternalMessage )
+fieldHandlerErr : Gradient -> String -> Model -> ( Model, ExternalMsg )
 fieldHandlerErr gradient str model =
     case gradient of
         Lightness ->
@@ -263,7 +263,7 @@ fieldHandlerErr gradient str model =
             ( { model | redField = str }, DoNothing )
 
 
-sliderHandler : Int -> Gradient -> Model -> ( Model, ExternalMessage )
+sliderHandler : Int -> Gradient -> Model -> ( Model, ExternalMsg )
 sliderHandler x gradient model =
     case gradient of
         Lightness ->
@@ -379,12 +379,12 @@ sliderHandler x gradient model =
 -- INTERNAL HELPERS --
 
 
-cohereAndSet : Model -> ( Model, ExternalMessage )
+cohereAndSet : Model -> ( Model, ExternalMsg )
 cohereAndSet =
     cohereModel >> setColor
 
 
-setColor : Model -> ( Model, ExternalMessage )
+setColor : Model -> ( Model, ExternalMsg )
 setColor ({ index, color } as model) =
     ( model
     , SetColor index color

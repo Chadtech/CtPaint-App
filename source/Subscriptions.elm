@@ -1,19 +1,19 @@
-module Main.Subscriptions exposing (subscriptions)
+module Subscriptions exposing (subscriptions)
 
 import AnimationFrame
 import ColorPicker.Mouse as ColorPicker
 import Keyboard.Subscriptions as Keyboard
 import Keyboard.Types
-import Main.Message exposing (Message(..))
-import Main.Model exposing (Model)
-import Main.Ports as Ports
 import Menu.Download.Mouse as Download
 import Menu.Import.Mouse as Import
-import Menu.MessageMap
+import Menu.MsgMap
 import Menu.Scale.Mouse as Scale
 import Menu.Types exposing (Menu(..))
 import Minimap.Mouse as Minimap
+import Model exposing (Model)
 import Mouse
+import Msg exposing (Msg(..))
+import Ports as Ports
 import Tool.Fill.Mouse as Fill
 import Tool.Hand.Mouse as Hand
 import Tool.Line.Mouse as Line
@@ -29,15 +29,15 @@ import Util exposing (maybeCons)
 import Window
 
 
-subscriptions : Model -> Sub Message
+subscriptions : Model -> Sub Msg
 subscriptions model =
     [ Window.resizes GetWindowSize
     , AnimationFrame.diffs Tick
     , Sub.map
-        ColorPickerMessage
+        ColorPickerMsg
         (ColorPicker.subscriptions model.colorPicker)
     , Sub.map
-        MinimapMessage
+        MinimapMsg
         (Minimap.subscriptions model.minimap)
     , keyboardUps
     , keyboardDowns
@@ -53,7 +53,7 @@ subscriptions model =
 -- MENU --
 
 
-menu : Model -> Sub Message
+menu : Model -> Sub Msg
 menu model =
     case model.menu of
         None ->
@@ -61,17 +61,17 @@ menu model =
 
         Download _ ->
             Sub.map
-                Menu.MessageMap.download
+                Menu.MsgMap.download
                 Download.subscriptions
 
         Import _ ->
             Sub.map
-                Menu.MessageMap.import_
+                Menu.MsgMap.import_
                 Import.subscriptions
 
         Scale _ ->
             Sub.map
-                Menu.MessageMap.scale
+                Menu.MsgMap.scale
                 Scale.subscriptions
 
         _ ->
@@ -82,57 +82,57 @@ menu model =
 -- SUBS --
 
 
-toolSubs : Model -> List (Sub Message)
+toolSubs : Model -> List (Sub Msg)
 toolSubs { tool } =
     case tool of
         Hand _ ->
-            List.map (Sub.map HandMessage) Hand.subs
+            List.map (Sub.map HandMsg) Hand.subs
 
         Sample ->
-            List.map (Sub.map SampleMessage) Sample.subs
+            List.map (Sub.map SampleMsg) Sample.subs
 
         Fill ->
-            List.map (Sub.map FillMessage) Fill.subs
+            List.map (Sub.map FillMsg) Fill.subs
 
         Pencil _ ->
-            List.map (Sub.map PencilMessage) Pencil.subs
+            List.map (Sub.map PencilMsg) Pencil.subs
 
         Line _ ->
-            List.map (Sub.map LineMessage) Line.subs
+            List.map (Sub.map LineMsg) Line.subs
 
         Rectangle _ ->
-            List.map (Sub.map RectangleMessage) Rectangle.subs
+            List.map (Sub.map RectangleMsg) Rectangle.subs
 
         RectangleFilled _ ->
             List.map
-                (Sub.map RectangleFilledMessage)
+                (Sub.map RectangleFilledMsg)
                 RectangleFilled.subs
 
         Select _ ->
-            List.map (Sub.map SelectMessage) Select.subs
+            List.map (Sub.map SelectMsg) Select.subs
 
         ZoomIn ->
-            List.map (Sub.map ZoomInMessage) ZoomIn.subs
+            List.map (Sub.map ZoomInMsg) ZoomIn.subs
 
         ZoomOut ->
-            List.map (Sub.map ZoomOutMessage) ZoomOut.subs
+            List.map (Sub.map ZoomOutMsg) ZoomOut.subs
 
 
 
 -- KEYBOARD --
 
 
-keyboardUps : Sub Message
+keyboardUps : Sub Msg
 keyboardUps =
     Keyboard.keyUp <|
         Keyboard.Types.Up
             >> Keyboard.Types.KeyEvent
-            >> KeyboardMessage
+            >> KeyboardMsg
 
 
-keyboardDowns : Sub Message
+keyboardDowns : Sub Msg
 keyboardDowns =
     Keyboard.keyDown <|
         Keyboard.Types.Down
             >> Keyboard.Types.KeyEvent
-            >> KeyboardMessage
+            >> KeyboardMsg

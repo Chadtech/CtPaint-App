@@ -1,11 +1,11 @@
 module Tool.ZoomIn.Update exposing (update)
 
-import Main.Model exposing (Model)
+import Model exposing (Model)
 import Tool.Zoom as Zoom
-import Tool.ZoomIn.Types exposing (Message(..))
+import Tool.ZoomIn.Types exposing (Msg(..))
 
 
-update : Message -> Model -> Model
+update : Msg -> Model -> Model
 update message model =
     case message of
         OnScreenMouseUp position ->

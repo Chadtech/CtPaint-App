@@ -1,13 +1,13 @@
 module Menu.Download.Incorporate exposing (incorporate)
 
-import Main.Model exposing (Model)
 import Menu.Download.Ports as Ports
-import Menu.Download.Types as Download exposing (ExternalMessage(..), Message(..))
+import Menu.Download.Types as Download exposing (ExternalMsg(..), Msg(..))
 import Menu.Ports as Ports
 import Menu.Types exposing (Menu(..))
+import Model exposing (Model)
 
 
-incorporate : Model -> ( Download.Model, ExternalMessage ) -> ( Model, Cmd Message )
+incorporate : Model -> ( Download.Model, ExternalMsg ) -> ( Model, Cmd Msg )
 incorporate model ( downloadModel, externalmessage ) =
     case externalmessage of
         DoNothing ->

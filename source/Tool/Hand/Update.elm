@@ -1,12 +1,12 @@
 module Tool.Hand.Update exposing (..)
 
-import Main.Model exposing (Model)
+import Model exposing (Model)
 import Mouse exposing (Position)
-import Tool.Hand.Types exposing (Message(..))
+import Tool.Hand.Types exposing (Msg(..))
 import Tool.Types exposing (Tool(..))
 
 
-update : Message -> Maybe ( Position, Position ) -> Model -> Model
+update : Msg -> Maybe ( Position, Position ) -> Model -> Model
 update message tool model =
     case ( message, tool ) of
         ( ScreenMouseDown { clientPos }, Nothing ) ->

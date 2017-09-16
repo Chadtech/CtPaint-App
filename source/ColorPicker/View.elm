@@ -11,7 +11,7 @@ import Palette.Types as Palette
 import Util exposing ((:=), left, toPosition, top)
 
 
-view : Model -> Html Message
+view : Model -> Html Msg
 view model =
     div
         [ class "card color-picker"
@@ -39,7 +39,7 @@ view model =
 -- BODY --
 
 
-body : Model -> List (Html Message)
+body : Model -> List (Html Msg)
 body ({ colorHexField, color } as model) =
     [ div
         [ class "visualization"
@@ -67,7 +67,7 @@ body ({ colorHexField, color } as model) =
     ]
 
 
-slider : String -> String -> Gradient -> Html Message -> Html Message
+slider : String -> String -> Gradient -> Html Msg -> Html Msg
 slider label fieldContent gradient sliderGradient =
     div
         [ class "slider-container" ]
@@ -87,13 +87,13 @@ slider label fieldContent gradient sliderGradient =
 -- SLIDERS --
 
 
-redGradient : Model -> Html Message
+redGradient : Model -> Html Msg
 redGradient { color, gradientClickedOn } =
     let
         { red, green, blue } =
             Color.toRgb color
 
-        attributes : List (Attribute Message)
+        attributes : List (Attribute Msg)
         attributes =
             let
                 gradientField =
@@ -121,13 +121,13 @@ redGradient { color, gradientClickedOn } =
         ]
 
 
-greenGradient : Model -> Html Message
+greenGradient : Model -> Html Msg
 greenGradient { color, gradientClickedOn } =
     let
         { red, green, blue } =
             Color.toRgb color
 
-        attributes : List (Attribute Message)
+        attributes : List (Attribute Msg)
         attributes =
             let
                 gradientField =
@@ -155,13 +155,13 @@ greenGradient { color, gradientClickedOn } =
         ]
 
 
-blueGradient : Model -> Html Message
+blueGradient : Model -> Html Msg
 blueGradient { color, gradientClickedOn } =
     let
         { red, green, blue } =
             Color.toRgb color
 
-        attributes : List (Attribute Message)
+        attributes : List (Attribute Msg)
         attributes =
             let
                 gradientField =
@@ -189,7 +189,7 @@ blueGradient { color, gradientClickedOn } =
         ]
 
 
-hueGradient : Model -> Html Message
+hueGradient : Model -> Html Msg
 hueGradient { color, gradientClickedOn } =
     let
         { red, green, blue } =
@@ -217,7 +217,7 @@ hueGradient { color, gradientClickedOn } =
                     |> List.map atDegree
                     |> gradientStyle
 
-        attributes : List (Attribute Message)
+        attributes : List (Attribute Msg)
         attributes =
             addMouseMoveHandler
                 (gradientAttributes nanSafeGradient)
@@ -239,7 +239,7 @@ hueGradient { color, gradientClickedOn } =
         ]
 
 
-saturationGradient : Model -> Html Message
+saturationGradient : Model -> Html Msg
 saturationGradient { color, gradientClickedOn } =
     let
         { hue, saturation, lightness } =
@@ -262,7 +262,7 @@ saturationGradient { color, gradientClickedOn } =
                     , Color.hsl hue 1 lightness
                     ]
 
-        attributes : List (Attribute Message)
+        attributes : List (Attribute Msg)
         attributes =
             addMouseMoveHandler
                 (gradientAttributes nanSafeGradient)
@@ -284,7 +284,7 @@ saturationGradient { color, gradientClickedOn } =
         ]
 
 
-lightnessGradient : Model -> Html Message
+lightnessGradient : Model -> Html Msg
 lightnessGradient { color, gradientClickedOn } =
     let
         { hue, saturation, lightness } =
@@ -304,7 +304,7 @@ lightnessGradient { color, gradientClickedOn } =
                     , Color.hsl hue saturation 1
                     ]
 
-        attributes : List (Attribute Message)
+        attributes : List (Attribute Msg)
         attributes =
             addMouseMoveHandler
                 (gradientAttributes nanSafeGradient)
@@ -330,7 +330,7 @@ lightnessGradient { color, gradientClickedOn } =
 -- INTERNAL HELPERS --
 
 
-gradientAttributes : ( String, String ) -> List (Attribute Message)
+gradientAttributes : ( String, String ) -> List (Attribute Msg)
 gradientAttributes gradientStyle_ =
     [ class "gradient"
     , style [ gradientStyle_ ]
@@ -338,7 +338,7 @@ gradientAttributes gradientStyle_ =
     ]
 
 
-addMouseMoveHandler : List (Attribute Message) -> Maybe Gradient -> Gradient -> List (Attribute Message)
+addMouseMoveHandler : List (Attribute Msg) -> Maybe Gradient -> Gradient -> List (Attribute Msg)
 addMouseMoveHandler attributes maybeGradient gradient =
     case maybeGradient of
         Just g ->

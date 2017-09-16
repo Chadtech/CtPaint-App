@@ -3,12 +3,12 @@ module Menu.Download.View exposing (view)
 import Html exposing (Html, a, div, form, input, p, text)
 import Html.Attributes exposing (class, placeholder, style, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Menu.Download.Types exposing (Message(..), Model)
+import Menu.Download.Types exposing (Model, Msg(..))
 import MouseEvents as Events
 import Util exposing (left, px, top)
 
 
-view : Model -> Html Message
+view : Model -> Html Msg
 view model =
     div
         [ class "card download"
@@ -38,7 +38,7 @@ view model =
         ]
 
 
-header : Html Message
+header : Html Msg
 header =
     div
         [ class "header"

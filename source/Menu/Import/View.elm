@@ -3,12 +3,12 @@ module Menu.Import.View exposing (view)
 import Html exposing (Html, a, div, form, input, p, text)
 import Html.Attributes exposing (class, placeholder, style, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Menu.Import.Types exposing (Message(..), Model)
+import Menu.Import.Types exposing (Model, Msg(..))
 import MouseEvents as Events
 import Util exposing (left, px, top, viewIf)
 
 
-view : Model -> Html Message
+view : Model -> Html Msg
 view model =
     div
         [ class "card import"
@@ -20,7 +20,7 @@ view model =
         (determineView model)
 
 
-determineView : Model -> List (Html Message)
+determineView : Model -> List (Html Msg)
 determineView model =
     if model.error then
         errorView model
@@ -28,7 +28,7 @@ determineView model =
         normalView model
 
 
-errorView : Model -> List (Html Message)
+errorView : Model -> List (Html Msg)
 errorView model =
     [ header
     , div
@@ -49,7 +49,7 @@ errorView model =
     ]
 
 
-normalView : Model -> List (Html Message)
+normalView : Model -> List (Html Msg)
 normalView model =
     [ header
     , form
@@ -72,7 +72,7 @@ normalView model =
     ]
 
 
-header : Html Message
+header : Html Msg
 header =
     div
         [ class "header"

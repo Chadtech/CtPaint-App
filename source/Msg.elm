@@ -1,4 +1,4 @@
-module Main.Message exposing (Message(..))
+module Msg exposing (Msg(..))
 
 import ColorPicker.Types as ColorPicker
 import Keyboard.Types as Keyboard
@@ -22,26 +22,26 @@ import Tool.ZoomOut.Types as ZoomOut
 import Window exposing (Size)
 
 
-type Message
-    = PaletteMessage Palette.Message
+type Msg
+    = PaletteMsg Palette.Msg
     | GetWindowSize Size
     | SetTool Tool
-    | KeyboardMessage Keyboard.Message
-    | HandMessage Hand.Message
-    | PencilMessage Pencil.Message
-    | LineMessage Line.Message
-    | ZoomInMessage ZoomIn.Message
-    | ZoomOutMessage ZoomOut.Message
-    | RectangleMessage Rectangle.Message
-    | RectangleFilledMessage RectangleFilled.Message
-    | SelectMessage Select.Message
-    | SampleMessage Sample.Message
-    | FillMessage Fill.Message
-    | TaskbarMessage Taskbar.Message
-    | MenuMessage Menu.Message
+    | KeyboardMsg Keyboard.Msg
+    | HandMsg Hand.Msg
+    | PencilMsg Pencil.Msg
+    | LineMsg Line.Msg
+    | ZoomInMsg ZoomIn.Msg
+    | ZoomOutMsg ZoomOut.Msg
+    | RectangleMsg Rectangle.Msg
+    | RectangleFilledMsg RectangleFilled.Msg
+    | SelectMsg Select.Msg
+    | SampleMsg Sample.Msg
+    | FillMsg Fill.Msg
+    | TaskbarMsg Taskbar.Msg
+    | MenuMsg Menu.Msg
     | Tick Time
-    | ColorPickerMessage ColorPicker.Message
-    | MinimapMessage Minimap.Message
+    | ColorPickerMsg ColorPicker.Msg
+    | MinimapMsg Minimap.Msg
     | ScreenMouseMove MouseEvent
     | ScreenMouseExit
     | HandleWindowFocus Bool

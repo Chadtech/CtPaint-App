@@ -5,7 +5,7 @@ import ParseInt
 import Types.Mouse exposing (Direction(..))
 
 
-type Message
+type Msg
     = ResizeToolbar Direction
     | PaletteSquareClick Color
     | WakeUpColorPicker Color Int
