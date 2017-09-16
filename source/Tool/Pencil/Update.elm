@@ -17,7 +17,7 @@ update message tool ({ canvasPosition } as model) =
         ( ScreenMouseDown { clientPos }, Nothing ) ->
             let
                 adjustedPosition =
-                    adjustPosition model 0 clientPos
+                    adjustPosition model tbw clientPos
             in
             { model
                 | tool = Pencil (Just adjustedPosition)
