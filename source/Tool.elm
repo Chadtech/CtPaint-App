@@ -1,39 +1,28 @@
 module Tool exposing (..)
 
+import Html exposing (Attribute)
+import Html.Attributes as Attributes
 import Mouse exposing (Position)
-import Tool.Fill.Mouse as Fill
-import Tool.Fill.Types as Fill
-import Tool.Hand.Mouse as Hand
-import Tool.Hand.Types as Hand
-import Tool.Line.Mouse as Line
-import Tool.Line.Types as Line
-import Tool.Pencil.Mouse as Pencil
-import Tool.Pencil.Types as Pencil
-import Tool.Rectangle.Mouse as Rectangle
-import Tool.Rectangle.Types as Rectangle
-import Tool.RectangleFilled.Mouse as RectangleFilled
-import Tool.RectangleFilled.Types as RectangleFilled
-import Tool.Sample.Mouse as Sample
-import Tool.Sample.Types as Sample
-import Tool.Select.Mouse as Select
-import Tool.Select.Types as Select
-import Tool.ZoomIn.Mouse as ZoomIn
-import Tool.ZoomIn.Types as ZoomIn
-import Tool.ZoomOut.Mouse as ZoomOut
-import Tool.ZoomOut.Types as ZoomOut
+import MouseEvents exposing (MouseEvent, onMouseUp)
+import Tool.Hand as Hand
+import Tool.Line as Line
+import Tool.Pencil as Pencil
+import Tool.Rectangle as Rectangle
+import Tool.RectangleFilled as RectangleFilled
+import Tool.Select as Select
 
 
 type Msg
     = HandMsg Hand.Msg
     | PencilMsg Pencil.Msg
     | LineMsg Line.Msg
-    | ZoomInMsg ZoomIn.Msg
-    | ZoomOutMsg ZoomOut.Msg
+    | ZoomInScreenMouseUp MouseEvent
+    | ZoomOutScreenMouseUp MouseEvent
     | RectangleMsg Rectangle.Msg
     | RectangleFilledMsg RectangleFilled.Msg
     | SelectMsg Select.Msg
-    | SampleMsg Sample.Msg
-    | FillMsg Fill.Msg
+    | SampleAt MouseEvent
+    | FillScreenMouseUp MouseEvent
 
 
 type Tool
@@ -50,43 +39,100 @@ type Tool
 
 
 
--- SUBSCRIPTIONS --
+-- INIT --
 
 
-subscriptions : Tool -> List (Sub Msg)
-subscriptions tool =
+init : Tool
+init =
+    Hand Nothing
+
+
+
+-- HTML ATTRIBUTES --
+
+
+attributes : Tool -> List (Attribute Msg)
+attributes tool =
     case tool of
         Hand _ ->
-            List.map (Sub.map HandMsg) Hand.subs
+            List.map
+                (Attributes.map HandMsg)
+                Hand.attributes
 
         Sample ->
-            List.map (Sub.map SampleMsg) Sample.subs
+            [ onMouseUp SampleAt ]
 
         Fill ->
-            List.map (Sub.map FillMsg) Fill.subs
+            [ onMouseUp FillScreenMouseUp ]
 
         Pencil _ ->
-            List.map (Sub.map PencilMsg) Pencil.subs
+            List.map
+                (Attributes.map PencilMsg)
+                Pencil.attributes
 
         Line _ ->
-            List.map (Sub.map LineMsg) Line.subs
+            List.map
+                (Attributes.map LineMsg)
+                Line.attributes
 
         Rectangle _ ->
-            List.map (Sub.map RectangleMsg) Rectangle.subs
+            List.map
+                (Attributes.map RectangleMsg)
+                Rectangle.attributes
 
         RectangleFilled _ ->
             List.map
-                (Sub.map RectangleFilledMsg)
-                RectangleFilled.subs
+                (Attributes.map RectangleFilledMsg)
+                RectangleFilled.attributes
 
         Select _ ->
-            List.map (Sub.map SelectMsg) Select.subs
+            List.map
+                (Attributes.map SelectMsg)
+                Select.attributes
 
         ZoomIn ->
-            List.map (Sub.map ZoomInMsg) ZoomIn.subs
+            [ onMouseUp ZoomInScreenMouseUp ]
 
         ZoomOut ->
-            List.map (Sub.map ZoomOutMsg) ZoomOut.subs
+            [ onMouseUp ZoomOutScreenMouseUp ]
+
+
+
+-- SUBSCRIPTIONS --
+
+
+subscriptions : Tool -> Sub Msg
+subscriptions tool =
+    case tool of
+        Hand _ ->
+            Sub.map HandMsg Hand.subs
+
+        Pencil _ ->
+            Sub.map PencilMsg Pencil.subs
+
+        Line _ ->
+            Sub.map LineMsg Line.subs
+
+        Rectangle _ ->
+            Sub.map RectangleMsg Rectangle.subs
+
+        RectangleFilled _ ->
+            Sub.map RectangleFilledMsg RectangleFilled.subs
+
+        Select _ ->
+            Sub.map SelectMsg Select.subs
+
+        Sample ->
+            Sub.none
+
+        ZoomIn ->
+            Sub.none
+
+        ZoomOut ->
+            Sub.none
+
+        Fill ->
+            Sub.none
 
 
 

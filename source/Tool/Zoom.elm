@@ -2,8 +2,40 @@ module Tool.Zoom exposing (..)
 
 import Canvas exposing (Size)
 import Mouse exposing (Position)
+import MouseEvents exposing (MouseEvent)
 import Types exposing (Model)
 import Util exposing (tbw)
+
+
+-- MOUSE EVENTS --
+
+
+zoomInScreenMouseUp : MouseEvent -> Model -> Model
+zoomInScreenMouseUp { clientPos } model =
+    let
+        newZoom =
+            next model.zoom
+    in
+    if model.zoom == newZoom then
+        model
+    else
+        adjust clientPos -1 (set newZoom model)
+
+
+zoomOutScreenMouseUp : MouseEvent -> Model -> Model
+zoomOutScreenMouseUp { clientPos } model =
+    let
+        newZoom =
+            prev model.zoom
+    in
+    if model.zoom == newZoom then
+        model
+    else
+        adjust clientPos 1 (set newZoom model)
+
+
+
+-- HELPERS --
 
 
 adjust : Position -> Int -> Model -> Model

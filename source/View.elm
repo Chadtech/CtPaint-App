@@ -17,16 +17,6 @@ import MouseEvents exposing (onMouseMove)
 import Palette.View as Palette
 import Taskbar.View as Taskbar
 import Tool exposing (Tool(..))
-import Tool.Fill.Mouse as Fill
-import Tool.Hand.Mouse as Hand
-import Tool.Line.Mouse as Line
-import Tool.Pencil.Mouse as Pencil
-import Tool.Rectangle.Mouse as Rectangle
-import Tool.RectangleFilled.Mouse as RectangleFilled
-import Tool.Sample.Mouse as Sample
-import Tool.Select.Mouse as Select
-import Tool.ZoomIn.Mouse as ZoomIn
-import Tool.ZoomOut.Mouse as ZoomOut
 import Toolbar.View as Toolbar
 import Types exposing (Model, Msg(..))
 import Util exposing ((:=), height, left, top, width)
@@ -137,79 +127,18 @@ clickScreen : Int -> Model -> Html Msg
 clickScreen canvasAreaHeight { tool } =
     let
         attributes =
-            addToolAttributes
-                tool
-                [ class ("screen " ++ Tool.name tool)
-                , style
-                    [ height canvasAreaHeight ]
-                , onMouseLeave ScreenMouseExit
-                , onMouseMove ScreenMouseMove
-                ]
+            [ class ("screen " ++ Tool.name tool)
+            , style
+                [ height canvasAreaHeight ]
+            , onMouseLeave ScreenMouseExit
+            , onMouseMove ScreenMouseMove
+            ]
+
+        toolAttrs =
+            Tool.attributes tool
+                |> List.map (Attributes.map ToolMsg)
     in
-    div attributes []
-
-
-addToolAttributes : Tool -> List (Attribute Msg) -> List (Attribute Msg)
-addToolAttributes tool attributes =
-    let
-        toolAttributes =
-            case tool of
-                Hand _ ->
-                    List.map
-                        (Attributes.map Tool.HandMsg)
-                        Hand.attributes
-
-                Sample ->
-                    List.map
-                        (Attributes.map Tool.SampleMsg)
-                        Sample.attributes
-
-                Fill ->
-                    List.map
-                        (Attributes.map Tool.FillMsg)
-                        Fill.attributes
-
-                Pencil _ ->
-                    List.map
-                        (Attributes.map Tool.PencilMsg)
-                        Pencil.attributes
-
-                Line _ ->
-                    List.map
-                        (Attributes.map Tool.LineMsg)
-                        Line.attributes
-
-                Rectangle _ ->
-                    List.map
-                        (Attributes.map Tool.RectangleMsg)
-                        Rectangle.attributes
-
-                RectangleFilled _ ->
-                    List.map
-                        (Attributes.map Tool.RectangleFilledMsg)
-                        RectangleFilled.attributes
-
-                Select _ ->
-                    List.map
-                        (Attributes.map Tool.SelectMsg)
-                        Select.attributes
-
-                ZoomIn ->
-                    List.map
-                        (Attributes.map Tool.ZoomInMsg)
-                        ZoomIn.attributes
-
-                ZoomOut ->
-                    List.map
-                        (Attributes.map Tool.ZoomOutMsg)
-                        ZoomOut.attributes
-    in
-    List.concat
-        [ List.map
-            (Attributes.map ToolMsg)
-            toolAttributes
-        , attributes
-        ]
+    div (toolAttrs ++ attributes) []
 
 
 

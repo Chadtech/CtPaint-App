@@ -5,20 +5,20 @@ import Types exposing (Model)
 
 
 adjustPosition : Model -> Int -> Position -> Position
-adjustPosition { canvas, canvasPosition, zoom } offset { x, y } =
+adjustPosition { canvas, canvasPosition, zoom } offset position =
     let
-        x_ =
+        x =
             List.sum
-                [ x
+                [ position.x
                 , -canvasPosition.x
                 , -offset
                 ]
 
-        y_ =
+        y =
             List.sum
-                [ y
+                [ position.y
                 , -canvasPosition.y
                 , -offset
                 ]
     in
-    Position (x_ // zoom) (y_ // zoom)
+    { x = x // zoom, y = y // zoom }

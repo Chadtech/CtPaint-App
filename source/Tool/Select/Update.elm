@@ -4,31 +4,31 @@ import Canvas exposing (Point, Size)
 import Draw.Rectangle as Rectangle
 import Draw.Select as Select
 import History.Update as History
-import Mouse exposing (Position)
-import Tool exposing (Tool(..))
-import Tool.Select.Types exposing (..)
+import Tool.Select exposing (Msg(..), SelectModel)
 import Tool.Util exposing (adjustPosition)
 import Types exposing (Model)
-import Util exposing (positionMin, tbw)
+import Util exposing ((&), positionMin, tbw)
 
 
-update : Msg -> Maybe Position -> Model -> Model
-update message maybePosition model =
-    case ( message, maybePosition ) of
-        ( OnScreenMouseDown position, Nothing ) ->
+update : Msg -> SelectModel -> Model -> ( Model, SelectModel )
+update message selectModel model =
+    case ( message, selectModel ) of
+        ( ScreenMouseDown { clientPos }, Nothing ) ->
             let
                 adjustedPosition =
-                    adjustPosition model 0 position
+                    adjustPosition model 0 clientPos
+
+                newModel =
+                    { model
+                        | drawAtRender =
+                            Rectangle.draw
+                                model.swatches.primary
+                                adjustedPosition
+                                adjustedPosition
+                    }
+                        |> handleExistingSelection
             in
-            { model
-                | tool = Select (Just adjustedPosition)
-                , drawAtRender =
-                    Rectangle.draw
-                        model.swatches.primary
-                        adjustedPosition
-                        adjustedPosition
-            }
-                |> handleExistingSelection
+            newModel & Just adjustedPosition
 
         ( SubMouseMove position, Just priorPosition ) ->
             { model
@@ -38,6 +38,7 @@ update message maybePosition model =
                         priorPosition
                         (adjustPosition model tbw position)
             }
+                & selectModel
 
         ( SubMouseUp position, Just priorPosition ) ->
             let
@@ -45,10 +46,8 @@ update message maybePosition model =
                     adjustPosition model tbw position
             in
             if adjustedPosition == priorPosition then
-                { model
-                    | tool = Select Nothing
-                    , drawAtRender = Canvas.batch []
-                }
+                { model | drawAtRender = Canvas.batch [] }
+                    & Nothing
             else
                 let
                     ( newSelection, drawOp ) =
@@ -59,24 +58,23 @@ update message maybePosition model =
                             model.canvas
                 in
                 { model
-                    | tool = Rectangle Nothing
-                    , pendingDraw =
+                    | pendingDraw =
                         Canvas.batch
                             [ model.pendingDraw
                             , drawOp
                             ]
                     , selection =
-                        Just
-                            ( positionMin
-                                priorPosition
-                                adjustedPosition
-                            , newSelection
-                            )
-                    , tool = Select Nothing
+                        ( positionMin
+                            priorPosition
+                            adjustedPosition
+                        , newSelection
+                        )
+                            |> Just
                 }
+                    & Nothing
 
         _ ->
-            model
+            model & selectModel
 
 
 

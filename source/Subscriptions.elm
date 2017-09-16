@@ -28,10 +28,7 @@ subscriptions model =
         (Minimap.subscriptions model.minimap)
     , keyboardUps
     , keyboardDowns
-    , model.tool
-        |> Tool.subscriptions
-        |> List.map (Sub.map ToolMsg)
-        |> Sub.batch
+    , Sub.map ToolMsg (Tool.subscriptions model.tool)
     , menu model
     , Ports.windowFocus HandleWindowFocus
     ]

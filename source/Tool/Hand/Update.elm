@@ -1,14 +1,14 @@
-module Tool.Hand.Update exposing (..)
+module Tool.Hand.Update exposing (update)
 
 import Mouse exposing (Position)
-import Tool exposing (Tool(..))
-import Tool.Hand.Types exposing (Msg(..))
+import Tool.Hand exposing (HandModel, Msg(..))
 import Types exposing (Model)
+import Util exposing ((&))
 
 
-update : Msg -> Maybe ( Position, Position ) -> Model -> Model
-update message tool model =
-    case ( message, tool ) of
+update : Msg -> HandModel -> Model -> ( Model, HandModel )
+update message toolModel model =
+    case ( message, toolModel ) of
         ( ScreenMouseDown { clientPos }, Nothing ) ->
             let
                 initialPosition =
@@ -18,15 +18,14 @@ update message tool model =
 
                         Nothing ->
                             model.canvasPosition
-            in
-            { model
-                | tool =
+
+                newToolModel =
                     ( initialPosition
                     , clientPos
                     )
                         |> Just
-                        |> Hand
-            }
+            in
+            model & newToolModel
 
         ( SubMouseMove position, Just ( initialPosition, click ) ) ->
             case model.selection of
@@ -53,6 +52,7 @@ update message tool model =
                                 , selection
                                 )
                     }
+                        & toolModel
 
                 Nothing ->
                     { model
@@ -71,11 +71,10 @@ update message tool model =
                                     ]
                             }
                     }
+                        & toolModel
 
         ( SubMouseUp, _ ) ->
-            { model
-                | tool = Hand Nothing
-            }
+            model & Nothing
 
         _ ->
-            model
+            model & toolModel

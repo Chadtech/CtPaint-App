@@ -87,7 +87,7 @@ init json =
 
     --, subMouseMove = Nothing
     , windowSize = windowSize
-    , tool = Hand Nothing
+    , tool = Tool.init
     , zoom = 1
     , galleryView = False
     , colorPicker = ColorPicker.init Palette.Init.palette
