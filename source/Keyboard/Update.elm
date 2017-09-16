@@ -22,10 +22,10 @@ import Menu.Ports
 import Menu.Scale.Types as Scale
 import Menu.Types as Menu exposing (Menu(..))
 import Minimap.Types as Minimap
-import Model exposing (Model)
 import Mouse exposing (Position)
-import Tool.Types exposing (Tool(..))
+import Tool exposing (Tool(..))
 import Tool.Zoom as Zoom
+import Types exposing (Model)
 
 
 update : Msg -> Model -> ( Model, Cmd message )

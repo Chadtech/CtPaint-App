@@ -1,8 +1,8 @@
 module Tool.ZoomIn.Update exposing (update)
 
-import Model exposing (Model)
 import Tool.Zoom as Zoom
 import Tool.ZoomIn.Types exposing (Msg(..))
+import Types exposing (Model)
 
 
 update : Msg -> Model -> Model

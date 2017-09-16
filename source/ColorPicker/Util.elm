@@ -1,7 +1,7 @@
 module ColorPicker.Util exposing (doesntHaveHue, wakeUp)
 
 import Color exposing (Color)
-import Model exposing (Model)
+import Types exposing (Model)
 import Util
 
 

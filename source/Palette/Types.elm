@@ -2,12 +2,10 @@ module Palette.Types exposing (..)
 
 import Color exposing (Color)
 import ParseInt
-import Types.Mouse exposing (Direction(..))
 
 
 type Msg
-    = ResizeToolbar Direction
-    | PaletteSquareClick Color
+    = PaletteSquareClick Color
     | WakeUpColorPicker Color Int
 
 

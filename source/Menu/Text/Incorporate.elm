@@ -7,7 +7,7 @@ import Menu.Text.Types as Text
         , Msg(..)
         )
 import Menu.Types exposing (Menu(..))
-import Model exposing (Model)
+import Types exposing (Model)
 
 
 incorporate : Model -> ( Text.Model, ExternalMsg ) -> ( Model, Cmd Msg )

@@ -3,9 +3,9 @@ module Tool.Fill.Update exposing (update)
 import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Draw.Util
 import History.Update as History
-import Model exposing (Model)
 import Tool.Fill.Types exposing (Msg(..))
 import Tool.Util exposing (adjustPosition)
+import Types exposing (Model)
 import Util exposing (maybeCons, tbw, toPoint)
 
 

@@ -9,58 +9,51 @@ import List.Unique
 import Menu.Update as Menu
 import Minimap.Incorporate as Minimap
 import Minimap.Update as Minimap
-import Model exposing (Model)
 import Mouse exposing (Position)
-import Msg exposing (Msg(..))
 import Palette.Update as Palette
 import Taskbar.Update as Taskbar
-import Tool.Fill.Update as Fill
-import Tool.Hand.Update as Hand
-import Tool.Line.Update as Line
-import Tool.Pencil.Update as Pencil
-import Tool.Rectangle.Update as Rectangle
-import Tool.RectangleFilled.Update as RectangleFilled
-import Tool.Sample.Update as Sample
-import Tool.Select.Update as Select
-import Tool.Types exposing (Tool(..))
-import Tool.ZoomIn.Update as ZoomIn
-import Tool.ZoomOut.Update as ZoomOut
+import Tool.Update as Tool
+import Types exposing (Model, Msg(..))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
-    case ( message, model.tool ) of
-        ( TaskbarMsg subMsg, _ ) ->
+    case message of
+        ToolMsg subMsg ->
+            Tool.update subMsg model
+                |> Tuple.mapSecond (Cmd.map ToolMsg)
+
+        TaskbarMsg subMsg ->
             let
                 ( newModel, cmd ) =
                     Taskbar.update subMsg model
             in
             ( newModel, Cmd.map TaskbarMsg cmd )
 
-        ( MenuMsg subMsg, _ ) ->
+        MenuMsg subMsg ->
             Menu.update subMsg model
                 |> Tuple.mapSecond (Cmd.map MenuMsg)
 
-        ( PaletteMsg subMsg, _ ) ->
+        PaletteMsg subMsg ->
             let
                 ( newModel, cmd ) =
                     Palette.update subMsg model
             in
             ( newModel, Cmd.map PaletteMsg cmd )
 
-        ( GetWindowSize size, _ ) ->
+        GetWindowSize size ->
             { model
                 | windowSize = size
             }
                 ! []
 
-        ( SetTool tool, _ ) ->
+        SetTool tool ->
             { model
                 | tool = tool
             }
                 ! []
 
-        ( KeyboardMsg subMsg, _ ) ->
+        KeyboardMsg subMsg ->
             let
                 ( newModel, cmd ) =
                     Keyboard.update subMsg model
@@ -70,62 +63,7 @@ update message model =
             in
             newModel ! [ cmd ]
 
-        ( HandMsg subMsg, Hand subModel ) ->
-            let
-                newModel =
-                    Hand.update subMsg subModel model
-            in
-            newModel ! []
-
-        ( SampleMsg subMsg, Sample ) ->
-            Sample.update subMsg model ! []
-
-        ( FillMsg subMsg, Fill ) ->
-            Fill.update subMsg model ! []
-
-        ( PencilMsg subMsg, Pencil subModel ) ->
-            let
-                newModel =
-                    Pencil.update subMsg subModel model
-            in
-            newModel ! []
-
-        ( LineMsg subMsg, Line subModel ) ->
-            let
-                newModel =
-                    Line.update subMsg subModel model
-            in
-            newModel ! []
-
-        ( ZoomInMsg subMsg, ZoomIn ) ->
-            let
-                newModel =
-                    ZoomIn.update subMsg model
-            in
-            newModel ! []
-
-        ( ZoomOutMsg subMsg, ZoomOut ) ->
-            let
-                newModel =
-                    ZoomOut.update subMsg model
-            in
-            newModel ! []
-
-        ( RectangleMsg subMsg, Rectangle subModel ) ->
-            let
-                newModel =
-                    Rectangle.update subMsg subModel model
-            in
-            newModel ! []
-
-        ( RectangleFilledMsg subMsg, RectangleFilled subModel ) ->
-            let
-                newModel =
-                    RectangleFilled.update subMsg subModel model
-            in
-            newModel ! []
-
-        ( Tick dt, _ ) ->
+        Tick dt ->
             case model.pendingDraw of
                 Batch [] ->
                     model ! []
@@ -141,14 +79,14 @@ update message model =
                     }
                         ! []
 
-        ( ColorPickerMsg subMsg, _ ) ->
+        ColorPickerMsg subMsg ->
             let
                 colorPickerUpdate =
                     ColorPicker.update subMsg model.colorPicker
             in
             ColorPicker.incorporate colorPickerUpdate model
 
-        ( MinimapMsg subMsg, _ ) ->
+        MinimapMsg subMsg ->
             case model.minimap of
                 Just minimap ->
                     let
@@ -160,7 +98,7 @@ update message model =
                 Nothing ->
                     model ! []
 
-        ( ScreenMouseMove { targetPos, clientPos }, _ ) ->
+        ScreenMouseMove { targetPos, clientPos } ->
             let
                 x =
                     clientPos.x - targetPos.x - model.canvasPosition.x
@@ -179,21 +117,14 @@ update message model =
             }
                 ! []
 
-        ( ScreenMouseExit, _ ) ->
+        ScreenMouseExit ->
             { model
                 | mousePosition =
                     Nothing
             }
                 ! []
 
-        ( SelectMsg subMsg, Select subModel ) ->
-            let
-                newModel =
-                    Select.update subMsg subModel model
-            in
-            newModel ! []
-
-        ( HandleWindowFocus focused, _ ) ->
+        HandleWindowFocus focused ->
             if focused then
                 { model
                     | keysDown = List.Unique.empty
@@ -201,6 +132,3 @@ update message model =
                     ! []
             else
                 model ! []
-
-        _ ->
-            model ! []

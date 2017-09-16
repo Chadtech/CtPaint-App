@@ -1,9 +1,9 @@
 module Tool.Sample.Update exposing (update)
 
 import Draw.Util exposing (colorAt)
-import Model exposing (Model)
 import Tool.Sample.Types exposing (Msg(..))
 import Tool.Util exposing (adjustPosition)
+import Types exposing (Model)
 import Util exposing (tbw)
 
 

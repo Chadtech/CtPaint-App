@@ -10,22 +10,9 @@ import Menu.MsgMap
 import Menu.Scale.Mouse as Scale
 import Menu.Types exposing (Menu(..))
 import Minimap.Mouse as Minimap
-import Model exposing (Model)
-import Mouse
-import Msg exposing (Msg(..))
 import Ports as Ports
-import Tool.Fill.Mouse as Fill
-import Tool.Hand.Mouse as Hand
-import Tool.Line.Mouse as Line
-import Tool.Pencil.Mouse as Pencil
-import Tool.Rectangle.Mouse as Rectangle
-import Tool.RectangleFilled.Mouse as RectangleFilled
-import Tool.Sample.Mouse as Sample
-import Tool.Select.Mouse as Select
-import Tool.Types exposing (Tool(..))
-import Tool.ZoomIn.Mouse as ZoomIn
-import Tool.ZoomOut.Mouse as ZoomOut
-import Util exposing (maybeCons)
+import Tool
+import Types exposing (Model, Msg(..))
 import Window
 
 
@@ -41,11 +28,14 @@ subscriptions model =
         (Minimap.subscriptions model.minimap)
     , keyboardUps
     , keyboardDowns
-    , Sub.batch (toolSubs model)
+    , model.tool
+        |> Tool.subscriptions
+        |> List.map (Sub.map ToolMsg)
+        |> Sub.batch
     , menu model
     , Ports.windowFocus HandleWindowFocus
     ]
-        |> maybeCons (Maybe.map Mouse.moves model.subMouseMove)
+        --|> maybeCons (Maybe.map Mouse.moves model.subMouseMove)
         |> Sub.batch
 
 
@@ -76,46 +66,6 @@ menu model =
 
         _ ->
             Sub.none
-
-
-
--- SUBS --
-
-
-toolSubs : Model -> List (Sub Msg)
-toolSubs { tool } =
-    case tool of
-        Hand _ ->
-            List.map (Sub.map HandMsg) Hand.subs
-
-        Sample ->
-            List.map (Sub.map SampleMsg) Sample.subs
-
-        Fill ->
-            List.map (Sub.map FillMsg) Fill.subs
-
-        Pencil _ ->
-            List.map (Sub.map PencilMsg) Pencil.subs
-
-        Line _ ->
-            List.map (Sub.map LineMsg) Line.subs
-
-        Rectangle _ ->
-            List.map (Sub.map RectangleMsg) Rectangle.subs
-
-        RectangleFilled _ ->
-            List.map
-                (Sub.map RectangleFilledMsg)
-                RectangleFilled.subs
-
-        Select _ ->
-            List.map (Sub.map SelectMsg) Select.subs
-
-        ZoomIn ->
-            List.map (Sub.map ZoomInMsg) ZoomIn.subs
-
-        ZoomOut ->
-            List.map (Sub.map ZoomOutMsg) ZoomOut.subs
 
 
 

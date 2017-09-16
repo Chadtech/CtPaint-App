@@ -9,7 +9,7 @@ import Menu.Scale.Update as Scale
 import Menu.Text.Incorporate as Text
 import Menu.Text.Update as Text
 import Menu.Types exposing (Menu(..), Msg(..))
-import Model exposing (Model)
+import Types exposing (Model)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

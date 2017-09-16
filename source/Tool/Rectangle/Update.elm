@@ -3,11 +3,11 @@ module Tool.Rectangle.Update exposing (update)
 import Canvas exposing (Size)
 import Draw.Rectangle as Rectangle
 import History.Update as History
-import Model exposing (Model)
 import Mouse exposing (Position)
+import Tool exposing (Tool(..))
 import Tool.Rectangle.Types exposing (Msg(..))
-import Tool.Types exposing (Tool(..))
 import Tool.Util exposing (adjustPosition)
+import Types exposing (Model)
 import Util exposing (tbw)
 
 

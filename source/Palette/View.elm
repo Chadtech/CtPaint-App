@@ -3,15 +3,13 @@ module Palette.View exposing (..)
 import Array
 import Color exposing (Color)
 import Draw.Util exposing (colorAt)
-import ElementRelativeMouseEvents as Events
 import Html exposing (Attribute, Html, a, div, p, span, text)
 import Html.Attributes exposing (class, classList, style)
 import Html.Events exposing (onClick)
-import Model exposing (Model)
 import Mouse exposing (Position)
 import Palette.Types as Palette exposing (Msg(..), Swatches)
-import Tool.Types exposing (Tool(..))
-import Types.Mouse exposing (Direction(..))
+import Tool exposing (Tool(..))
+import Types exposing (Model)
 import Util exposing ((:=), height, maybeCons, px, tbw)
 
 
@@ -113,14 +111,15 @@ edge : Html Msg
 edge =
     div
         [ class "edge"
-        , Util.toPosition
-            >> Down
-            >> ResizeToolbar
-            |> Events.onMouseDown
-        , Util.toPosition
-            >> Up
-            >> ResizeToolbar
-            |> Events.onMouseUp
+
+        --, Util.toPosition
+        --    >> Down
+        --    >> ResizeToolbar
+        --    |> Events.onMouseDown
+        --, Util.toPosition
+        --    >> Up
+        --    >> ResizeToolbar
+        --    |> Events.onMouseUp
         ]
         []
 

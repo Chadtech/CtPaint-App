@@ -4,7 +4,7 @@ import Menu.Download.Ports as Ports
 import Menu.Download.Types as Download exposing (ExternalMsg(..), Msg(..))
 import Menu.Ports as Ports
 import Menu.Types exposing (Menu(..))
-import Model exposing (Model)
+import Types exposing (Model)
 
 
 incorporate : Model -> ( Download.Model, ExternalMsg ) -> ( Model, Cmd Msg )

@@ -12,12 +12,11 @@ import Menu.Scale.View as Scale
 import Menu.Text.View as Text
 import Menu.Types exposing (Menu(..))
 import Minimap.View as Minimap
-import Model exposing (Model)
 import Mouse exposing (Position)
 import MouseEvents exposing (onMouseMove)
-import Msg exposing (Msg(..))
 import Palette.View as Palette
 import Taskbar.View as Taskbar
+import Tool exposing (Tool(..))
 import Tool.Fill.Mouse as Fill
 import Tool.Hand.Mouse as Hand
 import Tool.Line.Mouse as Line
@@ -26,10 +25,10 @@ import Tool.Rectangle.Mouse as Rectangle
 import Tool.RectangleFilled.Mouse as RectangleFilled
 import Tool.Sample.Mouse as Sample
 import Tool.Select.Mouse as Select
-import Tool.Types as Tool exposing (Tool(..))
 import Tool.ZoomIn.Mouse as ZoomIn
 import Tool.ZoomOut.Mouse as ZoomOut
 import Toolbar.View as Toolbar
+import Types exposing (Model, Msg(..))
 import Util exposing ((:=), height, left, top, width)
 
 
@@ -157,55 +156,60 @@ addToolAttributes tool attributes =
             case tool of
                 Hand _ ->
                     List.map
-                        (Attributes.map HandMsg)
+                        (Attributes.map Tool.HandMsg)
                         Hand.attributes
 
                 Sample ->
                     List.map
-                        (Attributes.map SampleMsg)
+                        (Attributes.map Tool.SampleMsg)
                         Sample.attributes
 
                 Fill ->
                     List.map
-                        (Attributes.map FillMsg)
+                        (Attributes.map Tool.FillMsg)
                         Fill.attributes
 
                 Pencil _ ->
                     List.map
-                        (Attributes.map PencilMsg)
+                        (Attributes.map Tool.PencilMsg)
                         Pencil.attributes
 
                 Line _ ->
                     List.map
-                        (Attributes.map LineMsg)
+                        (Attributes.map Tool.LineMsg)
                         Line.attributes
 
                 Rectangle _ ->
                     List.map
-                        (Attributes.map RectangleMsg)
+                        (Attributes.map Tool.RectangleMsg)
                         Rectangle.attributes
 
                 RectangleFilled _ ->
                     List.map
-                        (Attributes.map RectangleFilledMsg)
+                        (Attributes.map Tool.RectangleFilledMsg)
                         RectangleFilled.attributes
 
                 Select _ ->
                     List.map
-                        (Attributes.map SelectMsg)
+                        (Attributes.map Tool.SelectMsg)
                         Select.attributes
 
                 ZoomIn ->
                     List.map
-                        (Attributes.map ZoomInMsg)
+                        (Attributes.map Tool.ZoomInMsg)
                         ZoomIn.attributes
 
                 ZoomOut ->
                     List.map
-                        (Attributes.map ZoomOutMsg)
+                        (Attributes.map Tool.ZoomOutMsg)
                         ZoomOut.attributes
     in
-    toolAttributes ++ attributes
+    List.concat
+        [ List.map
+            (Attributes.map ToolMsg)
+            toolAttributes
+        , attributes
+        ]
 
 
 

@@ -2,8 +2,8 @@ module Taskbar.Update exposing (update)
 
 import Keyboard.Update as Keyboard
 import Minimap.Types as Minimap
-import Model exposing (Model)
 import Taskbar.Types as Taskbar exposing (Msg(..))
+import Types exposing (Model)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

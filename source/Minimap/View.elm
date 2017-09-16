@@ -12,7 +12,7 @@ import Minimap.Types
         , extraWidth
         )
 import MouseEvents as Events
-import Tool.Types as Tool exposing (Tool(..))
+import Tool exposing (Tool(..))
 import Util exposing (height, left, top, width)
 
 

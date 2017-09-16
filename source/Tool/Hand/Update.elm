@@ -1,9 +1,9 @@
 module Tool.Hand.Update exposing (..)
 
-import Model exposing (Model)
 import Mouse exposing (Position)
+import Tool exposing (Tool(..))
 import Tool.Hand.Types exposing (Msg(..))
-import Tool.Types exposing (Tool(..))
+import Types exposing (Model)
 
 
 update : Msg -> Maybe ( Position, Position ) -> Model -> Model

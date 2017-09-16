@@ -3,7 +3,7 @@ module History.Update exposing (..)
 import Array
 import Color exposing (Color)
 import History.Types exposing (HistoryOp(..))
-import Model exposing (Model)
+import Types exposing (Model)
 
 
 -- HISTORY --

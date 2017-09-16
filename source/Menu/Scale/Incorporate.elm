@@ -7,7 +7,7 @@ import Menu.Scale.Types as Scale
         , Msg(..)
         )
 import Menu.Types exposing (Menu(..))
-import Model exposing (Model)
+import Types exposing (Model)
 
 
 incorporate : Model -> ( Scale.Model, ExternalMsg ) -> ( Model, Cmd Msg )

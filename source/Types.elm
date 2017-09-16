@@ -1,4 +1,4 @@
-module Model exposing (..)
+module Types exposing (..)
 
 import Array exposing (Array)
 import Canvas exposing (Canvas, DrawOp(..), Point, Size)
@@ -10,16 +10,37 @@ import Json.Decode as Decode exposing (Decoder, Value)
 import Keyboard exposing (KeyCode)
 import Keyboard.Types as Keyboard exposing (Config)
 import List.Unique exposing (UniqueList)
-import Menu.Types exposing (Menu(..))
+import Menu.Types as Menu exposing (Menu(..))
 import Minimap.Types as Minimap
 import Mouse exposing (Position)
-import Msg exposing (Msg(..))
+import MouseEvents exposing (MouseEvent)
 import Palette.Init
-import Palette.Types exposing (Swatches)
+import Palette.Types as Palette exposing (Swatches)
 import Random exposing (Seed)
 import Taskbar.Types as Taskbar
-import Tool.Types exposing (Tool(..))
+import Time exposing (Time)
+import Tool exposing (Tool(..))
 import Util exposing (tbw)
+
+
+-- MSG --
+
+
+type Msg
+    = PaletteMsg Palette.Msg
+    | GetWindowSize Size
+    | SetTool Tool
+    | KeyboardMsg Keyboard.Msg
+    | ToolMsg Tool.Msg
+    | TaskbarMsg Taskbar.Msg
+    | MenuMsg Menu.Msg
+    | Tick Time
+    | ColorPickerMsg ColorPicker.Msg
+    | MinimapMsg Minimap.Msg
+    | ScreenMouseMove MouseEvent
+    | ScreenMouseExit
+    | HandleWindowFocus Bool
+
 
 
 -- INIT --
@@ -63,7 +84,8 @@ init json =
     , swatches = Palette.Init.swatches
     , palette = Palette.Init.palette
     , horizontalToolbarHeight = 58
-    , subMouseMove = Nothing
+
+    --, subMouseMove = Nothing
     , windowSize = windowSize
     , tool = Hand Nothing
     , zoom = 1
@@ -99,7 +121,8 @@ type alias Model =
     , swatches : Swatches
     , palette : Array Color
     , horizontalToolbarHeight : Int
-    , subMouseMove : Maybe (Position -> Msg)
+
+    --, subMouseMove : Maybe (Position -> Msg)
     , windowSize : Size
     , tool : Tool
     , zoom : Int

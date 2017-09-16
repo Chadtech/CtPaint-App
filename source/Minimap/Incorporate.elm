@@ -1,7 +1,7 @@
 module Minimap.Incorporate exposing (..)
 
 import Minimap.Types as Minimap exposing (ExternalMsg(..))
-import Model exposing (Model)
+import Types exposing (Model)
 
 
 incorporate : ( Minimap.Model, ExternalMsg ) -> Model -> Model

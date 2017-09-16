@@ -4,11 +4,11 @@ import Canvas exposing (Point, Size)
 import Draw.Rectangle as Rectangle
 import Draw.Select as Select
 import History.Update as History
-import Model exposing (Model)
 import Mouse exposing (Position)
+import Tool exposing (Tool(..))
 import Tool.Select.Types exposing (..)
-import Tool.Types exposing (..)
 import Tool.Util exposing (adjustPosition)
+import Types exposing (Model)
 import Util exposing (positionMin, tbw)
 
 

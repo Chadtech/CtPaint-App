@@ -3,9 +3,8 @@ module Toolbar.View exposing (view)
 import Html exposing (Html, a, div, text)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
-import Model exposing (Model)
-import Msg exposing (Msg(..))
-import Tool.Types as Tool exposing (Tool(..))
+import Tool exposing (Tool(..))
+import Types exposing (Model, Msg(..))
 import Util exposing ((:=))
 
 

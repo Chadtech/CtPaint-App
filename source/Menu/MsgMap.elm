@@ -5,24 +5,24 @@ import Menu.Import.Types as Import
 import Menu.Scale.Types as Scale
 import Menu.Text.Types as Text
 import Menu.Types as Menu
-import Msg as Msg
+import Types
 
 
-download : Download.Msg -> Msg.Msg
+download : Download.Msg -> Types.Msg
 download =
-    Menu.DownloadMsg >> Msg.MenuMsg
+    Menu.DownloadMsg >> Types.MenuMsg
 
 
-import_ : Import.Msg -> Msg.Msg
+import_ : Import.Msg -> Types.Msg
 import_ =
-    Menu.ImportMsg >> Msg.MenuMsg
+    Menu.ImportMsg >> Types.MenuMsg
 
 
-scale : Scale.Msg -> Msg.Msg
+scale : Scale.Msg -> Types.Msg
 scale =
-    Menu.ScaleMsg >> Msg.MenuMsg
+    Menu.ScaleMsg >> Types.MenuMsg
 
 
-text : Text.Msg -> Msg.Msg
+text : Text.Msg -> Types.Msg
 text =
-    Menu.TextMsg >> Msg.MenuMsg
+    Menu.TextMsg >> Types.MenuMsg

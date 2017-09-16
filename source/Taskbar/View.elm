@@ -5,8 +5,8 @@ import Html exposing (Attribute, Html, a, div, p, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick, onMouseOver)
 import Keyboard.Types exposing (Command(..))
-import Model exposing (Model)
 import Taskbar.Types exposing (Msg(..), Option(..))
+import Types exposing (Model)
 
 
 view : Model -> Html Msg

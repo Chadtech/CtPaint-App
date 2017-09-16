@@ -4,7 +4,7 @@ import Array
 import ColorPicker.Types as ColorPicker exposing (ExternalMsg(..))
 import History.Update as History
 import Menu.Ports
-import Model exposing (Model)
+import Types exposing (Model)
 
 
 incorporate : ( ColorPicker.Model, ExternalMsg ) -> Model -> ( Model, Cmd message )

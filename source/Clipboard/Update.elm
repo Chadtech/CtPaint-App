@@ -1,6 +1,6 @@
 module Clipboard.Update exposing (..)
 
-import Model exposing (Model)
+import Types exposing (Model)
 
 
 copy : Model -> Model

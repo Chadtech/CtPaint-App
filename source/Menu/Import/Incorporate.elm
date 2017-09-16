@@ -4,8 +4,8 @@ import Canvas
 import Menu.Import.Types as Import exposing (ExternalMsg(..), Msg(..))
 import Menu.Ports as Ports
 import Menu.Types exposing (Menu(..))
-import Model exposing (Model)
 import Task
+import Types exposing (Model)
 
 
 incorporate : Model -> ( Import.Model, ExternalMsg ) -> ( Model, Cmd Msg )
