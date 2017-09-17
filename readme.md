@@ -16,29 +16,16 @@ then go to `localhost:2970`
 This repo is organized as..
 
 ```
-./source
-├── Canvas.elm           -- Basic canvas functions
-├── Clipboard.elm        -- Copy, paste, cut
-├── ColorPicker          -- Color picker widget
-│   ├── Incorporate.elm
-│   ├── Mouse.elm
-│   ├── Types.elm
-│   ├── Update.elm
-│   ├── Util.elm
-│   └── View.elm
-├── Draw                 -- Basic drawing functions, uses Canvas.elm
-│   ├── Line.elm
-│   ├── Pixel.elm
-│   ├── Rectangle.elm
-│   ├── Select.elm
-│   └── Util.elm
-├── History.elm          -- Undo, Redo
-├── Keyboard             -- Handling global keyboard events
+├── Canvas.elm
+├── Clipboard.elm
+├── ColorPicker.elm
+├── Draw.elm
+├── History.elm
+├── Keyboard
 │   ├── Subscriptions.elm
-│   ├── Types.elm
 │   └── Update.elm
-├── Main.elm             -- Primary Elm File
-├── Menu                 -- Various menus that can pop open
+├── Main.elm
+├── Menu
 │   ├── Download
 │   │   ├── Incorporate.elm
 │   │   ├── Mouse.elm
@@ -52,8 +39,7 @@ This repo is organized as..
 │   │   ├── Types.elm
 │   │   ├── Update.elm
 │   │   └── View.elm
-│   ├── MsgMap.elm       -- Helper to map messages to higher Msg type
-│   ├── Ports.elm        
+│   ├── MsgMap.elm
 │   ├── Scale
 │   │   ├── Incorporate.elm
 │   │   ├── Mouse.elm
@@ -65,24 +51,24 @@ This repo is organized as..
 │   │   ├── Types.elm
 │   │   ├── Update.elm
 │   │   └── View.elm
-│   ├── Types.elm
 │   └── Update.elm
-├── Minimap              -- Mini view of whole canvas
+├── Menu.elm
+├── Minimap
 │   ├── Incorporate.elm
 │   ├── Mouse.elm
 │   ├── Types.elm
 │   ├── Update.elm
 │   └── View.elm
-├── Native               -- Native Elm code, JS canvas functions
+├── Native
 │   └── Canvas.js
-├── Palette              -- Color palette stuff
+├── Palette
 │   ├── Init.elm
 │   ├── Types.elm
 │   ├── Update.elm
 │   └── View.elm
-├── Ports.elm            -- JS and Elm interop
+├── Ports.elm
 ├── Styles
-│   ├── Main.styl        -- Main css style file
+│   ├── Main.styl
 │   ├── a.styl
 │   ├── canvas.styl
 │   ├── card.styl
@@ -96,12 +82,9 @@ This repo is organized as..
 │   ├── scale.styl
 │   ├── tool-button.styl
 │   └── toolbar.styl
-├── Subscriptions.elm    -- Highest subscriptions module
-├── Taskbar              -- Top menu bar
-│   ├── Types.elm
-│   ├── Update.elm
-│   └── View.elm
-├── Tool                 -- All tools
+├── Subscriptions.elm
+├── Taskbar.elm
+├── Tool
 │   ├── Fill.elm
 │   ├── Hand
 │   │   └── Update.elm
@@ -126,12 +109,12 @@ This repo is organized as..
 │   ├── Util.elm
 │   └── Zoom.elm
 ├── Tool.elm
-├── Toolbar              -- Left menu bar
+├── Toolbar
 │   └── View.elm
-├── Types.elm            -- Model, init, Msg, basic types.
-├── Update.elm           -- Top Update function
+├── Types.elm
+├── Update.elm
 ├── Util.elm
-├── View.elm             -- Top View function
-└── app.coffee           -- Primary JS file
+├── View.elm
+└── app.coffee
 ```
 
