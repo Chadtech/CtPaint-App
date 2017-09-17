@@ -27,17 +27,7 @@ import Util exposing ((&))
 
 update : Direction -> KeyPayload -> Model -> ( Model, Cmd Msg )
 update direction payload model =
-    case direction of
-        Up ->
-            updateUp payload model
-
-        Down ->
-            updateDown payload model & Cmd.none
-
-
-updateUp : KeyPayload -> Model -> ( Model, Cmd Msg )
-updateUp payload model =
-    case getCommand payload model.cmdKey model.keyboardUpConfig of
+    case getCommand payload direction model of
         NoCommand ->
             model & Cmd.none
 
@@ -54,40 +44,49 @@ updateUp payload model =
             { model | tool = Fill } & Cmd.none
 
         SwatchesOneTurn ->
-            { model
-                | swatches =
-                    { primary = model.swatches.first
-                    , first = model.swatches.second
-                    , second = model.swatches.third
-                    , third = model.swatches.primary
-                    , keyIsDown = False
-                    }
-            }
-                & Cmd.none
-
-        SwatchesThreeTurns ->
-            { model
-                | swatches =
-                    { primary = model.swatches.third
-                    , first = model.swatches.primary
-                    , second = model.swatches.first
-                    , third = model.swatches.second
-                    , keyIsDown = False
-                    }
-            }
-                & Cmd.none
+            if not model.swatches.keyIsDown then
+                { model
+                    | swatches =
+                        { primary = model.swatches.first
+                        , first = model.swatches.second
+                        , second = model.swatches.third
+                        , third = model.swatches.primary
+                        , keyIsDown = True
+                        }
+                }
+                    & Cmd.none
+            else
+                model & Cmd.none
 
         SwatchesTwoTurns ->
-            { model
-                | swatches =
-                    { primary = model.swatches.second
-                    , first = model.swatches.third
-                    , second = model.swatches.primary
-                    , third = model.swatches.first
-                    , keyIsDown = False
-                    }
-            }
-                & Cmd.none
+            if not model.swatches.keyIsDown then
+                { model
+                    | swatches =
+                        { primary = model.swatches.second
+                        , first = model.swatches.third
+                        , second = model.swatches.primary
+                        , third = model.swatches.first
+                        , keyIsDown = True
+                        }
+                }
+                    & Cmd.none
+            else
+                model & Cmd.none
+
+        SwatchesThreeTurns ->
+            if not model.swatches.keyIsDown then
+                { model
+                    | swatches =
+                        { primary = model.swatches.third
+                        , first = model.swatches.primary
+                        , second = model.swatches.first
+                        , third = model.swatches.second
+                        , keyIsDown = True
+                        }
+                }
+                    & Cmd.none
+            else
+                model & Cmd.none
 
         Undo ->
             History.undo model & Cmd.none
@@ -203,61 +202,9 @@ updateUp payload model =
                 & Cmd.none
 
 
-updateDown : KeyPayload -> Model -> Model
-updateDown payload model =
-    case getCommand payload model.cmdKey model.keyboardDownConfig of
-        NoCommand ->
-            model
-
-        SwatchesOneTurn ->
-            if not model.swatches.keyIsDown then
-                { model
-                    | swatches =
-                        { primary = model.swatches.first
-                        , first = model.swatches.second
-                        , second = model.swatches.third
-                        , third = model.swatches.primary
-                        , keyIsDown = True
-                        }
-                }
-            else
-                model
-
-        SwatchesTwoTurns ->
-            if not model.swatches.keyIsDown then
-                { model
-                    | swatches =
-                        { primary = model.swatches.second
-                        , first = model.swatches.third
-                        , second = model.swatches.primary
-                        , third = model.swatches.first
-                        , keyIsDown = True
-                        }
-                }
-            else
-                model
-
-        SwatchesThreeTurns ->
-            if not model.swatches.keyIsDown then
-                { model
-                    | swatches =
-                        { primary = model.swatches.third
-                        , first = model.swatches.primary
-                        , second = model.swatches.first
-                        , third = model.swatches.second
-                        , keyIsDown = True
-                        }
-                }
-            else
-                model
-
-        _ ->
-            model
-
-
-getCommand : KeyPayload -> (KeyPayload -> Bool) -> Dict String Command -> Command
-getCommand payload cmdKey config =
-    case Dict.get (payloadToString cmdKey payload) config of
+getCommand : KeyPayload -> Direction -> Model -> Command
+getCommand payload direction { cmdKey, keyConfig } =
+    case Dict.get (payloadToString direction cmdKey payload) keyConfig of
         Just command ->
             command
 

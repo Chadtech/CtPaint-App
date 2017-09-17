@@ -87,9 +87,10 @@ init json =
             .meta
         else
             .ctrl
-    , keyboardUpConfig = defaultUpConfig
+    , keyConfig = defaultConfig
+    , keyboardUpConfig = Dict.fromList []
     , keyboardUpLookUp = Dict.fromList []
-    , keyboardDownConfig = defaultKeyDownConfig
+    , keyboardDownConfig = Dict.fromList []
     , keyboardDownLookUp = Dict.fromList []
     , taskbarDropped = Nothing
     , minimap = Nothing
@@ -127,6 +128,7 @@ type alias Model =
     , clipboard : Maybe ( Position, Canvas )
     , keysDown : UniqueList KeyCode
     , cmdKey : KeyPayload -> Bool
+    , keyConfig : Dict String Command
     , keyboardUpConfig : Dict String Command
     , keyboardUpLookUp : Dict String (List String)
     , keyboardDownConfig : Dict String Command
@@ -217,8 +219,8 @@ type Command
 -- KEYBOARD --
 
 
-payloadToString : (KeyPayload -> Bool) -> KeyPayload -> String
-payloadToString cmdKey payload =
+payloadToString : Direction -> (KeyPayload -> Bool) -> KeyPayload -> String
+payloadToString dir cmdKey payload =
     let
         code =
             toString payload.code
@@ -229,7 +231,7 @@ payloadToString cmdKey payload =
         cmd =
             toString (cmdKey payload)
     in
-    shift ++ cmd ++ code
+    shift ++ cmd ++ code ++ toString dir
 
 
 type CmdState
@@ -246,7 +248,7 @@ type alias QuickKey =
     ( Direction, Key, CmdState, ShiftState )
 
 
-defaultConfig : List ( QuickKey, Command )
+defaultConfig : Dict String Command
 defaultConfig =
     [ ( Down, Number2, CmdIsUp, ShiftIsUp ) := SwatchesOneTurn
     , ( Down, Number3, CmdIsUp, ShiftIsUp ) := SwatchesTwoTurns
@@ -274,26 +276,27 @@ defaultConfig =
     , ( Down, CharD, CmdIsDown, ShiftIsDown ) := Scale
     , ( Down, Tab, CmdIsUp, ShiftIsUp ) := SwitchGalleryView
     ]
-
-
-defaultKeyDownConfig : Dict String Command
-defaultKeyDownConfig =
-    defaultConfig
-        |> List.filter (Tuple.first >> directionIsDown)
         |> List.map (Tuple.mapFirst quickKeyToString)
         |> Dict.fromList
 
 
-defaultUpConfig : Dict String Command
-defaultUpConfig =
-    defaultConfig
-        |> List.filter (Tuple.first >> directionIsUp)
-        |> List.map (Tuple.mapFirst quickKeyToString)
-        |> Dict.fromList
+
+--defaultKeyDownConfig : Dict String Command
+--defaultKeyDownConfig =
+--    defaultConfig
+--        |> List.filter (Tuple.first >> directionIsDown)
+--        |> List.map (Tuple.mapFirst quickKeyToString)
+--        |> Dict.fromList
+--defaultUpConfig : Dict String Command
+--defaultUpConfig =
+--    defaultConfig
+--        |> List.filter (Tuple.first >> directionIsUp)
+--        |> List.map (Tuple.mapFirst quickKeyToString)
+--        |> Dict.fromList
 
 
 quickKeyToString : QuickKey -> String
-quickKeyToString ( _, key, cmd, shift ) =
+quickKeyToString ( direction, key, cmd, shift ) =
     let
         code =
             Keyboard.Extra.toCode key
@@ -309,7 +312,7 @@ quickKeyToString ( _, key, cmd, shift ) =
                 == ShiftIsDown
                 |> toString
     in
-    shiftStr ++ cmdStr ++ code
+    shiftStr ++ cmdStr ++ code ++ toString direction
 
 
 directionIsDown : QuickKey -> Bool
