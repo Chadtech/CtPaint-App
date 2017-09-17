@@ -88,7 +88,7 @@ init json =
             .meta
         else
             .ctrl
-    , keyboardUpConfig = keyUpConfig
+    , keyboardUpConfig = defaultUpConfig
     , keyboardUpLookUp = Dict.fromList []
     , keyboardDownConfig = defaultKeyDownConfig
     , keyboardDownLookUp = Dict.fromList []
@@ -271,6 +271,14 @@ defaultKeyDownConfig =
         |> Dict.fromList
 
 
+defaultUpConfig : Dict String Command
+defaultUpConfig =
+    defaultConfig
+        |> List.filter (Tuple.first >> directionIsUp)
+        |> List.map (Tuple.mapFirst quickKeyToString)
+        |> Dict.fromList
+
+
 quickKeyToString : QuickKey -> String
 quickKeyToString ( _, key, cmd, shift ) =
     let
@@ -294,6 +302,11 @@ quickKeyToString ( _, key, cmd, shift ) =
 directionIsDown : QuickKey -> Bool
 directionIsDown ( direction, _, _, _ ) =
     direction == Down
+
+
+directionIsUp : QuickKey -> Bool
+directionIsUp ( direction, _, _, _ ) =
+    direction == Up
 
 
 

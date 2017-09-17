@@ -2,6 +2,7 @@ module Keyboard.Update exposing (update)
 
 import Canvas
 import Clipboard
+import Debug
 import Dict exposing (Dict)
 import Draw
 import History
@@ -27,7 +28,7 @@ import Util exposing ((&))
 
 update : Direction -> KeyPayload -> Model -> ( Model, Cmd Msg )
 update direction payload model =
-    case direction of
+    case Debug.log "Direction" direction of
         Up ->
             updateUp payload model
 
@@ -37,7 +38,7 @@ update direction payload model =
 
 updateUp : KeyPayload -> Model -> ( Model, Cmd Msg )
 updateUp payload model =
-    case getCommand payload model.cmdKey model.keyboardUpConfig of
+    case Debug.log "Command" <| getCommand payload model.cmdKey model.keyboardUpConfig of
         NoCommand ->
             model & Cmd.none
 
