@@ -2,7 +2,7 @@ module Tool.Rectangle.Update exposing (update)
 
 import Canvas exposing (Size)
 import Draw.Rectangle as Rectangle
-import History.Update as History
+import History
 import Mouse exposing (Position)
 import Tool exposing (Tool(..))
 import Tool.Rectangle exposing (Msg(..))

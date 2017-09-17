@@ -3,7 +3,7 @@ module Tool.Select.Update exposing (update)
 import Canvas exposing (Point, Size)
 import Draw.Rectangle as Rectangle
 import Draw.Select as Select
-import History.Update as History
+import History
 import Tool.Select exposing (Msg(..), SelectModel)
 import Tool.Util exposing (adjustPosition)
 import Types exposing (Model)

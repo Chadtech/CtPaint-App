@@ -2,7 +2,7 @@ module Tool.Fill exposing (..)
 
 import Canvas exposing (Canvas, DrawOp(..), Point)
 import Draw.Util
-import History.Update as History
+import History
 import MouseEvents exposing (MouseEvent)
 import Tool.Util exposing (adjustPosition)
 import Types exposing (Model)

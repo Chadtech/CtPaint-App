@@ -5,7 +5,6 @@ import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Color exposing (Color)
 import ColorPicker.Types as ColorPicker
 import Dict exposing (Dict)
-import History.Types exposing (HistoryOp(..))
 import Json.Decode as Decode exposing (Decoder, Value)
 import Keyboard exposing (KeyCode)
 import Keyboard.Types as Keyboard exposing (Config)
@@ -21,26 +20,6 @@ import Taskbar.Types as Taskbar
 import Time exposing (Time)
 import Tool exposing (Tool(..))
 import Util exposing (tbw)
-
-
--- MSG --
-
-
-type Msg
-    = PaletteMsg Palette.Msg
-    | GetWindowSize Size
-    | SetTool Tool
-    | KeyboardMsg Keyboard.Msg
-    | ToolMsg Tool.Msg
-    | TaskbarMsg Taskbar.Msg
-    | MenuMsg Menu.Msg
-    | Tick Time
-    | ColorPickerMsg ColorPicker.Msg
-    | MinimapMsg Minimap.Msg
-    | ScreenMouseMove MouseEvent
-    | ScreenMouseExit
-    | HandleWindowFocus Bool
-
 
 
 -- INIT --
@@ -111,6 +90,10 @@ init json =
         ! []
 
 
+
+-- TYPES --
+
+
 type alias Model =
     { session : Maybe Session
     , canvas : Canvas
@@ -143,6 +126,36 @@ type alias Model =
     , menu : Menu
     , seed : Seed
     }
+
+
+type Msg
+    = PaletteMsg Palette.Msg
+    | GetWindowSize Size
+    | SetTool Tool
+    | KeyboardMsg Keyboard.Msg
+    | ToolMsg Tool.Msg
+    | TaskbarMsg Taskbar.Msg
+    | MenuMsg Menu.Msg
+    | Tick Time
+    | ColorPickerMsg ColorPicker.Msg
+    | MinimapMsg Minimap.Msg
+    | ScreenMouseMove MouseEvent
+    | ScreenMouseExit
+    | HandleWindowFocus Bool
+
+
+type Direction
+    = Up
+    | Down
+
+
+type alias Session =
+    { email : String }
+
+
+type HistoryOp
+    = CanvasChange Canvas
+    | ColorChange Int Color
 
 
 
@@ -236,14 +249,6 @@ windowDecoder =
     Decode.map2 (,)
         (Decode.field "windowWidth" Decode.int)
         (Decode.field "windowHeight" Decode.int)
-
-
-
--- SESSION --
-
-
-type alias Session =
-    { email : String }
 
 
 sessionDecoder : Decoder Session

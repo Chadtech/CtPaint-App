@@ -4,7 +4,7 @@ import Canvas
 import Clipboard.Update as Clipboard
 import Dict
 import Draw.Rectangle as Rectangle
-import History.Update as History
+import History
 import Json.Decode exposing (decodeValue)
 import Keyboard exposing (KeyCode)
 import Keyboard.Types

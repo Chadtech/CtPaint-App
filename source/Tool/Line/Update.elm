@@ -2,7 +2,7 @@ module Tool.Line.Update exposing (update)
 
 import Canvas exposing (Size)
 import Draw.Line as Line
-import History.Update as History
+import History
 import Mouse exposing (Position)
 import Tool exposing (Tool(..))
 import Tool.Line exposing (Msg(..))

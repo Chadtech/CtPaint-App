@@ -2,7 +2,7 @@ module ColorPicker.Incorporate exposing (incorporate)
 
 import Array
 import ColorPicker.Types as ColorPicker exposing (ExternalMsg(..))
-import History.Update as History
+import History
 import Menu.Ports
 import Types exposing (Model)
 

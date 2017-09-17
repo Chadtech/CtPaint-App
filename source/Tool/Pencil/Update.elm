@@ -2,7 +2,7 @@ module Tool.Pencil.Update exposing (..)
 
 import Canvas exposing (DrawOp(..))
 import Draw.Line as Line
-import History.Update as History
+import History
 import Mouse exposing (Position)
 import Tool exposing (Tool(..))
 import Tool.Pencil exposing (Msg(..))

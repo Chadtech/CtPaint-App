@@ -1,9 +1,8 @@
-module History.Update exposing (..)
+module History exposing (..)
 
 import Array
 import Color exposing (Color)
-import History.Types exposing (HistoryOp(..))
-import Types exposing (Model)
+import Types exposing (HistoryOp(..), Model)
 
 
 -- HISTORY --
@@ -93,9 +92,7 @@ undo model =
 
 setHistory : List HistoryOp -> Model -> Model
 setHistory historyOps model =
-    { model
-        | history = historyOps
-    }
+    { model | history = historyOps }
 
 
 passToHistory : HistoryOp -> Model -> Model
@@ -112,9 +109,7 @@ passToHistory historyOp model =
 
 setFuture : List HistoryOp -> Model -> Model
 setFuture historyOps model =
-    { model
-        | future = historyOps
-    }
+    { model | future = historyOps }
 
 
 passToFuture : HistoryOp -> Model -> Model
