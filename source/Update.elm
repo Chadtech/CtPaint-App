@@ -1,11 +1,13 @@
 module Update exposing (update)
 
+import Array
 import Canvas exposing (DrawOp(Batch))
-import ColorPicker.Incorporate as ColorPicker
-import ColorPicker.Update as ColorPicker
+import ColorPicker
 import Debug exposing (log)
+import History
 import Keyboard.Update as Keyboard
 import List.Unique
+import Menu.Ports
 import Menu.Update as Menu
 import Minimap.Incorporate as Minimap
 import Minimap.Update as Minimap
@@ -14,6 +16,7 @@ import Palette.Update as Palette
 import Taskbar.Update as Taskbar
 import Tool.Update as Tool
 import Types exposing (Model, Msg(..))
+import Util exposing ((&))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -84,7 +87,7 @@ update message model =
                 colorPickerUpdate =
                     ColorPicker.update subMsg model.colorPicker
             in
-            ColorPicker.incorporate colorPickerUpdate model
+            incorporateColorPicker colorPickerUpdate model
 
         MinimapMsg subMsg ->
             case model.minimap of
@@ -132,3 +135,43 @@ update message model =
                     ! []
             else
                 model ! []
+
+
+incorporateColorPicker :
+    ( ColorPicker.Model, ColorPicker.ExternalMsg )
+    -> Model
+    -> ( Model, Cmd Msg )
+incorporateColorPicker ( colorPicker, maybeMsg ) model =
+    case maybeMsg of
+        ColorPicker.DoNothing ->
+            { model
+                | colorPicker = colorPicker
+            }
+                & Cmd.none
+
+        ColorPicker.SetColor index color ->
+            { model
+                | colorPicker = colorPicker
+                , palette =
+                    Array.set
+                        index
+                        color
+                        model.palette
+            }
+                & Cmd.none
+
+        ColorPicker.UpdateHistory index color ->
+            let
+                newModel =
+                    { model
+                        | colorPicker = colorPicker
+                    }
+                        |> History.addColor index color
+            in
+            newModel & Cmd.none
+
+        ColorPicker.StealFocus ->
+            model & Menu.Ports.stealFocus ()
+
+        ColorPicker.ReturnFocus ->
+            model & Menu.Ports.returnFocus ()

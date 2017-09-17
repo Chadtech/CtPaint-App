@@ -2,7 +2,7 @@ module Palette.View exposing (..)
 
 import Array
 import Color exposing (Color)
-import Draw.Util exposing (colorAt)
+import Draw
 import Html exposing (Attribute, Html, a, div, p, span, text)
 import Html.Attributes exposing (class, classList, style)
 import Html.Events exposing (onClick)
@@ -158,7 +158,7 @@ sampleColor model =
         Just position ->
             let
                 color =
-                    colorAt
+                    Draw.colorAt
                         position
                         model.canvas
 

@@ -1,10 +1,11 @@
 module Palette.Update exposing (update)
 
-import ColorPicker.Util as ColorPicker
+import Color exposing (Color)
 import Keyboard.Extra exposing (Key(..))
 import List.Unique
 import Palette.Types exposing (Msg(..))
 import Types exposing (Model)
+import Util exposing ((&))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -12,14 +13,7 @@ update message model =
     case message of
         --handleResize direction model
         WakeUpColorPicker color index ->
-            let
-                newModel =
-                    ColorPicker.wakeUp
-                        index
-                        color
-                        model
-            in
-            newModel ! []
+            wakeUp index color model & Cmd.none
 
         PaletteSquareClick color ->
             let
@@ -40,6 +34,18 @@ shiftIsDown { keysDown } =
     List.Unique.member
         (Keyboard.Extra.toCode Shift)
         keysDown
+
+
+wakeUp : Int -> Color -> Model -> Model
+wakeUp index color ({ colorPicker } as model) =
+    { model
+        | colorPicker =
+            { colorPicker
+                | color = color
+                , index = index
+                , show = True
+            }
+    }
 
 
 

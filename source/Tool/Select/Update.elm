@@ -1,8 +1,7 @@
 module Tool.Select.Update exposing (update)
 
 import Canvas exposing (Point, Size)
-import Draw.Rectangle as Rectangle
-import Draw.Select as Select
+import Draw
 import History
 import Tool.Select exposing (Msg(..), SelectModel)
 import Tool.Util exposing (adjustPosition)
@@ -16,12 +15,12 @@ update message selectModel model =
         ( ScreenMouseDown { clientPos }, Nothing ) ->
             let
                 adjustedPosition =
-                    adjustPosition model 0 clientPos
+                    adjustPosition model tbw clientPos
 
                 newModel =
                     { model
                         | drawAtRender =
-                            Rectangle.draw
+                            Draw.rectangle
                                 model.swatches.primary
                                 adjustedPosition
                                 adjustedPosition
@@ -33,7 +32,7 @@ update message selectModel model =
         ( SubMouseMove position, Just priorPosition ) ->
             { model
                 | drawAtRender =
-                    Rectangle.draw
+                    Draw.rectangle
                         model.swatches.second
                         priorPosition
                         (adjustPosition model tbw position)
@@ -51,7 +50,7 @@ update message selectModel model =
             else
                 let
                     ( newSelection, drawOp ) =
-                        Select.get
+                        Draw.getSelection
                             adjustedPosition
                             priorPosition
                             model.swatches.second
@@ -88,7 +87,7 @@ handleExistingSelection model =
             { model
                 | pendingDraw =
                     [ model.pendingDraw
-                    , Select.paste position selection
+                    , Draw.pasteSelection position selection
                     ]
                         |> Canvas.batch
                 , selection = Nothing

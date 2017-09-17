@@ -1,7 +1,7 @@
 module Tool.Rectangle.Update exposing (update)
 
 import Canvas exposing (Size)
-import Draw.Rectangle as Rectangle
+import Draw
 import History
 import Mouse exposing (Position)
 import Tool exposing (Tool(..))
@@ -23,7 +23,7 @@ update message toolModel model =
                 | tool =
                     Rectangle (Just adjustedPosition)
                 , drawAtRender =
-                    Rectangle.draw
+                    Draw.rectangle
                         model.swatches.primary
                         adjustedPosition
                         adjustedPosition
@@ -33,7 +33,7 @@ update message toolModel model =
         ( SubMouseMove position, Just priorPosition ) ->
             { model
                 | drawAtRender =
-                    Rectangle.draw
+                    Draw.rectangle
                         model.swatches.primary
                         priorPosition
                         (adjustPosition model tbw position)
@@ -46,7 +46,7 @@ update message toolModel model =
                 , pendingDraw =
                     Canvas.batch
                         [ model.pendingDraw
-                        , Rectangle.draw
+                        , Draw.rectangle
                             model.swatches.primary
                             priorPosition
                             (adjustPosition model tbw position)

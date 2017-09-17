@@ -1,7 +1,7 @@
 module Tool.Line.Update exposing (update)
 
 import Canvas exposing (Size)
-import Draw.Line as Line
+import Draw
 import History
 import Mouse exposing (Position)
 import Tool exposing (Tool(..))
@@ -23,7 +23,7 @@ update message toolModel model =
                 | tool =
                     Line (Just adjustedPosition)
                 , drawAtRender =
-                    Line.draw
+                    Draw.line
                         model.swatches.primary
                         adjustedPosition
                         adjustedPosition
@@ -33,7 +33,7 @@ update message toolModel model =
         ( SubMouseMove position, Just priorPosition ) ->
             { model
                 | drawAtRender =
-                    Line.draw
+                    Draw.line
                         model.swatches.primary
                         priorPosition
                         (adjustPosition model tbw position)
@@ -46,7 +46,7 @@ update message toolModel model =
                 , pendingDraw =
                     Canvas.batch
                         [ model.pendingDraw
-                        , Line.draw
+                        , Draw.line
                             model.swatches.primary
                             priorPosition
                             (adjustPosition model tbw position)

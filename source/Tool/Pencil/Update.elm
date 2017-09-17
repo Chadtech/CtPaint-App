@@ -1,7 +1,7 @@
 module Tool.Pencil.Update exposing (..)
 
 import Canvas exposing (DrawOp(..))
-import Draw.Line as Line
+import Draw
 import History
 import Mouse exposing (Position)
 import Tool exposing (Tool(..))
@@ -24,7 +24,7 @@ update message tool ({ canvasPosition } as model) =
                 , pendingDraw =
                     Canvas.batch
                         [ model.pendingDraw
-                        , Line.draw
+                        , Draw.line
                             model.swatches.primary
                             adjustedPosition
                             adjustedPosition
@@ -42,7 +42,7 @@ update message tool ({ canvasPosition } as model) =
                 , pendingDraw =
                     Canvas.batch
                         [ model.pendingDraw
-                        , Line.draw
+                        , Draw.line
                             model.swatches.primary
                             priorPosition
                             adjustedPosition

@@ -1,7 +1,7 @@
 module Subscriptions exposing (subscriptions)
 
 import AnimationFrame
-import ColorPicker.Mouse as ColorPicker
+import ColorPicker
 import Keyboard.Subscriptions as Keyboard
 import Keyboard.Types
 import Menu.Download.Mouse as Download

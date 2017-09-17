@@ -1,7 +1,7 @@
 module View exposing (view)
 
 import Canvas exposing (Canvas)
-import ColorPicker.View as ColorPicker
+import ColorPicker
 import Html exposing (Attribute, Html, div, p, text)
 import Html.Attributes as Attributes exposing (class, id, style)
 import Html.Events exposing (onMouseLeave)

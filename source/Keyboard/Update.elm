@@ -3,7 +3,7 @@ module Keyboard.Update exposing (keyDown, keyUp, update)
 import Canvas
 import Clipboard
 import Dict
-import Draw.Rectangle as Rectangle
+import Draw
 import History
 import Json.Decode exposing (decodeValue)
 import Keyboard exposing (KeyCode)
@@ -217,7 +217,7 @@ keyUp model quickKey =
                 , canvas =
                     let
                         drawOp =
-                            Rectangle.fill
+                            Draw.filledRectangle
                                 model.swatches.second
                                 (Canvas.getSize model.canvas)
                                 (Position 0 0)

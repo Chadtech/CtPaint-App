@@ -1,6 +1,6 @@
 module Tool.Sample exposing (..)
 
-import Draw.Util
+import Draw
 import MouseEvents exposing (MouseEvent)
 import Tool.Util exposing (adjustPosition)
 import Types exposing (Model)
@@ -13,7 +13,7 @@ subMouseUp { clientPos } ({ swatches } as model) =
         newSwatches =
             let
                 colorAtPosition =
-                    Draw.Util.colorAt
+                    Draw.colorAt
                         (adjustPosition model tbw clientPos)
                         model.canvas
             in

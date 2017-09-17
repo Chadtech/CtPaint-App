@@ -3,7 +3,7 @@ module Types exposing (..)
 import Array exposing (Array)
 import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Color exposing (Color)
-import ColorPicker.Types as ColorPicker
+import ColorPicker
 import Dict exposing (Dict)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Keyboard exposing (KeyCode)

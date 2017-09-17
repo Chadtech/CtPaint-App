@@ -1,7 +1,7 @@
 module Tool.Fill exposing (..)
 
 import Canvas exposing (Canvas, DrawOp(..), Point)
-import Draw.Util
+import Draw
 import History
 import MouseEvents exposing (MouseEvent)
 import Tool.Util exposing (adjustPosition)
@@ -16,7 +16,7 @@ screenMouseUp { clientPos } model =
             adjustPosition model tbw clientPos
 
         colorAtPosition =
-            Draw.Util.colorAt
+            Draw.colorAt
                 positionOnCanvas
                 model.canvas
     in
