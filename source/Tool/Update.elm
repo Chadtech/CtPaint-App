@@ -22,7 +22,7 @@ update msg model =
                 ( newModel, newHandModel ) =
                     Hand.update subMsg subModel model
             in
-            { model
+            { newModel
                 | tool = Hand newHandModel
             }
                 & Cmd.none
@@ -56,7 +56,7 @@ update msg model =
                 ( newModel, newSelectModel ) =
                     Select.update subMsg subModel model
             in
-            { model
+            { newModel
                 | tool = Select newSelectModel
             }
                 & Cmd.none
