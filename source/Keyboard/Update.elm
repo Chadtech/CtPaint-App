@@ -1,7 +1,7 @@
 module Keyboard.Update exposing (keyDown, keyUp, update)
 
 import Canvas
-import Clipboard.Update as Clipboard
+import Clipboard
 import Dict
 import Draw.Rectangle as Rectangle
 import History

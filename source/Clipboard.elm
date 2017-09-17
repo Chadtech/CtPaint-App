@@ -1,4 +1,4 @@
-module Clipboard.Update exposing (..)
+module Clipboard exposing (..)
 
 import Types exposing (Model)
 
