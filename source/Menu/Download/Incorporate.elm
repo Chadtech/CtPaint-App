@@ -1,10 +1,10 @@
 module Menu.Download.Incorporate exposing (incorporate)
 
+import Menu exposing (Menu(..))
 import Menu.Download.Ports as Ports
 import Menu.Download.Types as Download exposing (ExternalMsg(..), Msg(..))
-import Menu.Ports as Ports
-import Menu.Types exposing (Menu(..))
 import Types exposing (Model)
+import Util exposing ((&))
 
 
 incorporate : Model -> ( Download.Model, ExternalMsg ) -> ( Model, Cmd Msg )
@@ -14,13 +14,13 @@ incorporate model ( downloadModel, externalmessage ) =
             { model
                 | menu = Download downloadModel
             }
-                ! []
+                & Cmd.none
 
         DownloadFile fileName ->
             { model
                 | menu = None
             }
-                ! [ Ports.download (fileName ++ ".png") ]
+                & Ports.download (fileName ++ ".png")
 
         Close ->
-            { model | menu = None } ! [ Ports.returnFocus () ]
+            { model | menu = None } & Menu.returnFocus ()

@@ -16,16 +16,16 @@ import Keyboard.Types
         , keyPayloadDecoder
         )
 import List.Unique exposing (UniqueList)
+import Menu exposing (Menu(..))
 import Menu.Download.Types as Download
 import Menu.Import.Types as Import
-import Menu.Ports
 import Menu.Scale.Types as Scale
-import Menu.Types as Menu exposing (Menu(..))
 import Minimap.Types as Minimap
 import Mouse exposing (Position)
 import Tool exposing (Tool(..))
 import Tool.Zoom as Zoom
 import Types exposing (Model)
+import Util exposing ((&))
 
 
 update : Msg -> Model -> ( Model, Cmd message )
@@ -46,10 +46,10 @@ update message model =
                                 payload.code
                                 model.keysDown
                     }
-                        ! [ cmd ]
+                        & cmd
 
                 Err err ->
-                    model ! []
+                    model & Cmd.none
 
         KeyEvent (Down json) ->
             case decodeValue keyPayloadDecoder json of
@@ -70,10 +70,10 @@ update message model =
                                 }
                                 keyCmd
                     in
-                    ( newModel, Cmd.none )
+                    newModel & Cmd.none
 
                 Err err ->
-                    model ! []
+                    model & Cmd.none
 
 
 
@@ -274,7 +274,7 @@ keyUp model quickKey =
                 | seed = seed
                 , menu = Menu.Download downloadModel
             }
-                ! [ Menu.Ports.stealFocus () ]
+                ! [ Menu.stealFocus () ]
 
         Keyboard.Types.Import ->
             { model
@@ -283,7 +283,7 @@ keyUp model quickKey =
                         |> Import.init
                         |> Menu.Import
             }
-                ! [ Menu.Ports.stealFocus () ]
+                ! [ Menu.stealFocus () ]
 
         Keyboard.Types.Scale ->
             { model
@@ -301,7 +301,7 @@ keyUp model quickKey =
                                 (Canvas.getSize model.canvas)
                                 |> Menu.Scale
             }
-                ! [ Menu.Ports.stealFocus () ]
+                ! [ Menu.stealFocus () ]
 
         SwitchGalleryView ->
             { model

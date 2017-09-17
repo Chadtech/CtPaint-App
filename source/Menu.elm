@@ -1,9 +1,12 @@
-module Menu.Types exposing (Menu(..), Msg(..))
+port module Menu exposing (..)
 
 import Menu.Download.Types as Download
 import Menu.Import.Types as Import
 import Menu.Scale.Types as Scale
 import Menu.Text.Types as Text
+
+
+-- TYPES --
 
 
 type Menu
@@ -19,3 +22,13 @@ type Msg
     | ImportMsg Import.Msg
     | ScaleMsg Scale.Msg
     | TextMsg Text.Msg
+
+
+
+-- PORTS --
+
+
+port stealFocus : () -> Cmd msg
+
+
+port returnFocus : () -> Cmd msg

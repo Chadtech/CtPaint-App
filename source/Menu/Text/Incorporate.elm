@@ -1,13 +1,13 @@
 module Menu.Text.Incorporate exposing (incorporate)
 
-import Menu.Ports as Ports
+import Menu exposing (Menu(..))
 import Menu.Text.Types as Text
     exposing
         ( ExternalMsg(..)
         , Msg(..)
         )
-import Menu.Types exposing (Menu(..))
 import Types exposing (Model)
+import Util exposing ((&))
 
 
 incorporate : Model -> ( Text.Model, ExternalMsg ) -> ( Model, Cmd Msg )
@@ -17,10 +17,10 @@ incorporate model ( textModel, externalMsg ) =
             { model
                 | menu = Text textModel
             }
-                ! []
+                & Cmd.none
 
         AddText ->
-            model ! []
+            model & Cmd.none
 
         Close ->
-            ( { model | menu = None }, Ports.returnFocus () )
+            { model | menu = None } & Menu.returnFocus ()

@@ -1,5 +1,6 @@
 module Menu.Update exposing (update)
 
+import Menu exposing (Menu(..), Msg(..))
 import Menu.Download.Incorporate as Download
 import Menu.Download.Update as Download
 import Menu.Import.Incorporate as Import
@@ -8,7 +9,6 @@ import Menu.Scale.Incorporate as Scale
 import Menu.Scale.Update as Scale
 import Menu.Text.Incorporate as Text
 import Menu.Text.Update as Text
-import Menu.Types exposing (Menu(..), Msg(..))
 import Types exposing (Model)
 
 

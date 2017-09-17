@@ -1,13 +1,13 @@
 module Menu.Scale.Incorporate exposing (incorporate)
 
-import Menu.Ports as Ports
+import Menu exposing (Menu(..))
 import Menu.Scale.Types as Scale
     exposing
         ( ExternalMsg(..)
         , Msg(..)
         )
-import Menu.Types exposing (Menu(..))
 import Types exposing (Model)
+import Util exposing ((&))
 
 
 incorporate : Model -> ( Scale.Model, ExternalMsg ) -> ( Model, Cmd Msg )
@@ -17,10 +17,10 @@ incorporate model ( scaleModel, externalMsg ) =
             { model
                 | menu = Scale scaleModel
             }
-                ! []
+                & Cmd.none
 
         Finish ->
-            model ! []
+            model & Cmd.none
 
         Close ->
-            ( { model | menu = None }, Ports.returnFocus () )
+            { model | menu = None } & Menu.returnFocus ()

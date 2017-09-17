@@ -4,11 +4,11 @@ import AnimationFrame
 import ColorPicker
 import Keyboard.Subscriptions as Keyboard
 import Keyboard.Types
+import Menu exposing (Menu(..))
 import Menu.Download.Mouse as Download
 import Menu.Import.Mouse as Import
 import Menu.MsgMap
 import Menu.Scale.Mouse as Scale
-import Menu.Types exposing (Menu(..))
 import Minimap.Mouse as Minimap
 import Ports as Ports
 import Tool

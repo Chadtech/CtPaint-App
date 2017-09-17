@@ -9,7 +9,7 @@ import Json.Decode as Decode exposing (Decoder, Value)
 import Keyboard exposing (KeyCode)
 import Keyboard.Types as Keyboard exposing (Config)
 import List.Unique exposing (UniqueList)
-import Menu.Types as Menu exposing (Menu(..))
+import Menu exposing (Menu(..))
 import Minimap.Types as Minimap
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)

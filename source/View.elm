@@ -5,12 +5,12 @@ import ColorPicker
 import Html exposing (Attribute, Html, div, p, text)
 import Html.Attributes as Attributes exposing (class, id, style)
 import Html.Events exposing (onMouseLeave)
+import Menu exposing (Menu(..))
 import Menu.Download.View as Download
 import Menu.Import.View as Import
 import Menu.MsgMap
 import Menu.Scale.View as Scale
 import Menu.Text.View as Text
-import Menu.Types exposing (Menu(..))
 import Minimap.View as Minimap
 import Mouse exposing (Position)
 import MouseEvents exposing (onMouseMove)

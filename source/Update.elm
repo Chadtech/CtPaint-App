@@ -7,7 +7,7 @@ import Debug exposing (log)
 import History
 import Keyboard.Update as Keyboard
 import List.Unique
-import Menu.Ports
+import Menu
 import Menu.Update as Menu
 import Minimap.Incorporate as Minimap
 import Minimap.Update as Minimap
@@ -171,7 +171,7 @@ incorporateColorPicker ( colorPicker, maybeMsg ) model =
             newModel & Cmd.none
 
         ColorPicker.StealFocus ->
-            model & Menu.Ports.stealFocus ()
+            model & Menu.stealFocus ()
 
         ColorPicker.ReturnFocus ->
-            model & Menu.Ports.returnFocus ()
+            model & Menu.returnFocus ()

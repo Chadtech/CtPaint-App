@@ -1,11 +1,11 @@
 module Menu.Import.Incorporate exposing (incorporate)
 
 import Canvas
+import Menu exposing (Menu(..))
 import Menu.Import.Types as Import exposing (ExternalMsg(..), Msg(..))
-import Menu.Ports as Ports
-import Menu.Types exposing (Menu(..))
 import Task
 import Types exposing (Model)
+import Util exposing ((&))
 
 
 incorporate : Model -> ( Import.Model, ExternalMsg ) -> ( Model, Cmd Msg )
@@ -15,10 +15,10 @@ incorporate model ( importModel, externalmessage ) =
             { model
                 | menu = Import importModel
             }
-                ! []
+                & Cmd.none
 
         Close ->
-            { model | menu = None } ! [ Ports.returnFocus () ]
+            { model | menu = None } & Menu.returnFocus ()
 
         LoadImage ->
             let
@@ -33,7 +33,7 @@ incorporate model ( importModel, externalmessage ) =
             { model
                 | menu = Import importModel
             }
-                ! [ cmd ]
+                & cmd
 
         IncorporateImage image ->
             let
@@ -54,4 +54,4 @@ incorporate model ( importModel, externalmessage ) =
                 | selection = Just ( imagePosition, image )
                 , menu = None
             }
-                ! [ Ports.returnFocus () ]
+                & Menu.returnFocus ()
