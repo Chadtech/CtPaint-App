@@ -17,7 +17,6 @@ import MouseEvents exposing (MouseEvent)
 import Palette.Init
 import Palette.Types as Palette exposing (Swatches)
 import Random exposing (Seed)
-import Taskbar.Types as Taskbar
 import Time exposing (Time)
 import Tool exposing (Tool(..))
 import Util exposing ((:=), tbw)
@@ -132,7 +131,7 @@ type alias Model =
     , keyboardUpLookUp : Dict String (List String)
     , keyboardDownConfig : Dict String Command
     , keyboardDownLookUp : Dict String (List String)
-    , taskbarDropped : Maybe Taskbar.Option
+    , taskbarDropped : Maybe TaskbarDropDown
     , minimap : Maybe Minimap.Model
     , menu : Menu
     , seed : Seed
@@ -144,7 +143,6 @@ type Msg
     | GetWindowSize Size
     | SetTool Tool
     | ToolMsg Tool.Msg
-    | TaskbarMsg Taskbar.Msg
     | MenuMsg Menu.Msg
     | Tick Time
     | ColorPickerMsg ColorPicker.Msg
@@ -153,6 +151,11 @@ type Msg
     | ScreenMouseExit
     | HandleWindowFocus Bool
     | KeyboardEvent Direction Decode.Value
+    | DropDown (Maybe TaskbarDropDown)
+    | HoverOnto TaskbarDropDown
+    | SwitchMinimap Bool
+    | Command Command
+    | NoOp
 
 
 type alias KeyPayload =
@@ -161,6 +164,15 @@ type alias KeyPayload =
     , ctrl : Bool
     , shift : Bool
     }
+
+
+type TaskbarDropDown
+    = File
+    | Edit
+    | Transform
+    | Tools
+    | View
+    | Help
 
 
 type Direction
@@ -240,26 +252,27 @@ defaultConfig =
     , ( Down, Number3, CmdIsUp, ShiftIsUp ) := SwatchesTwoTurns
     , ( Down, Number4, CmdIsUp, ShiftIsUp ) := SwatchesThreeTurns
     , ( Up, Number1, CmdIsUp, ShiftIsUp ) := SwatchesOneTurn
-    , ( Up, Number2, CmdIsUp, ShiftIsUp ) := SwatchesThreeTurns
-    , ( Up, Number3, CmdIsUp, ShiftIsUp ) := SwatchesTwoTurns
-    , ( Up, Number4, CmdIsUp, ShiftIsUp ) := SwatchesThreeTurns
-    , ( Up, CharP, CmdIsUp, ShiftIsUp ) := SetToolToPencil
-    , ( Up, CharH, CmdIsUp, ShiftIsUp ) := SetToolToHand
-    , ( Up, CharS, CmdIsUp, ShiftIsUp ) := SetToolToSelect
-    , ( Up, CharG, CmdIsUp, ShiftIsUp ) := SetToolToFill
-    , ( Up, CharZ, CmdIsDown, ShiftIsUp ) := Undo
-    , ( Up, CharY, CmdIsDown, ShiftIsUp ) := Redo
-    , ( Up, CharC, CmdIsDown, ShiftIsUp ) := Copy
-    , ( Up, CharX, CmdIsDown, ShiftIsUp ) := Cut
-    , ( Up, CharV, CmdIsDown, ShiftIsUp ) := Paste
-    , ( Up, CharA, CmdIsDown, ShiftIsUp ) := SelectAll
-    , ( Up, Equals, CmdIsUp, ShiftIsUp ) := ZoomIn
-    , ( Up, Minus, CmdIsUp, ShiftIsUp ) := ZoomOut
-    , ( Up, BackQuote, CmdIsUp, ShiftIsUp ) := ShowMinimap
-    , ( Up, CharD, CmdIsUp, ShiftIsDown ) := Download
-    , ( Up, CharI, CmdIsDown, ShiftIsUp ) := Import
-    , ( Up, CharD, CmdIsDown, ShiftIsDown ) := Scale
-    , ( Up, Tab, CmdIsUp, ShiftIsUp ) := SwitchGalleryView
+    , ( Down, Number2, CmdIsUp, ShiftIsUp ) := SwatchesThreeTurns
+    , ( Down, Number3, CmdIsUp, ShiftIsUp ) := SwatchesTwoTurns
+    , ( Down, Number4, CmdIsUp, ShiftIsUp ) := SwatchesThreeTurns
+    , ( Up, Number5, CmdIsUp, ShiftIsUp ) := SwatchesOneTurn
+    , ( Down, CharP, CmdIsUp, ShiftIsUp ) := SetToolToPencil
+    , ( Down, CharH, CmdIsUp, ShiftIsUp ) := SetToolToHand
+    , ( Down, CharS, CmdIsUp, ShiftIsUp ) := SetToolToSelect
+    , ( Down, CharG, CmdIsUp, ShiftIsUp ) := SetToolToFill
+    , ( Down, CharZ, CmdIsDown, ShiftIsUp ) := Undo
+    , ( Down, CharY, CmdIsDown, ShiftIsUp ) := Redo
+    , ( Down, CharC, CmdIsDown, ShiftIsUp ) := Copy
+    , ( Down, CharX, CmdIsDown, ShiftIsUp ) := Cut
+    , ( Down, CharV, CmdIsDown, ShiftIsUp ) := Paste
+    , ( Down, CharA, CmdIsDown, ShiftIsUp ) := SelectAll
+    , ( Down, Equals, CmdIsUp, ShiftIsUp ) := ZoomIn
+    , ( Down, Minus, CmdIsUp, ShiftIsUp ) := ZoomOut
+    , ( Down, BackQuote, CmdIsUp, ShiftIsUp ) := ShowMinimap
+    , ( Down, CharD, CmdIsUp, ShiftIsDown ) := Download
+    , ( Down, CharI, CmdIsDown, ShiftIsUp ) := Import
+    , ( Down, CharD, CmdIsDown, ShiftIsDown ) := Scale
+    , ( Down, Tab, CmdIsUp, ShiftIsUp ) := SwitchGalleryView
     ]
 
 
@@ -307,6 +320,58 @@ directionIsDown ( direction, _, _, _ ) =
 directionIsUp : QuickKey -> Bool
 directionIsUp ( direction, _, _, _ ) =
     direction == Up
+
+
+keyCodeToString : KeyCode -> String
+keyCodeToString key =
+    case Keyboard.Extra.fromCode key of
+        Control ->
+            "Ctrl"
+
+        QuestionMark ->
+            "?"
+
+        Equals ->
+            "="
+
+        Semicolon ->
+            ";"
+
+        Super ->
+            "Cmd"
+
+        Asterisk ->
+            "*"
+
+        Comma ->
+            ","
+
+        Dollar ->
+            "$"
+
+        BackQuote ->
+            "`"
+
+        other ->
+            let
+                otherAsStr =
+                    toString other
+
+                isChar =
+                    String.left 4 otherAsStr == "Char"
+
+                isNumber =
+                    String.left 6 otherAsStr == "Number"
+            in
+            case ( isChar, isNumber ) of
+                ( True, _ ) ->
+                    String.right 1 otherAsStr
+
+                ( _, True ) ->
+                    String.right 1 otherAsStr
+
+                _ ->
+                    otherAsStr
 
 
 

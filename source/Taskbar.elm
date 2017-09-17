@@ -1,12 +1,16 @@
-module Taskbar.View exposing (view)
+module Taskbar exposing (view)
 
 import Dict exposing (Dict)
 import Html exposing (Attribute, Html, a, div, p, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick, onMouseOver)
-import Keyboard.Types exposing (Command(..))
-import Taskbar.Types exposing (Msg(..), Option(..))
-import Types exposing (Model)
+import Types
+    exposing
+        ( Command(..)
+        , Model
+        , Msg(..)
+        , TaskbarDropDown(..)
+        )
 
 
 view : Model -> Html Msg
@@ -23,9 +27,9 @@ view ({ taskbarDropped } as model) =
         ]
 
 
-invisibleWall : Maybe Option -> Html Msg
-invisibleWall maybeOption =
-    case maybeOption of
+invisibleWall : Maybe TaskbarDropDown -> Html Msg
+invisibleWall maybeTaskbarDropDown =
+    case maybeTaskbarDropDown of
         Just _ ->
             div
                 [ class "invisible-wall"
@@ -37,7 +41,7 @@ invisibleWall maybeOption =
             text ""
 
 
-help : Maybe Option -> Html Msg
+help : Maybe TaskbarDropDown -> Html Msg
 help maybeHelp =
     case maybeHelp of
         Just Help ->
@@ -255,7 +259,7 @@ toKeyCmdStr =
     String.join " + "
 
 
-taskbarButtonClose : Option -> Html Msg
+taskbarButtonClose : TaskbarDropDown -> Html Msg
 taskbarButtonClose option =
     a
         [ class "task-bar-button"

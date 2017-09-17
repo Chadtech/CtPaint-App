@@ -10,9 +10,9 @@ import List.Unique
 import Menu
 import Menu.Update as Menu
 import Minimap.Incorporate as Minimap
+import Minimap.Types as Minimap
 import Minimap.Update as Minimap
 import Palette.Update as Palette
-import Taskbar.Update as Taskbar
 import Tool.Update as Tool
 import Types exposing (Model, Msg(..), keyPayloadDecoder)
 import Util exposing ((&))
@@ -24,13 +24,6 @@ update message model =
         ToolMsg subMsg ->
             Tool.update subMsg model
                 |> Tuple.mapSecond (Cmd.map ToolMsg)
-
-        TaskbarMsg subMsg ->
-            let
-                ( newModel, cmd ) =
-                    Taskbar.update subMsg model
-            in
-            ( newModel, Cmd.map TaskbarMsg cmd )
 
         MenuMsg subMsg ->
             Menu.update subMsg model
@@ -130,6 +123,45 @@ update message model =
                     & Cmd.none
             else
                 model & Cmd.none
+
+        DropDown maybeOption ->
+            { model
+                | taskbarDropped = maybeOption
+            }
+                & Cmd.none
+
+        HoverOnto option ->
+            case model.taskbarDropped of
+                Nothing ->
+                    model & Cmd.none
+
+                Just currentOption ->
+                    if currentOption == option then
+                        model & Cmd.none
+                    else
+                        { model
+                            | taskbarDropped = Just option
+                        }
+                            & Cmd.none
+
+        SwitchMinimap turnOn ->
+            if turnOn then
+                { model
+                    | minimap =
+                        model.windowSize
+                            |> Minimap.init
+                            |> Just
+                }
+                    & Cmd.none
+            else
+                { model | minimap = Nothing } & Cmd.none
+
+        Command cmd ->
+            model & Cmd.none
+
+        --Keyboard.keyUp model cmd
+        NoOp ->
+            model & Cmd.none
 
 
 incorporateColorPicker :

@@ -15,7 +15,7 @@ import Minimap.View as Minimap
 import Mouse exposing (Position)
 import MouseEvents exposing (onMouseMove)
 import Palette.View as Palette
-import Taskbar.View as Taskbar
+import Taskbar
 import Tool exposing (Tool(..))
 import Toolbar.View as Toolbar
 import Types exposing (Model, Msg(..))
@@ -41,7 +41,7 @@ view model =
         div
             [ class "main" ]
             [ Toolbar.view model
-            , Html.map TaskbarMsg (Taskbar.view model)
+            , Taskbar.view model
             , Html.map PaletteMsg (Palette.view model)
             , canvasArea canvasAreaHeight model
             , clickScreen canvasAreaHeight model
