@@ -1,21 +1,10 @@
-module Keyboard.Update exposing (keyDown, keyUp, update)
+module Keyboard.Update exposing (update)
 
 import Canvas
 import Clipboard
-import Dict
+import Dict exposing (Dict)
 import Draw
 import History
-import Json.Decode exposing (decodeValue)
-import Keyboard exposing (KeyCode)
-import Keyboard.Types
-    exposing
-        ( Command(..)
-        , Config
-        , Direction(..)
-        , Msg(..)
-        , keyPayloadDecoder
-        )
-import List.Unique exposing (UniqueList)
 import Menu exposing (Menu(..))
 import Menu.Download.Types as Download
 import Menu.Import.Types as Import
@@ -24,75 +13,199 @@ import Minimap.Types as Minimap
 import Mouse exposing (Position)
 import Tool exposing (Tool(..))
 import Tool.Zoom as Zoom
-import Types exposing (Model)
+import Types
+    exposing
+        ( Command(..)
+        , Direction(..)
+        , KeyPayload
+        , Model
+        , Msg(..)
+        , payloadToString
+        )
 import Util exposing ((&))
 
 
-update : Msg -> Model -> ( Model, Cmd message )
-update message model =
-    case message of
-        KeyEvent (Up json) ->
-            case decodeValue keyPayloadDecoder json of
-                Ok payload ->
-                    let
-                        ( newModel, cmd ) =
-                            model.keyboardUpConfig
-                                |> getCmd model.keysDown
-                                |> keyUp model
-                    in
-                    { newModel
-                        | keysDown =
-                            List.Unique.remove
-                                payload.code
-                                model.keysDown
+update : Direction -> KeyPayload -> Model -> ( Model, Cmd Msg )
+update direction payload model =
+    case direction of
+        Up ->
+            updateUp payload model
+
+        Down ->
+            updateDown payload model & Cmd.none
+
+
+updateUp : KeyPayload -> Model -> ( Model, Cmd Msg )
+updateUp payload model =
+    case getCommand payload model.cmdKey model.keyboardUpConfig of
+        NoCommand ->
+            model & Cmd.none
+
+        SetToolToPencil ->
+            { model | tool = Pencil Nothing } & Cmd.none
+
+        SetToolToHand ->
+            { model | tool = Hand Nothing } & Cmd.none
+
+        SetToolToSelect ->
+            { model | tool = Select Nothing } & Cmd.none
+
+        SetToolToFill ->
+            { model | tool = Fill } & Cmd.none
+
+        SwatchesOneTurn ->
+            { model
+                | swatches =
+                    { primary = model.swatches.first
+                    , first = model.swatches.second
+                    , second = model.swatches.third
+                    , third = model.swatches.primary
+                    , keyIsDown = False
                     }
-                        & cmd
+            }
+                & Cmd.none
 
-                Err err ->
-                    model & Cmd.none
+        SwatchesThreeTurns ->
+            { model
+                | swatches =
+                    { primary = model.swatches.third
+                    , first = model.swatches.primary
+                    , second = model.swatches.first
+                    , third = model.swatches.second
+                    , keyIsDown = False
+                    }
+            }
+                & Cmd.none
 
-        KeyEvent (Down json) ->
-            case decodeValue keyPayloadDecoder json of
-                Ok payload ->
+        SwatchesTwoTurns ->
+            { model
+                | swatches =
+                    { primary = model.swatches.second
+                    , first = model.swatches.third
+                    , second = model.swatches.primary
+                    , third = model.swatches.first
+                    , keyIsDown = False
+                    }
+            }
+                & Cmd.none
+
+        Undo ->
+            History.undo model & Cmd.none
+
+        Redo ->
+            History.redo model & Cmd.none
+
+        Copy ->
+            Clipboard.copy model & Cmd.none
+
+        Cut ->
+            Clipboard.cut model & Cmd.none
+
+        Paste ->
+            Clipboard.paste model & Cmd.none
+
+        SelectAll ->
+            { model
+                | selection = Just ( Position 0 0, model.canvas )
+                , canvas =
                     let
-                        keyCmd =
-                            getCmd
-                                model.keysDown
-                                model.keyboardDownConfig
-
-                        newModel =
-                            keyDown
-                                { model
-                                    | keysDown =
-                                        List.Unique.cons
-                                            payload.code
-                                            model.keysDown
-                                }
-                                keyCmd
+                        drawOp =
+                            Draw.filledRectangle
+                                model.swatches.second
+                                (Canvas.getSize model.canvas)
+                                (Position 0 0)
                     in
-                    newModel & Cmd.none
+                    Canvas.getSize model.canvas
+                        |> Canvas.initialize
+                        |> Canvas.draw drawOp
+            }
+                & Cmd.none
 
-                Err err ->
-                    model & Cmd.none
+        Types.ZoomIn ->
+            let
+                newZoom =
+                    Zoom.next model.zoom
+            in
+            if model.zoom == newZoom then
+                model & Cmd.none
+            else
+                Zoom.set newZoom model & Cmd.none
+
+        Types.ZoomOut ->
+            let
+                newZoom =
+                    Zoom.prev model.zoom
+            in
+            if model.zoom == newZoom then
+                model & Cmd.none
+            else
+                Zoom.set newZoom model & Cmd.none
+
+        ShowMinimap ->
+            case model.minimap of
+                Nothing ->
+                    { model
+                        | minimap =
+                            model.windowSize
+                                |> Minimap.init
+                                |> Just
+                    }
+                        & Cmd.none
+
+                Just _ ->
+                    { model | minimap = Nothing } & Cmd.none
+
+        Types.Download ->
+            let
+                ( downloadModel, seed ) =
+                    Download.init
+                        model.projectName
+                        model.seed
+                        model.windowSize
+            in
+            { model
+                | seed = seed
+                , menu = Menu.Download downloadModel
+            }
+                ! [ Menu.stealFocus () ]
+
+        Types.Import ->
+            { model
+                | menu =
+                    model.windowSize
+                        |> Import.init
+                        |> Menu.Import
+            }
+                ! [ Menu.stealFocus () ]
+
+        Types.Scale ->
+            { model
+                | menu =
+                    case model.selection of
+                        Just ( position, canvas ) ->
+                            Scale.init
+                                model.windowSize
+                                (Canvas.getSize canvas)
+                                |> Menu.Scale
+
+                        Nothing ->
+                            Scale.init
+                                model.windowSize
+                                (Canvas.getSize model.canvas)
+                                |> Menu.Scale
+            }
+                & Menu.stealFocus ()
+
+        SwitchGalleryView ->
+            { model
+                | galleryView = not model.galleryView
+            }
+                & Cmd.none
 
 
-
--- KEY EVENTS --
-
-
-getCmd : UniqueList KeyCode -> Config -> Command
-getCmd list config =
-    case Dict.get (List.Unique.toList list) config of
-        Nothing ->
-            NoCommand
-
-        Just cmd ->
-            cmd
-
-
-keyDown : Model -> Command -> Model
-keyDown model quickKey =
-    case quickKey of
+updateDown : KeyPayload -> Model -> Model
+updateDown payload model =
+    case getCommand payload model.cmdKey model.keyboardDownConfig of
         NoCommand ->
             model
 
@@ -142,169 +255,11 @@ keyDown model quickKey =
             model
 
 
-keyUp : Model -> Command -> ( Model, Cmd message )
-keyUp model quickKey =
-    case quickKey of
-        NoCommand ->
-            model ! []
+getCommand : KeyPayload -> (KeyPayload -> Bool) -> Dict String Command -> Command
+getCommand payload cmdKey config =
+    case Dict.get (payloadToString cmdKey payload) config of
+        Just command ->
+            command
 
-        SetToolToPencil ->
-            { model | tool = Pencil Nothing } ! []
-
-        SetToolToHand ->
-            { model | tool = Hand Nothing } ! []
-
-        SetToolToSelect ->
-            { model | tool = Select Nothing } ! []
-
-        SetToolToFill ->
-            { model | tool = Fill } ! []
-
-        SwatchesOneTurn ->
-            { model
-                | swatches =
-                    { primary = model.swatches.first
-                    , first = model.swatches.second
-                    , second = model.swatches.third
-                    , third = model.swatches.primary
-                    , keyIsDown = False
-                    }
-            }
-                ! []
-
-        SwatchesThreeTurns ->
-            { model
-                | swatches =
-                    { primary = model.swatches.third
-                    , first = model.swatches.primary
-                    , second = model.swatches.first
-                    , third = model.swatches.second
-                    , keyIsDown = False
-                    }
-            }
-                ! []
-
-        SwatchesTwoTurns ->
-            { model
-                | swatches =
-                    { primary = model.swatches.second
-                    , first = model.swatches.third
-                    , second = model.swatches.primary
-                    , third = model.swatches.first
-                    , keyIsDown = False
-                    }
-            }
-                ! []
-
-        Undo ->
-            History.undo model ! []
-
-        Redo ->
-            History.redo model ! []
-
-        Copy ->
-            Clipboard.copy model ! []
-
-        Cut ->
-            Clipboard.cut model ! []
-
-        Paste ->
-            Clipboard.paste model ! []
-
-        SelectAll ->
-            { model
-                | selection = Just ( Position 0 0, model.canvas )
-                , canvas =
-                    let
-                        drawOp =
-                            Draw.filledRectangle
-                                model.swatches.second
-                                (Canvas.getSize model.canvas)
-                                (Position 0 0)
-                    in
-                    Canvas.getSize model.canvas
-                        |> Canvas.initialize
-                        |> Canvas.draw drawOp
-            }
-                ! []
-
-        Keyboard.Types.ZoomIn ->
-            let
-                newZoom =
-                    Zoom.next model.zoom
-            in
-            if model.zoom == newZoom then
-                model ! []
-            else
-                Zoom.set newZoom model ! []
-
-        Keyboard.Types.ZoomOut ->
-            let
-                newZoom =
-                    Zoom.prev model.zoom
-            in
-            if model.zoom == newZoom then
-                model ! []
-            else
-                Zoom.set newZoom model ! []
-
-        ShowMinimap ->
-            case model.minimap of
-                Nothing ->
-                    { model
-                        | minimap =
-                            model.windowSize
-                                |> Minimap.init
-                                |> Just
-                    }
-                        ! []
-
-                Just _ ->
-                    { model | minimap = Nothing } ! []
-
-        Keyboard.Types.Download ->
-            let
-                ( downloadModel, seed ) =
-                    Download.init
-                        model.projectName
-                        model.seed
-                        model.windowSize
-            in
-            { model
-                | seed = seed
-                , menu = Menu.Download downloadModel
-            }
-                ! [ Menu.stealFocus () ]
-
-        Keyboard.Types.Import ->
-            { model
-                | menu =
-                    model.windowSize
-                        |> Import.init
-                        |> Menu.Import
-            }
-                ! [ Menu.stealFocus () ]
-
-        Keyboard.Types.Scale ->
-            { model
-                | menu =
-                    case model.selection of
-                        Just ( position, canvas ) ->
-                            Scale.init
-                                model.windowSize
-                                (Canvas.getSize canvas)
-                                |> Menu.Scale
-
-                        Nothing ->
-                            Scale.init
-                                model.windowSize
-                                (Canvas.getSize model.canvas)
-                                |> Menu.Scale
-            }
-                ! [ Menu.stealFocus () ]
-
-        SwitchGalleryView ->
-            { model
-                | galleryView = not model.galleryView
-            }
-                ! []
+        Nothing ->
+            NoCommand

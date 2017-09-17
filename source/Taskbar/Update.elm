@@ -1,9 +1,11 @@
 module Taskbar.Update exposing (update)
 
-import Keyboard.Update as Keyboard
+--import Keyboard.Update as Keyboard
+
 import Minimap.Types as Minimap
 import Taskbar.Types as Taskbar exposing (Msg(..))
 import Types exposing (Model)
+import Util exposing ((&))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -13,21 +15,21 @@ update message model =
             { model
                 | taskbarDropped = maybeOption
             }
-                ! []
+                & Cmd.none
 
         HoverOnto option ->
             case model.taskbarDropped of
                 Nothing ->
-                    model ! []
+                    model & Cmd.none
 
                 Just currentOption ->
                     if currentOption == option then
-                        model ! []
+                        model & Cmd.none
                     else
                         { model
                             | taskbarDropped = Just option
                         }
-                            ! []
+                            & Cmd.none
 
         SwitchMinimap turnOn ->
             if turnOn then
@@ -37,12 +39,13 @@ update message model =
                             |> Minimap.init
                             |> Just
                 }
-                    ! []
+                    & Cmd.none
             else
-                { model | minimap = Nothing } ! []
+                { model | minimap = Nothing } & Cmd.none
 
         Command cmd ->
-            Keyboard.keyUp model cmd
+            model & Cmd.none
 
+        --Keyboard.keyUp model cmd
         NoOp ->
-            model ! []
+            model & Cmd.none

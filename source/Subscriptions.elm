@@ -1,9 +1,8 @@
-module Subscriptions exposing (subscriptions)
+port module Subscriptions exposing (subscriptions)
 
 import AnimationFrame
 import ColorPicker
-import Keyboard.Subscriptions as Keyboard
-import Keyboard.Types
+import Json.Decode exposing (Value)
 import Menu exposing (Menu(..))
 import Menu.Download.Mouse as Download
 import Menu.Import.Mouse as Import
@@ -12,7 +11,7 @@ import Menu.Scale.Mouse as Scale
 import Minimap.Mouse as Minimap
 import Ports as Ports
 import Tool
-import Types exposing (Model, Msg(..))
+import Types exposing (Direction(..), Model, Msg(..))
 import Window
 
 
@@ -69,17 +68,17 @@ menu model =
 -- KEYBOARD --
 
 
+port keyDown : (Value -> msg) -> Sub msg
+
+
+port keyUp : (Value -> msg) -> Sub msg
+
+
 keyboardUps : Sub Msg
 keyboardUps =
-    Keyboard.keyUp <|
-        Keyboard.Types.Up
-            >> Keyboard.Types.KeyEvent
-            >> KeyboardMsg
+    keyUp (KeyboardEvent Up)
 
 
 keyboardDowns : Sub Msg
 keyboardDowns =
-    Keyboard.keyDown <|
-        Keyboard.Types.Down
-            >> Keyboard.Types.KeyEvent
-            >> KeyboardMsg
+    keyDown (KeyboardEvent Down)

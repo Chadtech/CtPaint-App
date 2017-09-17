@@ -6,8 +6,9 @@ import Color exposing (Color)
 import ColorPicker
 import Dict exposing (Dict)
 import Json.Decode as Decode exposing (Decoder, Value)
+import Json.Decode.Pipeline as Pipeline exposing (decode, required)
 import Keyboard exposing (KeyCode)
-import Keyboard.Types as Keyboard exposing (Config)
+import Keyboard.Extra exposing (Key(..))
 import List.Unique exposing (UniqueList)
 import Menu exposing (Menu(..))
 import Minimap.Types as Minimap
@@ -19,7 +20,7 @@ import Random exposing (Seed)
 import Taskbar.Types as Taskbar
 import Time exposing (Time)
 import Tool exposing (Tool(..))
-import Util exposing (tbw)
+import Util exposing ((:=), tbw)
 
 
 -- INIT --
@@ -42,12 +43,18 @@ init json =
         canvasSize =
             Canvas.getSize canvas
 
-        keyUpConfig : Config
+        keyUpConfig : Dict String Command
         keyUpConfig =
-            Keyboard.initKeyUp
-                (decodeIsMac json)
-                (decodeIsChrome json)
-                Nothing
+            Dict.fromList []
+
+        isMac : Bool
+        isMac =
+            decodeIsMac json
+
+        --Keyboard.initKeyUp
+        --    (decodeIsMac json)
+        --    (decodeIsChrome json)
+        --    Nothing
     in
     { session = decodeSession json
     , canvas = canvas
@@ -76,12 +83,15 @@ init json =
     , selection = Nothing
     , clipboard = Nothing
     , keysDown = List.Unique.empty
+    , cmdKey =
+        if isMac then
+            .meta
+        else
+            .ctrl
     , keyboardUpConfig = keyUpConfig
-    , keyboardUpLookUp = Keyboard.reverseConfig keyUpConfig
-    , keyboardDownConfig = Keyboard.defaultKeyDownConfig
-    , keyboardDownLookUp =
-        Keyboard.reverseConfig
-            Keyboard.defaultKeyDownConfig
+    , keyboardUpLookUp = Dict.fromList []
+    , keyboardDownConfig = defaultKeyDownConfig
+    , keyboardDownLookUp = Dict.fromList []
     , taskbarDropped = Nothing
     , minimap = Nothing
     , menu = None
@@ -117,9 +127,10 @@ type alias Model =
     , selection : Maybe ( Position, Canvas )
     , clipboard : Maybe ( Position, Canvas )
     , keysDown : UniqueList KeyCode
-    , keyboardUpConfig : Keyboard.Config
+    , cmdKey : KeyPayload -> Bool
+    , keyboardUpConfig : Dict String Command
     , keyboardUpLookUp : Dict String (List String)
-    , keyboardDownConfig : Keyboard.Config
+    , keyboardDownConfig : Dict String Command
     , keyboardDownLookUp : Dict String (List String)
     , taskbarDropped : Maybe Taskbar.Option
     , minimap : Maybe Minimap.Model
@@ -132,7 +143,6 @@ type Msg
     = PaletteMsg Palette.Msg
     | GetWindowSize Size
     | SetTool Tool
-    | KeyboardMsg Keyboard.Msg
     | ToolMsg Tool.Msg
     | TaskbarMsg Taskbar.Msg
     | MenuMsg Menu.Msg
@@ -142,6 +152,15 @@ type Msg
     | ScreenMouseMove MouseEvent
     | ScreenMouseExit
     | HandleWindowFocus Bool
+    | KeyboardEvent Direction Decode.Value
+
+
+type alias KeyPayload =
+    { code : KeyCode
+    , meta : Bool
+    , ctrl : Bool
+    , shift : Bool
+    }
 
 
 type Direction
@@ -156,6 +175,125 @@ type alias Session =
 type HistoryOp
     = CanvasChange Canvas
     | ColorChange Int Color
+
+
+type Command
+    = SwatchesOneTurn
+    | SwatchesThreeTurns
+    | SwatchesTwoTurns
+    | SetToolToPencil
+    | SetToolToHand
+    | SetToolToSelect
+    | SetToolToFill
+    | Undo
+    | Redo
+    | Cut
+    | Copy
+    | SelectAll
+    | Paste
+    | ZoomIn
+    | ZoomOut
+    | ShowMinimap
+    | Download
+    | Import
+    | Scale
+    | SwitchGalleryView
+    | NoCommand
+
+
+
+-- KEYBOARD --
+
+
+payloadToString : (KeyPayload -> Bool) -> KeyPayload -> String
+payloadToString cmdKey payload =
+    let
+        code =
+            toString payload.code
+
+        shift =
+            toString payload.shift
+
+        cmd =
+            toString (cmdKey payload)
+    in
+    shift ++ cmd ++ code
+
+
+type CmdState
+    = CmdIsDown
+    | CmdIsUp
+
+
+type ShiftState
+    = ShiftIsDown
+    | ShiftIsUp
+
+
+type alias QuickKey =
+    ( Direction, Key, CmdState, ShiftState )
+
+
+defaultConfig : List ( QuickKey, Command )
+defaultConfig =
+    [ ( Down, Number2, CmdIsUp, ShiftIsUp ) := SwatchesOneTurn
+    , ( Down, Number3, CmdIsUp, ShiftIsUp ) := SwatchesTwoTurns
+    , ( Down, Number4, CmdIsUp, ShiftIsUp ) := SwatchesThreeTurns
+    , ( Up, Number1, CmdIsUp, ShiftIsUp ) := SwatchesOneTurn
+    , ( Up, Number2, CmdIsUp, ShiftIsUp ) := SwatchesThreeTurns
+    , ( Up, Number3, CmdIsUp, ShiftIsUp ) := SwatchesTwoTurns
+    , ( Up, Number4, CmdIsUp, ShiftIsUp ) := SwatchesThreeTurns
+    , ( Up, CharP, CmdIsUp, ShiftIsUp ) := SetToolToPencil
+    , ( Up, CharH, CmdIsUp, ShiftIsUp ) := SetToolToHand
+    , ( Up, CharS, CmdIsUp, ShiftIsUp ) := SetToolToSelect
+    , ( Up, CharG, CmdIsUp, ShiftIsUp ) := SetToolToFill
+    , ( Up, CharZ, CmdIsDown, ShiftIsUp ) := Undo
+    , ( Up, CharY, CmdIsDown, ShiftIsUp ) := Redo
+    , ( Up, CharC, CmdIsDown, ShiftIsUp ) := Copy
+    , ( Up, CharX, CmdIsDown, ShiftIsUp ) := Cut
+    , ( Up, CharV, CmdIsDown, ShiftIsUp ) := Paste
+    , ( Up, CharA, CmdIsDown, ShiftIsUp ) := SelectAll
+    , ( Up, Equals, CmdIsUp, ShiftIsUp ) := ZoomIn
+    , ( Up, Minus, CmdIsUp, ShiftIsUp ) := ZoomOut
+    , ( Up, BackQuote, CmdIsUp, ShiftIsUp ) := ShowMinimap
+    , ( Up, CharD, CmdIsUp, ShiftIsDown ) := Download
+    , ( Up, CharI, CmdIsDown, ShiftIsUp ) := Import
+    , ( Up, CharD, CmdIsDown, ShiftIsDown ) := Scale
+    , ( Up, Tab, CmdIsUp, ShiftIsUp ) := SwitchGalleryView
+    ]
+
+
+defaultKeyDownConfig : Dict String Command
+defaultKeyDownConfig =
+    defaultConfig
+        |> List.filter (Tuple.first >> directionIsDown)
+        |> List.map (Tuple.mapFirst quickKeyToString)
+        |> Dict.fromList
+
+
+quickKeyToString : QuickKey -> String
+quickKeyToString ( _, key, cmd, shift ) =
+    let
+        code =
+            Keyboard.Extra.toCode key
+                |> toString
+
+        cmdStr =
+            cmd
+                == CmdIsDown
+                |> toString
+
+        shiftStr =
+            shift
+                == ShiftIsDown
+                |> toString
+    in
+    shiftStr ++ cmdStr ++ code
+
+
+directionIsDown : QuickKey -> Bool
+directionIsDown ( direction, _, _, _ ) =
+    direction == Down
 
 
 
@@ -175,6 +313,19 @@ fillBlackOp canvas =
     , Canvas.Fill
     ]
         |> Canvas.batch
+
+
+
+-- KEYPAYLOARD DECODER
+
+
+keyPayloadDecoder : Decoder KeyPayload
+keyPayloadDecoder =
+    decode KeyPayload
+        |> required "keyCode" Decode.int
+        |> required "cmd" Decode.bool
+        |> required "ctrl" Decode.bool
+        |> required "shift" Decode.bool
 
 
 

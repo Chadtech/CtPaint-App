@@ -3,19 +3,18 @@ module Update exposing (update)
 import Array
 import Canvas exposing (DrawOp(Batch))
 import ColorPicker
-import Debug exposing (log)
 import History
+import Json.Decode as Decode
 import Keyboard.Update as Keyboard
 import List.Unique
 import Menu
 import Menu.Update as Menu
 import Minimap.Incorporate as Minimap
 import Minimap.Update as Minimap
-import Mouse exposing (Position)
 import Palette.Update as Palette
 import Taskbar.Update as Taskbar
 import Tool.Update as Tool
-import Types exposing (Model, Msg(..))
+import Types exposing (Model, Msg(..), keyPayloadDecoder)
 import Util exposing ((&))
 
 
@@ -48,28 +47,26 @@ update message model =
             { model
                 | windowSize = size
             }
-                ! []
+                & Cmd.none
 
         SetTool tool ->
             { model
                 | tool = tool
             }
-                ! []
+                & Cmd.none
 
-        KeyboardMsg subMsg ->
-            let
-                ( newModel, cmd ) =
-                    Keyboard.update subMsg model
+        KeyboardEvent direction json ->
+            case Decode.decodeValue keyPayloadDecoder json of
+                Ok payload ->
+                    Keyboard.update direction payload model
 
-                _ =
-                    log "keys down" newModel.keysDown
-            in
-            newModel ! [ cmd ]
+                Err err ->
+                    model & Cmd.none
 
         Tick dt ->
             case model.pendingDraw of
                 Batch [] ->
-                    model ! []
+                    model & Cmd.none
 
                 _ ->
                     { model
@@ -80,7 +77,7 @@ update message model =
                         , pendingDraw =
                             Canvas.batch []
                     }
-                        ! []
+                        & Cmd.none
 
         ColorPickerMsg subMsg ->
             let
@@ -96,10 +93,10 @@ update message model =
                         minimapUpdate =
                             Minimap.update subMsg minimap
                     in
-                    Minimap.incorporate minimapUpdate model ! []
+                    Minimap.incorporate minimapUpdate model & Cmd.none
 
                 Nothing ->
-                    model ! []
+                    model & Cmd.none
 
         ScreenMouseMove { targetPos, clientPos } ->
             let
@@ -108,33 +105,31 @@ update message model =
 
                 y =
                     clientPos.y - targetPos.y - model.canvasPosition.y
-
-                position =
-                    Position
-                        (x // model.zoom)
-                        (y // model.zoom)
             in
             { model
                 | mousePosition =
-                    Just position
+                    { x = x // model.zoom
+                    , y = y // model.zoom
+                    }
+                        |> Just
             }
-                ! []
+                & Cmd.none
 
         ScreenMouseExit ->
             { model
                 | mousePosition =
                     Nothing
             }
-                ! []
+                & Cmd.none
 
         HandleWindowFocus focused ->
             if focused then
                 { model
                     | keysDown = List.Unique.empty
                 }
-                    ! []
+                    & Cmd.none
             else
-                model ! []
+                model & Cmd.none
 
 
 incorporateColorPicker :
