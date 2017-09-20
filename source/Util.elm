@@ -32,6 +32,11 @@ pack =
     (,)
 
 
+swap : ( a, b ) -> ( b, a )
+swap ( a, b ) =
+    ( b, a )
+
+
 maybeCons : Maybe a -> List a -> List a
 maybeCons maybe list =
     case maybe of

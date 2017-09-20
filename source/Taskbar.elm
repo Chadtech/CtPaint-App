@@ -9,6 +9,7 @@ import Types
         ( Command(..)
         , Model
         , Msg(..)
+        , QuickKey
         , TaskbarDropDown(..)
         )
 
@@ -117,7 +118,7 @@ transform model =
                     , divider
                     , option_
                         "Scale"
-                        (getCmdStr model.keyboardUpLookUp Scale)
+                        (getCmdStr model.quickKeys Scale)
                         (Command Scale)
                     , option ( "Replace Color", "Cmd + R", NoOp )
                     , option ( "Invert", "Cmd + I", NoOp )
@@ -150,7 +151,7 @@ tools model =
                     , divider
                     , option_
                         "Scale"
-                        (getCmdStr model.keyboardUpLookUp Scale)
+                        (getCmdStr model.quickKeys Scale)
                         (Command Scale)
                     , option ( "Replace Color", "Cmd + R", NoOp )
                     , option ( "Invert", "Cmd + I", NoOp )
@@ -176,29 +177,29 @@ edit model =
                     [ class "options edit" ]
                     [ option_
                         "Undo"
-                        (getCmdStr model.keyboardUpLookUp Undo)
+                        (getCmdStr model.quickKeys Undo)
                         (Command Undo)
                     , option_
                         "Redo"
-                        (getCmdStr model.keyboardUpLookUp Redo)
+                        (getCmdStr model.quickKeys Redo)
                         (Command Redo)
                     , divider
                     , option_
                         "Cut"
-                        (getCmdStr model.keyboardUpLookUp Cut)
+                        (getCmdStr model.quickKeys Cut)
                         (Command Cut)
                     , option_
                         "Copy"
-                        (getCmdStr model.keyboardUpLookUp Copy)
+                        (getCmdStr model.quickKeys Copy)
                         (Command Copy)
                     , option_
                         "Paste"
-                        (getCmdStr model.keyboardUpLookUp Paste)
+                        (getCmdStr model.quickKeys Paste)
                         (Command Paste)
                     , divider
                     , option_
                         "Select all"
-                        (getCmdStr model.keyboardUpLookUp SelectAll)
+                        (getCmdStr model.quickKeys SelectAll)
                         (Command SelectAll)
                     , divider
                     , option ( "Preferences", "", NoOp )
@@ -223,11 +224,11 @@ file model =
                     , divider
                     , option_
                         "Download"
-                        (getCmdStr model.keyboardUpLookUp Download)
+                        (getCmdStr model.quickKeys Download)
                         (Command Download)
                     , option_
                         "Import"
-                        (getCmdStr model.keyboardUpLookUp Import)
+                        (getCmdStr model.quickKeys Import)
                         (Command Import)
                     , divider
                     , option ( "Imgur", "", NoOp )
@@ -244,19 +245,14 @@ file model =
 -- HELPERS --
 
 
-getCmdStr : Dict String (List String) -> Command -> String
+getCmdStr : Dict String String -> Command -> String
 getCmdStr cmdLookUp cmd =
     case Dict.get (toString cmd) cmdLookUp of
         Just keys ->
-            toKeyCmdStr keys
+            keys
 
         Nothing ->
             ""
-
-
-toKeyCmdStr : List String -> String
-toKeyCmdStr =
-    String.join " + "
 
 
 taskbarButtonClose : TaskbarDropDown -> Html Msg

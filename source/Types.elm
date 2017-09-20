@@ -49,11 +49,6 @@ init json =
         isMac : Bool
         isMac =
             decodeIsMac json
-
-        --Keyboard.initKeyUp
-        --    (decodeIsMac json)
-        --    (decodeIsChrome json)
-        --    Nothing
     in
     { session = decodeSession json
     , canvas = canvas
@@ -69,8 +64,6 @@ init json =
     , swatches = Palette.Init.swatches
     , palette = Palette.Init.palette
     , horizontalToolbarHeight = 58
-
-    --, subMouseMove = Nothing
     , windowSize = windowSize
     , tool = Tool.init
     , zoom = 1
@@ -88,10 +81,7 @@ init json =
         else
             .ctrl
     , keyConfig = defaultConfig
-    , keyboardUpConfig = Dict.fromList []
-    , keyboardUpLookUp = Dict.fromList []
-    , keyboardDownConfig = Dict.fromList []
-    , keyboardDownLookUp = Dict.fromList []
+    , quickKeys = defaultQuickKeys isMac
     , taskbarDropped = Nothing
     , minimap = Nothing
     , menu = None
@@ -114,8 +104,6 @@ type alias Model =
     , swatches : Swatches
     , palette : Array Color
     , horizontalToolbarHeight : Int
-
-    --, subMouseMove : Maybe (Position -> Msg)
     , windowSize : Size
     , tool : Tool
     , zoom : Int
@@ -129,10 +117,7 @@ type alias Model =
     , keysDown : UniqueList KeyCode
     , cmdKey : KeyPayload -> Bool
     , keyConfig : Dict String Command
-    , keyboardUpConfig : Dict String Command
-    , keyboardUpLookUp : Dict String (List String)
-    , keyboardDownConfig : Dict String Command
-    , keyboardDownLookUp : Dict String (List String)
+    , quickKeys : Dict String String
     , taskbarDropped : Maybe TaskbarDropDown
     , minimap : Maybe Minimap.Model
     , menu : Menu
@@ -248,8 +233,8 @@ type alias QuickKey =
     ( Direction, Key, CmdState, ShiftState )
 
 
-defaultConfig : Dict String Command
-defaultConfig =
+defaultConfigBase : List ( QuickKey, Command )
+defaultConfigBase =
     [ ( Down, Number2, CmdIsUp, ShiftIsUp ) := SwatchesOneTurn
     , ( Down, Number3, CmdIsUp, ShiftIsUp ) := SwatchesTwoTurns
     , ( Down, Number4, CmdIsUp, ShiftIsUp ) := SwatchesThreeTurns
@@ -276,23 +261,49 @@ defaultConfig =
     , ( Down, CharD, CmdIsDown, ShiftIsDown ) := Scale
     , ( Down, Tab, CmdIsUp, ShiftIsUp ) := SwitchGalleryView
     ]
+
+
+defaultConfig : Dict String Command
+defaultConfig =
+    defaultConfigBase
         |> List.map (Tuple.mapFirst quickKeyToString)
         |> Dict.fromList
 
 
+defaultQuickKeys : Bool -> Dict String String
+defaultQuickKeys isMac =
+    defaultConfigBase
+        |> List.map (quickKeyLookUp isMac)
+        |> Dict.fromList
 
---defaultKeyDownConfig : Dict String Command
---defaultKeyDownConfig =
---    defaultConfig
---        |> List.filter (Tuple.first >> directionIsDown)
---        |> List.map (Tuple.mapFirst quickKeyToString)
---        |> Dict.fromList
---defaultUpConfig : Dict String Command
---defaultUpConfig =
---    defaultConfig
---        |> List.filter (Tuple.first >> directionIsUp)
---        |> List.map (Tuple.mapFirst quickKeyToString)
---        |> Dict.fromList
+
+quickKeyLookUp : Bool -> ( QuickKey, Command ) -> ( String, String )
+quickKeyLookUp isMac ( ( _, key, cmdKey, shift ), command ) =
+    let
+        commandStr =
+            toString command
+
+        cmdKeyStr =
+            case ( cmdKey, isMac ) of
+                ( CmdIsDown, True ) ->
+                    "Cmd + "
+
+                ( CmdIsDown, False ) ->
+                    "Ctrl + "
+
+                _ ->
+                    ""
+
+        shiftStr =
+            if shift == ShiftIsDown then
+                "Shift + "
+            else
+                ""
+
+        keyStr =
+            keyCodeToString (Keyboard.Extra.toCode key)
+    in
+    ( commandStr, cmdKeyStr ++ shiftStr ++ keyStr )
 
 
 quickKeyToString : QuickKey -> String
