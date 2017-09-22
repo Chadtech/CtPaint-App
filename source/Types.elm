@@ -10,7 +10,7 @@ import Json.Decode.Pipeline as Pipeline exposing (decode, required)
 import Keyboard exposing (KeyCode)
 import Keyboard.Extra exposing (Key(..))
 import List.Unique exposing (UniqueList)
-import Menu exposing (Menu(..))
+import Menu exposing (Menu)
 import Minimap.Types as Minimap
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
@@ -84,7 +84,7 @@ init json =
     , quickKeys = defaultQuickKeys isMac
     , taskbarDropped = Nothing
     , minimap = Nothing
-    , menu = None
+    , menu = Nothing
     , seed = Random.initialSeed (decodeSeed json)
     }
         ! []
@@ -120,7 +120,7 @@ type alias Model =
     , quickKeys : Dict String String
     , taskbarDropped : Maybe TaskbarDropDown
     , minimap : Maybe Minimap.Model
-    , menu : Menu
+    , menu : Maybe Menu
     , seed : Seed
     }
 
@@ -137,7 +137,7 @@ type Msg
     | ScreenMouseMove MouseEvent
     | ScreenMouseExit
     | HandleWindowFocus Bool
-    | KeyboardEvent Direction Decode.Value
+    | KeyboardEvent Decode.Value
     | DropDown (Maybe TaskbarDropDown)
     | HoverOnto TaskbarDropDown
     | Command Command
@@ -149,6 +149,7 @@ type alias KeyPayload =
     , meta : Bool
     , ctrl : Bool
     , shift : Bool
+    , direction : Direction
     }
 
 
@@ -195,7 +196,7 @@ type Command
     | Paste
     | ZoomIn
     | ZoomOut
-    | Download
+    | InitDownload
     | Import
     | Scale
     | SwitchGalleryView
@@ -209,9 +210,12 @@ type Command
 -- KEYBOARD --
 
 
-payloadToString : Direction -> (KeyPayload -> Bool) -> KeyPayload -> String
-payloadToString dir cmdKey payload =
+payloadToString : (KeyPayload -> Bool) -> KeyPayload -> String
+payloadToString cmdKey payload =
     let
+        direction =
+            toString payload.direction
+
         code =
             toString payload.code
 
@@ -221,7 +225,7 @@ payloadToString dir cmdKey payload =
         cmd =
             toString (cmdKey payload)
     in
-    shift ++ cmd ++ code ++ toString dir
+    shift ++ cmd ++ code ++ direction
 
 
 type CmdState
@@ -265,7 +269,7 @@ defaultConfigBase =
     , ( Down, Equals, CmdIsUp, ShiftIsUp ) := ZoomIn
     , ( Down, Minus, CmdIsUp, ShiftIsUp ) := ZoomOut
     , ( Down, BackQuote, CmdIsUp, ShiftIsUp ) := ShowMinimap
-    , ( Down, CharD, CmdIsUp, ShiftIsDown ) := Download
+    , ( Down, CharD, CmdIsUp, ShiftIsDown ) := InitDownload
     , ( Down, CharI, CmdIsDown, ShiftIsUp ) := Import
     , ( Down, CharD, CmdIsDown, ShiftIsDown ) := Scale
     , ( Down, Tab, CmdIsUp, ShiftIsUp ) := SwitchGalleryView
@@ -420,16 +424,36 @@ fillBlackOp canvas =
 
 
 
--- KEYPAYLOARD DECODER
+-- KEYPAYLOAD DECODER
 
 
 keyPayloadDecoder : Decoder KeyPayload
 keyPayloadDecoder =
     decode KeyPayload
         |> required "keyCode" Decode.int
-        |> required "cmd" Decode.bool
+        |> required "meta" Decode.bool
         |> required "ctrl" Decode.bool
         |> required "shift" Decode.bool
+        |> required "direction" (Decode.succeed Down)
+
+
+directionDecoder : Decoder Direction
+directionDecoder =
+    Decode.string
+        |> Decode.andThen handleDirectionString
+
+
+handleDirectionString : String -> Decoder Direction
+handleDirectionString dir =
+    case dir of
+        "up" ->
+            Decode.succeed Up
+
+        "down" ->
+            Decode.succeed Down
+
+        _ ->
+            Decode.fail "Direction not up or down"
 
 
 

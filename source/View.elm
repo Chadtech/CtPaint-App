@@ -1,17 +1,18 @@
 module View exposing (view)
 
+--import Menu.About as About
+--import Menu.Download.View as Download
+--import Menu.Import.View as Import
+--import Menu.MsgMap
+--import Menu.Scale.View as Scale
+--import Menu.Text.View as Text
+
 import Canvas exposing (Canvas)
 import ColorPicker
 import Html exposing (Attribute, Html, div, p, text)
 import Html.Attributes as Attributes exposing (class, id, style)
 import Html.Events exposing (onMouseLeave)
-import Menu exposing (Menu(..))
-import Menu.About as About
-import Menu.Download.View as Download
-import Menu.Import.View as Import
-import Menu.MsgMap
-import Menu.Scale.View as Scale
-import Menu.Text.View as Text
+import Menu exposing (Menu)
 import Minimap.View as Minimap
 import Mouse exposing (Position)
 import MouseEvents exposing (onMouseMove)
@@ -48,7 +49,8 @@ view model =
             , clickScreen canvasAreaHeight model
             , colorPicker model
             , minimap model
-            , menu model.menu
+
+            --, menu model.menu
             ]
 
 
@@ -61,39 +63,29 @@ galleryView model =
 
 
 -- MENU --
-
-
-menu : Menu -> Html Msg
-menu m =
-    case m of
-        None ->
-            Html.text ""
-
-        Download model ->
-            Html.map
-                Menu.MsgMap.download
-                (Download.view model)
-
-        Import model ->
-            Html.map
-                Menu.MsgMap.import_
-                (Import.view model)
-
-        Scale model ->
-            Html.map
-                Menu.MsgMap.scale
-                (Scale.view model)
-
-        Text model ->
-            Html.map
-                Menu.MsgMap.text
-                (Text.view model)
-
-        About ->
-            Html.map MenuMsg About.view
-
-
-
+--menu : Menu -> Html Msg
+--menu m =
+--    case m of
+--        None ->
+--            Html.text ""
+--        Download model ->
+--            Html.map
+--                Menu.MsgMap.download
+--                (Download.view model)
+--        Import model ->
+--            Html.map
+--                Menu.MsgMap.import_
+--                (Import.view model)
+--        Scale model ->
+--            Html.map
+--                Menu.MsgMap.scale
+--                (Scale.view model)
+--        Text model ->
+--            Html.map
+--                Menu.MsgMap.text
+--                (Text.view model)
+--        About ->
+--            Html.map MenuMsg About.view
 -- MINI MAP --
 
 

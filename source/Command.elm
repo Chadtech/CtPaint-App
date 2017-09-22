@@ -1,16 +1,18 @@
 module Command exposing (..)
 
+--import Menu.Download.Types as Download
+--import Menu.Import.Types as Import
+--import Menu.Scale.Types as Scale
+
 import Canvas
 import Clipboard
 import Dict exposing (Dict)
 import Draw
 import History
-import Menu exposing (Menu(..))
-import Menu.Download.Types as Download
-import Menu.Import.Types as Import
-import Menu.Scale.Types as Scale
+import Menu exposing (Menu)
 import Minimap.Types as Minimap
 import Mouse exposing (Position)
+import Ports
 import Tool exposing (Tool(..))
 import Tool.Zoom as Zoom
 import Types
@@ -164,60 +166,28 @@ update cmd model =
         HideMinimap ->
             { model | minimap = Nothing } & Cmd.none
 
-        Types.Download ->
-            let
-                ( downloadModel, seed ) =
-                    Download.init
-                        model.projectName
-                        model.seed
-                        model.windowSize
-            in
-            { model
-                | seed = seed
-                , menu = Menu.Download downloadModel
-            }
-                ! [ Menu.stealFocus () ]
-
-        Types.Import ->
-            { model
-                | menu =
-                    model.windowSize
-                        |> Import.init
-                        |> Menu.Import
-            }
-                ! [ Menu.stealFocus () ]
-
-        Types.Scale ->
-            { model
-                | menu =
-                    case model.selection of
-                        Just ( position, canvas ) ->
-                            Scale.init
-                                model.windowSize
-                                (Canvas.getSize canvas)
-                                |> Menu.Scale
-
-                        Nothing ->
-                            Scale.init
-                                model.windowSize
-                                (Canvas.getSize model.canvas)
-                                |> Menu.Scale
-            }
-                & Menu.stealFocus ()
-
         SwitchGalleryView ->
             { model
                 | galleryView = not model.galleryView
             }
                 & Cmd.none
 
-        OpenAbout ->
-            { model | menu = About } & Cmd.none
+        InitDownload ->
+            { model
+                | menu =
+                    model.windowSize
+                        |> Menu.initDownload
+                        |> Just
+            }
+                & Cmd.none
+
+        _ ->
+            model & Cmd.none
 
 
-fromKeyPayload : KeyPayload -> Direction -> Model -> Command
-fromKeyPayload payload direction { cmdKey, keyConfig } =
-    case Dict.get (payloadToString direction cmdKey payload) keyConfig of
+fromKeyPayload : KeyPayload -> Model -> Command
+fromKeyPayload payload { cmdKey, keyConfig } =
+    case Dict.get (payloadToString cmdKey payload) keyConfig of
         Just command ->
             command
 

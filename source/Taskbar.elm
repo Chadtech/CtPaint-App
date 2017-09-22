@@ -275,8 +275,8 @@ fileDropped model =
         [ class "options file" ]
         [ option
             "Download"
-            (getCmdStr model.quickKeys Download)
-            (Command Download)
+            (getCmdStr model.quickKeys InitDownload)
+            (Command InitDownload)
         , option
             "Import"
             (getCmdStr model.quickKeys Import)

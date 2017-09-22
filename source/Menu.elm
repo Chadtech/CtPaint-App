@@ -1,36 +1,78 @@
 port module Menu exposing (..)
 
-import Menu.Download.Types as Download
-import Menu.Import.Types as Import
-import Menu.Scale.Types as Scale
-import Menu.Text.Types as Text
+import Download
+import Html exposing (Attribute, Html, div)
+import Html.Attributes exposing (class)
+import Mouse exposing (Position)
+import MouseEvents exposing (MouseEvent)
+import Random exposing (Seed)
+import Util exposing ((&))
+import Window exposing (Size)
 
 
--- TYPES --
+type alias Model =
+    { position : Position
+    , size : Size
+    , click : ClickState
+    , title : String
+    , content : Menu
+    }
 
 
 type Menu
-    = None
-    | Scale Scale.Model
-    | Download Download.Model
-    | Import Import.Model
-    | Text Text.Model
-    | About
+    = Download Download.Model
+
+
+type ClickState
+    = NoClick
+    | ClickAt Position
 
 
 type Msg
-    = DownloadMsg Download.Msg
-    | ImportMsg Import.Msg
-    | ScaleMsg Scale.Msg
-    | TextMsg Text.Msg
-    | CloseAbout
+    = HeaderMouseDown MouseEvent
+    | HeaderMouseMove MouseEvent
+    | HeaderMouseUp
+    | Close
 
 
 
--- PORTS --
+-- VIEW --
 
 
-port stealFocus : () -> Cmd msg
+view : Model -> Html Msg
+view { position, size, title, content } =
+    div
+        [ class ("card" ++ menuClass content) ]
+        []
 
 
-port returnFocus : () -> Cmd msg
+menuClass : Menu -> String
+menuClass content =
+    case content of
+        Download _ ->
+            "download"
+
+
+
+-- INIT --
+
+
+initDownload : Size -> Maybe String -> Seed -> ( Menu, Seed )
+initDownload windowSize maybeProjectName seed =
+    let
+        ( menu, seed ) =
+            Download.init maybeProjectName seed
+    in
+    { position =
+        { x = 400
+        , y = 400
+        }
+    , size =
+        { width = 400
+        , height = 400
+        }
+    , click = NoClick
+    , title = "download"
+    , content = Download menu
+    }
+        & seed

@@ -1,5 +1,7 @@
 module Update exposing (update)
 
+--import Menu.Update as Menu
+
 import Array
 import Canvas exposing (DrawOp(Batch))
 import ColorPicker
@@ -7,11 +9,10 @@ import Command
 import History
 import Json.Decode as Decode
 import List.Unique
-import Menu
-import Menu.Update as Menu
 import Minimap.Incorporate as Minimap
 import Minimap.Update as Minimap
 import Palette.Update as Palette
+import Ports
 import Tool.Update as Tool
 import Types exposing (Model, Msg(..), keyPayloadDecoder)
 import Util exposing ((&))
@@ -25,9 +26,10 @@ update message model =
                 |> Tuple.mapSecond (Cmd.map ToolMsg)
 
         MenuMsg subMsg ->
-            Menu.update subMsg model
-                |> Tuple.mapSecond (Cmd.map MenuMsg)
+            model & Cmd.none
 
+        --Menu.update subMsg model
+        --    |> Tuple.mapSecond (Cmd.map MenuMsg)
         PaletteMsg subMsg ->
             let
                 ( newModel, cmd ) =
@@ -47,17 +49,12 @@ update message model =
             }
                 & Cmd.none
 
-        KeyboardEvent direction json ->
+        KeyboardEvent json ->
             case Decode.decodeValue keyPayloadDecoder json of
                 Ok payload ->
-                    let
-                        cmd =
-                            Command.fromKeyPayload
-                                payload
-                                direction
-                                model
-                    in
-                    Command.update cmd model
+                    Command.update
+                        (Command.fromKeyPayload payload model)
+                        model
 
                 Err err ->
                     model & Cmd.none
@@ -191,7 +188,7 @@ incorporateColorPicker ( colorPicker, maybeMsg ) model =
             newModel & Cmd.none
 
         ColorPicker.StealFocus ->
-            model & Menu.stealFocus ()
+            model & Ports.stealFocus ()
 
         ColorPicker.ReturnFocus ->
-            model & Menu.returnFocus ()
+            model & Ports.returnFocus ()

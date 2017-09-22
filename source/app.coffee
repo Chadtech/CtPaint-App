@@ -3,12 +3,12 @@ AmazonCognitoIdentity = require 'amazon-cognito-identity-js'
 CognitoUserPool = AmazonCognitoIdentity.CognitoUserPool
 
 
-listenToKeyEvents = (app, keydown, keyup) ->
+listenToKeyEvents = (keydown, keyup) ->
     window.addEventListener 'keydown', keydown
     window.addEventListener 'keyup', keyup
 
 
-ignoreKeyEvents = (app, keydown, keyup) ->
+ignoreKeyEvents = (keydown, keyup) ->
     window.removeEventListener 'keydown', keydown
     window.removeEventListener 'keyup', keyup
 
@@ -35,33 +35,27 @@ init = (app) ->
     window.addEventListener 'blur', ->
         app.ports.windowFocus.send false
 
-    keyDownListener = (event) ->
-        payload =
-            keyCode: event.keyCode
-            shift: event.shiftKey
-            cmd: event.metaKey
-            ctrl: event.ctrlKey
+    makeKeyHandler = (direction) ->
+        (event) ->
+            app.ports.keyEvent.send
+                keyCode: event.keyCode
+                shift: event.shiftKey
+                meta: event.metaKey
+                ctrl: event.ctrlKey
+                direction: direction
 
-        app.ports.keyDown.send payload
-        event.preventDefault()
+            event.preventDefault()
 
-    keyUpListener = (event) ->
-        payload =
-            keyCode: event.keyCode
-            shift: event.shiftKey
-            cmd: event.metaKey
-            ctrl: event.ctrlKey
+    handleKeyDown = makeKeyHandler "down"
+    handleKeyUp = makeKeyHandler "up"
 
-        app.ports.keyUp.send payload
-        event.preventDefault()
-
-    listenToKeyEvents app, keyDownListener, keyUpListener
+    listenToKeyEvents handleKeyDown, handleKeyUp
 
     app.ports.stealFocus.subscribe ->
-        ignoreKeyEvents app, keyDownListener, keyUpListener
+        ignoreKeyEvents handleKeyDown, handleKeyUp
 
     app.ports.returnFocus.subscribe ->
-        listenToKeyEvents app, keyDownListener, keyUpListener
+        listenToKeyEvents handleKeyDown, handleKeyUp
 
     app
 
@@ -75,7 +69,7 @@ userPool = new CognitoUserPool poolData
 user = userPool.getCurrentUser()
 
 
-attributesWeWant =  [ 
+attributesWeWant =  [
     "nickname"
     "email"
 ]
@@ -94,13 +88,13 @@ flags = {
 }
 
 
-if user isnt null 
+if user isnt null
     user.getSession (err, session) ->
         if err
             init (Elm.Main.fullscreen flags)
 
             console.log err
-            return 
+            return
 
         user.getUserAttributes (err, attributes) ->
             if err
