@@ -10,6 +10,7 @@ import Menu.Scale.Update as Scale
 import Menu.Text.Incorporate as Text
 import Menu.Text.Update as Text
 import Types exposing (Model)
+import Util exposing ((&))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -38,6 +39,9 @@ update message model =
                 |> Text.update subMsg
                 |> Text.incorporate model
                 |> Tuple.mapSecond (Cmd.map TextMsg)
+
+        ( CloseAbout, About ) ->
+            { model | menu = None } & Cmd.none
 
         _ ->
             model ! []

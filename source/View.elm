@@ -6,6 +6,7 @@ import Html exposing (Attribute, Html, div, p, text)
 import Html.Attributes as Attributes exposing (class, id, style)
 import Html.Events exposing (onMouseLeave)
 import Menu exposing (Menu(..))
+import Menu.About as About
 import Menu.Download.View as Download
 import Menu.Import.View as Import
 import Menu.MsgMap
@@ -87,6 +88,9 @@ menu m =
             Html.map
                 Menu.MsgMap.text
                 (Text.view model)
+
+        About ->
+            Html.map MenuMsg About.view
 
 
 

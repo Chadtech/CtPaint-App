@@ -1,4 +1,4 @@
-module Keyboard.Update exposing (update)
+module Command exposing (..)
 
 import Canvas
 import Clipboard
@@ -25,9 +25,9 @@ import Types
 import Util exposing ((&))
 
 
-update : Direction -> KeyPayload -> Model -> ( Model, Cmd Msg )
-update direction payload model =
-    case getCommand payload direction model of
+update : Command -> Model -> ( Model, Cmd Msg )
+update cmd model =
+    case cmd of
         NoCommand ->
             model & Cmd.none
 
@@ -42,6 +42,18 @@ update direction payload model =
 
         SetToolToFill ->
             { model | tool = Fill } & Cmd.none
+
+        SetToolToSample ->
+            { model | tool = Sample } & Cmd.none
+
+        SetToolToLine ->
+            { model | tool = Line Nothing } & Cmd.none
+
+        SetToolToRectangle ->
+            { model | tool = Rectangle Nothing } & Cmd.none
+
+        SetToolToRectangleFilled ->
+            { model | tool = RectangleFilled Nothing } & Cmd.none
 
         SwatchesOneTurn ->
             if not model.swatches.keyIsDown then
@@ -141,18 +153,16 @@ update direction payload model =
                 Zoom.set newZoom model & Cmd.none
 
         ShowMinimap ->
-            case model.minimap of
-                Nothing ->
-                    { model
-                        | minimap =
-                            model.windowSize
-                                |> Minimap.init
-                                |> Just
-                    }
-                        & Cmd.none
+            { model
+                | minimap =
+                    model.windowSize
+                        |> Minimap.init
+                        |> Just
+            }
+                & Cmd.none
 
-                Just _ ->
-                    { model | minimap = Nothing } & Cmd.none
+        HideMinimap ->
+            { model | minimap = Nothing } & Cmd.none
 
         Types.Download ->
             let
@@ -201,9 +211,12 @@ update direction payload model =
             }
                 & Cmd.none
 
+        OpenAbout ->
+            { model | menu = About } & Cmd.none
 
-getCommand : KeyPayload -> Direction -> Model -> Command
-getCommand payload direction { cmdKey, keyConfig } =
+
+fromKeyPayload : KeyPayload -> Direction -> Model -> Command
+fromKeyPayload payload direction { cmdKey, keyConfig } =
     case Dict.get (payloadToString direction cmdKey payload) keyConfig of
         Just command ->
             command

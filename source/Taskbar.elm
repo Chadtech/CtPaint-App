@@ -4,6 +4,7 @@ import Dict exposing (Dict)
 import Html exposing (Attribute, Html, a, div, p, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick, onMouseOver)
+import Tool
 import Types
     exposing
         ( Command(..)
@@ -51,9 +52,9 @@ help maybeHelp =
                 , seam
                 , div
                     [ class "options help" ]
-                    [ option ( "About", "", NoOp )
-                    , option ( "Tutorial", "", NoOp )
-                    , option ( "Donate", "", NoOp )
+                    [ option "About" "" (Command OpenAbout)
+                    , option "Tutorial" "" NoOp
+                    , option "Donate" "" NoOp
                     ]
                 ]
 
@@ -74,7 +75,7 @@ view_ model =
                 , seam
                 , div
                     [ class "options view" ]
-                    [ option_
+                    [ option
                         "Gallery view"
                         "tab"
                         (Command SwitchGalleryView)
@@ -90,10 +91,10 @@ minimap : Model -> Html Msg
 minimap model =
     case model.minimap of
         Just _ ->
-            option_ "Hide Mini Map" "`" (SwitchMinimap False)
+            option "Hide Mini Map" "`" (Command HideMinimap)
 
         Nothing ->
-            option_ "Show Mini Map" "`" (SwitchMinimap True)
+            option "Show Mini Map" "`" (Command ShowMinimap)
 
 
 
@@ -104,29 +105,34 @@ transform : Model -> Html Msg
 transform model =
     case model.taskbarDropped of
         Just Transform ->
-            taskbarButtonOpen
-                [ text "Transform"
-                , seam
-                , div
-                    [ class "options transform" ]
-                    [ option ( "Flip Horiztonal", "Shift + H", NoOp )
-                    , option ( "Flip Vertical", "Shift + V", NoOp )
-                    , divider
-                    , option ( "Rotate 90", "Shift + R", NoOp )
-                    , option ( "Rotate 180", "Shift + E", NoOp )
-                    , option ( "Rotate 270", "Shift + D", NoOp )
-                    , divider
-                    , option_
-                        "Scale"
-                        (getCmdStr model.quickKeys Scale)
-                        (Command Scale)
-                    , option ( "Replace Color", "Cmd + R", NoOp )
-                    , option ( "Invert", "Cmd + I", NoOp )
-                    ]
-                ]
+            transformOpen model
 
         _ ->
             taskbarButtonClose Transform
+
+
+transformOpen : Model -> Html Msg
+transformOpen model =
+    [ text "Transform"
+    , seam
+    , div
+        [ class "options transform" ]
+        [ option "Flip Horiztonal" "Shift + H" NoOp
+        , option "Flip Vertical" "Shift + V" NoOp
+        , divider
+        , option "Rotate 90" "Shift + R" NoOp
+        , option "Rotate 180" "Shift + E" NoOp
+        , option "Rotate 270" "Shift + D" NoOp
+        , divider
+        , option
+            "Scale"
+            (getCmdStr model.quickKeys Scale)
+            (Command Scale)
+        , option "Replace Color" "Cmd + R" NoOp
+        , option "Invert" "Cmd + I" NoOp
+        ]
+    ]
+        |> taskbarButtonOpen
 
 
 
@@ -137,29 +143,61 @@ tools : Model -> Html Msg
 tools model =
     case model.taskbarDropped of
         Just Tools ->
-            taskbarButtonOpen
-                [ text "Tools"
-                , seam
-                , div
-                    [ class "options tools" ]
-                    [ option ( "Flip Horiztonal", "Shift + H", NoOp )
-                    , option ( "Flip Vertical", "Shift + V", NoOp )
-                    , divider
-                    , option ( "Rotate 90", "Shift + R", NoOp )
-                    , option ( "Rotate 180", "Shift + E", NoOp )
-                    , option ( "Rotate 270", "Shift + D", NoOp )
-                    , divider
-                    , option_
-                        "Scale"
-                        (getCmdStr model.quickKeys Scale)
-                        (Command Scale)
-                    , option ( "Replace Color", "Cmd + R", NoOp )
-                    , option ( "Invert", "Cmd + I", NoOp )
-                    ]
-                ]
+            toolsDropped model
 
         _ ->
             taskbarButtonClose Tools
+
+
+toolsDropped : Model -> Html Msg
+toolsDropped model =
+    [ text "Tools"
+    , seam
+    , div
+        [ class "options tools" ]
+        [ option
+            "Select"
+            (getCmdStr model.quickKeys SetToolToSelect)
+            (Command SetToolToSelect)
+        , option
+            "Zoom In"
+            (getCmdStr model.quickKeys ZoomIn)
+            (SetTool Tool.ZoomIn)
+        , option
+            "Zoom Out"
+            (getCmdStr model.quickKeys ZoomOut)
+            (SetTool Tool.ZoomOut)
+        , option
+            "Hand"
+            (getCmdStr model.quickKeys SetToolToHand)
+            (Command SetToolToHand)
+        , option
+            "Sample"
+            (getCmdStr model.quickKeys SetToolToSample)
+            (Command SetToolToSample)
+        , option
+            "Fill"
+            (getCmdStr model.quickKeys SetToolToFill)
+            (Command SetToolToFill)
+        , option
+            "Pencil"
+            (getCmdStr model.quickKeys SetToolToPencil)
+            (Command SetToolToPencil)
+        , option
+            "Line"
+            (getCmdStr model.quickKeys SetToolToLine)
+            (Command SetToolToLine)
+        , option
+            "Rectangle"
+            (getCmdStr model.quickKeys SetToolToRectangle)
+            (Command SetToolToRectangle)
+        , option
+            "Rectangle Filled"
+            (getCmdStr model.quickKeys SetToolToRectangleFilled)
+            (Command SetToolToRectangleFilled)
+        ]
+    ]
+        |> taskbarButtonOpen
 
 
 
@@ -170,75 +208,86 @@ edit : Model -> Html Msg
 edit model =
     case model.taskbarDropped of
         Just Edit ->
-            taskbarButtonOpen
-                [ text "Edit"
-                , seam
-                , div
-                    [ class "options edit" ]
-                    [ option_
-                        "Undo"
-                        (getCmdStr model.quickKeys Undo)
-                        (Command Undo)
-                    , option_
-                        "Redo"
-                        (getCmdStr model.quickKeys Redo)
-                        (Command Redo)
-                    , divider
-                    , option_
-                        "Cut"
-                        (getCmdStr model.quickKeys Cut)
-                        (Command Cut)
-                    , option_
-                        "Copy"
-                        (getCmdStr model.quickKeys Copy)
-                        (Command Copy)
-                    , option_
-                        "Paste"
-                        (getCmdStr model.quickKeys Paste)
-                        (Command Paste)
-                    , divider
-                    , option_
-                        "Select all"
-                        (getCmdStr model.quickKeys SelectAll)
-                        (Command SelectAll)
-                    , divider
-                    , option ( "Preferences", "", NoOp )
-                    ]
-                ]
+            editDropped model
 
         _ ->
             taskbarButtonClose Edit
+
+
+editDropped : Model -> Html Msg
+editDropped model =
+    [ text "Edit"
+    , seam
+    , div
+        [ class "options edit" ]
+        [ option
+            "Undo"
+            (getCmdStr model.quickKeys Undo)
+            (Command Undo)
+        , option
+            "Redo"
+            (getCmdStr model.quickKeys Redo)
+            (Command Redo)
+        , divider
+        , option
+            "Cut"
+            (getCmdStr model.quickKeys Cut)
+            (Command Cut)
+        , option
+            "Copy"
+            (getCmdStr model.quickKeys Copy)
+            (Command Copy)
+        , option
+            "Paste"
+            (getCmdStr model.quickKeys Paste)
+            (Command Paste)
+        , divider
+        , option
+            "Select all"
+            (getCmdStr model.quickKeys SelectAll)
+            (Command SelectAll)
+        , divider
+        , option "Preferences" "" NoOp
+        ]
+    ]
+        |> taskbarButtonOpen
+
+
+
+-- FILE --
 
 
 file : Model -> Html Msg
 file model =
     case model.taskbarDropped of
         Just File ->
-            taskbarButtonOpen
-                [ text "File"
-                , seam
-                , div
-                    [ class "options file" ]
-                    [ option ( "Save", "Cmd + S", NoOp )
-                    , option ( "Auto Save", "On", NoOp )
-                    , divider
-                    , option_
-                        "Download"
-                        (getCmdStr model.quickKeys Download)
-                        (Command Download)
-                    , option_
-                        "Import"
-                        (getCmdStr model.quickKeys Import)
-                        (Command Import)
-                    , divider
-                    , option ( "Imgur", "", NoOp )
-                    , option ( "Twitter", "", NoOp )
-                    , option ( "Facebook", "", NoOp )
-                    ]
-                ]
+            fileDropped model
 
         _ ->
             taskbarButtonClose File
+
+
+fileDropped : Model -> Html Msg
+fileDropped model =
+    [ text "File"
+    , seam
+    , div
+        [ class "options file" ]
+        [ option
+            "Download"
+            (getCmdStr model.quickKeys Download)
+            (Command Download)
+        , option
+            "Import"
+            (getCmdStr model.quickKeys Import)
+            (Command Import)
+        , divider
+        , option "Imgur" "" NoOp
+        , option "Twitter" "" NoOp
+        , option "Facebook" "" NoOp
+        ]
+    ]
+        |> taskbarButtonOpen
 
 
 
@@ -280,25 +329,14 @@ divider =
         [ div [ class "strike" ] [] ]
 
 
-option_ : String -> String -> Msg -> Html Msg
-option_ label cmdKeys message =
+option : String -> String -> Msg -> Html Msg
+option label cmdKeys message =
     div
         [ onClick message
         , class "option"
         ]
         [ p_ label
         , p_ cmdKeys
-        ]
-
-
-option : ( String, String, Msg ) -> Html Msg
-option ( label, cmdText, message ) =
-    div
-        [ onClick message
-        , class "option"
-        ]
-        [ p_ label
-        , p_ cmdText
         ]
 
 

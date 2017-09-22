@@ -1,9 +1,9 @@
 module Menu.Text.View exposing (view)
 
---import Html.Attributes exposing (class, placeholder, style)
 --import Html.Events exposing (onClick, onSubmit)
 
 import Html exposing (Html, a, br, div, form, input, p, text)
+import Html.Attributes exposing (class, placeholder, style)
 import Menu.Text.Types exposing (Model, Msg(..))
 
 
@@ -13,4 +13,6 @@ import Menu.Text.Types exposing (Model, Msg(..))
 
 view : Model -> Html Msg
 view model =
-    text ""
+    div
+        [ class "card text-menu" ]
+        []

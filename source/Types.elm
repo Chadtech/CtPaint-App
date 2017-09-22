@@ -140,7 +140,6 @@ type Msg
     | KeyboardEvent Direction Decode.Value
     | DropDown (Maybe TaskbarDropDown)
     | HoverOnto TaskbarDropDown
-    | SwitchMinimap Bool
     | Command Command
     | NoOp
 
@@ -184,6 +183,10 @@ type Command
     | SetToolToHand
     | SetToolToSelect
     | SetToolToFill
+    | SetToolToSample
+    | SetToolToLine
+    | SetToolToRectangle
+    | SetToolToRectangleFilled
     | Undo
     | Redo
     | Cut
@@ -192,11 +195,13 @@ type Command
     | Paste
     | ZoomIn
     | ZoomOut
-    | ShowMinimap
     | Download
     | Import
     | Scale
     | SwitchGalleryView
+    | HideMinimap
+    | ShowMinimap
+    | OpenAbout
     | NoCommand
 
 
@@ -247,6 +252,10 @@ defaultConfigBase =
     , ( Down, CharH, CmdIsUp, ShiftIsUp ) := SetToolToHand
     , ( Down, CharS, CmdIsUp, ShiftIsUp ) := SetToolToSelect
     , ( Down, CharG, CmdIsUp, ShiftIsUp ) := SetToolToFill
+    , ( Down, CharI, CmdIsUp, ShiftIsUp ) := SetToolToSample
+    , ( Down, CharL, CmdIsUp, ShiftIsUp ) := SetToolToLine
+    , ( Down, CharU, CmdIsUp, ShiftIsUp ) := SetToolToRectangle
+    , ( Down, CharJ, CmdIsUp, ShiftIsUp ) := SetToolToRectangleFilled
     , ( Down, CharZ, CmdIsDown, ShiftIsUp ) := Undo
     , ( Down, CharY, CmdIsDown, ShiftIsUp ) := Redo
     , ( Down, CharC, CmdIsDown, ShiftIsUp ) := Copy
@@ -347,6 +356,9 @@ keyCodeToString key =
 
         Equals ->
             "="
+
+        Minus ->
+            "-"
 
         Semicolon ->
             ";"

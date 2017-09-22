@@ -15,6 +15,7 @@ type Menu
     | Download Download.Model
     | Import Import.Model
     | Text Text.Model
+    | About
 
 
 type Msg
@@ -22,6 +23,7 @@ type Msg
     | ImportMsg Import.Msg
     | ScaleMsg Scale.Msg
     | TextMsg Text.Msg
+    | CloseAbout
 
 
 

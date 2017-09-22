@@ -3,14 +3,13 @@ module Update exposing (update)
 import Array
 import Canvas exposing (DrawOp(Batch))
 import ColorPicker
+import Command
 import History
 import Json.Decode as Decode
-import Keyboard.Update as Keyboard
 import List.Unique
 import Menu
 import Menu.Update as Menu
 import Minimap.Incorporate as Minimap
-import Minimap.Types as Minimap
 import Minimap.Update as Minimap
 import Palette.Update as Palette
 import Tool.Update as Tool
@@ -51,7 +50,14 @@ update message model =
         KeyboardEvent direction json ->
             case Decode.decodeValue keyPayloadDecoder json of
                 Ok payload ->
-                    Keyboard.update direction payload model
+                    let
+                        cmd =
+                            Command.fromKeyPayload
+                                payload
+                                direction
+                                model
+                    in
+                    Command.update cmd model
 
                 Err err ->
                     model & Cmd.none
@@ -144,22 +150,9 @@ update message model =
                         }
                             & Cmd.none
 
-        SwitchMinimap turnOn ->
-            if turnOn then
-                { model
-                    | minimap =
-                        model.windowSize
-                            |> Minimap.init
-                            |> Just
-                }
-                    & Cmd.none
-            else
-                { model | minimap = Nothing } & Cmd.none
-
         Command cmd ->
-            model & Cmd.none
+            Command.update cmd model
 
-        --Keyboard.keyUp model cmd
         NoOp ->
             model & Cmd.none
 
