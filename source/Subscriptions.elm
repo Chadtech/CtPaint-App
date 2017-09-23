@@ -1,14 +1,9 @@
 port module Subscriptions exposing (subscriptions)
 
---import Menu.Download.Mouse as Download
---import Menu.Import.Mouse as Import
---import Menu.MsgMap
---import Menu.Scale.Mouse as Scale
-
 import AnimationFrame
 import ColorPicker
 import Json.Decode exposing (Value)
-import Menu exposing (Menu)
+import Menu
 import Minimap.Mouse as Minimap
 import Ports as Ports
 import Tool
@@ -31,32 +26,21 @@ subscriptions model =
         (Minimap.subscriptions model.minimap)
     , keyEvent KeyboardEvent
     , Sub.map ToolMsg (Tool.subscriptions model.tool)
-
-    --, menu model
+    , menu model.menu
     , Ports.windowFocus HandleWindowFocus
     ]
-        --|> maybeCons (Maybe.map Mouse.moves model.subMouseMove)
         |> Sub.batch
 
 
 
 -- MENU --
---menu : Model -> Sub Msg
---menu model =
---    case model.menu of
---        None ->
---            Sub.none
---        Download _ ->
---            Sub.map
---                Menu.MsgMap.download
---                Download.subscriptions
---        Import _ ->
---            Sub.map
---                Menu.MsgMap.import_
---                Import.subscriptions
---        Scale _ ->
---            Sub.map
---                Menu.MsgMap.scale
---                Scale.subscriptions
---        _ ->
---            Sub.none
+
+
+menu : Maybe Menu.Model -> Sub Msg
+menu maybeMenu =
+    case maybeMenu of
+        Just _ ->
+            Sub.map MenuMsg Menu.subscriptions
+
+        Nothing ->
+            Sub.none

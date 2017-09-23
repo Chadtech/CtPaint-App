@@ -184,6 +184,28 @@ incorporateMenu ( menu, externalMsg ) model =
             { model | menu = Just menu }
                 & Cmd.map MenuMsg cmd
 
+        Menu.IncorporateImage image ->
+            let
+                size =
+                    Canvas.getSize image
+
+                canvas =
+                    Canvas.getSize model.canvas
+
+                imagePosition =
+                    { x =
+                        (canvas.width - size.width) // 2
+                    , y =
+                        (canvas.height - size.height) // 2
+                    }
+            in
+            { model
+                | selection =
+                    Just ( imagePosition, image )
+                , menu = Nothing
+            }
+                & Ports.returnFocus ()
+
 
 incorporateColorPicker :
     ( ColorPicker.Model, ColorPicker.ExternalMsg )

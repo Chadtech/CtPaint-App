@@ -279,8 +279,8 @@ fileDropped model =
             (Command InitDownload)
         , option
             "Import"
-            (getCmdStr model.quickKeys Import)
-            (Command Import)
+            (getCmdStr model.quickKeys InitImport)
+            (Command InitImport)
         , divider
         , option "Imgur" "" NoOp
         , option "Twitter" "" NoOp

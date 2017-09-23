@@ -1,9 +1,11 @@
 module Menu exposing (..)
 
+import Canvas exposing (Canvas)
 import Download
 import Html exposing (Attribute, Html, a, div, p, text)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
+import Import
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
 import Random exposing (Seed)
@@ -22,6 +24,7 @@ type alias Model =
 
 type Menu
     = Download Download.Model
+    | Import Import.Model
 
 
 type ClickState
@@ -39,12 +42,14 @@ type Msg
 
 type ContentMsg
     = DownloadMsg Download.Msg
+    | ImportMsg Import.Msg
 
 
 type ExternalMsg
     = DoNothing
     | Close
     | Cmd (Cmd Msg)
+    | IncorporateImage Canvas
 
 
 
@@ -87,25 +92,64 @@ update msg model =
             { model | click = NoClick } & DoNothing
 
         ContentMsg subMsg ->
-            let
-                ( newMenu, cmd ) =
-                    updateContent subMsg model
-            in
-            newMenu & Cmd (Cmd.map ContentMsg cmd)
+            updateContent subMsg model
 
 
-updateContent : ContentMsg -> Model -> ( Model, Cmd ContentMsg )
+updateContent : ContentMsg -> Model -> ( Model, ExternalMsg )
 updateContent msg model =
     case ( msg, model.content ) of
         ( DownloadMsg subMsg, Download subModel ) ->
             let
                 ( newSubModel, cmd ) =
                     Download.update subMsg subModel
+
+                contentCmd =
+                    Cmd.map
+                        (ContentMsg << DownloadMsg)
+                        cmd
             in
             { model
                 | content = Download newSubModel
             }
-                & Cmd.map DownloadMsg cmd
+                & Cmd contentCmd
+
+        ( ImportMsg subMsg, Import subModel ) ->
+            let
+                importUpdate =
+                    Import.update subMsg subModel
+            in
+            incorporateImport importUpdate model
+
+        _ ->
+            model & DoNothing
+
+
+incorporateImport :
+    ( Import.Model, Import.ExternalMsg )
+    -> Model
+    -> ( Model, ExternalMsg )
+incorporateImport ( subModel, externalMsg ) model =
+    case externalMsg of
+        Import.DoNothing ->
+            { model
+                | content = Import subModel
+            }
+                & DoNothing
+
+        Import.IncorporateImage canvas ->
+            model & IncorporateImage canvas
+
+        Import.Cmd cmd ->
+            let
+                contentCmd =
+                    Cmd.map
+                        (ContentMsg << ImportMsg)
+                        cmd
+            in
+            { model
+                | content = Import subModel
+            }
+                & Cmd contentCmd
 
 
 
@@ -136,8 +180,12 @@ contentView : Menu -> List (Html ContentMsg)
 contentView menu =
     case menu of
         Download subModel ->
-            Download.view subModel
-                |> List.map (Html.map DownloadMsg)
+            List.map (Html.map DownloadMsg) <|
+                Download.view subModel
+
+        Import subModel ->
+            List.map (Html.map ImportMsg) <|
+                Import.view subModel
 
 
 header : String -> Html Msg
@@ -157,9 +205,31 @@ menuClass content =
         Download _ ->
             "download"
 
+        Import _ ->
+            "import"
+
 
 
 -- INIT --
+
+
+initImport : Size -> Model
+initImport windowSize =
+    let
+        size =
+            { width = 416
+            , height = 112
+            }
+    in
+    { position =
+        { x = (windowSize.width - size.width) // 2
+        , y = (windowSize.height - size.height) // 2
+        }
+    , size = size
+    , click = NoClick
+    , title = "import"
+    , content = Import Import.init
+    }
 
 
 initDownload : Size -> Maybe String -> Seed -> ( Model, Seed )
@@ -183,3 +253,15 @@ initDownload windowSize maybeProjectName seed =
     , content = Download menu
     }
         & newSeed
+
+
+
+-- SUBSCRIPTIONS --
+
+
+subscriptions : Sub Msg
+subscriptions =
+    Sub.batch
+        [ Mouse.moves HeaderMouseMove
+        , Mouse.ups (always HeaderMouseUp)
+        ]
