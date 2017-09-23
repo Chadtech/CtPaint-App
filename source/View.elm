@@ -49,8 +49,7 @@ view model =
             , clickScreen canvasAreaHeight model
             , colorPicker model
             , minimap model
-
-            --, menu model.menu
+            , menu model.menu
             ]
 
 
@@ -63,6 +62,19 @@ galleryView model =
 
 
 -- MENU --
+
+
+menu : Maybe Menu.Model -> Html Msg
+menu maybeMenuModel =
+    case maybeMenuModel of
+        Just menuModel ->
+            Html.map MenuMsg (Menu.view menuModel)
+
+        Nothing ->
+            Html.text ""
+
+
+
 --menu : Menu -> Html Msg
 --menu m =
 --    case m of

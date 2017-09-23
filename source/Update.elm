@@ -9,6 +9,7 @@ import Command
 import History
 import Json.Decode as Decode
 import List.Unique
+import Menu
 import Minimap.Incorporate as Minimap
 import Minimap.Update as Minimap
 import Palette.Update as Palette
@@ -26,10 +27,17 @@ update message model =
                 |> Tuple.mapSecond (Cmd.map ToolMsg)
 
         MenuMsg subMsg ->
-            model & Cmd.none
+            case model.menu of
+                Just menu ->
+                    let
+                        menuUpdate =
+                            Menu.update subMsg menu
+                    in
+                    incorporateMenu menuUpdate model
 
-        --Menu.update subMsg model
-        --    |> Tuple.mapSecond (Cmd.map MenuMsg)
+                Nothing ->
+                    model & Cmd.none
+
         PaletteMsg subMsg ->
             let
                 ( newModel, cmd ) =
@@ -152,6 +160,29 @@ update message model =
 
         NoOp ->
             model & Cmd.none
+
+
+incorporateMenu :
+    ( Menu.Model, Menu.ExternalMsg )
+    -> Model
+    -> ( Model, Cmd Msg )
+incorporateMenu ( menu, externalMsg ) model =
+    case externalMsg of
+        Menu.DoNothing ->
+            { model
+                | menu = Just menu
+            }
+                & Cmd.none
+
+        Menu.Close ->
+            { model
+                | menu = Nothing
+            }
+                & Cmd.none
+
+        Menu.Cmd cmd ->
+            { model | menu = Just menu }
+                & Cmd.map MenuMsg cmd
 
 
 incorporateColorPicker :

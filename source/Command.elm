@@ -173,11 +173,16 @@ update cmd model =
                 & Cmd.none
 
         InitDownload ->
+            let
+                ( menuModel, seed ) =
+                    Menu.initDownload
+                        model.windowSize
+                        model.projectName
+                        model.seed
+            in
             { model
-                | menu =
-                    model.windowSize
-                        |> Menu.initDownload
-                        |> Just
+                | menu = Just menuModel
+                , seed = seed
             }
                 & Cmd.none
 

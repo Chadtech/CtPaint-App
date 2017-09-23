@@ -10,7 +10,7 @@ import Json.Decode.Pipeline as Pipeline exposing (decode, required)
 import Keyboard exposing (KeyCode)
 import Keyboard.Extra exposing (Key(..))
 import List.Unique exposing (UniqueList)
-import Menu exposing (Menu)
+import Menu
 import Minimap.Types as Minimap
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
@@ -120,7 +120,7 @@ type alias Model =
     , quickKeys : Dict String String
     , taskbarDropped : Maybe TaskbarDropDown
     , minimap : Maybe Minimap.Model
-    , menu : Maybe Menu
+    , menu : Maybe Menu.Model
     , seed : Seed
     }
 

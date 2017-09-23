@@ -1,7 +1,11 @@
-module Download exposing (..)
+port module Download exposing (..)
 
 import Array exposing (Array)
+import Html exposing (Html, a, form, input, p, text)
+import Html.Attributes exposing (class, placeholder, value)
+import Html.Events exposing (onClick, onInput, onSubmit)
 import Random exposing (Generator, Seed)
+import Util exposing ((&))
 
 
 type Msg
@@ -13,6 +17,66 @@ type alias Model =
     { content : String
     , placeholder : String
     }
+
+
+
+-- PORTS --
+
+
+port download : String -> Cmd msg
+
+
+
+-- UPDATE --
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        UpdateField field ->
+            { model | content = field } & Cmd.none
+
+        Submit ->
+            let
+                fileName =
+                    case model.content of
+                        "" ->
+                            model.placeholder
+
+                        content ->
+                            content
+            in
+            model & download fileName
+
+
+
+-- VIEW --
+
+
+view : Model -> List (Html Msg)
+view model =
+    [ form
+        [ class "field"
+        , onSubmit Submit
+        ]
+        [ p [] [ text "file name" ]
+        , input
+            [ onInput UpdateField
+            , value model.content
+            , placeholder model.placeholder
+            ]
+            []
+        ]
+    , a
+        [ class "submit-button"
+        , onClick Submit
+        ]
+        [ text "download" ]
+    ]
+
+
+
+-- INIT --
 
 
 init : Maybe String -> Seed -> ( Model, Seed )
