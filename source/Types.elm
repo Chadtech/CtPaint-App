@@ -198,11 +198,12 @@ type Command
     | ZoomOut
     | InitDownload
     | InitImport
-    | Scale
+    | InitScale
+    | InitText
+    | InitAbout
     | SwitchGalleryView
     | HideMinimap
     | ShowMinimap
-    | OpenAbout
     | NoCommand
 
 
@@ -271,7 +272,8 @@ defaultConfigBase =
     , ( Down, BackQuote, CmdIsUp, ShiftIsUp ) := ShowMinimap
     , ( Down, CharD, CmdIsUp, ShiftIsDown ) := InitDownload
     , ( Down, CharI, CmdIsDown, ShiftIsUp ) := InitImport
-    , ( Down, CharD, CmdIsDown, ShiftIsDown ) := Scale
+    , ( Down, CharD, CmdIsDown, ShiftIsDown ) := InitScale
+    , ( Down, CharT, CmdIsUp, ShiftIsUp ) := InitText
     , ( Down, Tab, CmdIsUp, ShiftIsUp ) := SwitchGalleryView
     ]
 

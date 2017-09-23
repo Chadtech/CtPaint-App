@@ -191,7 +191,13 @@ update cmd model =
             }
                 & Cmd.none
 
-        _ ->
+        InitScale ->
+            model & Cmd.none
+
+        InitText ->
+            model & Cmd.none
+
+        InitAbout ->
             model & Cmd.none
 
 

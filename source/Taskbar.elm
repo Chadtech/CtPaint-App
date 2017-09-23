@@ -52,7 +52,7 @@ help maybeHelp =
                 , seam
                 , div
                     [ class "options help" ]
-                    [ option "About" "" (Command OpenAbout)
+                    [ option "About" "" (Command InitAbout)
                     , option "Tutorial" "" NoOp
                     , option "Donate" "" NoOp
                     ]
@@ -126,8 +126,8 @@ transformOpen model =
         , divider
         , option
             "Scale"
-            (getCmdStr model.quickKeys Scale)
-            (Command Scale)
+            (getCmdStr model.quickKeys InitScale)
+            (Command InitScale)
         , option "Replace Color" "Cmd + R" NoOp
         , option "Invert" "Cmd + I" NoOp
         ]

@@ -9,6 +9,7 @@ import Import
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
 import Random exposing (Seed)
+import Scale
 import Util exposing ((&), height, left, top, width)
 import Window exposing (Size)
 
@@ -25,6 +26,7 @@ type alias Model =
 type Menu
     = Download Download.Model
     | Import Import.Model
+    | Scale Scale.Model
 
 
 type ClickState
@@ -43,6 +45,7 @@ type Msg
 type ContentMsg
     = DownloadMsg Download.Msg
     | ImportMsg Import.Msg
+    | ScaleMsg Scale.Msg
 
 
 type ExternalMsg
@@ -50,6 +53,7 @@ type ExternalMsg
     | Close
     | Cmd (Cmd Msg)
     | IncorporateImage Canvas
+    | ScaleTo Int Int
 
 
 
@@ -120,8 +124,31 @@ updateContent msg model =
             in
             incorporateImport importUpdate model
 
+        ( ScaleMsg subMsg, Scale subModel ) ->
+            let
+                scaleUpdate =
+                    Scale.update subMsg subModel
+            in
+            incorporateScale scaleUpdate model
+
         _ ->
             model & DoNothing
+
+
+incorporateScale :
+    ( Scale.Model, Scale.ExternalMsg )
+    -> Model
+    -> ( Model, ExternalMsg )
+incorporateScale ( subModel, externalMsg ) model =
+    case externalMsg of
+        Scale.DoNothing ->
+            { model
+                | content = Scale subModel
+            }
+                & DoNothing
+
+        Scale.ScaleTo dw dh ->
+            model & ScaleTo dw dh
 
 
 incorporateImport :
@@ -187,6 +214,10 @@ contentView menu =
             List.map (Html.map ImportMsg) <|
                 Import.view subModel
 
+        Scale subModel ->
+            List.map (Html.map ScaleMsg) <|
+                Scale.view subModel
+
 
 header : String -> Html Msg
 header title =
@@ -207,6 +238,9 @@ menuClass content =
 
         Import _ ->
             "import"
+
+        Scale _ ->
+            "scale"
 
 
 

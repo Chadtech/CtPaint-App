@@ -178,7 +178,7 @@ incorporateMenu ( menu, externalMsg ) model =
             { model
                 | menu = Nothing
             }
-                & Cmd.none
+                & Ports.returnFocus ()
 
         Menu.Cmd cmd ->
             { model | menu = Just menu }
