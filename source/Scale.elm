@@ -1,6 +1,8 @@
 module Scale exposing (..)
 
-import Html exposing (Html)
+import Html exposing (Html, a, div, form, input, p, text)
+import Html.Attributes exposing (class, placeholder)
+import Html.Events exposing (onSubmit)
 import Util exposing ((&))
 import Window exposing (Size)
 
@@ -41,7 +43,74 @@ type Field
 
 view : Model -> List (Html Msg)
 view model =
-    Html.text "" |> List.singleton
+    [ div
+        [ class "select-body" ]
+        [ leftSide model
+        , rightSide model
+        , form
+            [ class "field ratio" ]
+            [ p [] [ text "Lock" ]
+            , input [] []
+            ]
+        , div
+            [ class "buttons-container" ]
+            [ a
+                []
+                [ text "Set Size" ]
+            , a
+                []
+                [ text "Cancel" ]
+            ]
+        ]
+    ]
+
+
+rightSide : Model -> Html Msg
+rightSide { initialSize } =
+    div
+        [ class "column" ]
+        [ p [] [ text "Percent" ]
+        , field
+            [ p [] [ text "width" ]
+            , input
+                [ placeholder "100%" ]
+                []
+            ]
+        , field
+            [ p [] [ text "height" ]
+            , input
+                [ placeholder "100%" ]
+                []
+            ]
+        ]
+
+
+leftSide : Model -> Html Msg
+leftSide { initialSize } =
+    div
+        [ class "column" ]
+        [ p [] [ text "Percent" ]
+        , field
+            [ p [] [ text "width" ]
+            , input
+                [ placeholder "100%" ]
+                []
+            ]
+        , field
+            [ p [] [ text "height" ]
+            , input
+                [ placeholder "100%" ]
+                []
+            ]
+        ]
+
+
+field : List (Html Msg) -> Html Msg
+field =
+    form
+        [ class "field scale"
+        , onSubmit ScaleClick
+        ]
 
 
 

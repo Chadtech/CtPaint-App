@@ -206,6 +206,30 @@ incorporateMenu ( menu, externalMsg ) model =
             }
                 & Ports.returnFocus ()
 
+        Menu.ScaleTo dw dh ->
+            case model.selection of
+                Nothing ->
+                    let
+                        newCanvas =
+                            Canvas.scale dw dh model.canvas
+                    in
+                    { model
+                        | canvas =
+                            Canvas.scale dw dh model.canvas
+                    }
+                        & Ports.returnFocus ()
+
+                Just ( pos, selection ) ->
+                    let
+                        newSelection =
+                            Canvas.scale dw dh selection
+                    in
+                    { model
+                        | selection =
+                            Just ( pos, newSelection )
+                    }
+                        & Ports.returnFocus ()
+
 
 incorporateColorPicker :
     ( ColorPicker.Model, ColorPicker.ExternalMsg )

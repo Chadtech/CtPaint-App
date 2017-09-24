@@ -69,6 +69,13 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     return model;
   }
 
+  function scale(dw, hw, model) {
+    model = cloneModel(model);
+
+    // -- WIP -- //
+
+    return model;
+  }
 
   function handleDrawOp (ctx, drawOp) {
     var point, point1, size, color;
@@ -81,7 +88,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
         handleDrawOp(ctx, drawOps._0);
 
         drawOps = drawOps._1;
-      } 
+      }
 
       break;
 
@@ -130,7 +137,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
       break;
 
     case "LineJoin" :
-    
+
       ctx.lineJoin = drawOp._0;
       break;
 
@@ -140,7 +147,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
       break;
 
     case "LineDashOffset" :
-    
+
       ctx.lineDashOffset = drawOp._0;
       break;
 
@@ -243,8 +250,8 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     case "SetTransform" :
 
       ctx.setTransform(
-        drawOp._0, 
-        drawOp._1, 
+        drawOp._0,
+        drawOp._1,
         drawOp._2,
         drawOp._3,
         drawOp._4,
@@ -255,8 +262,8 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     case "Transform" :
 
       ctx.transform(
-        drawOp._0, 
-        drawOp._1, 
+        drawOp._0,
+        drawOp._1,
         drawOp._2,
         drawOp._3,
         drawOp._4,
@@ -343,7 +350,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
       ctx.clip();
       break;
 
-    case "ClosePath" : 
+    case "ClosePath" :
 
       ctx.clearPath();
       break;
@@ -410,7 +417,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     var width = imageData.width;
     var height = imageData.height;
-    
+
     var i = 0;
     var data = [];
     while (i < imageData.data.length) {
@@ -420,7 +427,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
 
     var index = (point.x * 4) + (point.y * width * 4);
     var targetColor = data.slice(index, index + 4);
-    
+
     function setToColor (index) {
       data[ index ] = color.red;
       data[ index + 1 ] = color.green;
@@ -537,7 +544,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     var canvas = model.canvas();
     var ctx = canvas.getContext("2d");
     var imageData = ctx.getImageData(
-      point.x, 
+      point.x,
       point.y,
       size.width,
       size.height
@@ -625,6 +632,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     getImageData: F3(getImageData), // eslint-disable-line no-undef
     clone: cloneModel,
     draw: F2(draw),
+    scale: F3(scale),
     toDataURL: F3(toDataURL) // eslint-disable-line no-undef
   };
 }();

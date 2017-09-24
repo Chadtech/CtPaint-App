@@ -12,6 +12,7 @@ module Canvas
         , getSize
         , initialize
         , loadImage
+        , scale
         , setSize
         , toDataUrl
         , toHtml
@@ -171,6 +172,11 @@ toHtml =
 draw : DrawOp -> Canvas -> Canvas
 draw =
     Native.Canvas.draw
+
+
+scale : Int -> Int -> Canvas -> Canvas
+scale =
+    Native.Canvas.scale
 
 
 {-| You dont want to apply `DrawOp` one at a time. Bundle many `DrawOp` together in one batch, using `batch`.

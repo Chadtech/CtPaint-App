@@ -3,7 +3,6 @@ module Tool.Line exposing (..)
 import Html exposing (Attribute)
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent, onMouseDown)
-import Util exposing (toPosition)
 
 
 type Msg

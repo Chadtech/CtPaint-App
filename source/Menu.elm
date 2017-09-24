@@ -247,6 +247,25 @@ menuClass content =
 -- INIT --
 
 
+initScale : Size -> Size -> Model
+initScale canvasSize windowSize =
+    let
+        size =
+            { width = 424
+            , height = 186
+            }
+    in
+    { position =
+        { x = (windowSize.width - size.width) // 2
+        , y = (windowSize.height - size.height) // 2
+        }
+    , size = size
+    , click = NoClick
+    , title = "scale"
+    , content = Scale (Scale.init canvasSize)
+    }
+
+
 initImport : Size -> Model
 initImport windowSize =
     let
