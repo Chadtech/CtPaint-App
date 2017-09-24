@@ -230,6 +230,9 @@ incorporateMenu ( menu, externalMsg ) model =
                     }
                         & Ports.returnFocus ()
 
+        Menu.AddText str ->
+            model & Cmd.none
+
 
 incorporateColorPicker :
     ( ColorPicker.Model, ColorPicker.ExternalMsg )

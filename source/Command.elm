@@ -189,13 +189,35 @@ update cmd model =
                 | menu = Just menuModel
                 , seed = seed
             }
-                & Cmd.none
-
-        InitScale ->
-            model & Cmd.none
+                & Ports.stealFocus ()
 
         InitText ->
-            model & Cmd.none
+            { model
+                | menu =
+                    model.windowSize
+                        |> Menu.initText
+                        |> Just
+            }
+                & Ports.stealFocus ()
+
+        InitScale ->
+            let
+                menu =
+                    case model.selection of
+                        Just ( pos, selection ) ->
+                            Menu.initScale
+                                (Canvas.getSize selection)
+                                model.windowSize
+                                |> Just
+
+                        Nothing ->
+                            Menu.initScale
+                                (Canvas.getSize model.canvas)
+                                model.windowSize
+                                |> Just
+            in
+            { model | menu = menu }
+                & Ports.stealFocus ()
 
         InitAbout ->
             model & Cmd.none

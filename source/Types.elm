@@ -19,7 +19,7 @@ import Palette.Types as Palette exposing (Swatches)
 import Random exposing (Seed)
 import Time exposing (Time)
 import Tool exposing (Tool(..))
-import Util exposing ((:=), tbw)
+import Util exposing ((&), (:=), tbw)
 
 
 -- INIT --
@@ -87,7 +87,7 @@ init json =
     , menu = Nothing
     , seed = Random.initialSeed (decodeSeed json)
     }
-        ! []
+        & Cmd.none
 
 
 

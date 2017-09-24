@@ -10,6 +10,7 @@ import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
 import Random exposing (Seed)
 import Scale
+import Text
 import Util exposing ((&), height, left, top, width)
 import Window exposing (Size)
 
@@ -27,6 +28,7 @@ type Menu
     = Download Download.Model
     | Import Import.Model
     | Scale Scale.Model
+    | Text String
 
 
 type ClickState
@@ -46,6 +48,7 @@ type ContentMsg
     = DownloadMsg Download.Msg
     | ImportMsg Import.Msg
     | ScaleMsg Scale.Msg
+    | TextMsg Text.Msg
 
 
 type ExternalMsg
@@ -54,6 +57,7 @@ type ExternalMsg
     | Cmd (Cmd Msg)
     | IncorporateImage Canvas
     | ScaleTo Int Int
+    | AddText String
 
 
 
@@ -131,8 +135,31 @@ updateContent msg model =
             in
             incorporateScale scaleUpdate model
 
+        ( TextMsg subMsg, Text subModel ) ->
+            let
+                textUpdate =
+                    Text.update subMsg subModel
+            in
+            incorporateText textUpdate model
+
         _ ->
             model & DoNothing
+
+
+incorporateText :
+    ( String, Text.ExternalMsg )
+    -> Model
+    -> ( Model, ExternalMsg )
+incorporateText ( subModel, externalMsg ) model =
+    case externalMsg of
+        Text.DoNothing ->
+            { model
+                | content = Text subModel
+            }
+                & DoNothing
+
+        Text.AddText text ->
+            model & AddText text
 
 
 incorporateScale :
@@ -218,33 +245,46 @@ contentView menu =
             List.map (Html.map ScaleMsg) <|
                 Scale.view subModel
 
+        Text subModel ->
+            List.map (Html.map TextMsg) <|
+                Text.view subModel
+
 
 header : String -> Html Msg
 header title =
     div
-        [ class "header"
-        , MouseEvents.onMouseDown HeaderMouseDown
-        ]
-        [ p [] [ text title ]
+        [ class "header" ]
+        [ div
+            [ class "click-screen"
+            , MouseEvents.onMouseDown HeaderMouseDown
+            ]
+            []
+        , p [] [ text title ]
         , a [ onClick XClick ] [ text "x" ]
         ]
 
 
-menuClass : Menu -> String
-menuClass content =
-    case content of
-        Download _ ->
-            "download"
-
-        Import _ ->
-            "import"
-
-        Scale _ ->
-            "scale"
-
-
 
 -- INIT --
+
+
+initText : Size -> Model
+initText windowSize =
+    let
+        size =
+            { width = 400
+            , height = 400
+            }
+    in
+    { position =
+        { x = (windowSize.width - size.width) // 2
+        , y = (windowSize.height - size.height) // 2
+        }
+    , size = size
+    , click = NoClick
+    , title = "text"
+    , content = Text Text.init
+    }
 
 
 initScale : Size -> Size -> Model

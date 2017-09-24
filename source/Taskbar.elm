@@ -130,6 +130,11 @@ transformOpen model =
             (Command InitScale)
         , option "Replace Color" "Cmd + R" NoOp
         , option "Invert" "Cmd + I" NoOp
+        , divider
+        , option
+            "Text"
+            (getCmdStr model.quickKeys InitText)
+            (Command InitText)
         ]
     ]
         |> taskbarButtonOpen
