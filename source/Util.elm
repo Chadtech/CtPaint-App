@@ -1,10 +1,12 @@
 module Util exposing (..)
 
 import Canvas exposing (Point)
+import Color exposing (Color)
 import Html exposing (Attribute, Html)
 import Html.Events
 import Json.Decode as Json
 import Mouse exposing (Position)
+import ParseInt
 import Window exposing (Size)
 
 
@@ -76,7 +78,59 @@ slice start end =
 
 
 
--- HTML
+-- COLOR --
+
+
+toHex : Color -> String
+toHex color =
+    let
+        { red, green, blue } =
+            Color.toRgb color
+    in
+    [ "#"
+    , toHexHelper <| ParseInt.toHex red
+    , toHexHelper <| ParseInt.toHex green
+    , toHexHelper <| ParseInt.toHex blue
+    ]
+        |> String.concat
+
+
+toHexHelper : String -> String
+toHexHelper hex =
+    if String.length hex > 1 then
+        hex
+    else
+        "0" ++ hex
+
+
+toColor : String -> Maybe Color
+toColor colorMaybe =
+    if 6 == String.length colorMaybe then
+        let
+            r =
+                String.slice 0 2 colorMaybe
+                    |> ParseInt.parseIntHex
+
+            g =
+                String.slice 2 4 colorMaybe
+                    |> ParseInt.parseIntHex
+
+            b =
+                String.slice 4 6 colorMaybe
+                    |> ParseInt.parseIntHex
+        in
+        case ( r, g, b ) of
+            ( Ok red, Ok green, Ok blue ) ->
+                Just (Color.rgb red green blue)
+
+            _ ->
+                Nothing
+    else
+        Nothing
+
+
+
+-- HTML --
 
 
 onContextMenu : msg -> Attribute msg

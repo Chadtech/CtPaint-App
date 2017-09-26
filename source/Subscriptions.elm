@@ -5,7 +5,6 @@ import ColorPicker
 import Json.Decode exposing (Value)
 import Menu
 import Minimap.Mouse as Minimap
-import Ports as Ports
 import Tool
 import Types exposing (Direction(..), Model, Msg(..))
 import Window
@@ -27,7 +26,6 @@ subscriptions model =
     , keyEvent KeyboardEvent
     , Sub.map ToolMsg (Tool.subscriptions model.tool)
     , menu model.menu
-    , Ports.windowFocus HandleWindowFocus
     ]
         |> Sub.batch
 

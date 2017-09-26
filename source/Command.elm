@@ -222,6 +222,19 @@ update cmd model =
         InitAbout ->
             model & Cmd.none
 
+        ToggleColorPicker ->
+            let
+                { colorPicker } =
+                    model
+            in
+            { model
+                | colorPicker =
+                    { colorPicker
+                        | show = not colorPicker.show
+                    }
+            }
+                & Cmd.none
+
 
 fromKeyPayload : KeyPayload -> Model -> Command
 fromKeyPayload payload { cmdKey, keyConfig } =

@@ -1,16 +1,68 @@
-module Palette.View exposing (..)
+module Palette exposing (..)
 
-import Array
+import Array exposing (Array)
 import Color exposing (Color)
 import Draw
 import Html exposing (Attribute, Html, a, div, p, span, text)
 import Html.Attributes exposing (class, classList, style)
 import Html.Events exposing (onClick)
 import Mouse exposing (Position)
-import Palette.Types as Palette exposing (Msg(..), Swatches)
 import Tool exposing (Tool(..))
-import Types exposing (Model)
-import Util exposing ((:=), height, maybeCons, px, tbw)
+import Types exposing (Model, Msg(..))
+import Util
+    exposing
+        ( (:=)
+        , height
+        , maybeCons
+        , px
+        , tbw
+        , toColor
+        , toHex
+        )
+
+
+-- INIT --
+
+
+initPalette : Array Color
+initPalette =
+    [ Color.rgba 176 166 154 255
+    , Color.black
+    , Color.white
+    , Color.rgba 241 29 35 255
+    , Color.black
+    , Color.black
+    , Color.black
+    , Color.black
+    ]
+        |> Array.fromList
+
+
+initSwatches : Swatches
+initSwatches =
+    { primary = Color.rgba 176 166 154 255
+    , first = Color.black
+    , second = Color.white
+    , third = Color.rgba 241 29 35 255
+    , keyIsDown = False
+    }
+
+
+
+-- TYPES --
+
+
+type alias Swatches =
+    { primary : Color
+    , first : Color
+    , second : Color
+    , third : Color
+    , keyIsDown : Bool
+    }
+
+
+
+-- VIEW --
 
 
 view : Model -> Html Msg
@@ -23,7 +75,7 @@ view model =
         [ edge
         , div
             [ class "palette" ]
-            [ swatches model.swatches
+            [ swatchesView model.swatches
             , generalPalette model
             ]
         , infoBox model
@@ -61,7 +113,7 @@ paletteSquare show selectedIndex index color =
     div
         [ class "square"
         , background color
-        , WakeUpColorPicker color index
+        , SetColorPicker color index
             |> Util.onContextMenu
         , onClick (PaletteSquareClick color)
         ]
@@ -83,8 +135,8 @@ highLight show =
 -- SWATCHES --
 
 
-swatches : Swatches -> Html Msg
-swatches { primary, first, second, third } =
+swatchesView : Swatches -> Html Msg
+swatchesView { primary, first, second, third } =
     div
         [ class "swatches" ]
         [ swatch primary "primary"
@@ -163,7 +215,7 @@ sampleColor model =
                         model.canvas
 
                 colorStr =
-                    Palette.toHex color
+                    toHex color
 
                 backgroundColor =
                     if (Color.toHsl color).lightness > 0.5 then
@@ -298,7 +350,7 @@ toolContent ({ tool } as model) =
 
 background : Color -> Attribute Msg
 background =
-    Palette.toHex
+    toHex
         >> (,) "background"
         >> List.singleton
         >> style

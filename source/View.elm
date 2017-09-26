@@ -1,12 +1,5 @@
 module View exposing (view)
 
---import Menu.About as About
---import Menu.Download.View as Download
---import Menu.Import.View as Import
---import Menu.MsgMap
---import Menu.Scale.View as Scale
---import Menu.Text.View as Text
-
 import Canvas exposing (Canvas)
 import ColorPicker
 import Html exposing (Attribute, Html, div, p, text)
@@ -16,7 +9,7 @@ import Menu exposing (Menu)
 import Minimap.View as Minimap
 import Mouse exposing (Position)
 import MouseEvents exposing (onMouseMove)
-import Palette.View as Palette
+import Palette
 import Taskbar
 import Tool exposing (Tool(..))
 import Toolbar.View as Toolbar
@@ -44,7 +37,7 @@ view model =
             [ class "main" ]
             [ Toolbar.view model
             , Taskbar.view model
-            , Html.map PaletteMsg (Palette.view model)
+            , Palette.view model
             , canvasArea canvasAreaHeight model
             , clickScreen canvasAreaHeight model
             , colorPicker model

@@ -1,18 +1,14 @@
 module Update exposing (update)
 
---import Menu.Update as Menu
-
 import Array
 import Canvas exposing (DrawOp(Batch))
 import ColorPicker
 import Command
 import History
 import Json.Decode as Decode
-import List.Unique
 import Menu
 import Minimap.Incorporate as Minimap
 import Minimap.Update as Minimap
-import Palette.Update as Palette
 import Ports
 import Tool.Update as Tool
 import Types exposing (Model, Msg(..), keyPayloadDecoder)
@@ -38,24 +34,12 @@ update message model =
                 Nothing ->
                     model & Cmd.none
 
-        PaletteMsg subMsg ->
-            let
-                ( newModel, cmd ) =
-                    Palette.update subMsg model
-            in
-            ( newModel, Cmd.map PaletteMsg cmd )
-
         GetWindowSize size ->
-            { model
-                | windowSize = size
-            }
+            { model | windowSize = size }
                 & Cmd.none
 
         SetTool tool ->
-            { model
-                | tool = tool
-            }
-                & Cmd.none
+            { model | tool = tool } & Cmd.none
 
         KeyboardEvent json ->
             case Decode.decodeValue keyPayloadDecoder json of
@@ -126,15 +110,6 @@ update message model =
             }
                 & Cmd.none
 
-        HandleWindowFocus focused ->
-            if focused then
-                { model
-                    | keysDown = List.Unique.empty
-                }
-                    & Cmd.none
-            else
-                model & Cmd.none
-
         DropDown maybeOption ->
             { model
                 | taskbarDropped = maybeOption
@@ -157,6 +132,34 @@ update message model =
 
         Command cmd ->
             Command.update cmd model
+
+        PaletteSquareClick color ->
+            let
+                { swatches } =
+                    model
+            in
+            { model
+                | swatches =
+                    { swatches
+                        | primary = color
+                    }
+            }
+                & Cmd.none
+
+        SetColorPicker color index ->
+            let
+                { colorPicker } =
+                    model
+            in
+            { model
+                | colorPicker =
+                    { colorPicker
+                        | color = color
+                        , index = index
+                        , show = True
+                    }
+            }
+                & Cmd.none
 
         NoOp ->
             model & Cmd.none

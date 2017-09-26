@@ -31,8 +31,15 @@ import Html.Events
         )
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
-import Palette.Types as Palette
-import Util exposing ((&), (:=), left, top)
+import Util
+    exposing
+        ( (&)
+        , (:=)
+        , left
+        , toColor
+        , toHex
+        , top
+        )
 
 
 -- TYPES --
@@ -129,7 +136,7 @@ init colors =
             |> toString
     , show = False
     , colorHexField =
-        String.dropLeft 1 (Palette.toHex color)
+        String.dropLeft 1 (toHex color)
     , gradientClickedOn = Nothing
     , focusedOn = False
     }
@@ -216,7 +223,7 @@ update message model =
                 newHexField =
                     String.toUpper hex
             in
-            case Palette.toColor newHexField of
+            case toColor newHexField of
                 Just color ->
                     cohereAndSet
                         { model
@@ -538,7 +545,7 @@ cohereModel model =
                 |> floor
                 |> toString
         , colorHexField =
-            String.dropLeft 1 (Palette.toHex model.color)
+            String.dropLeft 1 (toHex model.color)
     }
 
 
@@ -579,7 +586,7 @@ body ({ colorHexField, color } as model) =
     [ div
         [ class "visualization"
         , style
-            [ "background" := Palette.toHex color ]
+            [ "background" := toHex color ]
         ]
         []
     , form

@@ -9,13 +9,10 @@ import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline as Pipeline exposing (decode, required)
 import Keyboard exposing (KeyCode)
 import Keyboard.Extra exposing (Key(..))
-import List.Unique exposing (UniqueList)
 import Menu
 import Minimap.Types as Minimap
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
-import Palette.Init
-import Palette.Types as Palette exposing (Swatches)
 import Random exposing (Seed)
 import Time exposing (Time)
 import Tool exposing (Tool(..))
@@ -61,20 +58,19 @@ init json =
         }
     , pendingDraw = Canvas.batch []
     , drawAtRender = Canvas.batch []
-    , swatches = Palette.Init.swatches
-    , palette = Palette.Init.palette
+    , swatches = initSwatches
+    , palette = initPalette
     , horizontalToolbarHeight = 58
     , windowSize = windowSize
     , tool = Tool.init
     , zoom = 1
     , galleryView = False
-    , colorPicker = ColorPicker.init Palette.Init.palette
+    , colorPicker = ColorPicker.init initPalette
     , history = [ CanvasChange canvas ]
     , future = []
     , mousePosition = Nothing
     , selection = Nothing
     , clipboard = Nothing
-    , keysDown = List.Unique.empty
     , cmdKey =
         if isMac then
             .meta
@@ -114,7 +110,6 @@ type alias Model =
     , mousePosition : Maybe Position
     , selection : Maybe ( Position, Canvas )
     , clipboard : Maybe ( Position, Canvas )
-    , keysDown : UniqueList KeyCode
     , cmdKey : KeyPayload -> Bool
     , keyConfig : Dict String Command
     , quickKeys : Dict String String
@@ -126,8 +121,7 @@ type alias Model =
 
 
 type Msg
-    = PaletteMsg Palette.Msg
-    | GetWindowSize Size
+    = GetWindowSize Size
     | SetTool Tool
     | ToolMsg Tool.Msg
     | MenuMsg Menu.Msg
@@ -136,11 +130,12 @@ type Msg
     | MinimapMsg Minimap.Msg
     | ScreenMouseMove MouseEvent
     | ScreenMouseExit
-    | HandleWindowFocus Bool
     | KeyboardEvent Decode.Value
     | DropDown (Maybe TaskbarDropDown)
     | HoverOnto TaskbarDropDown
     | Command Command
+    | PaletteSquareClick Color
+    | SetColorPicker Color Int
     | NoOp
 
 
@@ -201,10 +196,48 @@ type Command
     | InitScale
     | InitText
     | InitAbout
+    | ToggleColorPicker
     | SwitchGalleryView
     | HideMinimap
     | ShowMinimap
     | NoCommand
+
+
+type alias Swatches =
+    { primary : Color
+    , first : Color
+    , second : Color
+    , third : Color
+    , keyIsDown : Bool
+    }
+
+
+
+-- PALETTE --
+
+
+initPalette : Array Color
+initPalette =
+    [ Color.rgba 176 166 154 255
+    , Color.black
+    , Color.white
+    , Color.rgba 241 29 35 255
+    , Color.black
+    , Color.black
+    , Color.black
+    , Color.black
+    ]
+        |> Array.fromList
+
+
+initSwatches : Swatches
+initSwatches =
+    { primary = Color.rgba 176 166 154 255
+    , first = Color.black
+    , second = Color.white
+    , third = Color.rgba 241 29 35 255
+    , keyIsDown = False
+    }
 
 
 
