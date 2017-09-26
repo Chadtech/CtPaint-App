@@ -6,7 +6,7 @@ import Html exposing (Attribute, Html, div, p, text)
 import Html.Attributes as Attributes exposing (class, id, style)
 import Html.Events exposing (onMouseLeave)
 import Menu exposing (Menu)
-import Minimap.View as Minimap
+import Minimap
 import Mouse exposing (Position)
 import MouseEvents exposing (onMouseMove)
 import Palette

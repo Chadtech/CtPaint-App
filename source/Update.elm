@@ -7,8 +7,7 @@ import Command
 import History
 import Json.Decode as Decode
 import Menu
-import Minimap.Incorporate as Minimap
-import Minimap.Update as Minimap
+import Minimap
 import Ports
 import Tool.Update as Tool
 import Types exposing (Model, Msg(..), keyPayloadDecoder)
@@ -81,7 +80,7 @@ update message model =
                         minimapUpdate =
                             Minimap.update subMsg minimap
                     in
-                    Minimap.incorporate minimapUpdate model & Cmd.none
+                    incorporateMinimap minimapUpdate model
 
                 Nothing ->
                     model & Cmd.none
@@ -163,6 +162,25 @@ update message model =
 
         NoOp ->
             model & Cmd.none
+
+
+incorporateMinimap :
+    ( Minimap.Model, Minimap.ExternalMsg )
+    -> Model
+    -> ( Model, Cmd Msg )
+incorporateMinimap ( minimap, externalMsg ) model =
+    case externalMsg of
+        Minimap.DoNothing ->
+            { model
+                | minimap = Just minimap
+            }
+                & Cmd.none
+
+        Minimap.Close ->
+            { model
+                | minimap = Nothing
+            }
+                & Cmd.none
 
 
 incorporateMenu :

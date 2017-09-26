@@ -10,7 +10,7 @@ import Json.Decode.Pipeline as Pipeline exposing (decode, required)
 import Keyboard exposing (KeyCode)
 import Keyboard.Extra exposing (Key(..))
 import Menu
-import Minimap.Types as Minimap
+import Minimap
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
 import Random exposing (Seed)

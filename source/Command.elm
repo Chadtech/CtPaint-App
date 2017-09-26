@@ -6,7 +6,7 @@ import Dict exposing (Dict)
 import Draw
 import History
 import Menu exposing (Menu)
-import Minimap.Types as Minimap
+import Minimap
 import Mouse exposing (Position)
 import Ports
 import Tool exposing (Tool(..))

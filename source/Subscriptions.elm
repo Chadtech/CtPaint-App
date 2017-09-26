@@ -4,7 +4,7 @@ import AnimationFrame
 import ColorPicker
 import Json.Decode exposing (Value)
 import Menu
-import Minimap.Mouse as Minimap
+import Minimap
 import Tool
 import Types exposing (Direction(..), Model, Msg(..))
 import Window
