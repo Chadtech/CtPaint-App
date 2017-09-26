@@ -91,38 +91,6 @@ type alias Model =
 -- INIT --
 
 
-newFrom : Int -> Color -> Model -> Model
-newFrom index color model =
-    let
-        { red, green, blue } =
-            Color.toRgb color
-
-        { hue, saturation, lightness } =
-            Color.toHsl color
-    in
-    { model
-        | color = color
-        , index = index
-        , redField = toString red
-        , greenField = toString green
-        , blueField = toString blue
-        , hueField =
-            (radians hue / (2 * pi) * 360)
-                |> floor
-                |> toString
-        , saturationField =
-            (saturation * 255)
-                |> floor
-                |> toString
-        , lightnessField =
-            (lightness * 255)
-                |> floor
-                |> toString
-        , colorHexField =
-            String.dropLeft 1 (Palette.toHex color)
-    }
-
-
 init : Array Color -> Model
 init colors =
     let

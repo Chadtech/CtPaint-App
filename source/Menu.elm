@@ -1,5 +1,6 @@
 module Menu exposing (..)
 
+import About
 import Canvas exposing (Canvas)
 import Download
 import Html exposing (Attribute, Html, a, div, p, text)
@@ -29,6 +30,7 @@ type Menu
     | Import Import.Model
     | Scale Scale.Model
     | Text String
+    | About
 
 
 type ClickState
@@ -248,6 +250,9 @@ contentView menu =
         Text subModel ->
             List.map (Html.map TextMsg) <|
                 Text.view subModel
+
+        About ->
+            About.view
 
 
 header : String -> Html Msg
