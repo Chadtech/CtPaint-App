@@ -10,7 +10,13 @@ import Menu
 import Minimap
 import Ports
 import Tool.Update as Tool
-import Types exposing (Model, Msg(..), keyPayloadDecoder)
+import Types
+    exposing
+        ( Model
+        , Msg(..)
+        , keyPayloadDecoder
+        , toUrl
+        )
 import Util exposing ((&))
 
 
@@ -159,6 +165,9 @@ update message model =
                     }
             }
                 & Cmd.none
+
+        OpenNewWindow window ->
+            model & Ports.openNewPage (toUrl window)
 
         NoOp ->
             model & Cmd.none

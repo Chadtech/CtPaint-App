@@ -29,11 +29,8 @@ window.onbeforeunload = (event) -> ""
 init = (app) ->
     app.ports.download.subscribe downloadCanvas
 
-    window.addEventListener 'focus', ->
-        app.ports.windowFocus.send true
-
-    window.addEventListener 'blur', ->
-        app.ports.windowFocus.send false
+    app.ports.openNewPage.subscribe (url) ->
+        window.open url
 
     makeKeyHandler = (direction) ->
         (event) ->

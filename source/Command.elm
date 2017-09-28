@@ -220,7 +220,13 @@ update cmd model =
                 & Ports.stealFocus ()
 
         InitAbout ->
-            model & Cmd.none
+            { model
+                | menu =
+                    model.windowSize
+                        |> Menu.initAbout
+                        |> Just
+            }
+                & Cmd.none
 
         ToggleColorPicker ->
             let

@@ -136,7 +136,12 @@ type Msg
     | Command Command
     | PaletteSquareClick Color
     | SetColorPicker Color Int
+    | OpenNewWindow NewWindow
     | NoOp
+
+
+type NewWindow
+    = Preferences
 
 
 type alias KeyPayload =
@@ -210,6 +215,17 @@ type alias Swatches =
     , third : Color
     , keyIsDown : Bool
     }
+
+
+
+-- WINDOW --
+
+
+toUrl : NewWindow -> String
+toUrl window =
+    case window of
+        Preferences ->
+            "https://www.twitter.com"
 
 
 

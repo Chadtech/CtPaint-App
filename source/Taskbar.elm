@@ -10,6 +10,7 @@ import Types
         ( Command(..)
         , Model
         , Msg(..)
+        , NewWindow(..)
         , QuickKey
         , TaskbarDropDown(..)
         )
@@ -252,7 +253,10 @@ editDropped model =
             (getCmdStr model.quickKeys SelectAll)
             (Command SelectAll)
         , divider
-        , option "Preferences" "" NoOp
+        , option
+            "Preferences"
+            ""
+            (OpenNewWindow Preferences)
         ]
     ]
         |> taskbarButtonOpen

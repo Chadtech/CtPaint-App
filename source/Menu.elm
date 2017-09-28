@@ -353,6 +353,25 @@ initDownload windowSize maybeProjectName seed =
         & newSeed
 
 
+initAbout : Size -> Model
+initAbout windowSize =
+    let
+        size =
+            { width = 400
+            , height = 400
+            }
+    in
+    { position =
+        { x = (windowSize.width - size.width) // 2
+        , y = (windowSize.height - size.height) // 2
+        }
+    , size = size
+    , click = NoClick
+    , title = "about"
+    , content = About
+    }
+
+
 
 -- SUBSCRIPTIONS --
 
