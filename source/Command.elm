@@ -228,6 +228,17 @@ update cmd model =
             }
                 & Cmd.none
 
+        InitReplaceColor ->
+            { model
+                | menu =
+                    Menu.initReplaceColor
+                        model.windowSize
+                        model.swatches.primary
+                        model.swatches.second
+                        |> Just
+            }
+                & Cmd.none
+
         ToggleColorPicker ->
             let
                 { colorPicker } =

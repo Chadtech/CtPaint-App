@@ -2,6 +2,7 @@ module Menu exposing (..)
 
 import About
 import Canvas exposing (Canvas)
+import Color exposing (Color)
 import Download
 import Html exposing (Attribute, Html, a, div, p, text)
 import Html.Attributes exposing (class, style)
@@ -10,6 +11,7 @@ import Import
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
 import Random exposing (Seed)
+import ReplaceColor
 import Scale
 import Text
 import Util exposing ((&), height, left, top, width)
@@ -31,6 +33,7 @@ type Menu
     | Scale Scale.Model
     | Text String
     | About
+    | ReplaceColor ReplaceColor.Model
 
 
 type ClickState
@@ -51,6 +54,7 @@ type ContentMsg
     | ImportMsg Import.Msg
     | ScaleMsg Scale.Msg
     | TextMsg Text.Msg
+    | ReplaceColorMsg ReplaceColor.Msg
 
 
 type ExternalMsg
@@ -254,6 +258,10 @@ contentView menu =
         About ->
             About.view
 
+        ReplaceColor subModel ->
+            List.map (Html.map ReplaceColorMsg) <|
+                ReplaceColor.view subModel
+
 
 header : String -> Html Msg
 header title =
@@ -369,6 +377,27 @@ initAbout windowSize =
     , click = NoClick
     , title = "about"
     , content = About
+    }
+
+
+initReplaceColor : Size -> Color -> Color -> Model
+initReplaceColor windowSize target replacement =
+    let
+        size =
+            { width = 400
+            , height = 400
+            }
+    in
+    { position =
+        { x = (windowSize.width - size.width) // 2
+        , y = (windowSize.height - size.height) // 2
+        }
+    , size = size
+    , click = NoClick
+    , title = "replace color"
+    , content =
+        ReplaceColor.init target replacement
+            |> ReplaceColor
     }
 
 

@@ -201,6 +201,7 @@ type Command
     | InitScale
     | InitText
     | InitAbout
+    | InitReplaceColor
     | ToggleColorPicker
     | SwitchGalleryView
     | HideMinimap
@@ -323,6 +324,7 @@ defaultConfigBase =
     , ( Down, CharI, CmdIsDown, ShiftIsUp ) := InitImport
     , ( Down, CharD, CmdIsDown, ShiftIsDown ) := InitScale
     , ( Down, CharT, CmdIsUp, ShiftIsUp ) := InitText
+    , ( Down, CharR, CmdIsUp, ShiftIsUp ) := InitReplaceColor
     , ( Down, Tab, CmdIsUp, ShiftIsUp ) := SwitchGalleryView
     ]
 

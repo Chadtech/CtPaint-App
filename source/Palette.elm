@@ -105,11 +105,22 @@ generalPalette model =
         , style
             [ height (model.horizontalToolbarHeight - 10) ]
         ]
-        paletteSquares
+        (List.append paletteSquares [ addColor ])
+
+
+addColor : Html Msg
+addColor =
+    div
+        [ class "square plus" ]
+        [ text "+" ]
 
 
 paletteSquare : Bool -> Int -> Int -> Color -> Html Msg
 paletteSquare show selectedIndex index color =
+    let
+        isSelected =
+            index == selectedIndex
+    in
     div
         [ class "square"
         , background color
@@ -117,7 +128,7 @@ paletteSquare show selectedIndex index color =
             |> Util.onContextMenu
         , onClick (PaletteSquareClick color)
         ]
-        (highLight (show && (index == selectedIndex)))
+        (highLight (show && isSelected))
 
 
 highLight : Bool -> List (Html Msg)
