@@ -166,17 +166,23 @@ update cmd model =
             else
                 Zoom.set newZoom model & Cmd.none
 
-        ShowMinimap ->
-            { model
-                | minimap =
-                    model.windowSize
-                        |> Minimap.init
-                        |> Just
-            }
-                & Cmd.none
+        ToggleMinimap ->
+            case model.minimap of
+                Just _ ->
+                    { model
+                        | minimap =
+                            Nothing
+                    }
+                        & Cmd.none
 
-        HideMinimap ->
-            { model | minimap = Nothing } & Cmd.none
+                Nothing ->
+                    { model
+                        | minimap =
+                            model.windowSize
+                                |> Minimap.init
+                                |> Just
+                    }
+                        & Cmd.none
 
         SwitchGalleryView ->
             { model

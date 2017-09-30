@@ -126,7 +126,7 @@ paletteSquare show selectedIndex index color =
     div
         [ class "square"
         , background color
-        , SetColorPicker color index
+        , OpenColorPicker color index
             |> Util.onContextMenu
         , onClick (PaletteSquareClick color)
         ]

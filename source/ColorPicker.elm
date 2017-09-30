@@ -98,17 +98,9 @@ type alias Model =
 -- INIT --
 
 
-init : Array Color -> Model
-init colors =
+init : Bool -> Int -> Color -> Model
+init show index color =
     let
-        color =
-            case Array.get 0 colors of
-                Just color ->
-                    color
-
-                Nothing ->
-                    Color.black
-
         { red, green, blue } =
             Color.toRgb color
 
@@ -118,7 +110,7 @@ init colors =
     { position = Position 50 350
     , clickState = Nothing
     , color = color
-    , index = 0
+    , index = index
     , redField = toString red
     , greenField = toString green
     , blueField = toString blue
@@ -134,7 +126,7 @@ init colors =
         (lightness * 255)
             |> floor
             |> toString
-    , show = False
+    , show = show
     , colorHexField =
         String.dropLeft 1 (toHex color)
     , gradientClickedOn = Nothing

@@ -48,16 +48,11 @@ help : Maybe TaskbarDropDown -> Html Msg
 help maybeHelp =
     case maybeHelp of
         Just Help ->
-            taskbarButtonOpen
-                [ text "Help"
-                , seam
-                , div
-                    [ class "options help" ]
-                    [ option "About" "" (Command InitAbout)
-                    , option "Tutorial" "" NoOp
-                    , option "Donate" "" NoOp
-                    ]
-                ]
+            [ option "About" "" (Command InitAbout)
+            , option "Tutorial" "" NoOp
+            , option "Donate" "" NoOp
+            ]
+                |> taskbarButtonOpen "Help"
 
         _ ->
             taskbarButtonClose Help
@@ -71,31 +66,33 @@ view_ : Model -> Html Msg
 view_ model =
     case model.taskbarDropped of
         Just View ->
-            taskbarButtonOpen
-                [ text "View"
-                , seam
-                , div
-                    [ class "options view" ]
-                    [ option
-                        "Gallery view"
-                        "tab"
-                        (Command SwitchGalleryView)
-                    , minimap model
-                    ]
-                ]
+            [ option
+                "Gallery view"
+                "tab"
+                (Command SwitchGalleryView)
+            , option
+                (minimapLabel model)
+                (getCmdStr model.quickKeys ToggleMinimap)
+                (Command ToggleMinimap)
+            , option
+                "Color Picker"
+                (getCmdStr model.quickKeys ToggleColorPicker)
+                (Command ToggleColorPicker)
+            ]
+                |> taskbarButtonOpen "View"
 
         _ ->
             taskbarButtonClose View
 
 
-minimap : Model -> Html Msg
-minimap model =
+minimapLabel : Model -> String
+minimapLabel model =
     case model.minimap of
         Just _ ->
-            option "Hide Mini Map" "`" (Command HideMinimap)
+            "Hide Mini Map"
 
         Nothing ->
-            option "Show Mini Map" "`" (Command ShowMinimap)
+            "Show Mini Map"
 
 
 
@@ -114,31 +111,26 @@ transform model =
 
 transformOpen : Model -> Html Msg
 transformOpen model =
-    [ text "Transform"
-    , seam
-    , div
-        [ class "options transform" ]
-        [ option "Flip Horiztonal" "Shift + H" NoOp
-        , option "Flip Vertical" "Shift + V" NoOp
-        , divider
-        , option "Rotate 90" "Shift + R" NoOp
-        , option "Rotate 180" "Shift + E" NoOp
-        , option "Rotate 270" "Shift + D" NoOp
-        , divider
-        , option
-            "Scale"
-            (getCmdStr model.quickKeys InitScale)
-            (Command InitScale)
-        , option "Replace Color" "Cmd + R" NoOp
-        , option "Invert" "Cmd + I" NoOp
-        , divider
-        , option
-            "Text"
-            (getCmdStr model.quickKeys InitText)
-            (Command InitText)
-        ]
+    [ option "Flip Horiztonal" "Shift + H" NoOp
+    , option "Flip Vertical" "Shift + V" NoOp
+    , divider
+    , option "Rotate 90" "Shift + R" NoOp
+    , option "Rotate 180" "Shift + E" NoOp
+    , option "Rotate 270" "Shift + D" NoOp
+    , divider
+    , option
+        "Scale"
+        (getCmdStr model.quickKeys InitScale)
+        (Command InitScale)
+    , option "Replace Color" "Cmd + R" NoOp
+    , option "Invert" "Cmd + I" NoOp
+    , divider
+    , option
+        "Text"
+        (getCmdStr model.quickKeys InitText)
+        (Command InitText)
     ]
-        |> taskbarButtonOpen
+        |> taskbarButtonOpen "Transform"
 
 
 
@@ -157,53 +149,48 @@ tools model =
 
 toolsDropped : Model -> Html Msg
 toolsDropped model =
-    [ text "Tools"
-    , seam
-    , div
-        [ class "options tools" ]
-        [ option
-            "Select"
-            (getCmdStr model.quickKeys SetToolToSelect)
-            (Command SetToolToSelect)
-        , option
-            "Zoom In"
-            (getCmdStr model.quickKeys ZoomIn)
-            (SetTool Tool.ZoomIn)
-        , option
-            "Zoom Out"
-            (getCmdStr model.quickKeys ZoomOut)
-            (SetTool Tool.ZoomOut)
-        , option
-            "Hand"
-            (getCmdStr model.quickKeys SetToolToHand)
-            (Command SetToolToHand)
-        , option
-            "Sample"
-            (getCmdStr model.quickKeys SetToolToSample)
-            (Command SetToolToSample)
-        , option
-            "Fill"
-            (getCmdStr model.quickKeys SetToolToFill)
-            (Command SetToolToFill)
-        , option
-            "Pencil"
-            (getCmdStr model.quickKeys SetToolToPencil)
-            (Command SetToolToPencil)
-        , option
-            "Line"
-            (getCmdStr model.quickKeys SetToolToLine)
-            (Command SetToolToLine)
-        , option
-            "Rectangle"
-            (getCmdStr model.quickKeys SetToolToRectangle)
-            (Command SetToolToRectangle)
-        , option
-            "Rectangle Filled"
-            (getCmdStr model.quickKeys SetToolToRectangleFilled)
-            (Command SetToolToRectangleFilled)
-        ]
+    [ option
+        "Select"
+        (getCmdStr model.quickKeys SetToolToSelect)
+        (Command SetToolToSelect)
+    , option
+        "Zoom In"
+        (getCmdStr model.quickKeys ZoomIn)
+        (SetTool Tool.ZoomIn)
+    , option
+        "Zoom Out"
+        (getCmdStr model.quickKeys ZoomOut)
+        (SetTool Tool.ZoomOut)
+    , option
+        "Hand"
+        (getCmdStr model.quickKeys SetToolToHand)
+        (Command SetToolToHand)
+    , option
+        "Sample"
+        (getCmdStr model.quickKeys SetToolToSample)
+        (Command SetToolToSample)
+    , option
+        "Fill"
+        (getCmdStr model.quickKeys SetToolToFill)
+        (Command SetToolToFill)
+    , option
+        "Pencil"
+        (getCmdStr model.quickKeys SetToolToPencil)
+        (Command SetToolToPencil)
+    , option
+        "Line"
+        (getCmdStr model.quickKeys SetToolToLine)
+        (Command SetToolToLine)
+    , option
+        "Rectangle"
+        (getCmdStr model.quickKeys SetToolToRectangle)
+        (Command SetToolToRectangle)
+    , option
+        "Rectangle Filled"
+        (getCmdStr model.quickKeys SetToolToRectangleFilled)
+        (Command SetToolToRectangleFilled)
     ]
-        |> taskbarButtonOpen
+        |> taskbarButtonOpen "Tools"
 
 
 
@@ -222,44 +209,39 @@ edit model =
 
 editDropped : Model -> Html Msg
 editDropped model =
-    [ text "Edit"
-    , seam
-    , div
-        [ class "options edit" ]
-        [ option
-            "Undo"
-            (getCmdStr model.quickKeys Undo)
-            (Command Undo)
-        , option
-            "Redo"
-            (getCmdStr model.quickKeys Redo)
-            (Command Redo)
-        , divider
-        , option
-            "Cut"
-            (getCmdStr model.quickKeys Cut)
-            (Command Cut)
-        , option
-            "Copy"
-            (getCmdStr model.quickKeys Copy)
-            (Command Copy)
-        , option
-            "Paste"
-            (getCmdStr model.quickKeys Paste)
-            (Command Paste)
-        , divider
-        , option
-            "Select all"
-            (getCmdStr model.quickKeys SelectAll)
-            (Command SelectAll)
-        , divider
-        , option
-            "Preferences"
-            ""
-            (OpenNewWindow Preferences)
-        ]
+    [ option
+        "Undo"
+        (getCmdStr model.quickKeys Undo)
+        (Command Undo)
+    , option
+        "Redo"
+        (getCmdStr model.quickKeys Redo)
+        (Command Redo)
+    , divider
+    , option
+        "Cut"
+        (getCmdStr model.quickKeys Cut)
+        (Command Cut)
+    , option
+        "Copy"
+        (getCmdStr model.quickKeys Copy)
+        (Command Copy)
+    , option
+        "Paste"
+        (getCmdStr model.quickKeys Paste)
+        (Command Paste)
+    , divider
+    , option
+        "Select all"
+        (getCmdStr model.quickKeys SelectAll)
+        (Command SelectAll)
+    , divider
+    , option
+        "Preferences"
+        ""
+        (OpenNewWindow Preferences)
     ]
-        |> taskbarButtonOpen
+        |> taskbarButtonOpen "Edit"
 
 
 
@@ -278,25 +260,20 @@ file model =
 
 fileDropped : Model -> Html Msg
 fileDropped model =
-    [ text "File"
-    , seam
-    , div
-        [ class "options file" ]
-        [ option
-            "Download"
-            (getCmdStr model.quickKeys InitDownload)
-            (Command InitDownload)
-        , option
-            "Import"
-            (getCmdStr model.quickKeys InitImport)
-            (Command InitImport)
-        , divider
-        , option "Imgur" "" NoOp
-        , option "Twitter" "" NoOp
-        , option "Facebook" "" NoOp
-        ]
+    [ option
+        "Download"
+        (getCmdStr model.quickKeys InitDownload)
+        (Command InitDownload)
+    , option
+        "Import"
+        (getCmdStr model.quickKeys InitImport)
+        (Command InitImport)
+    , divider
+    , option "Imgur" "" NoOp
+    , option "Twitter" "" NoOp
+    , option "Facebook" "" NoOp
     ]
-        |> taskbarButtonOpen
+        |> taskbarButtonOpen "File"
 
 
 
@@ -323,11 +300,19 @@ taskbarButtonClose option =
         [ text (toString option) ]
 
 
-taskbarButtonOpen : List (Html Msg) -> Html Msg
-taskbarButtonOpen =
+taskbarButtonOpen : String -> List (Html Msg) -> Html Msg
+taskbarButtonOpen labelStr children =
     a
         [ class "task-bar-button current"
         , onClick (DropDown Nothing)
+        ]
+        [ text labelStr
+        , seam
+        , div
+            [ class
+                ("options " ++ String.toLower labelStr)
+            ]
+            children
         ]
 
 

@@ -65,7 +65,19 @@ init json =
     , tool = Tool.init
     , zoom = 1
     , galleryView = False
-    , colorPicker = ColorPicker.init initPalette
+    , colorPicker =
+        case Array.get 0 initPalette of
+            Just color ->
+                ColorPicker.init
+                    False
+                    0
+                    color
+
+            Nothing ->
+                ColorPicker.init
+                    False
+                    0
+                    Color.black
     , history = [ CanvasChange canvas ]
     , future = []
     , mousePosition = Nothing
@@ -135,7 +147,7 @@ type Msg
     | HoverOnto TaskbarDropDown
     | Command Command
     | PaletteSquareClick Color
-    | SetColorPicker Color Int
+    | OpenColorPicker Color Int
     | OpenNewWindow NewWindow
     | AddPaletteSquare
     | NoOp
@@ -210,8 +222,7 @@ type Command
     | InitReplaceColor
     | ToggleColorPicker
     | SwitchGalleryView
-    | HideMinimap
-    | ShowMinimap
+    | ToggleMinimap
     | Delete
     | NoCommand
 
@@ -326,7 +337,7 @@ defaultConfigBase =
     , ( Down, CharA, CmdIsDown, ShiftIsUp ) := SelectAll
     , ( Down, Equals, CmdIsUp, ShiftIsUp ) := ZoomIn
     , ( Down, Minus, CmdIsUp, ShiftIsUp ) := ZoomOut
-    , ( Down, BackQuote, CmdIsUp, ShiftIsUp ) := ShowMinimap
+    , ( Down, BackQuote, CmdIsUp, ShiftIsUp ) := ToggleMinimap
     , ( Down, CharD, CmdIsUp, ShiftIsDown ) := InitDownload
     , ( Down, CharI, CmdIsDown, ShiftIsUp ) := InitImport
     , ( Down, CharD, CmdIsDown, ShiftIsDown ) := InitScale
@@ -334,6 +345,7 @@ defaultConfigBase =
     , ( Down, CharR, CmdIsUp, ShiftIsUp ) := InitReplaceColor
     , ( Down, Tab, CmdIsUp, ShiftIsUp ) := SwitchGalleryView
     , ( Down, BackSpace, CmdIsUp, ShiftIsUp ) := Delete
+    , ( Down, CharE, CmdIsUp, ShiftIsUp ) := ToggleColorPicker
     ]
 
 

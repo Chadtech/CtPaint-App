@@ -151,18 +151,10 @@ update message model =
             }
                 & Cmd.none
 
-        SetColorPicker color index ->
-            let
-                { colorPicker } =
-                    model
-            in
+        OpenColorPicker color index ->
             { model
                 | colorPicker =
-                    { colorPicker
-                        | color = color
-                        , index = index
-                        , show = True
-                    }
+                    ColorPicker.init True index color
             }
                 & Cmd.none
 
