@@ -77,6 +77,92 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     return model;
   }
 
+  function groupBy(input, spacing) {
+    var output = [];
+
+    for (var i = 0; i < input.length; i += spacing) {
+      output[output.length] = input.slice(i, i + spacing);
+    }
+
+    return output;
+  }
+
+  function flatten(input) {
+    return [].concat.apply([], input);
+  }
+
+  function flipHorizontal(model) {
+    model = cloneModel(model);
+
+    var ctx = model.canvas().getContext("2d");
+
+    var imageData = ctx.getImageData(0, 0, model.width, model.height);
+    var width = imageData.width;
+    var height = imageData.height;
+
+    var i = 0;
+    var data = [];
+    while (i < imageData.data.length) {
+      data.push(imageData.data[i]);
+      i++;
+    }
+
+    var rows = groupBy(groupBy(data, 4), width);
+
+    i = 0;
+    while (i < rows.length) {
+      rows[ i ] = rows[ i ].reverse();
+      i++;
+    }
+
+    var data = flatten(flatten(rows));
+
+    var newImageData = ctx.createImageData(model.width, model.height);
+
+    i = 0;
+    while (i < data.length) {
+      newImageData.data[ i ] = data[ i ];
+      i++;
+    }
+
+    ctx.putImageData(newImageData,0,0);
+
+    return model;
+  }
+
+  function flipVertical(model) {
+    model = cloneModel(model);
+
+    var ctx = model.canvas().getContext("2d");
+
+    var imageData = ctx.getImageData(0, 0, model.width, model.height);
+    var width = imageData.width;
+    var height = imageData.height;
+
+    var i = 0;
+    var data = [];
+    while (i < imageData.data.length) {
+      data.push(imageData.data[i]);
+      i++;
+    }
+
+    var rows = groupBy(groupBy(data, 4), width);
+    rows.reverse();
+    var data = flatten(flatten(rows));
+
+    var newImageData = ctx.createImageData(model.width, model.height);
+
+    i = 0;
+    while (i < data.length) {
+      newImageData.data[ i ] = data[ i ];
+      i++;
+    }
+
+    ctx.putImageData(newImageData,0,0);
+
+    return model;
+  }
+
   function handleDrawOp (ctx, drawOp) {
     var point, point1, size, color;
 
@@ -234,6 +320,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
 
     case "Rotate" :
 
+      console.log(drawOp._0);
       ctx.rotate(drawOp._0);
       break;
 
@@ -484,7 +571,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
       pixelsToCheck.shift();
     }
 
-    var newImageData= ctx.createImageData(canvas.width, canvas.height);
+    var newImageData = ctx.createImageData(canvas.width, canvas.height);
 
     index = 0;
     while (index < data.length) {
@@ -633,6 +720,8 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     clone: cloneModel,
     draw: F2(draw),
     scale: F3(scale),
+    flipHorizontal: flipHorizontal,
+    flipVertical: flipVertical,
     toDataURL: F3(toDataURL) // eslint-disable-line no-undef
   };
 }();

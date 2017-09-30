@@ -155,6 +155,8 @@ type Msg
 
 type NewWindow
     = Preferences
+    | Tutorial
+    | Donate
 
 
 type alias KeyPayload =
@@ -224,6 +226,11 @@ type Command
     | SwitchGalleryView
     | ToggleMinimap
     | Delete
+    | FlipHorizontal
+    | FlipVertical
+    | Rotate90
+    | Rotate180
+    | Rotate270
     | NoCommand
 
 
@@ -244,6 +251,12 @@ toUrl : NewWindow -> String
 toUrl window =
     case window of
         Preferences ->
+            "https://www.twitter.com"
+
+        Tutorial ->
+            "https://www.twitter.com"
+
+        Donate ->
             "https://www.twitter.com"
 
 
@@ -346,6 +359,11 @@ defaultConfigBase =
     , ( Down, Tab, CmdIsUp, ShiftIsUp ) := SwitchGalleryView
     , ( Down, BackSpace, CmdIsUp, ShiftIsUp ) := Delete
     , ( Down, CharE, CmdIsUp, ShiftIsUp ) := ToggleColorPicker
+    , ( Down, CharH, CmdIsUp, ShiftIsDown ) := FlipHorizontal
+    , ( Down, CharV, CmdIsUp, ShiftIsDown ) := FlipVertical
+    , ( Down, CharR, CmdIsUp, ShiftIsDown ) := Rotate90
+    , ( Down, CharF, CmdIsUp, ShiftIsDown ) := Rotate180
+    , ( Down, CharV, CmdIsUp, ShiftIsDown ) := Rotate270
     ]
 
 

@@ -49,8 +49,8 @@ help maybeHelp =
     case maybeHelp of
         Just Help ->
             [ option "About" "" (Command InitAbout)
-            , option "Tutorial" "" NoOp
-            , option "Donate" "" NoOp
+            , option "Tutorial" "" (OpenNewWindow Tutorial)
+            , option "Donate" "" (OpenNewWindow Donate)
             ]
                 |> taskbarButtonOpen "Help"
 
@@ -111,12 +111,27 @@ transform model =
 
 transformOpen : Model -> Html Msg
 transformOpen model =
-    [ option "Flip Horiztonal" "Shift + H" NoOp
-    , option "Flip Vertical" "Shift + V" NoOp
+    [ option
+        "Flip Horiztonal"
+        (getCmdStr model.quickKeys FlipHorizontal)
+        (Command FlipHorizontal)
+    , option
+        "Flip Vertical"
+        (getCmdStr model.quickKeys FlipVertical)
+        (Command FlipVertical)
     , divider
-    , option "Rotate 90" "Shift + R" NoOp
-    , option "Rotate 180" "Shift + E" NoOp
-    , option "Rotate 270" "Shift + D" NoOp
+    , option
+        "Rotate 90"
+        (getCmdStr model.quickKeys Rotate90)
+        (Command Rotate90)
+    , option
+        "Rotate 180"
+        (getCmdStr model.quickKeys Rotate180)
+        (Command Rotate180)
+    , option
+        "Rotate 270"
+        (getCmdStr model.quickKeys Rotate270)
+        (Command Rotate270)
     , divider
     , option
         "Scale"
