@@ -111,7 +111,9 @@ generalPalette model =
 addColor : Html Msg
 addColor =
     div
-        [ class "square plus" ]
+        [ class "square plus"
+        , onClick AddPaletteSquare
+        ]
         [ text "+" ]
 
 
@@ -173,17 +175,7 @@ swatch color quadrant =
 edge : Html Msg
 edge =
     div
-        [ class "edge"
-
-        --, Util.toPosition
-        --    >> Down
-        --    >> ResizeToolbar
-        --    |> Events.onMouseDown
-        --, Util.toPosition
-        --    >> Up
-        --    >> ResizeToolbar
-        --    |> Events.onMouseUp
-        ]
+        [ class "edge" ]
         []
 
 

@@ -169,6 +169,15 @@ update message model =
         OpenNewWindow window ->
             model & Ports.openNewPage (toUrl window)
 
+        AddPaletteSquare ->
+            { model
+                | palette =
+                    Array.push
+                        model.swatches.second
+                        model.palette
+            }
+                & Cmd.none
+
         NoOp ->
             model & Cmd.none
 

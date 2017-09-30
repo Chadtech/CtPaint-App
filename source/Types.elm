@@ -137,6 +137,7 @@ type Msg
     | PaletteSquareClick Color
     | SetColorPicker Color Int
     | OpenNewWindow NewWindow
+    | AddPaletteSquare
     | NoOp
 
 
@@ -177,9 +178,14 @@ type HistoryOp
 
 
 type Command
-    = SwatchesOneTurn
-    | SwatchesThreeTurns
-    | SwatchesTwoTurns
+    = SwatchesTurnLeft
+    | SwatchesTurnRight
+    | SwatchesQuickTurnLeft
+    | RevertQuickTurnLeft
+    | SwatchesQuickTurnRight
+    | RevertQuickTurnRight
+    | SwatchesQuickTurnDown
+    | RevertQuickTurnDown
     | SetToolToPencil
     | SetToolToHand
     | SetToolToSelect
@@ -206,6 +212,7 @@ type Command
     | SwitchGalleryView
     | HideMinimap
     | ShowMinimap
+    | Delete
     | NoCommand
 
 
@@ -295,14 +302,14 @@ type alias QuickKey =
 
 defaultConfigBase : List ( QuickKey, Command )
 defaultConfigBase =
-    [ ( Down, Number2, CmdIsUp, ShiftIsUp ) := SwatchesOneTurn
-    , ( Down, Number3, CmdIsUp, ShiftIsUp ) := SwatchesTwoTurns
-    , ( Down, Number4, CmdIsUp, ShiftIsUp ) := SwatchesThreeTurns
-    , ( Up, Number1, CmdIsUp, ShiftIsUp ) := SwatchesOneTurn
-    , ( Down, Number2, CmdIsUp, ShiftIsUp ) := SwatchesThreeTurns
-    , ( Down, Number3, CmdIsUp, ShiftIsUp ) := SwatchesTwoTurns
-    , ( Down, Number4, CmdIsUp, ShiftIsUp ) := SwatchesThreeTurns
-    , ( Up, Number5, CmdIsUp, ShiftIsUp ) := SwatchesOneTurn
+    [ ( Down, Number2, CmdIsUp, ShiftIsUp ) := SwatchesQuickTurnLeft
+    , ( Down, Number3, CmdIsUp, ShiftIsUp ) := SwatchesQuickTurnDown
+    , ( Down, Number4, CmdIsUp, ShiftIsUp ) := SwatchesQuickTurnRight
+    , ( Down, Number1, CmdIsUp, ShiftIsUp ) := SwatchesTurnLeft
+    , ( Up, Number2, CmdIsUp, ShiftIsUp ) := RevertQuickTurnLeft
+    , ( Up, Number3, CmdIsUp, ShiftIsUp ) := RevertQuickTurnDown
+    , ( Up, Number4, CmdIsUp, ShiftIsUp ) := RevertQuickTurnRight
+    , ( Down, Number5, CmdIsUp, ShiftIsUp ) := SwatchesTurnRight
     , ( Down, CharP, CmdIsUp, ShiftIsUp ) := SetToolToPencil
     , ( Down, CharH, CmdIsUp, ShiftIsUp ) := SetToolToHand
     , ( Down, CharS, CmdIsUp, ShiftIsUp ) := SetToolToSelect
@@ -326,6 +333,7 @@ defaultConfigBase =
     , ( Down, CharT, CmdIsUp, ShiftIsUp ) := InitText
     , ( Down, CharR, CmdIsUp, ShiftIsUp ) := InitReplaceColor
     , ( Down, Tab, CmdIsUp, ShiftIsUp ) := SwitchGalleryView
+    , ( Down, BackSpace, CmdIsUp, ShiftIsUp ) := Delete
     ]
 
 
@@ -487,7 +495,7 @@ keyPayloadDecoder =
         |> required "meta" Decode.bool
         |> required "ctrl" Decode.bool
         |> required "shift" Decode.bool
-        |> required "direction" (Decode.succeed Down)
+        |> required "direction" directionDecoder
 
 
 directionDecoder : Decoder Direction

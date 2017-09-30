@@ -53,50 +53,66 @@ update cmd model =
         SetToolToRectangleFilled ->
             { model | tool = RectangleFilled Nothing } & Cmd.none
 
-        SwatchesOneTurn ->
-            if not model.swatches.keyIsDown then
-                { model
-                    | swatches =
-                        { primary = model.swatches.first
-                        , first = model.swatches.second
-                        , second = model.swatches.third
-                        , third = model.swatches.primary
-                        , keyIsDown = True
-                        }
-                }
-                    & Cmd.none
-            else
-                model & Cmd.none
+        SwatchesTurnLeft ->
+            swatchesTurnLeft model & Cmd.none
 
-        SwatchesTwoTurns ->
-            if not model.swatches.keyIsDown then
-                { model
-                    | swatches =
-                        { primary = model.swatches.second
-                        , first = model.swatches.third
-                        , second = model.swatches.primary
-                        , third = model.swatches.first
-                        , keyIsDown = True
-                        }
-                }
-                    & Cmd.none
-            else
-                model & Cmd.none
+        SwatchesTurnRight ->
+            swatchesTurnRight model & Cmd.none
 
-        SwatchesThreeTurns ->
-            if not model.swatches.keyIsDown then
-                { model
-                    | swatches =
-                        { primary = model.swatches.third
-                        , first = model.swatches.primary
-                        , second = model.swatches.first
-                        , third = model.swatches.second
-                        , keyIsDown = True
-                        }
-                }
-                    & Cmd.none
-            else
+        SwatchesQuickTurnLeft ->
+            if model.swatches.keyIsDown then
                 model & Cmd.none
+            else
+                let
+                    newModel =
+                        model
+                            |> swatchesTurnLeft
+                            |> setKeyAsDown
+                in
+                newModel & Cmd.none
+
+        RevertQuickTurnLeft ->
+            swatchesTurnRight (setKeyAsUp model)
+                & Cmd.none
+
+        SwatchesQuickTurnRight ->
+            if model.swatches.keyIsDown then
+                model & Cmd.none
+            else
+                let
+                    newModel =
+                        model
+                            |> swatchesTurnRight
+                            |> setKeyAsDown
+                in
+                newModel & Cmd.none
+
+        RevertQuickTurnRight ->
+            swatchesTurnLeft (setKeyAsUp model)
+                & Cmd.none
+
+        SwatchesQuickTurnDown ->
+            if model.swatches.keyIsDown then
+                model & Cmd.none
+            else
+                let
+                    newModel =
+                        model
+                            |> swatchesTurnLeft
+                            |> swatchesTurnLeft
+                            |> setKeyAsDown
+                in
+                newModel & Cmd.none
+
+        RevertQuickTurnDown ->
+            let
+                newModel =
+                    model
+                        |> swatchesTurnLeft
+                        |> swatchesTurnLeft
+                        |> setKeyAsUp
+            in
+            newModel & Cmd.none
 
         Undo ->
             History.undo model & Cmd.none
@@ -251,6 +267,59 @@ update cmd model =
                     }
             }
                 & Cmd.none
+
+        Delete ->
+            case model.selection of
+                Just _ ->
+                    { model
+                        | selection = Nothing
+                    }
+                        & Cmd.none
+
+                Nothing ->
+                    model & Cmd.none
+
+
+swatchesTurnLeft : Model -> Model
+swatchesTurnLeft ({ swatches } as model) =
+    { model
+        | swatches =
+            { swatches
+                | primary = model.swatches.first
+                , first = model.swatches.second
+                , second = model.swatches.third
+                , third = model.swatches.primary
+            }
+    }
+
+
+swatchesTurnRight : Model -> Model
+swatchesTurnRight ({ swatches } as model) =
+    { model
+        | swatches =
+            { swatches
+                | primary = model.swatches.third
+                , first = model.swatches.primary
+                , second = model.swatches.first
+                , third = model.swatches.second
+            }
+    }
+
+
+setKeyAsUp : Model -> Model
+setKeyAsUp ({ swatches } as model) =
+    { model
+        | swatches =
+            { swatches | keyIsDown = False }
+    }
+
+
+setKeyAsDown : Model -> Model
+setKeyAsDown ({ swatches } as model) =
+    { model
+        | swatches =
+            { swatches | keyIsDown = True }
+    }
 
 
 fromKeyPayload : KeyPayload -> Model -> Command
