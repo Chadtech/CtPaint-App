@@ -7,6 +7,7 @@ import Download
 import Html exposing (Attribute, Html, a, div, p, text)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
+import Imgur
 import Import
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
@@ -34,6 +35,7 @@ type Menu
     | Text String
     | About
     | ReplaceColor ReplaceColor.Model
+    | Imgur Imgur.Model
 
 
 type ClickState
@@ -55,6 +57,7 @@ type ContentMsg
     | ScaleMsg Scale.Msg
     | TextMsg Text.Msg
     | ReplaceColorMsg ReplaceColor.Msg
+    | ImgurMsg Imgur.Msg
 
 
 type ExternalMsg
@@ -262,6 +265,10 @@ contentView menu =
             List.map (Html.map ReplaceColorMsg) <|
                 ReplaceColor.view subModel
 
+        Imgur subModel ->
+            List.map (Html.map ImgurMsg) <|
+                Imgur.view subModel
+
 
 header : String -> Html Msg
 header title =
@@ -398,6 +405,26 @@ initReplaceColor windowSize target replacement =
     , content =
         ReplaceColor.init target replacement
             |> ReplaceColor
+    }
+
+
+initImgur : Size -> Model
+initImgur windowSize =
+    let
+        size =
+            { width = 400
+            , height = 400
+            }
+    in
+    { position =
+        { x = (windowSize.width - size.width) // 2
+        , y = (windowSize.height - size.height) // 2
+        }
+    , size = size
+    , click = NoClick
+    , title = "imgur"
+    , content =
+        Imgur Imgur.init
     }
 
 

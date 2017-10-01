@@ -137,8 +137,14 @@ transformOpen model =
         "Scale"
         (getCmdStr model.quickKeys InitScale)
         (Command InitScale)
-    , option "Replace Color" "Cmd + R" NoOp
-    , option "Invert" "Cmd + I" NoOp
+    , option
+        "Replace Color"
+        (getCmdStr model.quickKeys InitReplaceColor)
+        (Command InitReplaceColor)
+    , option
+        "Invert"
+        (getCmdStr model.quickKeys InvertColors)
+        (Command InvertColors)
     , divider
     , option
         "Text"
@@ -284,9 +290,7 @@ fileDropped model =
         (getCmdStr model.quickKeys InitImport)
         (Command InitImport)
     , divider
-    , option "Imgur" "" NoOp
-    , option "Twitter" "" NoOp
-    , option "Facebook" "" NoOp
+    , option "Imgur" "" InitImgur
     ]
         |> taskbarButtonOpen "File"
 

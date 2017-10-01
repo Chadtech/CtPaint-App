@@ -300,6 +300,9 @@ update cmd model =
         Rotate270 ->
             flip Draw.rotate270 model
 
+        InvertColors ->
+            flip Canvas.invert model
+
 
 flip : (Canvas -> Canvas) -> Model -> ( Model, Cmd Msg )
 flip transform model =

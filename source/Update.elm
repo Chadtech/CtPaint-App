@@ -170,8 +170,13 @@ update message model =
             }
                 & Cmd.none
 
-        NoOp ->
-            model & Cmd.none
+        InitImgur ->
+            { model
+                | menu =
+                    Menu.initImgur model.windowSize
+                        |> Just
+            }
+                & Cmd.none
 
 
 incorporateMinimap :

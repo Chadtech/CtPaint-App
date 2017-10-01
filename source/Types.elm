@@ -150,7 +150,7 @@ type Msg
     | OpenColorPicker Color Int
     | OpenNewWindow NewWindow
     | AddPaletteSquare
-    | NoOp
+    | InitImgur
 
 
 type NewWindow
@@ -231,6 +231,7 @@ type Command
     | Rotate90
     | Rotate180
     | Rotate270
+    | InvertColors
     | NoCommand
 
 
@@ -364,6 +365,7 @@ defaultConfigBase =
     , ( Down, CharR, CmdIsUp, ShiftIsDown ) := Rotate90
     , ( Down, CharF, CmdIsUp, ShiftIsDown ) := Rotate180
     , ( Down, CharE, CmdIsUp, ShiftIsDown ) := Rotate270
+    , ( Down, CharI, CmdIsDown, ShiftIsUp ) := InvertColors
     ]
 
 
