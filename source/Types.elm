@@ -363,7 +363,7 @@ defaultConfigBase =
     , ( Down, CharV, CmdIsUp, ShiftIsDown ) := FlipVertical
     , ( Down, CharR, CmdIsUp, ShiftIsDown ) := Rotate90
     , ( Down, CharF, CmdIsUp, ShiftIsDown ) := Rotate180
-    , ( Down, CharV, CmdIsUp, ShiftIsDown ) := Rotate270
+    , ( Down, CharE, CmdIsUp, ShiftIsDown ) := Rotate270
     ]
 
 

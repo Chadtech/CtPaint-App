@@ -16,6 +16,130 @@ import RasterShapes as Shapes
 import Util exposing (positionMin, toPoint, toSize)
 
 
+-- ROTATE AND FLIP --
+
+
+flipVertical : Canvas -> Canvas
+flipVertical canvas =
+    let
+        { width, height } =
+            Canvas.getSize canvas
+
+        newCanvas =
+            Canvas.initialize
+                { width = width
+                , height = height
+                }
+
+        drawOp =
+            Canvas.batch
+                [ Scale 1 -1
+                , DrawImage
+                    canvas
+                    (At (Point 0 (toFloat -height)))
+                ]
+    in
+    Canvas.draw drawOp newCanvas
+
+
+flipHorizontal : Canvas -> Canvas
+flipHorizontal canvas =
+    let
+        { width, height } =
+            Canvas.getSize canvas
+
+        newCanvas =
+            Canvas.initialize
+                { width = width
+                , height = height
+                }
+
+        drawOp =
+            Canvas.batch
+                [ Scale -1 1
+                , DrawImage
+                    canvas
+                    (At (Point (toFloat -width) 0))
+                ]
+    in
+    Canvas.draw drawOp newCanvas
+
+
+rotate270 : Canvas -> Canvas
+rotate270 canvas =
+    let
+        { width, height } =
+            Canvas.getSize canvas
+
+        newCanvas =
+            Canvas.initialize
+                { width = height
+                , height = width
+                }
+
+        drawOp =
+            Canvas.batch
+                [ Rotate ((3 * pi) / 2)
+                , DrawImage
+                    canvas
+                    (At (Point (toFloat -width) 0))
+                ]
+    in
+    Canvas.draw drawOp newCanvas
+
+
+rotate90 : Canvas -> Canvas
+rotate90 canvas =
+    let
+        { width, height } =
+            Canvas.getSize canvas
+
+        newCanvas =
+            Canvas.initialize
+                { width = height
+                , height = width
+                }
+
+        drawOp =
+            Canvas.batch
+                [ Rotate (pi / 2)
+                , DrawImage
+                    canvas
+                    (At (Point 0 (toFloat -height)))
+                ]
+    in
+    Canvas.draw drawOp newCanvas
+
+
+rotate180 : Canvas -> Canvas
+rotate180 canvas =
+    let
+        { width, height } =
+            Canvas.getSize canvas
+
+        newCanvas =
+            Canvas.initialize
+                { width = width
+                , height = height
+                }
+
+        drawOp =
+            let
+                at =
+                    Point
+                        (toFloat -width)
+                        (toFloat -height)
+                        |> At
+            in
+            Canvas.batch
+                [ Scale -1 -1
+                , DrawImage canvas at
+                ]
+    in
+    Canvas.draw drawOp newCanvas
+
+
+
 -- LINE --
 
 

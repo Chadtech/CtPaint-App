@@ -1,8 +1,7 @@
 module Command exposing (..)
 
-import Canvas exposing (DrawOp(Rotate))
+import Canvas exposing (Canvas, DrawOp(Rotate))
 import Clipboard
-import Debug
 import Dict exposing (Dict)
 import Draw
 import History
@@ -26,7 +25,7 @@ import Util exposing ((&))
 
 update : Command -> Model -> ( Model, Cmd Msg )
 update cmd model =
-    case Debug.log "CMD" cmd of
+    case cmd of
         NoCommand ->
             model & Cmd.none
 
@@ -287,72 +286,39 @@ update cmd model =
                     model & Cmd.none
 
         FlipHorizontal ->
-            case model.selection of
-                Just ( position, selection ) ->
-                    { model
-                        | selection =
-                            ( position
-                            , Canvas.flipHorizontal
-                                selection
-                            )
-                                |> Just
-                    }
-                        & Cmd.none
-
-                Nothing ->
-                    { model
-                        | canvas =
-                            Canvas.flipHorizontal
-                                model.canvas
-                    }
-                        & Cmd.none
+            flip Draw.flipHorizontal model
 
         FlipVertical ->
-            case model.selection of
-                Just ( position, selection ) ->
-                    { model
-                        | selection =
-                            ( position
-                            , Canvas.flipVertical
-                                selection
-                            )
-                                |> Just
-                    }
-                        & Cmd.none
-
-                Nothing ->
-                    { model
-                        | canvas =
-                            Canvas.flipVertical
-                                model.canvas
-                    }
-                        & Cmd.none
+            flip Draw.flipVertical model
 
         Rotate90 ->
-            case model.selection of
-                Just ( position, selection ) ->
-                    { model
-                        | selection =
-                            ( position
-                            , Canvas.draw
-                                (Rotate (pi / 2))
-                                selection
-                            )
-                                |> Just
-                    }
-                        & Cmd.none
+            flip Draw.rotate90 model
 
-                Nothing ->
-                    { model
-                        | canvas =
-                            Canvas.draw
-                                (Rotate (pi / 2))
-                                model.canvas
-                    }
-                        & Cmd.none
+        Rotate180 ->
+            flip Draw.rotate180 model
 
-        _ ->
-            model & Cmd.none
+        Rotate270 ->
+            flip Draw.rotate270 model
+
+
+flip : (Canvas -> Canvas) -> Model -> ( Model, Cmd Msg )
+flip transform model =
+    case model.selection of
+        Just ( position, selection ) ->
+            { model
+                | selection =
+                    ( position
+                    , transform selection
+                    )
+                        |> Just
+            }
+                & Cmd.none
+
+        Nothing ->
+            { model
+                | canvas = transform model.canvas
+            }
+                & Cmd.none
 
 
 swatchesTurnLeft : Model -> Model

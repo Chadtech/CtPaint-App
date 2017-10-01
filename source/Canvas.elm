@@ -8,8 +8,6 @@ module Canvas
         , Size
         , batch
         , draw
-        , flipHorizontal
-        , flipVertical
         , getImageData
         , getSize
         , initialize
@@ -179,16 +177,6 @@ draw =
 scale : Int -> Int -> Canvas -> Canvas
 scale =
     Native.Canvas.scale
-
-
-flipHorizontal : Canvas -> Canvas
-flipHorizontal =
-    Native.Canvas.flipHorizontal
-
-
-flipVertical : Canvas -> Canvas
-flipVertical =
-    Native.Canvas.flipVertical
 
 
 {-| You dont want to apply `DrawOp` one at a time. Bundle many `DrawOp` together in one batch, using `batch`.

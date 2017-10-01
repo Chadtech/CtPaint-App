@@ -1,6 +1,5 @@
 module ColorPicker exposing (..)
 
-import Array exposing (Array)
 import Color exposing (Color)
 import Html
     exposing
