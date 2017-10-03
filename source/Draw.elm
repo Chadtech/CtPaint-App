@@ -41,6 +41,25 @@ text str color =
 
 
 
+-- INVERT --
+
+
+invert : Canvas -> Canvas
+invert canvas =
+    let
+        drawOp =
+            [ GlobalCompositionOp "difference"
+            , FillStyle Color.white
+            , FillRect
+                { x = 0, y = 0 }
+                (Canvas.getSize canvas)
+            ]
+                |> Canvas.batch
+    in
+    Canvas.draw drawOp canvas
+
+
+
 -- ROTATE AND FLIP --
 
 

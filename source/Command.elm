@@ -301,7 +301,7 @@ update cmd model =
             transform Draw.rotate270 model
 
         InvertColors ->
-            transform Canvas.invert model
+            transform Draw.invert model
 
 
 transform : (Canvas -> Canvas) -> Model -> ( Model, Cmd Msg )

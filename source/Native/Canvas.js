@@ -78,19 +78,6 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     return model;
   }
 
-  function invert(model){
-    model = cloneModel(model);
-
-    var canvas = model.canvas();
-    var ctx = canvas.getContext("2d");
-
-    ctx.globalCompositeOperation='difference';
-    ctx.fillStyle='white';
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-
-    return model;
-  }
-
   function groupBy(input, spacing) {
     var output = [];
 
@@ -662,7 +649,6 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     clone: cloneModel,
     draw: F2(draw),
     scale: F3(scale),
-    invert, invert,
     toDataURL: F3(toDataURL) // eslint-disable-line no-undef
   };
 }();

@@ -11,7 +11,6 @@ module Canvas
         , getImageData
         , getSize
         , initialize
-        , invert
         , loadImage
         , scale
         , setSize
@@ -178,11 +177,6 @@ draw =
 scale : Int -> Int -> Canvas -> Canvas
 scale =
     Native.Canvas.scale
-
-
-invert : Canvas -> Canvas
-invert =
-    Native.Canvas.invert
 
 
 {-| You dont want to apply `DrawOp` one at a time. Bundle many `DrawOp` together in one batch, using `batch`.
