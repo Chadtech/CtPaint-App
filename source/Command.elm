@@ -286,32 +286,32 @@ update cmd model =
                     model & Cmd.none
 
         FlipHorizontal ->
-            flip Draw.flipHorizontal model
+            transform Draw.flipHorizontal model
 
         FlipVertical ->
-            flip Draw.flipVertical model
+            transform Draw.flipVertical model
 
         Rotate90 ->
-            flip Draw.rotate90 model
+            transform Draw.rotate90 model
 
         Rotate180 ->
-            flip Draw.rotate180 model
+            transform Draw.rotate180 model
 
         Rotate270 ->
-            flip Draw.rotate270 model
+            transform Draw.rotate270 model
 
         InvertColors ->
-            flip Canvas.invert model
+            transform Canvas.invert model
 
 
-flip : (Canvas -> Canvas) -> Model -> ( Model, Cmd Msg )
-flip transform model =
+transform : (Canvas -> Canvas) -> Model -> ( Model, Cmd Msg )
+transform transformation model =
     case model.selection of
         Just ( position, selection ) ->
             { model
                 | selection =
                     ( position
-                    , transform selection
+                    , transformation selection
                     )
                         |> Just
             }
@@ -319,7 +319,8 @@ flip transform model =
 
         Nothing ->
             { model
-                | canvas = transform model.canvas
+                | canvas =
+                    transformation model.canvas
             }
                 & Cmd.none
 

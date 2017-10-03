@@ -292,8 +292,8 @@ initText : Size -> Model
 initText windowSize =
     let
         size =
-            { width = 400
-            , height = 400
+            { width = 500
+            , height = 300
             }
     in
     { position =

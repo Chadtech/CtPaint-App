@@ -365,7 +365,7 @@ defaultConfigBase =
     , ( Down, CharR, CmdIsUp, ShiftIsDown ) := Rotate90
     , ( Down, CharF, CmdIsUp, ShiftIsDown ) := Rotate180
     , ( Down, CharE, CmdIsUp, ShiftIsDown ) := Rotate270
-    , ( Down, CharI, CmdIsDown, ShiftIsUp ) := InvertColors
+    , ( Down, CharI, CmdIsUp, ShiftIsDown ) := InvertColors
     ]
 
 

@@ -16,6 +16,31 @@ import RasterShapes as Shapes
 import Util exposing (positionMin, toPoint, toSize)
 
 
+-- TEXT --
+
+
+text : String -> Color -> Canvas
+text str color =
+    let
+        drawOp =
+            Canvas.batch
+                [ Font "41px hfnss"
+                , FillStyle color
+                , TextAlign "center"
+                , TextBaseline "middle"
+                , FillText str { x = 200, y = 200 }
+                ]
+
+        canvas =
+            Canvas.initialize
+                { width = 400
+                , height = 400
+                }
+    in
+    Canvas.draw drawOp canvas
+
+
+
 -- ROTATE AND FLIP --
 
 

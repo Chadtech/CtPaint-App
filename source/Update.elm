@@ -4,6 +4,7 @@ import Array
 import Canvas exposing (DrawOp(Batch))
 import ColorPicker
 import Command
+import Draw
 import History
 import Json.Decode as Decode
 import Menu
@@ -267,7 +268,24 @@ incorporateMenu ( menu, externalMsg ) model =
                         & Ports.returnFocus ()
 
         Menu.AddText str ->
-            model & Cmd.none
+            let
+                text =
+                    Draw.text str model.swatches.primary
+
+                position =
+                    { x = 0
+                    , y = 0
+                    }
+            in
+            { model
+                | menu = Nothing
+                , selection =
+                    ( position
+                    , text
+                    )
+                        |> Just
+            }
+                & Ports.returnFocus ()
 
 
 incorporateColorPicker :

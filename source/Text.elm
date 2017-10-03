@@ -1,6 +1,8 @@
 module Text exposing (..)
 
-import Html exposing (Html, p, text)
+import Html exposing (Html, a, p, text, textarea)
+import Html.Attributes exposing (class, spellcheck)
+import Html.Events exposing (onClick, onInput)
 import Util exposing ((&))
 
 
@@ -34,7 +36,18 @@ update msg model =
 
 view : String -> List (Html Msg)
 view str =
-    [ p [] [ text str ] ]
+    [ textarea
+        [ onInput UpdateField
+        , class "text-menu"
+        , spellcheck False
+        ]
+        [ text str ]
+    , a
+        [ onClick OkayClick
+        , class "submit-button"
+        ]
+        [ text "Add Text" ]
+    ]
 
 
 
