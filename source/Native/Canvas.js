@@ -73,9 +73,51 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
   function scale(dw, hw, model) {
     model = cloneModel(model);
 
-    // -- WIP -- //
+    var i = 0;
+    var data = [];
+    while (i < imageData.data.length) {
+      data.push(imageData.data[i]);
+      i++;
+    }
+
+    var rows = groupBy(groupBy(data, 4), model.width);
+
+    i = 0
+    while (i < rows.length) {
+      rows[i] = scaleBy(dw, rows[i]);
+      i++;
+    }
+
+    data = flatten(flatten(scaleBy(hw, rows)));
+
+    var newImageData = ctx.createImageData(canvas.width, canvas.height);
+
+    i = 0;
+    while (i < data.length) {
+      newImageData.data[ i ] = data[ i ];
+      i++;
+    }
+
+    ctx.putImageData(newImageData,0,0);
 
     return model;
+  }
+
+  function scaleBy(factor, items) {
+    var newItems = [];
+
+    var i = 0;
+    while (i < items.length) {
+      var j = 0;
+      var repeats = Math.floor((j + 1) * factor) - Math.floor(j * factor) 
+      while (j <= repeats) {
+        newItems.push(items[i]);
+        j++;
+      }
+      i++;
+    }
+
+    return newItems;
   }
 
   function groupBy(input, spacing) {
