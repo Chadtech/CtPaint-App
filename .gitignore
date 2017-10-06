@@ -5,3 +5,7 @@ development/style.css
 distribution/
 
 node_modules
+
+
+elm-module-graph.py
+module-graph.json

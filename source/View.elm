@@ -12,7 +12,7 @@ import MouseEvents exposing (onMouseMove)
 import Palette
 import Taskbar
 import Tool exposing (Tool(..))
-import Toolbar.View as Toolbar
+import Toolbar
 import Types exposing (Model, Msg(..))
 import Util exposing ((:=), height, left, top, width)
 

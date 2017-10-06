@@ -34,7 +34,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "gulp",
-    "loc": "cd source && find . -name '*.elm' | xargs wc -l && find . -name '*.styl' | xargs wc -l && cd ../"
+    "loc": "cd source && find . -name '*.elm' | xargs wc -l && find . -name '*.styl' | xargs wc -l && find . -name '*.coffee' | xargs wc -l && cd ../"
   },
   "author": "Chadtech chadtech@programhouse.us",
   "license": "you can use it"

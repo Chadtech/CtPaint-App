@@ -1,4 +1,4 @@
-module Toolbar.View exposing (view)
+module Toolbar exposing (view)
 
 import Html exposing (Html, a, div, text)
 import Html.Attributes exposing (class, classList)
