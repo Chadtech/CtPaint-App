@@ -10,6 +10,7 @@ import Canvas
         , Size
         )
 import Color exposing (Color)
+import Hfnss exposing (Pixel(..))
 import List.Extra exposing (groupsOf)
 import Mouse exposing (Position)
 import RasterShapes as Shapes
@@ -21,26 +22,41 @@ import Util exposing (positionMin, toPoint, toSize)
 
 text : String -> Color -> Canvas
 text str color =
-    let
-        drawOp =
-            Canvas.batch
-                [ Font "41px hfnss"
-                , FillStyle color
-                , TextAlign "center"
-                , TextBaseline "middle"
-                , FillText str { x = 200, y = 200 }
-                ]
+    str
+        |> String.split "\n"
+        |> List.indexedMap (,)
+        |> List.map toPixels
 
-        canvas =
-            Canvas.initialize
-                { width = 400
-                , height = 400
-                }
-    in
-    Canvas.draw drawOp canvas
+
+toPixels : ( Int, String ) -> ( Int, List ( Int, List (List Pixel) ) )
+toPixels ( index, string ) =
+    ( index
+    , string
+        |> String.toList
+        |> List.map Hfnss.get
+        |> List.indexedMap (,)
+    )
 
 
 
+--    let
+--        drawOp =
+--            Canvas.batch
+--                [ Font "41px hfnss"
+--                , FillStyle color
+--                , TextAlign "center"
+--                , TextBaseline "middle"
+--                , FillText str { x = 200, y = 200 }
+--                ]
+--
+--        canvas =
+--            Canvas.initialize
+--                { width = 400
+--                , height = 400
+--                }
+--    in
+--    Canvas.draw drawOp canvas
+--
 -- INVERT --
 
 

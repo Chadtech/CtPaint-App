@@ -6,6 +6,16 @@ type Pixel
     | Black
 
 
+get : Char -> List (List Pixel)
+get char =
+    case char of
+        'A' ->
+            aUpper
+
+        _ ->
+            questionMark
+
+
 aUpper : List (List Pixel)
 aUpper =
     [ [ Black, Black, Black, Gray, Gray, Gray, Gray, Gray, Black, Black, Black ]
