@@ -39,6 +39,11 @@ swap ( a, b ) =
     ( b, a )
 
 
+withIndex : List a -> List ( Int, a )
+withIndex =
+    List.indexedMap (,)
+
+
 maybeCons : Maybe a -> List a -> List a
 maybeCons maybe list =
     case maybe of

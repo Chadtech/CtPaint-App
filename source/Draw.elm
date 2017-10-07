@@ -14,7 +14,13 @@ import Hfnss exposing (Pixel(..))
 import List.Extra exposing (groupsOf)
 import Mouse exposing (Position)
 import RasterShapes as Shapes
-import Util exposing (positionMin, toPoint, toSize)
+import Util
+    exposing
+        ( positionMin
+        , toPoint
+        , toSize
+        , withIndex
+        )
 
 
 -- TEXT --
@@ -22,41 +28,108 @@ import Util exposing (positionMin, toPoint, toSize)
 
 text : String -> Color -> Canvas
 text str color =
-    str
-        |> String.split "\n"
-        |> List.indexedMap (,)
-        |> List.map toPixels
+    let
+        lines =
+            str
+                |> String.split "\n"
+                |> List.map String.toList
+
+        canvas =
+            Canvas.initialize
+    in
+    { width =
+        List.map List.length lines
+            |> List.maximum
+            |> Maybe.withDefault 0
+            |> (*) 11
+    , height =
+        List.length lines * 19
+    }
+        |> Canvas.initialize
+        |> Canvas.draw (textOp lines color)
 
 
-toPixels : ( Int, String ) -> ( Int, List ( Int, List (List Pixel) ) )
-toPixels ( index, string ) =
-    ( index
-    , string
-        |> String.toList
-        |> List.map Hfnss.get
-        |> List.indexedMap (,)
-    )
+textOp : List (List Char) -> Color -> DrawOp
+textOp chars color =
+    chars
+        |> toMatrix
+        |> toCharPoints
+        |> charsToLetters
+        |> List.map (Tuple.mapSecond toLetterPoints)
+        |> mergePoints
+        |> List.map (toDrawOps color)
+        |> Canvas.batch
+
+
+toDrawOps : Color -> ( Point, Pixel ) -> DrawOp
+toDrawOps color ( point, fontPixel ) =
+    case fontPixel of
+        Gray ->
+            pixel color point
+
+        Black ->
+            Canvas.batch []
+
+
+mergePoints : List ( Point, List ( Point, Pixel ) ) -> List ( Point, Pixel )
+mergePoints =
+    List.map (Tuple.mapFirst toLetterSize)
+        >> List.map mergeThisPoint
+        >> List.concat
+
+
+mergeThisPoint : ( Point, List ( Point, Pixel ) ) -> List ( Point, Pixel )
+mergeThisPoint ( point, pixels ) =
+    pixels
+        |> List.map (Tuple.mapFirst (combinePoints point))
+
+
+combinePoints : Point -> Point -> Point
+combinePoints p0 p1 =
+    { x = p0.x + p1.x
+    , y = p0.y + p1.y
+    }
+
+
+toLetterSize : Point -> Point
+toLetterSize { x, y } =
+    { x = x * 11, y = y * 19 }
+
+
+toLetterPoints : List (List Pixel) -> List ( Point, Pixel )
+toLetterPoints =
+    List.map withIndex
+        >> withIndex
+        >> List.map withY
+        >> List.concat
+
+
+charsToLetters : List ( Point, Char ) -> List ( Point, List (List Pixel) )
+charsToLetters =
+    List.map (Tuple.mapSecond Hfnss.get)
+
+
+toMatrix : List (List a) -> List ( Int, List ( Int, a ) )
+toMatrix =
+    List.map withIndex >> withIndex
+
+
+toCharPoints : List ( Int, List ( Int, Char ) ) -> List ( Point, Char )
+toCharPoints =
+    List.map withY >> List.concat
+
+
+withY : ( Int, List ( Int, item ) ) -> List ( Point, item )
+withY ( y, row ) =
+    List.map (withX y) row
+
+
+withX : Int -> ( Int, item ) -> ( Point, item )
+withX y ( x, item ) =
+    ( { x = toFloat x, y = toFloat y }, item )
 
 
 
---    let
---        drawOp =
---            Canvas.batch
---                [ Font "41px hfnss"
---                , FillStyle color
---                , TextAlign "center"
---                , TextBaseline "middle"
---                , FillText str { x = 200, y = 200 }
---                ]
---
---        canvas =
---            Canvas.initialize
---                { width = 400
---                , height = 400
---                }
---    in
---    Canvas.draw drawOp canvas
---
 -- INVERT --
 
 
