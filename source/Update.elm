@@ -24,8 +24,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
         ToolMsg subMsg ->
-            Tool.update subMsg model
-                |> Tuple.mapSecond (Cmd.map ToolMsg)
+            Tool.update subMsg model & Cmd.none
 
         MenuMsg subMsg ->
             case model.menu of

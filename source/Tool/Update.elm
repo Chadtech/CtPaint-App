@@ -14,7 +14,7 @@ import Types exposing (Model)
 import Util exposing ((&))
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> Model
 update msg model =
     case ( msg, model.tool ) of
         ( HandMsg subMsg, Hand subModel ) ->
@@ -25,31 +25,30 @@ update msg model =
             { newModel
                 | tool = Hand newHandModel
             }
-                & Cmd.none
 
         ( SampleAt mouseEvent, Sample ) ->
-            Sample.subMouseUp mouseEvent model & Cmd.none
+            Sample.subMouseUp mouseEvent model
 
         ( FillScreenMouseUp mouseEvent, Fill ) ->
-            Fill.screenMouseUp mouseEvent model ! []
+            Fill.screenMouseUp mouseEvent model
 
         ( PencilMsg subMsg, Pencil subModel ) ->
-            Pencil.update subMsg subModel model ! []
+            Pencil.update subMsg subModel model
 
         ( LineMsg subMsg, Line subModel ) ->
-            Line.update subMsg subModel model ! []
+            Line.update subMsg subModel model
 
         ( ZoomInScreenMouseUp position, ZoomIn ) ->
-            zoomInScreenMouseUp position model & Cmd.none
+            zoomInScreenMouseUp position model
 
         ( ZoomOutScreenMouseUp position, ZoomOut ) ->
-            zoomOutScreenMouseUp position model & Cmd.none
+            zoomOutScreenMouseUp position model
 
         ( RectangleMsg subMsg, Rectangle subModel ) ->
-            Rectangle.update subMsg subModel model ! []
+            Rectangle.update subMsg subModel model
 
         ( RectangleFilledMsg subMsg, RectangleFilled subModel ) ->
-            RectangleFilled.update subMsg subModel model ! []
+            RectangleFilled.update subMsg subModel model
 
         ( SelectMsg subMsg, Select subModel ) ->
             let
@@ -59,7 +58,6 @@ update msg model =
             { newModel
                 | tool = Select newSelectModel
             }
-                & Cmd.none
 
         _ ->
-            model ! []
+            model
