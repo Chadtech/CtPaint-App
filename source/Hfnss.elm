@@ -168,6 +168,132 @@ get char =
         ' ' ->
             space
 
+        '0' ->
+            number0
+
+        '1' ->
+            number1
+
+        '2' ->
+            number2
+
+        '3' ->
+            number3
+
+        '4' ->
+            number4
+
+        '5' ->
+            number5
+
+        '6' ->
+            number6
+
+        '7' ->
+            number7
+
+        '8' ->
+            number8
+
+        '9' ->
+            number9
+
+        '.' ->
+            period
+
+        ',' ->
+            comma
+
+        '"' ->
+            doubleQuote
+
+        '\'' ->
+            singleQuote
+
+        '?' ->
+            questionMark
+
+        '!' ->
+            exclaimationMark
+
+        '@' ->
+            at
+
+        '_' ->
+            underscore
+
+        '*' ->
+            asterisk
+
+        '#' ->
+            hash
+
+        '$' ->
+            dollar
+
+        '%' ->
+            percent
+
+        '&' ->
+            ampersand
+
+        '(' ->
+            openParenthesis
+
+        ')' ->
+            closeParenthesis
+
+        '+' ->
+            plus
+
+        '-' ->
+            minus
+
+        '/' ->
+            forwardSlash
+
+        ':' ->
+            colon
+
+        ';' ->
+            semiColon
+
+        '<' ->
+            leftArrow
+
+        '>' ->
+            rightArrow
+
+        '=' ->
+            equals
+
+        '\\' ->
+            backSlash
+
+        ']' ->
+            closeBracket
+
+        '^' ->
+            caret
+
+        '[' ->
+            openBracket
+
+        '`' ->
+            graveQuote
+
+        '{' ->
+            openCurlyBrace
+
+        '|' ->
+            line
+
+        '}' ->
+            closeCurlyBrace
+
+        '~' ->
+            negation
+
         _ ->
             questionMark
 
