@@ -142,7 +142,7 @@ type Msg
     | MinimapMsg Minimap.Msg
     | ScreenMouseMove MouseEvent
     | ScreenMouseExit
-    | KeyboardEvent Decode.Value
+    | KeyboardEvent (Result String KeyPayload)
     | DropDown (Maybe TaskbarDropDown)
     | HoverOnto TaskbarDropDown
     | Command Command
@@ -518,6 +518,11 @@ fillBlackOp canvas =
 
 
 -- KEYPAYLOAD DECODER
+
+
+decodeKeyPayload : Value -> Result String KeyPayload
+decodeKeyPayload =
+    Decode.decodeValue keyPayloadDecoder
 
 
 keyPayloadDecoder : Decoder KeyPayload

@@ -6,7 +6,6 @@ import ColorPicker
 import Command
 import Draw
 import History
-import Json.Decode as Decode
 import Menu
 import Minimap
 import Ports
@@ -18,7 +17,7 @@ import Types
         , keyPayloadDecoder
         , toUrl
         )
-import Util exposing ((&))
+import Util exposing ((&), origin)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -47,15 +46,13 @@ update message model =
         SetTool tool ->
             { model | tool = tool } & Cmd.none
 
-        KeyboardEvent json ->
-            case Decode.decodeValue keyPayloadDecoder json of
-                Ok payload ->
-                    Command.update
-                        (Command.fromKeyPayload payload model)
-                        model
+        KeyboardEvent (Ok payload) ->
+            Command.update
+                (Command.fromKeyPayload payload model)
+                model
 
-                Err err ->
-                    model & Cmd.none
+        KeyboardEvent (Err err) ->
+            model & Cmd.none
 
         Tick dt ->
             case model.pendingDraw of
@@ -268,20 +265,13 @@ incorporateMenu ( menu, externalMsg ) model =
                         & Ports.returnFocus ()
 
         Menu.AddText str ->
-            let
-                text =
-                    Draw.text str model.swatches.primary
-
-                position =
-                    { x = 0
-                    , y = 0
-                    }
-            in
             { model
                 | menu = Nothing
                 , selection =
-                    ( position
-                    , text
+                    ( origin
+                    , Draw.text
+                        str
+                        model.swatches.primary
                     )
                         |> Just
             }

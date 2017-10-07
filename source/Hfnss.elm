@@ -12,6 +12,162 @@ get char =
         'A' ->
             aUpper
 
+        'B' ->
+            bUpper
+
+        'C' ->
+            cUpper
+
+        'D' ->
+            dUpper
+
+        'E' ->
+            eUpper
+
+        'F' ->
+            fUpper
+
+        'G' ->
+            gUpper
+
+        'H' ->
+            hUpper
+
+        'I' ->
+            iUpper
+
+        'J' ->
+            jUpper
+
+        'K' ->
+            kUpper
+
+        'L' ->
+            lUpper
+
+        'M' ->
+            mUpper
+
+        'N' ->
+            nUpper
+
+        'O' ->
+            oUpper
+
+        'P' ->
+            pUpper
+
+        'Q' ->
+            qUpper
+
+        'R' ->
+            rUpper
+
+        'S' ->
+            sUpper
+
+        'T' ->
+            tUpper
+
+        'U' ->
+            uUpper
+
+        'V' ->
+            vUpper
+
+        'W' ->
+            wUpper
+
+        'X' ->
+            xUpper
+
+        'Y' ->
+            yUpper
+
+        'Z' ->
+            zUpper
+
+        'a' ->
+            aLower
+
+        'b' ->
+            bLower
+
+        'c' ->
+            cLower
+
+        'd' ->
+            dLower
+
+        'e' ->
+            eLower
+
+        'f' ->
+            fLower
+
+        'g' ->
+            gLower
+
+        'h' ->
+            hLower
+
+        'i' ->
+            iLower
+
+        'j' ->
+            jLower
+
+        'k' ->
+            kLower
+
+        'l' ->
+            lLower
+
+        'm' ->
+            mLower
+
+        'n' ->
+            nLower
+
+        'o' ->
+            oLower
+
+        'p' ->
+            pLower
+
+        'q' ->
+            qLower
+
+        'r' ->
+            rLower
+
+        's' ->
+            sLower
+
+        't' ->
+            tLower
+
+        'u' ->
+            uLower
+
+        'v' ->
+            vLower
+
+        'w' ->
+            wLower
+
+        'x' ->
+            xLower
+
+        'y' ->
+            yLower
+
+        'z' ->
+            zLower
+
+        ' ' ->
+            space
+
         _ ->
             questionMark
 

@@ -6,7 +6,13 @@ import Json.Decode exposing (Value)
 import Menu
 import Minimap
 import Tool
-import Types exposing (Direction(..), Model, Msg(..))
+import Types
+    exposing
+        ( Direction(..)
+        , Model
+        , Msg(..)
+        , decodeKeyPayload
+        )
 import Window
 
 
@@ -23,7 +29,7 @@ subscriptions model =
     , Sub.map
         MinimapMsg
         (Minimap.subscriptions model.minimap)
-    , keyEvent KeyboardEvent
+    , keyEvent (KeyboardEvent << decodeKeyPayload)
     , Sub.map ToolMsg (Tool.subscriptions model.tool)
     , menu model.menu
     ]
