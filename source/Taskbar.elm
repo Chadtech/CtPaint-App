@@ -8,6 +8,7 @@ import Tool
 import Types
     exposing
         ( Command(..)
+        , MinimapState(..)
         , Model
         , Msg(..)
         , NewWindow(..)
@@ -88,10 +89,10 @@ view_ model =
 minimapLabel : Model -> String
 minimapLabel model =
     case model.minimap of
-        Just _ ->
+        Minimap _ ->
             "Hide Mini Map"
 
-        Nothing ->
+        _ ->
             "Show Mini Map"
 
 

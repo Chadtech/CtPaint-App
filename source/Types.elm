@@ -91,7 +91,7 @@ init json =
     , keyConfig = defaultConfig
     , quickKeys = defaultQuickKeys isMac
     , taskbarDropped = Nothing
-    , minimap = Nothing
+    , minimap = NoMinimap
     , menu = Nothing
     , seed = Random.initialSeed (decodeSeed json)
     }
@@ -126,10 +126,16 @@ type alias Model =
     , keyConfig : Dict String Command
     , quickKeys : Dict String String
     , taskbarDropped : Maybe TaskbarDropDown
-    , minimap : Maybe Minimap.Model
+    , minimap : MinimapState
     , menu : Maybe Menu.Model
     , seed : Seed
     }
+
+
+type MinimapState
+    = NoMinimap
+    | Minimap Minimap.Model
+    | Closed Position
 
 
 type Msg

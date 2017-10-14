@@ -12,7 +12,8 @@ import Ports
 import Tool.Update as Tool
 import Types
     exposing
-        ( Model
+        ( MinimapState(..)
+        , Model
         , Msg(..)
         , keyPayloadDecoder
         , toUrl
@@ -78,14 +79,14 @@ update message model =
 
         MinimapMsg subMsg ->
             case model.minimap of
-                Just minimap ->
+                Minimap minimap ->
                     let
                         minimapUpdate =
                             Minimap.update subMsg minimap
                     in
                     incorporateMinimap minimapUpdate model
 
-                Nothing ->
+                _ ->
                     model & Cmd.none
 
         ScreenMouseMove { targetPos, clientPos } ->
@@ -184,13 +185,14 @@ incorporateMinimap ( minimap, externalMsg ) model =
     case externalMsg of
         Minimap.DoNothing ->
             { model
-                | minimap = Just minimap
+                | minimap = Minimap minimap
             }
                 & Cmd.none
 
         Minimap.Close ->
             { model
-                | minimap = Nothing
+                | minimap =
+                    Closed minimap.externalPosition
             }
                 & Cmd.none
 

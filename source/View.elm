@@ -13,7 +13,7 @@ import Palette
 import Taskbar
 import Tool exposing (Tool(..))
 import Toolbar
-import Types exposing (Model, Msg(..))
+import Types exposing (MinimapState(..), Model, Msg(..))
 import Util exposing ((:=), height, left, top, width)
 
 
@@ -68,41 +68,18 @@ menu maybeMenuModel =
 
 
 
---menu : Menu -> Html Msg
---menu m =
---    case m of
---        None ->
---            Html.text ""
---        Download model ->
---            Html.map
---                Menu.MsgMap.download
---                (Download.view model)
---        Import model ->
---            Html.map
---                Menu.MsgMap.import_
---                (Import.view model)
---        Scale model ->
---            Html.map
---                Menu.MsgMap.scale
---                (Scale.view model)
---        Text model ->
---            Html.map
---                Menu.MsgMap.text
---                (Text.view model)
---        About ->
---            Html.map MenuMsg About.view
 -- MINI MAP --
 
 
 minimap : Model -> Html Msg
 minimap model =
     case model.minimap of
-        Just minimapModel ->
+        Minimap minimapModel ->
             Html.map
                 MinimapMsg
                 (Minimap.view minimapModel model.canvas)
 
-        Nothing ->
+        _ ->
             Html.text ""
 
 

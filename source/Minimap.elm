@@ -50,8 +50,8 @@ type MouseHappening
 -- INIT --
 
 
-init : Size -> Model
-init { width, height } =
+init : Maybe Position -> Size -> Model
+init maybeInitialPosition { width, height } =
     let
         minimapSize =
             { width = 250 + extraWidth
@@ -59,9 +59,14 @@ init { width, height } =
             }
     in
     { externalPosition =
-        { x = (width - minimapSize.width) // 2
-        , y = (height - minimapSize.height) // 2
-        }
+        case maybeInitialPosition of
+            Just position ->
+                position
+
+            Nothing ->
+                { x = (width - minimapSize.width) // 2
+                , y = (height - minimapSize.height) // 2
+                }
     , internalPosition =
         { x = 0
         , y = 0
@@ -86,23 +91,13 @@ extraWidth =
 -- SUBSCRIPTIONS --
 
 
-subscriptions : Maybe Model -> Sub Msg
-subscriptions maybeModel =
-    case maybeModel of
-        Nothing ->
-            Sub.none
-
-        Just model ->
-            toSubscriptions model
-
-
-toSubscriptions : Model -> Sub Msg
-toSubscriptions model =
+subscriptions : Model -> Sub Msg
+subscriptions model =
     case model.clickState of
         NoClicks ->
             Sub.none
 
-        anythingElse ->
+        _ ->
             Sub.batch
                 [ Mouse.moves
                     (MouseDidSomething << MouseMoved)

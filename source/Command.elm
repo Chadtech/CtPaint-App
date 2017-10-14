@@ -7,7 +7,6 @@ import Draw
 import History
 import Menu exposing (Menu)
 import Minimap
-import Mouse exposing (Position)
 import Ports
 import Tool exposing (Tool(..))
 import Tool.Zoom as Zoom
@@ -16,11 +15,12 @@ import Types
         ( Command(..)
         , Direction(..)
         , KeyPayload
+        , MinimapState(..)
         , Model
         , Msg(..)
         , payloadToString
         )
-import Util exposing ((&))
+import Util exposing ((&), origin)
 
 
 update : Command -> Model -> ( Model, Cmd Msg )
@@ -63,13 +63,10 @@ update cmd model =
             if model.swatches.keyIsDown then
                 model & Cmd.none
             else
-                let
-                    newModel =
-                        model
-                            |> swatchesTurnLeft
-                            |> setKeyAsDown
-                in
-                newModel & Cmd.none
+                model
+                    |> swatchesTurnLeft
+                    |> setKeyAsDown
+                    & Cmd.none
 
         RevertQuickTurnLeft ->
             swatchesTurnRight (setKeyAsUp model)
@@ -79,13 +76,10 @@ update cmd model =
             if model.swatches.keyIsDown then
                 model & Cmd.none
             else
-                let
-                    newModel =
-                        model
-                            |> swatchesTurnRight
-                            |> setKeyAsDown
-                in
-                newModel & Cmd.none
+                model
+                    |> swatchesTurnRight
+                    |> setKeyAsDown
+                    & Cmd.none
 
         RevertQuickTurnRight ->
             swatchesTurnLeft (setKeyAsUp model)
@@ -95,24 +89,18 @@ update cmd model =
             if model.swatches.keyIsDown then
                 model & Cmd.none
             else
-                let
-                    newModel =
-                        model
-                            |> swatchesTurnLeft
-                            |> swatchesTurnLeft
-                            |> setKeyAsDown
-                in
-                newModel & Cmd.none
+                model
+                    |> swatchesTurnLeft
+                    |> swatchesTurnLeft
+                    |> setKeyAsDown
+                    & Cmd.none
 
         RevertQuickTurnDown ->
-            let
-                newModel =
-                    model
-                        |> swatchesTurnLeft
-                        |> swatchesTurnLeft
-                        |> setKeyAsUp
-            in
-            newModel & Cmd.none
+            model
+                |> swatchesTurnLeft
+                |> swatchesTurnLeft
+                |> setKeyAsUp
+                & Cmd.none
 
         Undo ->
             History.undo model & Cmd.none
@@ -131,14 +119,14 @@ update cmd model =
 
         SelectAll ->
             { model
-                | selection = Just ( Position 0 0, model.canvas )
+                | selection = Just ( origin, model.canvas )
                 , canvas =
                     let
                         drawOp =
                             Draw.filledRectangle
                                 model.swatches.second
                                 (Canvas.getSize model.canvas)
-                                (Position 0 0)
+                                origin
                     in
                     Canvas.getSize model.canvas
                         |> Canvas.initialize
@@ -168,19 +156,31 @@ update cmd model =
 
         ToggleMinimap ->
             case model.minimap of
-                Just _ ->
+                Minimap minimapModel ->
                     { model
                         | minimap =
-                            Nothing
+                            minimapModel.externalPosition
+                                |> Closed
                     }
                         & Cmd.none
 
-                Nothing ->
+                Closed position ->
                     { model
                         | minimap =
-                            model.windowSize
-                                |> Minimap.init
-                                |> Just
+                            Minimap.init
+                                (Just position)
+                                model.windowSize
+                                |> Minimap
+                    }
+                        & Cmd.none
+
+                NoMinimap ->
+                    { model
+                        | minimap =
+                            Minimap.init
+                                Nothing
+                                model.windowSize
+                                |> Minimap
                     }
                         & Cmd.none
 

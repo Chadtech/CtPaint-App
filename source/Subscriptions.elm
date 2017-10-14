@@ -9,6 +9,7 @@ import Tool
 import Types
     exposing
         ( Direction(..)
+        , MinimapState(..)
         , Model
         , Msg(..)
         , decodeKeyPayload
@@ -26,14 +27,27 @@ subscriptions model =
     , Sub.map
         ColorPickerMsg
         (ColorPicker.subscriptions model.colorPicker)
-    , Sub.map
-        MinimapMsg
-        (Minimap.subscriptions model.minimap)
+    , minimap model.minimap
     , keyEvent (KeyboardEvent << decodeKeyPayload)
     , Sub.map ToolMsg (Tool.subscriptions model.tool)
     , menu model.menu
     ]
         |> Sub.batch
+
+
+
+-- MINIMAP --
+
+
+minimap : MinimapState -> Sub Msg
+minimap state =
+    case state of
+        Minimap model ->
+            Minimap.subscriptions model
+                |> Sub.map MinimapMsg
+
+        _ ->
+            Sub.none
 
 
 
