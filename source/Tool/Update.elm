@@ -11,7 +11,6 @@ import Tool.Sample as Sample
 import Tool.Select.Update as Select
 import Tool.Zoom exposing (zoomInScreenMouseUp, zoomOutScreenMouseUp)
 import Types exposing (Model)
-import Util exposing ((&))
 
 
 update : Msg -> Model -> Model

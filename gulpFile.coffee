@@ -71,8 +71,6 @@ gulp.task "elm-make", ->
             (stderr.split "\n").forEach (line) ->
                 util.log (util.colors.yellow (String line))
 
-            formatCmd = "elm-format ./source --yes"
-            cp.exec formatCmd, ->
 
         stdout = stdout.slice 0, stdout.length - 1
         (stdout.split "\n").forEach (line) ->

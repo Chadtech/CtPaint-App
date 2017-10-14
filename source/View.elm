@@ -129,15 +129,15 @@ clickScreen canvasAreaHeight { tool } =
     let
         attributes =
             [ class ("screen " ++ Tool.name tool)
-            , style
-                [ height canvasAreaHeight ]
+            , style [ height canvasAreaHeight ]
             , onMouseLeave ScreenMouseExit
             , onMouseMove ScreenMouseMove
             ]
 
         toolAttrs =
-            Tool.attributes tool
-                |> List.map (Attributes.map ToolMsg)
+            List.map
+                (Attributes.map ToolMsg)
+                (Tool.attributes tool)
     in
     div (toolAttrs ++ attributes) []
 
