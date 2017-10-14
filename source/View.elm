@@ -75,9 +75,11 @@ minimap : Model -> Html Msg
 minimap model =
     case model.minimap of
         Minimap minimapModel ->
-            Html.map
-                MinimapMsg
-                (Minimap.view minimapModel model.canvas)
+            Minimap.view
+                minimapModel
+                model.canvas
+                model.selection
+                |> Html.map MinimapMsg
 
         _ ->
             Html.text ""

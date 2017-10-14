@@ -1,6 +1,11 @@
 module Minimap exposing (..)
 
-import Canvas exposing (Canvas)
+import Canvas
+    exposing
+        ( Canvas
+        , DrawImageParams(..)
+        , DrawOp(..)
+        )
 import Html exposing (Attribute, Html, a, div, p, text)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
@@ -8,7 +13,7 @@ import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
 import Tool exposing (Tool(..))
 import Tool.Zoom.Util as Zoom
-import Util exposing ((&), height, left, top, width)
+import Util exposing ((&), height, left, toPoint, top, width)
 import Window exposing (Size)
 
 
@@ -196,8 +201,8 @@ handleMouse event model =
 -- VIEW --
 
 
-view : Model -> Canvas -> Html Msg
-view model canvas =
+view : Model -> Canvas -> Maybe ( Position, Canvas ) -> Html Msg
+view model canvas maybeSelection =
     div
         [ class "card mini-map"
         , style
@@ -217,7 +222,7 @@ view model canvas =
             ]
             [ Canvas.toHtml
                 (canvasAttrs model canvas)
-                canvas
+                (withSelection canvas maybeSelection)
             , screen
             ]
         , a
@@ -231,6 +236,22 @@ view model canvas =
             ]
             [ text (Tool.icon ZoomOut) ]
         ]
+
+
+withSelection : Canvas -> Maybe ( Position, Canvas ) -> Canvas
+withSelection canvas maybeSelection =
+    case maybeSelection of
+        Nothing ->
+            canvas
+
+        Just ( position, selection ) ->
+            let
+                drawOp =
+                    DrawImage
+                        selection
+                        (At (toPoint position))
+            in
+            Canvas.draw drawOp canvas
 
 
 canvasAttrs : Model -> Canvas -> List (Attribute Msg)
