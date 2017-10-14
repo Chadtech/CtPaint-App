@@ -3,6 +3,7 @@ module Tool.Zoom exposing (..)
 import Canvas exposing (Size)
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
+import Tool.Zoom.Util as Zoom
 import Types exposing (Model)
 import Util exposing (tbw)
 
@@ -14,7 +15,7 @@ zoomInScreenMouseUp : MouseEvent -> Model -> Model
 zoomInScreenMouseUp { clientPos } model =
     let
         newZoom =
-            next model.zoom
+            Zoom.next model.zoom
     in
     if model.zoom == newZoom then
         model
@@ -26,7 +27,7 @@ zoomOutScreenMouseUp : MouseEvent -> Model -> Model
 zoomOutScreenMouseUp { clientPos } model =
     let
         newZoom =
-            prev model.zoom
+            Zoom.prev model.zoom
     in
     if model.zoom == newZoom then
         model
@@ -92,65 +93,3 @@ set zoom ({ canvas, canvasPosition, windowSize } as model) =
         , canvasPosition =
             Position x y
     }
-
-
-next : Int -> Int
-next zoom =
-    case zoom of
-        1 ->
-            2
-
-        2 ->
-            3
-
-        3 ->
-            4
-
-        4 ->
-            6
-
-        6 ->
-            8
-
-        8 ->
-            12
-
-        12 ->
-            16
-
-        16 ->
-            24
-
-        _ ->
-            zoom
-
-
-prev : Int -> Int
-prev zoom =
-    case zoom of
-        2 ->
-            1
-
-        3 ->
-            2
-
-        4 ->
-            3
-
-        6 ->
-            4
-
-        8 ->
-            6
-
-        12 ->
-            8
-
-        16 ->
-            12
-
-        24 ->
-            16
-
-        _ ->
-            zoom

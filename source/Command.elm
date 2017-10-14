@@ -10,6 +10,7 @@ import Minimap
 import Ports
 import Tool exposing (Tool(..))
 import Tool.Zoom as Zoom
+import Tool.Zoom.Util as Zoom
 import Types
     exposing
         ( Command(..)

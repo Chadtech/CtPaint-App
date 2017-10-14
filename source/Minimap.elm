@@ -1,12 +1,13 @@
 module Minimap exposing (..)
 
 import Canvas exposing (Canvas)
-import Html exposing (Html, a, div, p, text)
+import Html exposing (Attribute, Html, a, div, p, text)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
 import Tool exposing (Tool(..))
+import Tool.Zoom.Util as Zoom
 import Util exposing ((&), height, left, top, width)
 import Window exposing (Size)
 
@@ -36,6 +37,8 @@ type ExternalMsg
 
 type Msg
     = CloseClick
+    | ZoomInClicked
+    | ZoomOutClicked
     | MouseDidSomething MouseHappening
 
 
@@ -112,9 +115,21 @@ subscriptions model =
 
 update : Msg -> Model -> ( Model, ExternalMsg )
 update message model =
-    case Debug.log "msg" message of
+    case message of
         CloseClick ->
             model & Close
+
+        ZoomInClicked ->
+            { model
+                | zoom = Zoom.next model.zoom
+            }
+                & DoNothing
+
+        ZoomOutClicked ->
+            { model
+                | zoom = Zoom.prev model.zoom
+            }
+                & DoNothing
 
         MouseDidSomething mouseHappening ->
             handleMouse mouseHappening model
@@ -201,21 +216,36 @@ view model canvas =
                 ]
             ]
             [ Canvas.toHtml
-                [ style
-                    [ left model.internalPosition.x
-                    , top model.internalPosition.y
-                    ]
-                ]
+                (canvasAttrs model canvas)
                 canvas
             , screen
             ]
         , a
-            [ class "tool-button" ]
+            [ class "tool-button"
+            , onClick ZoomInClicked
+            ]
             [ text (Tool.icon ZoomIn) ]
         , a
-            [ class "tool-button" ]
+            [ class "tool-button"
+            , onClick ZoomOutClicked
+            ]
             [ text (Tool.icon ZoomOut) ]
         ]
+
+
+canvasAttrs : Model -> Canvas -> List (Attribute Msg)
+canvasAttrs { zoom, internalPosition } canvas =
+    let
+        size =
+            Canvas.getSize canvas
+    in
+    [ left internalPosition.x
+    , top internalPosition.y
+    , height (zoom * size.height)
+    , width (zoom * size.width)
+    ]
+        |> style
+        |> List.singleton
 
 
 screen : Html Msg
