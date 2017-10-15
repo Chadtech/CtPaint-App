@@ -12,6 +12,7 @@ import Types exposing (Model, Msg(..))
 import Util
     exposing
         ( (:=)
+        , background
         , height
         , maybeCons
         , px
@@ -349,14 +350,6 @@ toolContent ({ tool } as model) =
 
 
 -- HELPERS --
-
-
-background : Color -> Attribute Msg
-background =
-    toHex
-        >> (,) "background"
-        >> List.singleton
-        >> style
 
 
 generalContent : Model -> List String

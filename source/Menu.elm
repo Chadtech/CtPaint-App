@@ -67,6 +67,7 @@ type ExternalMsg
     | IncorporateImage Canvas
     | ScaleTo Int Int
     | AddText String
+    | Replace Color Color
 
 
 
@@ -151,8 +152,33 @@ updateContent msg model =
             in
             incorporateText textUpdate model
 
+        ( ReplaceColorMsg subMsg, ReplaceColor subModel ) ->
+            let
+                replaceColorUpdate =
+                    ReplaceColor.update subMsg subModel
+            in
+            incorporateReplaceColor
+                replaceColorUpdate
+                model
+
         _ ->
             model & DoNothing
+
+
+incorporateReplaceColor :
+    ( ReplaceColor.Model, ReplaceColor.ExternalMsg )
+    -> Model
+    -> ( Model, ExternalMsg )
+incorporateReplaceColor ( subModel, externalMsg ) model =
+    case externalMsg of
+        ReplaceColor.DoNothing ->
+            { model
+                | content = ReplaceColor subModel
+            }
+                & DoNothing
+
+        ReplaceColor.Replace target replacement ->
+            model & Replace target replacement
 
 
 incorporateText :
@@ -293,7 +319,7 @@ initText windowSize =
     let
         size =
             { width = 500
-            , height = 300
+            , height = 308
             }
     in
     { position =
@@ -387,12 +413,12 @@ initAbout windowSize =
     }
 
 
-initReplaceColor : Size -> Color -> Color -> Model
-initReplaceColor windowSize target replacement =
+initReplaceColor : Size -> Color -> Color -> List Color -> Model
+initReplaceColor windowSize target replacement palette =
     let
         size =
-            { width = 400
-            , height = 400
+            { width = 196
+            , height = 338
             }
     in
     { position =
@@ -403,7 +429,7 @@ initReplaceColor windowSize target replacement =
     , click = NoClick
     , title = "replace color"
     , content =
-        ReplaceColor.init target replacement
+        ReplaceColor.init target replacement palette
             |> ReplaceColor
     }
 

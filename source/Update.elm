@@ -280,6 +280,33 @@ incorporateMenu ( menu, externalMsg ) model =
                 |> History.addCanvas
                 & Ports.returnFocus ()
 
+        Menu.Replace target replacement ->
+            case model.selection of
+                Just ( position, selection ) ->
+                    { model
+                        | menu = Nothing
+                        , selection =
+                            ( position
+                            , Draw.replace
+                                target
+                                replacement
+                                selection
+                            )
+                                |> Just
+                    }
+                        & Cmd.none
+
+                Nothing ->
+                    { model
+                        | menu = Nothing
+                        , canvas =
+                            Draw.replace
+                                target
+                                replacement
+                                model.canvas
+                    }
+                        & Cmd.none
+
 
 incorporateColorPicker :
     ( ColorPicker.Model, ColorPicker.ExternalMsg )

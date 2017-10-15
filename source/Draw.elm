@@ -23,6 +23,15 @@ import Util
         )
 
 
+-- REPLACE --
+
+
+replace : Color -> Color -> Canvas -> Canvas
+replace target replacement canvas =
+    canvas
+
+
+
 -- TEXT --
 
 
@@ -33,9 +42,6 @@ text str color =
             str
                 |> String.split "\n"
                 |> List.map String.toList
-
-        canvas =
-            Canvas.initialize
     in
     { width =
         List.map List.length lines

@@ -1,5 +1,6 @@
 module Command exposing (..)
 
+import Array
 import Canvas exposing (Canvas, DrawOp(Rotate))
 import Clipboard
 import Dict exposing (Dict)
@@ -258,6 +259,7 @@ update cmd model =
                         model.windowSize
                         model.swatches.primary
                         model.swatches.second
+                        (Array.toList model.palette)
                         |> Just
             }
                 & Cmd.none

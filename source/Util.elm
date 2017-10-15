@@ -3,6 +3,7 @@ module Util exposing (..)
 import Canvas exposing (Point)
 import Color exposing (Color)
 import Html exposing (Attribute, Html)
+import Html.Attributes exposing (style)
 import Html.Events
 import Json.Decode as Json
 import Mouse exposing (Position)
@@ -179,6 +180,14 @@ width =
 height : Int -> ( String, String )
 height =
     px >> (,) "height"
+
+
+background : Color -> Attribute msg
+background =
+    toHex
+        >> (,) "background"
+        >> List.singleton
+        >> style
 
 
 

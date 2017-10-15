@@ -581,7 +581,7 @@ view model =
             [ class "header"
             , MouseEvents.onMouseDown HeaderMouseDown
             ]
-            [ p [] [ text "Color Editor" ]
+            [ p [] [ text "color picker" ]
             , a
                 [ onClick Close ]
                 [ text "x" ]
