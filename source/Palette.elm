@@ -92,8 +92,8 @@ generalPalette model =
         square : Int -> Color -> Html Msg
         square =
             paletteSquare
-                model.colorPicker.show
-                model.colorPicker.index
+                model.colorPicker.window.show
+                model.colorPicker.picker.index
 
         paletteSquares =
             model.palette

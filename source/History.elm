@@ -130,9 +130,16 @@ handleColor index color ({ colorPicker, palette } as model) =
         | palette =
             Array.set index color palette
         , colorPicker =
-            if colorPicker.index == index then
+            let
+                { picker } =
+                    colorPicker
+            in
+            if picker.index == index then
                 { colorPicker
-                    | color = color
+                    | picker =
+                        { picker
+                            | color = color
+                        }
                 }
             else
                 colorPicker

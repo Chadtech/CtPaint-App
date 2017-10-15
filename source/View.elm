@@ -91,7 +91,7 @@ minimap model =
 
 colorPicker : Model -> Html Msg
 colorPicker { colorPicker } =
-    if colorPicker.show then
+    if colorPicker.window.show then
         Html.map
             ColorPickerMsg
             (ColorPicker.view colorPicker)

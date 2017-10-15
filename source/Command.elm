@@ -266,11 +266,19 @@ update cmd model =
             let
                 { colorPicker } =
                     model
+
+                { window } =
+                    colorPicker
+
+                newWindow =
+                    { window
+                        | show = not window.show
+                    }
             in
             { model
                 | colorPicker =
                     { colorPicker
-                        | show = not colorPicker.show
+                        | window = newWindow
                     }
             }
                 & Cmd.none
