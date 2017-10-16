@@ -162,6 +162,11 @@ px int =
     toString int ++ "px"
 
 
+pct : Float -> String
+pct float =
+    toString (floor float) ++ "%"
+
+
 left : Int -> ( String, String )
 left =
     px >> (,) "left"

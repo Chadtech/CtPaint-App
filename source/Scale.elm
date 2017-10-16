@@ -1,9 +1,30 @@
 module Scale exposing (..)
 
-import Html exposing (Html, a, div, form, input, p, text)
-import Html.Attributes exposing (class, placeholder)
-import Html.Events exposing (onSubmit)
-import Util exposing ((&))
+import Html
+    exposing
+        ( Attribute
+        , Html
+        , a
+        , div
+        , form
+        , input
+        , p
+        , text
+        )
+import Html.Attributes
+    exposing
+        ( class
+        , placeholder
+        , type_
+        , value
+        )
+import Html.Events
+    exposing
+        ( onClick
+        , onFocus
+        , onSubmit
+        )
+import Util exposing ((&), pct, px)
 import Window exposing (Size)
 
 
@@ -17,6 +38,7 @@ type alias Model =
     , percentHeight : Float
     , initialSize : Size
     , lockRatio : Bool
+    , focus : Maybe Field
     }
 
 
@@ -27,6 +49,8 @@ type ExternalMsg
 
 type Msg
     = UpdateField Field String
+    | Lock
+    | FieldFocused Field
     | ScaleClick
 
 
@@ -47,59 +71,112 @@ view model =
         [ class "select-body" ]
         [ leftSide model
         , rightSide model
-        , form
-            [ class "field ratio" ]
-            [ p [] [ text "Lock" ]
-            , input [] []
-            ]
         , div
-            [ class "buttons-container" ]
-            [ a
-                []
-                [ text "Set Size" ]
-            , a
-                []
-                [ text "Cancel" ]
+            []
+            [ lock model.lockRatio
             ]
+        , a
+            [ class "submit-button" ]
+            [ text "set size" ]
         ]
     ]
 
 
-rightSide : Model -> Html Msg
-rightSide { initialSize } =
+lock : Bool -> Html Msg
+lock locked =
+    form
+        [ class "field scale lock" ]
+        [ p [] [ text "lock" ]
+        , input
+            [ class "ratio-lock"
+            , lockedValue locked
+            , onClick Lock
+            , type_ "button"
+            ]
+            []
+        ]
+
+
+lockedValue : Bool -> Attribute Msg
+lockedValue locked =
+    if locked then
+        value "x"
+    else
+        value " "
+
+
+leftSide : Model -> Html Msg
+leftSide { focus, percentHeight, percentWidth } =
     div
         [ class "column" ]
         [ p [] [ text "Percent" ]
         , field
             [ p [] [ text "width" ]
             , input
-                [ placeholder "100%" ]
+                [ placeholder (pct percentWidth)
+                , onFocus (FieldFocused PercentWidth)
+                , valueIfFocus
+                    PercentWidth
+                    focus
+                    (toString percentWidth)
+                ]
                 []
             ]
         , field
             [ p [] [ text "height" ]
             , input
-                [ placeholder "100%" ]
+                [ placeholder (pct percentHeight)
+                , onFocus (FieldFocused PercentHeight)
+                , valueIfFocus
+                    PercentHeight
+                    focus
+                    (toString percentHeight)
+                ]
                 []
             ]
         ]
 
 
-leftSide : Model -> Html Msg
-leftSide { initialSize } =
+valueIfFocus : Field -> Maybe Field -> String -> Attribute Msg
+valueIfFocus thisField maybeFocusedField str =
+    case maybeFocusedField of
+        Just focusedField ->
+            if thisField == focusedField then
+                value str
+            else
+                value ""
+
+        Nothing ->
+            value ""
+
+
+rightSide : Model -> Html Msg
+rightSide { fixedWidth, fixedHeight, focus } =
     div
         [ class "column" ]
-        [ p [] [ text "Percent" ]
+        [ p [] [ text "Absolute" ]
         , field
             [ p [] [ text "width" ]
             , input
-                [ placeholder "100%" ]
+                [ placeholder (px fixedWidth)
+                , onFocus (FieldFocused FixedWidth)
+                , valueIfFocus
+                    FixedWidth
+                    focus
+                    (toString fixedWidth)
+                ]
                 []
             ]
         , field
             [ p [] [ text "height" ]
             , input
-                [ placeholder "100%" ]
+                [ placeholder (px fixedHeight)
+                , onFocus (FieldFocused FixedHeight)
+                , valueIfFocus
+                    FixedHeight
+                    focus
+                    (toString fixedHeight)
+                ]
                 []
             ]
         ]
@@ -122,6 +199,19 @@ update msg model =
     case msg of
         UpdateField field str ->
             updateField field str model
+
+        Lock ->
+            { model
+                | lockRatio =
+                    not model.lockRatio
+            }
+                & DoNothing
+
+        FieldFocused field ->
+            { model
+                | focus = Just field
+            }
+                & DoNothing
 
         ScaleClick ->
             let
@@ -241,4 +331,5 @@ init size =
     , percentHeight = 100
     , initialSize = size
     , lockRatio = False
+    , focus = Nothing
     }

@@ -338,7 +338,7 @@ initScale canvasSize windowSize =
     let
         size =
             { width = 424
-            , height = 186
+            , height = 196
             }
     in
     { position =

@@ -48,10 +48,25 @@
         input
             width 280px
 
+        &.lock
+            display inline-block
+        
         &.scale
             margin 4px 0px 0px 0px
             input 
                 width 100px
+
+ 
+                &.ratio-lock
+                    height 24px
+                    width 24px
+
+                    border-radius 0px
+                    padding-bottom 2px
+
+                    cursor pointer
+                    text-align center
+
 
             p
                 width 100px
@@ -62,10 +77,6 @@
 
             p
                 width 40px
-    
-    .ratio
-        display inline-block
-        margin 4px 0px 0px 0px
 
     .submit-button
         display table
@@ -82,6 +93,12 @@
         text-align center
         height 40px
         line-height 40px
+
+    .buttons-container
+        margin-top 8px
+        text-align center
+        a
+            margin-left 4px
 
     .text-menu
         outline none
