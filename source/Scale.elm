@@ -37,6 +37,10 @@ type alias Model =
     , fixedHeight : Int
     , percentWidth : Float
     , percentHeight : Float
+    , fixedWidthField : String
+    , fixedHeightField : String
+    , percentWidthField : String
+    , percentHeightField : String
     , initialSize : Size
     , lockRatio : Bool
     , focus : Maybe Field
@@ -110,7 +114,7 @@ leftSide : Model -> Html Msg
 leftSide { focus, percentHeight, percentWidth } =
     div
         [ class "column" ]
-        [ p [] [ text "Percent" ]
+        [ p [] [ text "percent" ]
         , field
             [ p [] [ text "width" ]
             , input
@@ -157,7 +161,7 @@ rightSide : Model -> Html Msg
 rightSide { fixedWidth, fixedHeight, focus } =
     div
         [ class "column" ]
-        [ p [] [ text "Absolute" ]
+        [ p [] [ text "absolute" ]
         , field
             [ p [] [ text "width" ]
             , input
@@ -230,40 +234,64 @@ updateField : Field -> String -> Model -> ( Model, ExternalMsg )
 updateField field str model =
     case field of
         FixedWidth ->
+            let
+                newModel =
+                    { model
+                        | fixedWidthField = str
+                    }
+            in
             case String.toInt str of
                 Ok fixedWidth ->
-                    handleFixedWidth fixedWidth model
+                    cohereFixedWidth fixedWidth newModel
 
                 Err err ->
-                    model & DoNothing
+                    newModel & DoNothing
 
         FixedHeight ->
+            let
+                newModel =
+                    { model
+                        | fixedHeightField = str
+                    }
+            in
             case String.toInt str of
                 Ok fixedHeight ->
-                    handleFixedHeight fixedHeight model
+                    cohereFixedHeight fixedHeight newModel
 
                 Err err ->
-                    model & DoNothing
+                    newModel & DoNothing
 
         PercentWidth ->
+            let
+                newModel =
+                    { model
+                        | percentWidthField = str
+                    }
+            in
             case String.toFloat str of
                 Ok percentWidth ->
-                    handlePercentWidth percentWidth model
+                    coherePercentWidth percentWidth newModel
 
                 Err err ->
-                    model & DoNothing
+                    newModel & DoNothing
 
         PercentHeight ->
+            let
+                newModel =
+                    { model
+                        | percentHeightField = str
+                    }
+            in
             case String.toFloat str of
                 Ok percentHeight ->
-                    handlePercentHeight percentHeight model
+                    coherePercentHeight percentHeight newModel
 
                 Err err ->
-                    model & DoNothing
+                    newModel & DoNothing
 
 
-handleFixedWidth : Int -> Model -> ( Model, ExternalMsg )
-handleFixedWidth fixedWidth model =
+cohereFixedWidth : Int -> Model -> ( Model, ExternalMsg )
+cohereFixedWidth fixedWidth model =
     { model
         | fixedWidth = fixedWidth
         , percentWidth =
@@ -274,13 +302,13 @@ handleFixedWidth fixedWidth model =
                 initialWidth =
                     toFloat model.initialSize.width
             in
-            fixedWidth_ / initialWidth
+            (fixedWidth_ / initialWidth) * 100
     }
         & DoNothing
 
 
-handleFixedHeight : Int -> Model -> ( Model, ExternalMsg )
-handleFixedHeight fixedHeight model =
+cohereFixedHeight : Int -> Model -> ( Model, ExternalMsg )
+cohereFixedHeight fixedHeight model =
     { model
         | fixedHeight = fixedHeight
         , percentHeight =
@@ -291,13 +319,13 @@ handleFixedHeight fixedHeight model =
                 initialHeight =
                     toFloat model.initialSize.height
             in
-            fixedHeight_ / initialHeight
+            (fixedHeight_ / initialHeight) * 100
     }
         & DoNothing
 
 
-handlePercentWidth : Float -> Model -> ( Model, ExternalMsg )
-handlePercentWidth percentWidth model =
+coherePercentWidth : Float -> Model -> ( Model, ExternalMsg )
+coherePercentWidth percentWidth model =
     { model
         | percentWidth = percentWidth
         , fixedWidth =
@@ -310,8 +338,8 @@ handlePercentWidth percentWidth model =
         & DoNothing
 
 
-handlePercentHeight : Float -> Model -> ( Model, ExternalMsg )
-handlePercentHeight percentHeight model =
+coherePercentHeight : Float -> Model -> ( Model, ExternalMsg )
+coherePercentHeight percentHeight model =
     { model
         | percentHeight = percentHeight
         , fixedHeight =
@@ -334,6 +362,10 @@ init size =
     , fixedHeight = size.height
     , percentWidth = 100
     , percentHeight = 100
+    , fixedWidthField = toString size.width
+    , fixedHeightField = toString size.height
+    , percentWidthField = "100"
+    , percentHeightField = "100"
     , initialSize = size
     , lockRatio = False
     , focus = Nothing

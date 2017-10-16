@@ -337,7 +337,7 @@ initScale : Size -> Size -> Model
 initScale canvasSize windowSize =
     let
         size =
-            { width = 424
+            { width = 384
             , height = 196
             }
     in
