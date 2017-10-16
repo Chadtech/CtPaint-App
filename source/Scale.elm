@@ -81,7 +81,9 @@ view model =
             [ lock model.lockRatio
             ]
         , a
-            [ class "submit-button" ]
+            [ class "submit-button"
+            , onClick ScaleClick
+            ]
             [ text "set size" ]
         ]
     ]

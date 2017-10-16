@@ -105,6 +105,10 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
   function scale(dw, hw, model) {
     model = cloneModel(model);
 
+    var ctx = model.canvas().getContext("2d");
+
+    var imageData = ctx.getImageData(0,0,model.width, model.height);
+
     var i = 0;
     var data = [];
     while (i < imageData.data.length) {
@@ -121,8 +125,11 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     }
 
     data = flatten(flatten(scaleBy(hw, rows)));
-
-    var newImageData = ctx.createImageData(canvas.width, canvas.height);
+    console.log(data);
+    var newImageData = ctx.createImageData(
+        rows[0].length,
+        rows.length
+    );
 
     i = 0;
     while (i < data.length) {
@@ -163,7 +170,14 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
   }
 
   function flatten(input) {
-    return [].concat.apply([], input);
+    var output = [];
+
+    var index = 0;
+    while (index < input.length) {
+      output = output.concat(input[index]);
+      index++;
+    }
+    return output;
   }
 
   function handleDrawOp (ctx, drawOp) {

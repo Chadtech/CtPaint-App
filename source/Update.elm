@@ -249,7 +249,8 @@ incorporateMenu ( menu, externalMsg ) model =
                             Canvas.scale dw dh model.canvas
                     in
                     { model
-                        | canvas =
+                        | menu = Nothing
+                        , canvas =
                             Canvas.scale dw dh model.canvas
                     }
                         |> History.addCanvas
@@ -261,7 +262,8 @@ incorporateMenu ( menu, externalMsg ) model =
                             Canvas.scale dw dh selection
                     in
                     { model
-                        | selection =
+                        | menu = Nothing
+                        , selection =
                             Just ( pos, newSelection )
                     }
                         & Ports.returnFocus ()
