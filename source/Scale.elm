@@ -111,19 +111,19 @@ lockedValue locked =
 
 
 leftSide : Model -> Html Msg
-leftSide { focus, percentHeight, percentWidth } =
+leftSide model =
     div
         [ class "column" ]
         [ p [] [ text "percent" ]
         , field
             [ p [] [ text "width" ]
             , input
-                [ placeholder (pct percentWidth)
+                [ placeholder (pct model.percentWidth)
                 , onFocus (FieldFocused PercentWidth)
                 , valueIfFocus
                     PercentWidth
-                    focus
-                    (toString percentWidth)
+                    model.focus
+                    model.percentWidthField
                 , onInput (UpdateField PercentWidth)
                 ]
                 []
@@ -131,12 +131,12 @@ leftSide { focus, percentHeight, percentWidth } =
         , field
             [ p [] [ text "height" ]
             , input
-                [ placeholder (pct percentHeight)
+                [ placeholder (pct model.percentHeight)
                 , onFocus (FieldFocused PercentHeight)
                 , valueIfFocus
                     PercentHeight
-                    focus
-                    (toString percentHeight)
+                    model.focus
+                    model.percentHeightField
                 , onInput (UpdateField PercentHeight)
                 ]
                 []
@@ -158,19 +158,19 @@ valueIfFocus thisField maybeFocusedField str =
 
 
 rightSide : Model -> Html Msg
-rightSide { fixedWidth, fixedHeight, focus } =
+rightSide model =
     div
         [ class "column" ]
         [ p [] [ text "absolute" ]
         , field
             [ p [] [ text "width" ]
             , input
-                [ placeholder (px fixedWidth)
+                [ placeholder (px model.fixedWidth)
                 , onFocus (FieldFocused FixedWidth)
                 , valueIfFocus
                     FixedWidth
-                    focus
-                    (toString fixedWidth)
+                    model.focus
+                    model.fixedWidthField
                 , onInput (UpdateField FixedWidth)
                 ]
                 []
@@ -178,12 +178,12 @@ rightSide { fixedWidth, fixedHeight, focus } =
         , field
             [ p [] [ text "height" ]
             , input
-                [ placeholder (px fixedHeight)
+                [ placeholder (px model.fixedHeight)
                 , onFocus (FieldFocused FixedHeight)
                 , valueIfFocus
                     FixedHeight
-                    focus
-                    (toString fixedHeight)
+                    model.focus
+                    model.fixedHeightField
                 , onInput (UpdateField FixedHeight)
                 ]
                 []
