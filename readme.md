@@ -16,74 +16,43 @@ then go to `localhost:2970`
 This repo is organized as..
 
 ```
+./source
+├── About.elm
 ├── Canvas.elm
 ├── Clipboard.elm
 ├── ColorPicker.elm
+├── Command.elm
+├── Download.elm
 ├── Draw.elm
+├── Hfnss.elm
 ├── History.elm
-├── Keyboard
-│   ├── Subscriptions.elm
-│   └── Update.elm
+├── Imgur.elm
+├── Import.elm
 ├── Main.elm
-├── Menu
-│   ├── Download
-│   │   ├── Incorporate.elm
-│   │   ├── Mouse.elm
-│   │   ├── Ports.elm
-│   │   ├── Types.elm
-│   │   ├── Update.elm
-│   │   └── View.elm
-│   ├── Import
-│   │   ├── Incorporate.elm
-│   │   ├── Mouse.elm
-│   │   ├── Types.elm
-│   │   ├── Update.elm
-│   │   └── View.elm
-│   ├── MsgMap.elm
-│   ├── Scale
-│   │   ├── Incorporate.elm
-│   │   ├── Mouse.elm
-│   │   ├── Types.elm
-│   │   ├── Update.elm
-│   │   └── View.elm
-│   ├── Text
-│   │   ├── Incorporate.elm
-│   │   ├── Types.elm
-│   │   ├── Update.elm
-│   │   └── View.elm
-│   └── Update.elm
 ├── Menu.elm
-├── Minimap
-│   ├── Incorporate.elm
-│   ├── Mouse.elm
-│   ├── Types.elm
-│   ├── Update.elm
-│   └── View.elm
+├── Minimap.elm
 ├── Native
 │   └── Canvas.js
-├── Palette
-│   ├── Init.elm
-│   ├── Types.elm
-│   ├── Update.elm
-│   └── View.elm
+├── Palette.elm
 ├── Ports.elm
+├── ReplaceColor.elm
+├── Scale.elm
 ├── Styles
 │   ├── Main.styl
 │   ├── a.styl
 │   ├── canvas.styl
 │   ├── card.styl
 │   ├── color-picker.styl
-│   ├── download.styl
 │   ├── form.styl
-│   ├── import.styl
+│   ├── menu.styl
 │   ├── minimap.styl
 │   ├── p.styl
 │   ├── palette.styl
-│   ├── scale.styl
 │   ├── tool-button.styl
 │   └── toolbar.styl
 ├── Subscriptions.elm
 ├── Taskbar.elm
+├── Text.elm
 ├── Tool
 │   ├── Fill.elm
 │   ├── Hand
@@ -107,10 +76,11 @@ This repo is organized as..
 │   ├── Select.elm
 │   ├── Update.elm
 │   ├── Util.elm
+│   ├── Zoom
+│   │   └── Util.elm
 │   └── Zoom.elm
 ├── Tool.elm
-├── Toolbar
-│   └── View.elm
+├── Toolbar.elm
 ├── Types.elm
 ├── Update.elm
 ├── Util.elm
