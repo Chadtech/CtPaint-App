@@ -70,6 +70,38 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     return model;
   }
 
+  function replace(targetColor, replacementColor, model) {
+    model = cloneModel(model);
+
+    var target = _elm_lang$core$Color$toRgb(targetColor);
+    var replacement = _elm_lang$core$Color$toRgb(replacementColor);
+
+    var ctx = model.canvas().getContext("2d");
+
+    var imageData = ctx.getImageData(0,0,model.width, model.height);
+    var data = imageData.data;
+
+    var redSame, blueSame, greenSame;
+    var index = 0;
+    while (index < data.length) {
+      redSame = data[ index ] === target.red;
+      greenSame = data[ index + 1 ] == target.green;
+      blueSame = data[ index + 2 ] == target.blue;
+
+      if (redSame && greenSame && blueSame) {
+        data[ index ] = replacement.red;
+        data[ index + 1 ] = replacement.green;
+        data[ index + 2 ] = replacement.blue;
+      }
+
+      index += 4;
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+
+    return model;
+  }
+
   function scale(dw, hw, model) {
     model = cloneModel(model);
 
@@ -82,7 +114,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
 
     var rows = groupBy(groupBy(data, 4), model.width);
 
-    i = 0
+    i = 0;
     while (i < rows.length) {
       rows[i] = scaleBy(dw, rows[i]);
       i++;
@@ -109,7 +141,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     var i = 0;
     while (i < items.length) {
       var j = 0;
-      var repeats = Math.floor((j + 1) * factor) - Math.floor(j * factor) 
+      var repeats = Math.floor((j + 1) * factor) - Math.floor(j * factor);
       while (j <= repeats) {
         newItems.push(items[i]);
         j++;
@@ -469,7 +501,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
 
 
   function fill (color, point, ctx) {
-    var color = _elm_lang$core$Color$toRgb(color);
+    color = _elm_lang$core$Color$toRgb(color);
 
     var canvas = ctx.canvas;
     var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -691,6 +723,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     clone: cloneModel,
     draw: F2(draw),
     scale: F3(scale),
+    replace: F3(replace),
     toDataURL: F3(toDataURL) // eslint-disable-line no-undef
   };
 }();
