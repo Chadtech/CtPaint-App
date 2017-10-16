@@ -22,6 +22,7 @@ import Html.Events
     exposing
         ( onClick
         , onFocus
+        , onInput
         , onSubmit
         )
 import Util exposing ((&), pct, px)
@@ -119,6 +120,7 @@ leftSide { focus, percentHeight, percentWidth } =
                     PercentWidth
                     focus
                     (toString percentWidth)
+                , onInput (UpdateField PercentWidth)
                 ]
                 []
             ]
@@ -131,6 +133,7 @@ leftSide { focus, percentHeight, percentWidth } =
                     PercentHeight
                     focus
                     (toString percentHeight)
+                , onInput (UpdateField PercentHeight)
                 ]
                 []
             ]
@@ -164,6 +167,7 @@ rightSide { fixedWidth, fixedHeight, focus } =
                     FixedWidth
                     focus
                     (toString fixedWidth)
+                , onInput (UpdateField FixedWidth)
                 ]
                 []
             ]
@@ -176,6 +180,7 @@ rightSide { fixedWidth, fixedHeight, focus } =
                     FixedHeight
                     focus
                     (toString fixedHeight)
+                , onInput (UpdateField FixedHeight)
                 ]
                 []
             ]
