@@ -11,6 +11,7 @@ import Imgur
 import Import
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
+import New
 import Random exposing (Seed)
 import ReplaceColor
 import Scale
@@ -36,6 +37,7 @@ type Menu
     | About
     | ReplaceColor ReplaceColor.Model
     | Imgur Imgur.Model
+    | New New.Model
 
 
 type ClickState
@@ -58,6 +60,7 @@ type ContentMsg
     | TextMsg Text.Msg
     | ReplaceColorMsg ReplaceColor.Msg
     | ImgurMsg Imgur.Msg
+    | NewMsg New.Msg
 
 
 type ExternalMsg
@@ -294,6 +297,10 @@ contentView menu =
         Imgur subModel ->
             List.map (Html.map ImgurMsg) <|
                 Imgur.view subModel
+
+        New subModel ->
+            List.map (Html.map NewMsg) <|
+                New.view subModel
 
 
 header : String -> Html Msg
