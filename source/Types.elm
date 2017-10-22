@@ -29,19 +29,22 @@ init json =
         windowSize =
             decodeWindow json
 
-        canvas : Canvas
-        canvas =
-            Size 400 400
-                |> Canvas.initialize
-                |> fillBlack
+        ( canvas, menu ) =
+            case decodeCanvas json of
+                Just canvas ->
+                    canvas & Nothing
+
+                Nothing ->
+                    Canvas.initialize
+                        { width = 400
+                        , height = 400
+                        }
+                        |> fillBlack
+                        & Just (Menu.initNew windowSize)
 
         canvasSize : Size
         canvasSize =
             Canvas.getSize canvas
-
-        keyUpConfig : Dict String Command
-        keyUpConfig =
-            Dict.fromList []
 
         isMac : Bool
         isMac =
@@ -92,7 +95,7 @@ init json =
     , quickKeys = defaultQuickKeys isMac
     , taskbarDropped = Nothing
     , minimap = NoMinimap
-    , menu = Nothing
+    , menu = menu
     , seed = Random.initialSeed (decodeSeed json)
     }
         & Cmd.none
@@ -528,6 +531,33 @@ keyCodeToString key =
 
 
 -- INIT CANVAS --
+
+
+decodeCanvas : Value -> Maybe Canvas
+decodeCanvas json =
+    json
+        |> Decode.decodeValue canvasDecoder
+        |> Result.toMaybe
+
+
+canvasDecoder : Decoder Canvas
+canvasDecoder =
+    decode toCanvas
+        |> required "width" Decode.int
+        |> required "height" Decode.int
+        |> required "data" Decode.string
+
+
+toCanvas : Int -> Int -> String -> Canvas
+toCanvas width height data =
+    let
+        size =
+            { width = width
+            , height = height
+            }
+    in
+    Canvas.initialize size
+        |> fillBlack
 
 
 fillBlack : Canvas -> Canvas

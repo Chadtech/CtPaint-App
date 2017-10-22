@@ -321,6 +321,25 @@ header title =
 -- INIT --
 
 
+initNew : Size -> Model
+initNew windowSize =
+    let
+        size =
+            { width = 400
+            , height = 400
+            }
+    in
+    { position =
+        { x = (windowSize.width - size.width) // 2
+        , y = (windowSize.height - size.height) // 2
+        }
+    , size = size
+    , click = NoClick
+    , title = "new"
+    , content = New New.init
+    }
+
+
 initText : Size -> Model
 initText windowSize =
     let

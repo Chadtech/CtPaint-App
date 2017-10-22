@@ -82,6 +82,7 @@ flags = {
     seed: Math.round (Math.random() * 999999999999)
     isMac: (window.navigator.userAgent.indexOf "Mac") isnt -1
     isChrome: (window.navigator.userAgent.indexOf "Chrome") isnt -1
+    canvas: null
 }
 
 
