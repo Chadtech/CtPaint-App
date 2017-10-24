@@ -1,6 +1,6 @@
 module Util exposing (..)
 
-import Canvas exposing (Point)
+import Canvas exposing (Canvas, Point)
 import Color exposing (Color)
 import Html exposing (Attribute, Html)
 import Html.Attributes exposing (style)
@@ -87,18 +87,23 @@ slice start end =
 -- COLOR --
 
 
-toHex : Color -> String
-toHex color =
+toHexColor : Color -> String
+toHexColor color =
     let
         { red, green, blue } =
             Color.toRgb color
     in
     [ "#"
-    , toHexHelper <| ParseInt.toHex red
-    , toHexHelper <| ParseInt.toHex green
-    , toHexHelper <| ParseInt.toHex blue
+    , toHex red
+    , toHex green
+    , toHex blue
     ]
         |> String.concat
+
+
+toHex : Int -> String
+toHex =
+    ParseInt.toHex >> toHexHelper
 
 
 toHexHelper : String -> String
@@ -189,7 +194,7 @@ height =
 
 background : Color -> Attribute msg
 background =
-    toHex
+    toHexColor
         >> (,) "background"
         >> List.singleton
         >> style
@@ -259,3 +264,17 @@ allTrue =
 allFalse : List Bool -> Bool
 allFalse =
     List.map not >> allTrue
+
+
+
+-- CANVAS --
+
+
+getImageDataString : Canvas -> String
+getImageDataString canvas =
+    canvas
+        |> Canvas.getImageData
+            { x = 0, y = 0 }
+            (Canvas.getSize canvas)
+        |> List.map toHex
+        |> String.concat

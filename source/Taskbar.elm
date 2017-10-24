@@ -283,6 +283,10 @@ file model =
 fileDropped : Model -> Html Msg
 fileDropped model =
     [ option
+        "Save"
+        (getCmdStr model.quickKeys Save)
+        (Command Save)
+    , option
         "Download"
         (getCmdStr model.quickKeys InitDownload)
         (Command InitDownload)

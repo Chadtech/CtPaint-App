@@ -8,7 +8,7 @@ import Draw
 import History
 import Menu exposing (Menu)
 import Minimap
-import Ports
+import Ports exposing (JsMsg(..))
 import Tool exposing (Tool(..))
 import Tool.Zoom as Zoom
 import Tool.Zoom.Util as Zoom
@@ -199,7 +199,7 @@ update cmd model =
                         |> Menu.initImport
                         |> Just
             }
-                & Ports.stealFocus ()
+                & Ports.send StealFocus
 
         InitDownload ->
             let
@@ -213,7 +213,7 @@ update cmd model =
                 | menu = Just menuModel
                 , seed = seed
             }
-                & Ports.stealFocus ()
+                & Ports.send StealFocus
 
         InitText ->
             { model
@@ -222,7 +222,7 @@ update cmd model =
                         |> Menu.initText
                         |> Just
             }
-                & Ports.stealFocus ()
+                & Ports.send StealFocus
 
         InitScale ->
             let
@@ -241,7 +241,7 @@ update cmd model =
                                 |> Just
             in
             { model | menu = menu }
-                & Ports.stealFocus ()
+                & Ports.send StealFocus
 
         InitAbout ->
             { model
@@ -313,6 +313,15 @@ update cmd model =
 
         InvertColors ->
             transform Draw.invert model
+
+        Save ->
+            let
+                jsMsg =
+                    SaveLocally
+                        (Canvas.getSize model.canvas)
+                        (Util.getImageDataString model.canvas)
+            in
+            model & Ports.send jsMsg
 
 
 transform : (Canvas -> Canvas) -> Model -> ( Model, Cmd Msg )

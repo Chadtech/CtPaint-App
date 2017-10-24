@@ -6,7 +6,12 @@ import Color exposing (Color)
 import ColorPicker
 import Dict exposing (Dict)
 import Json.Decode as Decode exposing (Decoder, Value)
-import Json.Decode.Pipeline as Pipeline exposing (decode, required)
+import Json.Decode.Pipeline as Pipeline
+    exposing
+        ( decode
+        , required
+        , requiredAt
+        )
 import Keyboard exposing (KeyCode)
 import Keyboard.Extra exposing (Key(..))
 import Menu
@@ -30,18 +35,25 @@ init json =
             decodeWindow json
 
         ( canvas, menu ) =
-            case decodeCanvas json of
-                Just canvas ->
+            case Err "dont load it right now" of
+                Ok canvas ->
                     canvas & Nothing
 
-                Nothing ->
+                Err err ->
                     Canvas.initialize
                         { width = 400
                         , height = 400
                         }
                         |> fillBlack
-                        & Just (Menu.initNew windowSize)
+                        & Nothing
 
+        --                    Canvas.initialize
+        --                        { width = 400
+        --                        , height = 400
+        --                        }
+        --                        |> fillBlack
+        --                        & Just (Menu.initNew windowSize)
+        --
         canvasSize : Size
         canvasSize =
             Canvas.getSize canvas
@@ -241,6 +253,7 @@ type Command
     | Rotate180
     | Rotate270
     | InvertColors
+    | Save
     | NoCommand
 
 
@@ -533,19 +546,24 @@ keyCodeToString key =
 -- INIT CANVAS --
 
 
-decodeCanvas : Value -> Maybe Canvas
+decodeCanvas : Value -> Result String Canvas
 decodeCanvas json =
     json
         |> Decode.decodeValue canvasDecoder
-        |> Result.toMaybe
 
 
 canvasDecoder : Decoder Canvas
 canvasDecoder =
     decode toCanvas
-        |> required "width" Decode.int
-        |> required "height" Decode.int
-        |> required "data" Decode.string
+        |> requiredAt
+            [ "canvas", "size", "width" ]
+            Decode.int
+        |> requiredAt
+            [ "canvas", "size", "height" ]
+            Decode.int
+        |> requiredAt
+            [ "canvas", "data" ]
+            Decode.string
 
 
 toCanvas : Int -> Int -> String -> Canvas
@@ -555,6 +573,10 @@ toCanvas width height data =
             { width = width
             , height = height
             }
+
+        colors =
+            data
+                |> String.toList
     in
     Canvas.initialize size
         |> fillBlack

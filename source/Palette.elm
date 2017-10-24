@@ -219,7 +219,7 @@ sampleColor model =
                         model.canvas
 
                 colorStr =
-                    toHex color
+                    Util.toHexColor color
 
                 backgroundColor =
                     if (Color.toHsl color).lightness > 0.5 then

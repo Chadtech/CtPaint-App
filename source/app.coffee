@@ -12,26 +12,9 @@ ignoreKeyEvents = (keydown, keyup) ->
     window.removeEventListener 'keydown', keydown
     window.removeEventListener 'keyup', keyup
 
-
-downloadCanvas = (fn) ->
-    canvas = document.getElementById "main-canvas"
-    png = canvas.toDataURL()
-
-    a = document.createElement "a"
-    a.href = png
-    a.download = fn
-    a.click()
-
-
 window.onbeforeunload = (event) -> ""
 
-
 init = (app) ->
-    app.ports.download.subscribe downloadCanvas
-
-    app.ports.openNewPage.subscribe (url) ->
-        window.open url
-
     makeKeyHandler = (direction) ->
         (event) ->
             app.ports.keyEvent.send
@@ -48,11 +31,27 @@ init = (app) ->
 
     listenToKeyEvents handleKeyDown, handleKeyUp
 
-    app.ports.stealFocus.subscribe ->
-        ignoreKeyEvents handleKeyDown, handleKeyUp
+    jsMsgHandler = (msg) ->
+        switch msg.type
+            when "save"
+                localStorage.setItem "canvas", JSON.stringify msg.payload
 
-    app.ports.returnFocus.subscribe ->
-        listenToKeyEvents handleKeyDown, handleKeyUp
+            when "steal focus"
+                ignoreKeyEvents handleKeyDown, handleKeyUp
+
+            when "return focus"
+                listenToKeyEvents handleKeyDown, handleKeyUp
+
+            when "download"
+                canvas = document.getElementById "main-canvas"
+                png = canvas.toDataUrl()
+
+                a = document.createElement "a"
+                a.href = png
+                a.download = msg.payload
+                a.click()
+
+    app.ports.toJs.subscribe jsMsgHandler
 
     app
 
@@ -76,13 +75,16 @@ makeFlags = (obj, attr) ->
         obj[ attr.Name ] = attr.Value
     obj
 
+
+canvas = localStorage.getItem "canvas"
+
 flags = {
     windowHeight: window.innerHeight,
     windowWidth: window.innerWidth,
     seed: Math.round (Math.random() * 999999999999)
     isMac: (window.navigator.userAgent.indexOf "Mac") isnt -1
     isChrome: (window.navigator.userAgent.indexOf "Chrome") isnt -1
-    canvas: null
+    canvas: JSON.parse canvas
 }
 
 

@@ -8,7 +8,7 @@ import Draw
 import History
 import Menu
 import Minimap
-import Ports
+import Ports exposing (JsMsg(..))
 import Tool.Update as Tool
 import Types
     exposing
@@ -157,7 +157,7 @@ update message model =
                 & Cmd.none
 
         OpenNewWindow window ->
-            model & Ports.openNewPage (toUrl window)
+            model & Cmd.none
 
         AddPaletteSquare ->
             { model
@@ -213,7 +213,7 @@ incorporateMenu ( menu, externalMsg ) model =
             { model
                 | menu = Nothing
             }
-                & Ports.returnFocus ()
+                & Ports.send ReturnFocus
 
         Menu.Cmd cmd ->
             { model | menu = Just menu }
@@ -239,7 +239,7 @@ incorporateMenu ( menu, externalMsg ) model =
                     Just ( imagePosition, image )
                 , menu = Nothing
             }
-                & Ports.returnFocus ()
+                & Ports.send ReturnFocus
 
         Menu.ScaleTo dw dh ->
             case model.selection of
@@ -254,7 +254,7 @@ incorporateMenu ( menu, externalMsg ) model =
                             Canvas.scale dw dh model.canvas
                     }
                         |> History.addCanvas
-                        & Ports.returnFocus ()
+                        & Ports.send ReturnFocus
 
                 Just ( pos, selection ) ->
                     let
@@ -266,7 +266,7 @@ incorporateMenu ( menu, externalMsg ) model =
                         , selection =
                             Just ( pos, newSelection )
                     }
-                        & Ports.returnFocus ()
+                        & Ports.send ReturnFocus
 
         Menu.AddText str ->
             { model
@@ -280,7 +280,7 @@ incorporateMenu ( menu, externalMsg ) model =
                         |> Just
             }
                 |> History.addCanvas
-                & Ports.returnFocus ()
+                & Ports.send ReturnFocus
 
         Menu.Replace target replacement ->
             case model.selection of
@@ -344,7 +344,7 @@ incorporateColorPicker ( colorPicker, maybeMsg ) model =
             newModel & Cmd.none
 
         ColorPicker.StealFocus ->
-            model & Ports.stealFocus ()
+            model & Ports.send StealFocus
 
         ColorPicker.ReturnFocus ->
-            model & Ports.returnFocus ()
+            model & Ports.send ReturnFocus

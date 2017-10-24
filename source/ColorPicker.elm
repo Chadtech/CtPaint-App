@@ -36,7 +36,6 @@ import Util
         , (:=)
         , left
         , toColor
-        , toHex
         , top
         )
 
@@ -149,7 +148,9 @@ initPicker index color =
             |> floor
             |> toString
     , colorHexField =
-        String.dropLeft 1 (toHex color)
+        color
+            |> Util.toHexColor
+            |> String.dropLeft 1
     , gradientClickedOn = Nothing
     }
 
@@ -560,7 +561,9 @@ cohereModel picker =
                 |> floor
                 |> toString
         , colorHexField =
-            String.dropLeft 1 (toHex picker.color)
+            picker.color
+                |> Util.toHexColor
+                |> String.dropLeft 1
     }
 
 
@@ -603,7 +606,7 @@ body ({ colorHexField, color } as model) =
     [ div
         [ class "visualization"
         , style
-            [ "background" := toHex color ]
+            [ "background" := Util.toHexColor color ]
         ]
         []
     , form
