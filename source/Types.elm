@@ -47,13 +47,6 @@ init json =
                         |> fillBlack
                         & Nothing
 
-        --                    Canvas.initialize
-        --                        { width = 400
-        --                        , height = 400
-        --                        }
-        --                        |> fillBlack
-        --                        & Just (Menu.initNew windowSize)
-        --
         canvasSize : Size
         canvasSize =
             Canvas.getSize canvas
