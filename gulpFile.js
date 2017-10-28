@@ -19,18 +19,12 @@ paths = {
 
 
 gulp.task("js", function() {
-  var config = {
-    cash: {}
-  };
-  var b = browserify("./source/app.js", config);
+  var b = browserify("./source/app.js");
   return b.bundle()
     .pipe(source("paint-app.js"))
     .pipe(buffer())
     .pipe(gulp.dest(paths.development));
 });
-
-build = require("./build");
-gulp.task("build", build);
 
 gulp.task("stylus", function() {
   return gulp
