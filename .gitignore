@@ -1,7 +1,5 @@
 elm-stuff
-development/app.js
-development/elm.js
-development/style.css
+development/paint-app-styles.css
 development/paint-app.js
 development/paint-app-elm.js
 distribution/

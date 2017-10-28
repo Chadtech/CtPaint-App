@@ -29,7 +29,7 @@ gulp.task("js", function() {
 gulp.task("stylus", function() {
   return gulp
     .src(["./source/Styles/main.styl", paths.css])
-    .pipe(concat("style.styl"))
+    .pipe(concat("paint-app-styles.styl"))
     .pipe(stylus())
     .pipe(gulp.dest(paths.development));
 });
