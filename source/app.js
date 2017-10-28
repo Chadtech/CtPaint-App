@@ -1,6 +1,3 @@
-var AmazonCognitoIdentity = require("amazon-cognito-identity-js");
-var CognitoUserPool = AmazonCognitoIdentity.CognitoUserPool;
-
 PaintApp = {
     init: function(flags) {
 
@@ -16,8 +13,7 @@ PaintApp = {
 
         window.onbeforeunload = function(event) { return ""; };
 
-
-        var app = Elm.Main.fullscreen(flags);
+        var app = Elm.PaintApp.fullscreen(flags);
 
         function makeKeyHandler (direction) {
             return function(event) {

@@ -11,7 +11,7 @@ var util = require("gulp-util");
 paths = {
   development: "./development",
   distribution: "./distribution",
-  mainElm: "./source/Main.elm",
+  mainElm: "./source/PaintApp.elm",
   elm: "./source/**/*.elm",
   css: "./source/**/*.styl",
   js: "./source/**/*.js"
@@ -20,12 +20,11 @@ paths = {
 
 gulp.task("js", function() {
   var config = {
-    debug: true,
     cash: {}
   };
   var b = browserify("./source/app.js", config);
   return b.bundle()
-    .pipe(source("app.js"))
+    .pipe(source("paint-app.js"))
     .pipe(buffer())
     .pipe(gulp.dest(paths.development));
 });
@@ -49,7 +48,7 @@ gulp.task("elm-make", function() {
     paths.mainElm,
     "--warn",
     "--output",
-    paths.development + "/elm.js"
+    paths.development + "/paint-app-elm.js"
   ].join(" ");
   return cp.exec(cmd, function(error, stdout, stderr) {
     if (error) {

@@ -1,4 +1,4 @@
-module Main exposing (..)
+module PaintApp exposing (..)
 
 import Html
 import Json.Decode exposing (Value)

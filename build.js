@@ -11,14 +11,14 @@ module.exports = function() {
         "elm-make",
         "./source/Main.elm",
         "--output",
-        "bin/elm.js"
+        "bin/paint-app-elm.js"
     ].join(" ");
 
     var stdout;
     stdout = cp.execSync(cmd);
     util.log(String(stdout));
 
-    gulp.src(["./bin/elm-loader.js", "./source/app.js"])
+    gulp.src(["./bin/paint-app-elm-loader.js", "./source/paint-app.js"])
         .pipe(concat("app.js"))
         .pipe(gulp.dest("./bin/"));
 
