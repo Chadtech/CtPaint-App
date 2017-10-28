@@ -67,9 +67,13 @@ gulp.task("server", function() {
   return (require("./server"))(2970, util.log);
 });
 
-gulp.watch(paths.elm, ["elm"]);
-gulp.watch(paths.css, ["stylus"]);
-gulp.watch(paths.js, ["js"]);
+gulp.task("watch", function(){
+    gulp.watch(paths.elm, ["elm"]);
+    gulp.watch(paths.css, ["stylus"]);
+    gulp.watch(paths.js, ["js"]);
 
-gulp.task("default", ["elm", "js", "stylus", "server"]);
+});
+
+gulp.task("build", [ "elm", "js", "stylus"]);
+gulp.task("default", ["watch", "elm", "js", "stylus", "server"]);
 
