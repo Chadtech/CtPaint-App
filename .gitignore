@@ -6,6 +6,7 @@ distribution/
 
 node_modules
 
+bin
 
 elm-module-graph.py
 module-graph.json

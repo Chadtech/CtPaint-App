@@ -30,6 +30,9 @@ gulp.task("js", function() {
     .pipe(gulp.dest(paths.development));
 });
 
+build = require("./build");
+gulp.task("build", build);
+
 gulp.task("stylus", function() {
   return gulp
     .src(["./source/Styles/main.styl", paths.css])
