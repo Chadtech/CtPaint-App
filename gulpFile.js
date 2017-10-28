@@ -19,8 +19,8 @@ paths = {
 
 
 gulp.task("js", function() {
-  var b = browserify("./source/app.js");
-  return b.bundle()
+  return browserify("./source/app.js")
+    .bundle()
     .pipe(source("paint-app.js"))
     .pipe(buffer())
     .pipe(gulp.dest(paths.development));
