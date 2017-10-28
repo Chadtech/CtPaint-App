@@ -74,6 +74,6 @@ gulp.task("watch", function(){
 
 });
 
-gulp.task("build", [ "js", "stylus"]);
+gulp.task("build", [ "elm",  "js", "stylus"]);
 gulp.task("default", ["watch", "elm", "js", "stylus", "server"]);
 
