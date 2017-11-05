@@ -6,7 +6,7 @@ import Color exposing (Color)
 import ColorPicker
 import Dict exposing (Dict)
 import Json.Decode as Decode exposing (Decoder, Value)
-import Json.Decode.Pipeline as Pipeline
+import Json.Decode.Pipeline
     exposing
         ( decode
         , required
@@ -56,7 +56,7 @@ init json =
         isMac =
             decodeIsMac json
     in
-    { session = decodeSession json
+    { user = Nothing
     , canvas = canvas
     , projectName = Nothing
     , canvasPosition =
@@ -112,7 +112,7 @@ init json =
 
 
 type alias Model =
-    { session : Maybe Session
+    { user : Maybe User
     , canvas : Canvas
     , projectName : Maybe String
     , canvasPosition : Position
@@ -197,8 +197,11 @@ type Direction
     | Down
 
 
-type alias Session =
-    { email : String }
+type alias User =
+    { email : String
+    , username : String
+    , profile : String
+    }
 
 
 type HistoryOp
@@ -567,10 +570,6 @@ toCanvas width height data =
             { width = width
             , height = height
             }
-
-        colors =
-            data
-                |> String.toList
     in
     Canvas.initialize size
         |> fillBlack
@@ -701,14 +700,3 @@ windowDecoder =
     Decode.map2 (,)
         (Decode.field "windowWidth" Decode.int)
         (Decode.field "windowHeight" Decode.int)
-
-
-sessionDecoder : Decoder Session
-sessionDecoder =
-    Decode.field "email" Decode.string
-        |> Decode.map Session
-
-
-decodeSession : Value -> Maybe Session
-decodeSession =
-    Decode.decodeValue sessionDecoder >> Result.toMaybe

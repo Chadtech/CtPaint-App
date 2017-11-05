@@ -12,7 +12,7 @@ import Util exposing (tbw)
 
 
 update : Msg -> Maybe Position -> Model -> Model
-update message tool ({ canvasPosition } as model) =
+update message tool model =
     case ( message, tool ) of
         ( ScreenMouseDown { clientPos }, Nothing ) ->
             let

@@ -55,7 +55,7 @@ update message model =
         KeyboardEvent (Err err) ->
             model & Cmd.none
 
-        Tick dt ->
+        Tick _ ->
             case model.pendingDraw of
                 Batch [] ->
                     model & Cmd.none
@@ -245,10 +245,6 @@ incorporateMenu ( menu, externalMsg ) model =
         Menu.ScaleTo dw dh ->
             case model.selection of
                 Nothing ->
-                    let
-                        newCanvas =
-                            Canvas.scale dw dh model.canvas
-                    in
                     { model
                         | menu = Nothing
                         , canvas =

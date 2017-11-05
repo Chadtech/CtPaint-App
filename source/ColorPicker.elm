@@ -749,7 +749,7 @@ blueGradient { color, gradientClickedOn } =
 hueGradient : Picker -> Html PickerMsg
 hueGradient { color, gradientClickedOn } =
     let
-        { red, green, blue } =
+        { red } =
             Color.toRgb color
 
         { hue, saturation, lightness } =

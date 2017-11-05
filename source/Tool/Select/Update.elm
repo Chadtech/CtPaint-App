@@ -1,6 +1,6 @@
 module Tool.Select.Update exposing (update)
 
-import Canvas exposing (Point, Size)
+import Canvas
 import Draw
 import History
 import Tool.Select exposing (Msg(..), SelectModel)

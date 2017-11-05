@@ -2,10 +2,10 @@ module View exposing (view)
 
 import Canvas exposing (Canvas)
 import ColorPicker
-import Html exposing (Attribute, Html, div, p, text)
+import Html exposing (Html, div)
 import Html.Attributes as Attributes exposing (class, id, style)
 import Html.Events exposing (onMouseLeave)
-import Menu exposing (Menu)
+import Menu
 import Minimap
 import Mouse exposing (Position)
 import MouseEvents exposing (onMouseMove)
@@ -143,7 +143,7 @@ canvasArea canvasAreaHeight model =
 
 
 canvasStyles : Model -> List ( String, String )
-canvasStyles ({ zoom, canvasPosition, canvas } as model) =
+canvasStyles { zoom, canvasPosition, canvas } =
     let
         canvasSize =
             Canvas.getSize canvas
@@ -173,7 +173,7 @@ selection model =
 
 
 selectionStyles : Model -> Position -> Canvas -> List ( String, String )
-selectionStyles ({ zoom, canvasPosition, canvas } as model) position selection =
+selectionStyles { zoom, canvasPosition } position selection =
     let
         selectionSize =
             Canvas.getSize selection

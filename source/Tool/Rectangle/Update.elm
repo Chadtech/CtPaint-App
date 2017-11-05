@@ -1,6 +1,6 @@
 module Tool.Rectangle.Update exposing (update)
 
-import Canvas exposing (Size)
+import Canvas
 import Draw
 import History
 import Mouse exposing (Position)

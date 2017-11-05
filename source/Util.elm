@@ -11,11 +11,6 @@ import ParseInt
 import Window exposing (Size)
 
 
-swap : ( a, b ) -> ( b, a )
-swap ( a, b ) =
-    ( b, a )
-
-
 withIndex : List a -> List ( Int, a )
 withIndex =
     List.indexedMap (,)
@@ -29,29 +24,6 @@ maybeCons maybe list =
 
         Nothing ->
             list
-
-
-contains : List a -> a -> Bool
-contains =
-    flip List.member
-
-
-groupsOfFour : List a -> List (List a)
-groupsOfFour list =
-    makeGroupsHelp list [] |> List.reverse
-
-
-makeGroupsHelp : List a -> List (List a) -> List (List a)
-makeGroupsHelp xs res =
-    case xs of
-        a :: b :: c :: d :: rest ->
-            makeGroupsHelp rest ([ a, b, c, d ] :: res)
-
-        [] ->
-            res
-
-        _ ->
-            xs :: res
 
 
 

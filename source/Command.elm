@@ -1,12 +1,12 @@
 module Command exposing (..)
 
 import Array
-import Canvas exposing (Canvas, DrawOp(Rotate))
+import Canvas exposing (Canvas)
 import Clipboard
-import Dict exposing (Dict)
+import Dict
 import Draw
 import History
-import Menu exposing (Menu)
+import Menu
 import Minimap
 import Ports exposing (JsMsg(..))
 import Tool exposing (Tool(..))
@@ -229,7 +229,7 @@ update cmd model =
             let
                 menu =
                     case model.selection of
-                        Just ( pos, selection ) ->
+                        Just ( _, selection ) ->
                             Menu.initScale
                                 (Canvas.getSize selection)
                                 model.windowSize

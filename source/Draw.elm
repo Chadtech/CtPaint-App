@@ -416,7 +416,7 @@ colorAt pos =
 toColor : List Int -> Color
 toColor values =
     case values of
-        r :: g :: b :: a :: [] ->
+        r :: g :: b :: _ :: [] ->
             Color.rgb r g b
 
         _ ->

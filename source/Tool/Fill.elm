@@ -1,12 +1,12 @@
 module Tool.Fill exposing (..)
 
-import Canvas exposing (Canvas, DrawOp(..), Point)
+import Canvas exposing (DrawOp(..))
 import Draw
 import History
 import MouseEvents exposing (MouseEvent)
 import Tool.Util exposing (adjustPosition)
 import Types exposing (Model)
-import Util exposing (maybeCons, tbw, toPoint)
+import Util exposing (tbw, toPoint)
 
 
 screenMouseUp : MouseEvent -> Model -> Model
