@@ -14,7 +14,7 @@ import Taskbar
 import Tool exposing (Tool(..))
 import Toolbar
 import Types exposing (MinimapState(..), Model, Msg(..))
-import Util exposing ((:=), height, left, top, width)
+import Util exposing (height, left, top, width)
 
 
 -- VIEW --

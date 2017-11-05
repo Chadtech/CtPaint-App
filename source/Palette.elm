@@ -8,11 +8,11 @@ import Html.Attributes exposing (class, classList, style)
 import Html.Events exposing (onClick)
 import Mouse exposing (Position)
 import Tool exposing (Tool(..))
+import Tuple.Infix exposing ((:=))
 import Types exposing (Model, Msg(..))
 import Util
     exposing
-        ( (:=)
-        , background
+        ( background
         , height
         , maybeCons
         , px

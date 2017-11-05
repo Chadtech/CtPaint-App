@@ -16,7 +16,8 @@ import Random exposing (Seed)
 import ReplaceColor
 import Scale
 import Text
-import Util exposing ((&), height, left, top, width)
+import Tuple.Infix exposing ((&))
+import Util exposing (height, left, top, width)
 import Window exposing (Size)
 
 

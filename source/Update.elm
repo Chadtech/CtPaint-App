@@ -10,6 +10,7 @@ import Menu
 import Minimap
 import Ports exposing (JsMsg(..))
 import Tool.Update as Tool
+import Tuple.Infix exposing ((&))
 import Types
     exposing
         ( MinimapState(..)
@@ -18,7 +19,7 @@ import Types
         , keyPayloadDecoder
         , toUrl
         )
-import Util exposing ((&), origin)
+import Util exposing (origin)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

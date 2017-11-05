@@ -21,7 +21,8 @@ import MouseEvents exposing (MouseEvent)
 import Random exposing (Seed)
 import Time exposing (Time)
 import Tool exposing (Tool(..))
-import Util exposing ((&), (:=), tbw)
+import Tuple.Infix exposing ((&), (:=))
+import Util exposing (tbw)
 
 
 -- INIT --

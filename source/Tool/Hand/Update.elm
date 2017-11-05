@@ -2,8 +2,8 @@ module Tool.Hand.Update exposing (update)
 
 import Mouse exposing (Position)
 import Tool.Hand exposing (HandModel, Msg(..))
+import Tuple.Infix exposing ((&))
 import Types exposing (Model)
-import Util exposing ((&))
 
 
 update : Msg -> HandModel -> Model -> ( Model, HandModel )

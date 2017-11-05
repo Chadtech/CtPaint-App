@@ -11,30 +11,6 @@ import ParseInt
 import Window exposing (Size)
 
 
-(:=) : a -> b -> ( a, b )
-(:=) =
-    (,)
-
-
-(&) : a -> b -> ( a, b )
-(&) =
-    (,)
-
-
-{-| infixl 0 means the (:=) operator has the same precedence as (<|) and (|>),
-meaning you can use it at the end of a pipeline and have the precedence work out.
--}
-infixl 0 :=
-
-
-infixl 0 &
-
-
-pack : a -> b -> ( a, b )
-pack =
-    (,)
-
-
 swap : ( a, b ) -> ( b, a )
 swap ( a, b ) =
     ( b, a )
@@ -76,11 +52,6 @@ makeGroupsHelp xs res =
 
         _ ->
             xs :: res
-
-
-slice : Int -> Int -> List a -> List a
-slice start end =
-    List.drop start >> List.take (end - start)
 
 
 
@@ -250,20 +221,6 @@ toPosition { x, y } =
 toPoint : Position -> Point
 toPoint { x, y } =
     Point (toFloat x) (toFloat y)
-
-
-
--- BOOL --
-
-
-allTrue : List Bool -> Bool
-allTrue =
-    List.foldr (&&) True
-
-
-allFalse : List Bool -> Bool
-allFalse =
-    List.map not >> allTrue
 
 
 

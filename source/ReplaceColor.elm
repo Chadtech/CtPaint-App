@@ -4,7 +4,8 @@ import Color exposing (Color)
 import Html exposing (Html, a, div, p, text)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
-import Util exposing ((&), background, height)
+import Tuple.Infix exposing ((&))
+import Util exposing (background, height)
 
 
 type Msg

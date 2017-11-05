@@ -9,6 +9,8 @@
     "exposed-modules": [],
     "native-modules": true,
     "dependencies": {
+        "Chadtech/elm-bool-extra": "1.2.1 <= v < 2.0.0",
+        "Chadtech/tuple-infix": "1.0.0 <= v < 2.0.0",
         "Elm-Canvas/raster-shapes": "1.1.1 <= v < 2.0.0",
         "NoRedInk/elm-decode-pipeline": "3.0.0 <= v < 4.0.0",
         "elm-community/list-extra": "6.1.0 <= v < 7.0.0",

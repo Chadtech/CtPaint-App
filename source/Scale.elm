@@ -25,7 +25,8 @@ import Html.Events
         , onInput
         , onSubmit
         )
-import Util exposing ((&), pct, px)
+import Tuple.Infix exposing ((&))
+import Util exposing (pct, px)
 import Window exposing (Size)
 
 

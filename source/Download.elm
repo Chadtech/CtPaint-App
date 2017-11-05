@@ -5,7 +5,7 @@ import Html exposing (Html, a, form, input, p, text)
 import Html.Attributes exposing (class, placeholder, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Random exposing (Generator, Seed)
-import Util exposing ((&))
+import Tuple.Infix exposing ((&))
 
 
 type Msg

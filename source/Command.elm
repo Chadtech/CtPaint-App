@@ -12,6 +12,7 @@ import Ports exposing (JsMsg(..))
 import Tool exposing (Tool(..))
 import Tool.Zoom as Zoom
 import Tool.Zoom.Util as Zoom
+import Tuple.Infix exposing ((&))
 import Types
     exposing
         ( Command(..)
@@ -22,7 +23,7 @@ import Types
         , Msg(..)
         , payloadToString
         )
-import Util exposing ((&), origin)
+import Util exposing (origin)
 
 
 update : Command -> Model -> ( Model, Cmd Msg )

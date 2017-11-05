@@ -5,7 +5,7 @@ import Html exposing (Html, a, div, form, input, p, text)
 import Html.Attributes exposing (class, placeholder, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Task
-import Util exposing ((&))
+import Tuple.Infix exposing ((&))
 
 
 -- TYPES --

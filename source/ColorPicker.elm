@@ -1,5 +1,6 @@
 module ColorPicker exposing (..)
 
+import Bool.Extra
 import Color exposing (Color)
 import Html
     exposing
@@ -30,14 +31,8 @@ import Html.Events
         )
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
-import Util
-    exposing
-        ( (&)
-        , (:=)
-        , left
-        , toColor
-        , top
-        )
+import Tuple.Infix exposing ((&), (:=))
+import Util exposing (left, toColor, top)
 
 
 -- TYPES --
@@ -191,11 +186,11 @@ doesntHaveHue color =
         { red, green, blue } =
             Color.toRgb color
     in
-    Util.allTrue
-        [ red == green
-        , green == blue
-        , blue == red
-        ]
+    [ red == green
+    , green == blue
+    , blue == red
+    ]
+        |> Bool.Extra.all
 
 
 

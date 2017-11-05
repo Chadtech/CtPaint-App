@@ -5,8 +5,9 @@ import Draw
 import History
 import Tool.Select exposing (Msg(..), SelectModel)
 import Tool.Util exposing (adjustPosition)
+import Tuple.Infix exposing ((&))
 import Types exposing (Model)
-import Util exposing ((&), positionMin, tbw)
+import Util exposing (positionMin, tbw)
 
 
 update : Msg -> SelectModel -> Model -> ( Model, SelectModel )

@@ -13,7 +13,8 @@ import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
 import Tool exposing (Tool(..))
 import Tool.Zoom.Util as Zoom
-import Util exposing ((&), height, left, toPoint, top, width)
+import Tuple.Infix exposing ((&))
+import Util exposing (height, left, toPoint, top, width)
 import Window exposing (Size)
 
 

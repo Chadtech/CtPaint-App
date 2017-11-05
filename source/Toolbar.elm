@@ -4,8 +4,8 @@ import Html exposing (Html, a, div, text)
 import Html.Attributes exposing (attribute, class, classList, title)
 import Html.Events exposing (onClick)
 import Tool exposing (Tool(..))
+import Tuple.Infix exposing ((&), (:=))
 import Types exposing (Command(..), Model, Msg(..))
-import Util exposing ((&), (:=))
 
 
 view : Model -> Html Msg

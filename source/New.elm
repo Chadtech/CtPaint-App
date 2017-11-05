@@ -4,7 +4,7 @@ import Canvas exposing (Canvas, Size)
 import Color
 import Draw
 import Html exposing (Html, div)
-import Util exposing ((&))
+import Tuple.Infix exposing ((&))
 
 
 type Msg

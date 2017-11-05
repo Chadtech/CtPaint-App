@@ -2,7 +2,7 @@ port module Ports exposing (..)
 
 import Canvas exposing (Size)
 import Json.Encode as Encode exposing (Value)
-import Util exposing ((:=))
+import Tuple.Infix exposing ((:=))
 
 
 type JsMsg
