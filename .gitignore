@@ -2,7 +2,7 @@ elm-stuff
 development/paint-app-styles.css
 development/paint-app.js
 development/paint-app-elm.js
-distribution/
+development/client.js
 
 node_modules
 

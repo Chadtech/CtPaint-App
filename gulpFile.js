@@ -3,7 +3,6 @@ var source = require("vinyl-source-stream");
 var buffer = require("vinyl-buffer");
 var cp = require("child_process");
 var stylus = require("gulp-stylus");
-var coffeeify = require("coffeeify");
 var browserify = require("browserify");
 var concat = require("gulp-concat");
 var util = require("gulp-util");
