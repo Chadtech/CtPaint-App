@@ -72,11 +72,9 @@ update message model =
                         & Cmd.none
 
         ColorPickerMsg subMsg ->
-            let
-                colorPickerUpdate =
-                    ColorPicker.update subMsg model.colorPicker
-            in
-            incorporateColorPicker colorPickerUpdate model
+            model.colorPicker
+                |> ColorPicker.update subMsg
+                |> incorporateColorPicker model
 
         MinimapMsg subMsg ->
             case model.minimap of
@@ -308,12 +306,12 @@ incorporateMenu ( menu, externalMsg ) model =
 
 
 incorporateColorPicker :
-    ( ColorPicker.Model, ColorPicker.ExternalMsg )
-    -> Model
+    Model
+    -> ( ColorPicker.Model, ColorPicker.Reply )
     -> ( Model, Cmd Msg )
-incorporateColorPicker ( colorPicker, maybeMsg ) model =
-    case maybeMsg of
-        ColorPicker.DoNothing ->
+incorporateColorPicker model ( colorPicker, reply ) =
+    case reply of
+        ColorPicker.NoReply ->
             { model
                 | colorPicker = colorPicker
             }
@@ -331,14 +329,11 @@ incorporateColorPicker ( colorPicker, maybeMsg ) model =
                 & Cmd.none
 
         ColorPicker.UpdateHistory index color ->
-            let
-                newModel =
-                    { model
-                        | colorPicker = colorPicker
-                    }
-                        |> History.addColor index color
-            in
-            newModel & Cmd.none
+            { model
+                | colorPicker = colorPicker
+            }
+                |> History.addColor index color
+                & Cmd.none
 
         ColorPicker.StealFocus ->
             model & Ports.send StealFocus

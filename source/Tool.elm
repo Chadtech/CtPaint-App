@@ -4,6 +4,7 @@ import Html exposing (Attribute)
 import Html.Attributes as Attributes
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent, onMouseUp)
+import Styles
 import Tool.Hand as Hand
 import Tool.Line as Line
 import Tool.Pencil as Pencil
@@ -186,6 +187,40 @@ icon tool =
 
         ZoomOut ->
             "\xEA18"
+
+
+class : Tool -> Styles.Class
+class tool =
+    case tool of
+        Hand _ ->
+            Styles.Hand
+
+        Sample ->
+            Styles.Sample
+
+        Fill ->
+            Styles.Fill
+
+        Pencil _ ->
+            Styles.Pencil
+
+        Line _ ->
+            Styles.Line
+
+        Rectangle _ ->
+            Styles.Rectangle
+
+        RectangleFilled _ ->
+            Styles.RectangleFilled
+
+        Select _ ->
+            Styles.Select
+
+        ZoomIn ->
+            Styles.ZoomIn
+
+        ZoomOut ->
+            Styles.ZoomOut
 
 
 name : Tool -> String

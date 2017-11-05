@@ -31,6 +31,7 @@ import Html.Events
         )
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
+import Styles exposing (Class(..))
 import Tuple.Infix exposing ((&), (:=))
 import Util exposing (left, toColor, top)
 
@@ -38,8 +39,8 @@ import Util exposing (left, toColor, top)
 -- TYPES --
 
 
-type ExternalMsg
-    = DoNothing
+type Reply
+    = NoReply
     | SetColor Int Color
     | UpdateHistory Int Color
     | StealFocus
@@ -207,7 +208,7 @@ integrateWindow model window =
     { model | window = window }
 
 
-updatePicker : PickerMsg -> Picker -> ( Picker, ExternalMsg )
+updatePicker : PickerMsg -> Picker -> ( Picker, Reply )
 updatePicker msg picker =
     case msg of
         SetFocus True ->
@@ -233,16 +234,16 @@ updatePicker msg picker =
                     { picker
                         | colorHexField = newHexField
                     }
-                        & DoNothing
+                        & NoReply
 
         StealSubmit ->
-            picker & DoNothing
+            picker & NoReply
 
         SetNoGradientClickedOn ->
             { picker
                 | gradientClickedOn = Nothing
             }
-                & DoNothing
+                & NoReply
 
         MouseDownOnPointer gradient ->
             { picker
@@ -263,7 +264,7 @@ updatePicker msg picker =
             fieldHandler gradient str picker
 
 
-updateWindow : WindowMsg -> Window -> ( Window, ExternalMsg )
+updateWindow : WindowMsg -> Window -> ( Window, Reply )
 updateWindow msg window =
     case msg of
         HeaderMouseDown { targetPos, clientPos } ->
@@ -274,12 +275,12 @@ updateWindow msg window =
                     }
                         |> Just
             }
-                & DoNothing
+                & NoReply
 
         HeaderMouseMove position ->
             case window.clickState of
                 Nothing ->
-                    window & DoNothing
+                    window & NoReply
 
                 Just originalClick ->
                     { window
@@ -288,17 +289,17 @@ updateWindow msg window =
                             , y = position.y - originalClick.y
                             }
                     }
-                        & DoNothing
+                        & NoReply
 
         HeaderMouseUp ->
             { window | clickState = Nothing }
-                & DoNothing
+                & NoReply
 
         Close ->
-            { window | show = False } & DoNothing
+            { window | show = False } & NoReply
 
 
-update : Msg -> Model -> ( Model, ExternalMsg )
+update : Msg -> Model -> ( Model, Reply )
 update message model =
     case message of
         HandlePickerMsg pickerMsg ->
@@ -316,7 +317,7 @@ update message model =
 -- MESSAGE HANDLERS --
 
 
-fieldHandler : Gradient -> String -> Picker -> ( Picker, ExternalMsg )
+fieldHandler : Gradient -> String -> Picker -> ( Picker, Reply )
 fieldHandler gradient str picker =
     case String.toInt str of
         Ok int ->
@@ -326,7 +327,7 @@ fieldHandler gradient str picker =
             fieldHandlerErr gradient str picker
 
 
-fieldHandlerOk : Gradient -> String -> Int -> Picker -> ( Picker, ExternalMsg )
+fieldHandlerOk : Gradient -> String -> Int -> Picker -> ( Picker, Reply )
 fieldHandlerOk gradient str int picker =
     let
         { hue, saturation, lightness } =
@@ -418,29 +419,29 @@ validateHue oldColor newColor int =
         newColor
 
 
-fieldHandlerErr : Gradient -> String -> Picker -> ( Picker, ExternalMsg )
+fieldHandlerErr : Gradient -> String -> Picker -> ( Picker, Reply )
 fieldHandlerErr gradient str picker =
     case gradient of
         Lightness ->
-            { picker | lightnessField = str } & DoNothing
+            { picker | lightnessField = str } & NoReply
 
         Saturation ->
-            { picker | saturationField = str } & DoNothing
+            { picker | saturationField = str } & NoReply
 
         Hue ->
-            { picker | hueField = str } & DoNothing
+            { picker | hueField = str } & NoReply
 
         Blue ->
-            { picker | blueField = str } & DoNothing
+            { picker | blueField = str } & NoReply
 
         Green ->
-            { picker | greenField = str } & DoNothing
+            { picker | greenField = str } & NoReply
 
         Red ->
-            { picker | redField = str } & DoNothing
+            { picker | redField = str } & NoReply
 
 
-sliderHandler : Int -> Gradient -> Picker -> ( Picker, ExternalMsg )
+sliderHandler : Int -> Gradient -> Picker -> ( Picker, Reply )
 sliderHandler x gradient picker =
     case gradient of
         Lightness ->
@@ -520,12 +521,12 @@ sliderHandler x gradient picker =
 -- INTERNAL HELPERS --
 
 
-cohereAndSet : Picker -> ( Picker, ExternalMsg )
+cohereAndSet : Picker -> ( Picker, Reply )
 cohereAndSet =
     cohereModel >> setColor
 
 
-setColor : Picker -> ( Picker, ExternalMsg )
+setColor : Picker -> ( Picker, Reply )
 setColor ({ index, color } as picker) =
     picker & SetColor index color
 
@@ -564,6 +565,8 @@ cohereModel picker =
 
 
 -- VIEW --
+--{ class, classList } =
+--    Styles.helpers
 
 
 view : Model -> Html Msg

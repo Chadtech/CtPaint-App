@@ -3,13 +3,14 @@ module View exposing (view)
 import Canvas exposing (Canvas)
 import ColorPicker
 import Html exposing (Html, div)
-import Html.Attributes as Attributes exposing (class, id, style)
+import Html.Attributes as Attributes exposing (id, style)
 import Html.Events exposing (onMouseLeave)
 import Menu
 import Minimap
 import Mouse exposing (Position)
 import MouseEvents exposing (onMouseMove)
 import Palette
+import Styles exposing (Class(..))
 import Taskbar
 import Tool exposing (Tool(..))
 import Toolbar
@@ -18,6 +19,10 @@ import Util exposing (height, left, top, width)
 
 
 -- VIEW --
+
+
+{ class } =
+    Styles.helpers
 
 
 view : Model -> Html Msg
@@ -34,7 +39,7 @@ view model =
                     ]
         in
         div
-            [ class "main" ]
+            [ class [ Main ] ]
             [ Toolbar.view model
             , Taskbar.view model
             , Palette.view model
@@ -49,7 +54,7 @@ view model =
 galleryView : Model -> Html Msg
 galleryView model =
     div
-        [ class "main gallery" ]
+        [ class [ Main, Gallery ] ]
         [ Canvas.toHtml [] model.canvas ]
 
 
@@ -107,7 +112,7 @@ clickScreen : Int -> Model -> Html Msg
 clickScreen canvasAreaHeight { tool } =
     let
         attributes =
-            [ class ("screen " ++ Tool.name tool)
+            [ class [ Screen, Tool.class tool ]
             , style [ height canvasAreaHeight ]
             , onMouseLeave ScreenMouseExit
             , onMouseMove ScreenMouseMove
@@ -128,12 +133,12 @@ clickScreen canvasAreaHeight { tool } =
 canvasArea : Int -> Model -> Html Msg
 canvasArea canvasAreaHeight model =
     div
-        [ class "canvas-area"
+        [ class [ CanvasArea ]
         , style
             [ height canvasAreaHeight ]
         ]
         [ Canvas.toHtml
-            [ class "main-canvas"
+            [ class [ MainCanvas ]
             , id "main-canvas"
             , style (canvasStyles model)
             ]
@@ -162,7 +167,7 @@ selection model =
             div
                 [ style (selectionStyles model position canvas) ]
                 [ Canvas.toHtml
-                    [ class "selection-canvas"
+                    [ class [ SelectionCanvas ]
                     , style (selectionStyles model position canvas)
                     ]
                     canvas

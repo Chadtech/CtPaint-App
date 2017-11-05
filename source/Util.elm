@@ -149,6 +149,11 @@ background =
 
 tbw : Int
 tbw =
+    floor toolbarWidth
+
+
+toolbarWidth : Float
+toolbarWidth =
     29
 
 
