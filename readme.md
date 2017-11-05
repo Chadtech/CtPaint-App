@@ -1,22 +1,11 @@
 # CtPaint : App
 
-This is CtPaint, an image editor that runs in your web browser.
-
-## Quick start
-
-```
-npm install
-elm package install
-gulp
-````
-
-then go to `localhost:2970`
+This is CtPaint version 2, an image editor that runs in your web browser.
 
 
 This repo is organized as..
 
 ```
-./source
 ├── About.elm
 ├── Canvas.elm
 ├── Clipboard.elm
@@ -28,11 +17,12 @@ This repo is organized as..
 ├── History.elm
 ├── Imgur.elm
 ├── Import.elm
-├── Main.elm
 ├── Menu.elm
 ├── Minimap.elm
 ├── Native
 │   └── Canvas.js
+├── New.elm
+├── PaintApp.elm
 ├── Palette.elm
 ├── Ports.elm
 ├── ReplaceColor.elm
@@ -40,7 +30,6 @@ This repo is organized as..
 ├── Styles
 │   ├── Main.styl
 │   ├── a.styl
-│   ├── canvas.styl
 │   ├── card.styl
 │   ├── color-picker.styl
 │   ├── form.styl
@@ -50,6 +39,8 @@ This repo is organized as..
 │   ├── palette.styl
 │   ├── tool-button.styl
 │   └── toolbar.styl
+├── Styles.elm
+├── Stylesheets.elm
 ├── Subscriptions.elm
 ├── Taskbar.elm
 ├── Text.elm
@@ -85,6 +76,7 @@ This repo is organized as..
 ├── Update.elm
 ├── Util.elm
 ├── View.elm
-└── app.coffee
+└── app.js
+
 ```
 
