@@ -9,9 +9,11 @@ import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
 import Imgur
 import Import
+import Login
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
 import New
+import Open
 import Random exposing (Seed)
 import ReplaceColor
 import Scale
@@ -39,6 +41,8 @@ type Menu
     | ReplaceColor ReplaceColor.Model
     | Imgur Imgur.Model
     | New New.Model
+    | Open Open.Model
+    | Login Login.Model
 
 
 type ClickState
@@ -62,6 +66,8 @@ type ContentMsg
     | ReplaceColorMsg ReplaceColor.Msg
     | ImgurMsg Imgur.Msg
     | NewMsg New.Msg
+    | OpenMsg Open.Msg
+    | LoginMsg Login.Msg
 
 
 type ExternalMsg
@@ -302,6 +308,14 @@ contentView menu =
         New subModel ->
             List.map (Html.map NewMsg) <|
                 New.view subModel
+
+        Open subModel ->
+            List.map (Html.map OpenMsg) <|
+                Open.view subModel
+
+        Login subModel ->
+            List.map (Html.map LoginMsg) <|
+                Login.view subModel
 
 
 header : String -> Html Msg
