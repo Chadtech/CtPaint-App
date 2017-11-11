@@ -1,28 +1,104 @@
-module View exposing (view)
+module View exposing (css, view)
 
 import Canvas exposing (Canvas)
+import Chadtech.Colors exposing (ignorable2)
 import ColorPicker
+import Css exposing (..)
+import Css.Elements exposing (canvas)
+import Css.Namespace exposing (namespace)
 import Html exposing (Html, div)
 import Html.Attributes as Attributes exposing (id, style)
+import Html.CssHelpers
 import Html.Events exposing (onMouseLeave)
 import Menu
 import Minimap
-import Mouse exposing (Position)
+import Mouse
 import MouseEvents exposing (onMouseMove)
 import Palette
-import Styles exposing (Class(..))
 import Taskbar
-import Tool exposing (Tool(..))
+import Tool
 import Toolbar
 import Types exposing (MinimapState(..), Model, Msg(..))
-import Util exposing (height, left, top, width)
+import Util exposing (toolbarWidth)
+
+
+-- STYLES --
+
+
+type Class
+    = Main
+    | Gallery
+    | CanvasArea
+    | MainCanvas
+    | SelectionCanvas
+    | Screen
+    | Hand
+    | Sample
+    | Fill
+    | Select
+    | ZoomIn
+    | ZoomOut
+    | Pencil
+    | Line
+    | Rectangle
+    | RectangleFilled
+
+
+css : Stylesheet
+css =
+    [ Css.class Main
+        [ width (pct 100)
+        , withClass Gallery
+            [ cursor none
+            , children
+                [ canvas
+                    [ display block
+                    , margin2 zero auto
+                    , transform (translateY (pct 50))
+                    ]
+                ]
+            ]
+        ]
+    , Css.class MainCanvas
+        [ position absolute
+        , border3 (px 2) solid ignorable2
+        ]
+    , Css.class SelectionCanvas
+        [ position absolute
+        , backgroundImage (url "https://cdn.rawgit.com/Chadtech/CtPaint-Shell/master/public/selection.gif")
+        , padding (px 1)
+        ]
+    , Css.class CanvasArea
+        [ position absolute
+        , overflow hidden
+        , width (calc (pct 100) minus (px toolbarWidth))
+        , left (px toolbarWidth)
+        , top (px toolbarWidth)
+        ]
+    , Css.class Screen
+        [ position absolute
+        , width (calc (pct 100) minus (px toolbarWidth))
+        , left (px toolbarWidth)
+        , top (px toolbarWidth)
+        , cursor crosshair
+        , withClass Hand [ cursor move ]
+        ]
+    ]
+        |> namespace mainViewNamespace
+        |> stylesheet
+
+
+mainViewNamespace : String
+mainViewNamespace =
+    "MainView"
+
 
 
 -- VIEW --
 
 
 { class } =
-    Styles.helpers
+    Html.CssHelpers.withNamespace mainViewNamespace
 
 
 view : Model -> Html Msg
@@ -40,7 +116,7 @@ view model =
         in
         div
             [ class [ Main ] ]
-            [ Toolbar.view model
+            [ Toolbar.view model.tool
             , Taskbar.view model
             , Palette.view model
             , canvasArea canvasAreaHeight model
@@ -97,9 +173,9 @@ minimap model =
 colorPicker : Model -> Html Msg
 colorPicker { colorPicker } =
     if colorPicker.window.show then
-        Html.map
-            ColorPickerMsg
-            (ColorPicker.view colorPicker)
+        colorPicker
+            |> ColorPicker.view
+            |> Html.map ColorPickerMsg
     else
         Html.text ""
 
@@ -112,8 +188,8 @@ clickScreen : Int -> Model -> Html Msg
 clickScreen canvasAreaHeight { tool } =
     let
         attributes =
-            [ class [ Screen, Tool.class tool ]
-            , style [ height canvasAreaHeight ]
+            [ class [ Screen, toolClass tool ]
+            , style [ Util.height canvasAreaHeight ]
             , onMouseLeave ScreenMouseExit
             , onMouseMove ScreenMouseMove
             ]
@@ -126,6 +202,40 @@ clickScreen canvasAreaHeight { tool } =
     div (toolAttrs ++ attributes) []
 
 
+toolClass : Tool.Tool -> Class
+toolClass tool =
+    case tool of
+        Tool.Hand _ ->
+            Hand
+
+        Tool.Sample ->
+            Sample
+
+        Tool.Fill ->
+            Fill
+
+        Tool.Pencil _ ->
+            Pencil
+
+        Tool.Line _ ->
+            Line
+
+        Tool.Rectangle _ ->
+            Rectangle
+
+        Tool.RectangleFilled _ ->
+            RectangleFilled
+
+        Tool.Select _ ->
+            Select
+
+        Tool.ZoomIn ->
+            ZoomIn
+
+        Tool.ZoomOut ->
+            ZoomOut
+
+
 
 -- CANVAS --
 
@@ -135,11 +245,11 @@ canvasArea canvasAreaHeight model =
     div
         [ class [ CanvasArea ]
         , style
-            [ height canvasAreaHeight ]
+            [ Util.height canvasAreaHeight ]
         ]
         [ Canvas.toHtml
             [ class [ MainCanvas ]
-            , id "main-canvas"
+            , Attributes.id "main-canvas"
             , style (canvasStyles model)
             ]
             (Canvas.draw model.drawAtRender model.canvas)
@@ -153,10 +263,10 @@ canvasStyles { zoom, canvasPosition, canvas } =
         canvasSize =
             Canvas.getSize canvas
     in
-    [ left canvasPosition.x
-    , top canvasPosition.y
-    , width (canvasSize.width * zoom)
-    , height (canvasSize.height * zoom)
+    [ Util.left canvasPosition.x
+    , Util.top canvasPosition.y
+    , Util.width (canvasSize.width * zoom)
+    , Util.height (canvasSize.height * zoom)
     ]
 
 
@@ -177,14 +287,14 @@ selection model =
             Html.text ""
 
 
-selectionStyles : Model -> Position -> Canvas -> List ( String, String )
+selectionStyles : Model -> Mouse.Position -> Canvas -> List ( String, String )
 selectionStyles { zoom, canvasPosition } position selection =
     let
         selectionSize =
             Canvas.getSize selection
     in
-    [ left (canvasPosition.x + position.x * zoom + 1)
-    , top (canvasPosition.y + position.y * zoom + 1)
-    , width (selectionSize.width * zoom)
-    , height (selectionSize.height * zoom)
+    [ Util.left (canvasPosition.x + position.x * zoom + 1)
+    , Util.top (canvasPosition.y + position.y * zoom + 1)
+    , Util.width (selectionSize.width * zoom)
+    , Util.height (selectionSize.height * zoom)
     ]

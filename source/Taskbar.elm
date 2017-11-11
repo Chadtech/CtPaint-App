@@ -1,8 +1,14 @@
-module Taskbar exposing (view)
+module Taskbar exposing (css, view)
 
+import Chadtech.Colors exposing (ignorable1, ignorable2, ignorable3, point)
+import Css exposing (..)
+import Css.Elements
+import Css.Namespace exposing (namespace)
+import Data.Taskbar exposing (DropDown(..))
 import Dict exposing (Dict)
-import Html exposing (Attribute, Html, a, div, p, text)
-import Html.Attributes exposing (class)
+import Html exposing (Attribute, Html, a, div, p)
+import Html.CssHelpers
+import Html.Custom exposing (outdent)
 import Html.Events exposing (onClick, onMouseOver)
 import Tool
 import Types
@@ -13,14 +19,148 @@ import Types
         , Msg(..)
         , NewWindow(..)
         , QuickKey
-        , TaskbarDropDown(..)
         )
+import Util exposing (toolbarWidth)
+
+
+-- STYLES --
+
+
+type Class
+    = Taskbar
+    | InvisibleWall
+    | Button
+    | Dropped
+    | Divider
+    | Strike
+    | Option
+    | Options
+    | Seam
+    | DropDown DropDown
+
+
+css : Stylesheet
+css =
+    [ Css.class Taskbar
+        [ backgroundColor ignorable2
+        , height (px toolbarWidth)
+        , width (calc (pct 100) minus (px toolbarWidth))
+        , left (px toolbarWidth)
+        , top (px 0)
+        , position absolute
+        , borderBottom3 (px 1) solid ignorable3
+        ]
+    , Css.class InvisibleWall
+        [ width (calc (pct 100) plus (px toolbarWidth))
+        , height (vh 100)
+        , position absolute
+        , top (px 0)
+        , left (px -toolbarWidth)
+        , zIndex (int 1)
+        ]
+    , Css.class Button
+        [ zIndex (int 2)
+        , position relative
+        , padding2 (px 2) (px 4)
+        , withClass Dropped [ zIndex (int 3) ]
+        , active outdent
+        ]
+    , Css.class Seam
+        [ backgroundColor ignorable2
+        , height (px 2)
+        , left (px 0)
+        , zIndex (int 4)
+        , width (calc (pct 100) plus (px 2))
+        , position absolute
+        ]
+    , (Css.class Options << List.append outdent)
+        [ position absolute
+        , left (px -2)
+        , backgroundColor ignorable2
+        , width (px 300)
+        , giveDropdownWidth (DropDown Help) 110
+        , giveDropdownWidth (DropDown View) 200
+        , giveDropdownWidth (DropDown Edit) 220
+        , giveDropdownWidth (DropDown File) 220
+        , hover [ color point ]
+        , padding (px 4)
+        ]
+    , Css.class Divider
+        [ height (px 16)
+        , position relative
+        ]
+    , Css.class Strike
+        [ position absolute
+        , top (px 6)
+        , left (px 4)
+        , height (px 0)
+        , width (px 292)
+        , borderTop3 (px 2) solid ignorable3
+        , borderBottom3 (px 2) solid ignorable1
+        ]
+    , Css.class Option
+        [ height (px 32)
+        , width (px 296)
+        , position relative
+        , justifyContent spaceBetween
+        , verticalAlign middle
+        , displayFlex
+        , children
+            [ Css.Elements.p
+                [ height (px 32)
+                , display tableCell
+                , marginLeft (px 4)
+                , marginTop (px 5)
+                , marginRight (px 4)
+                ]
+            ]
+        , hover
+            [ backgroundColor point
+            , children
+                [ Css.Elements.p
+                    [ color ignorable3 ]
+                ]
+            ]
+        ]
+    ]
+        |> namespace taskbarNamespace
+        |> stylesheet
+
+
+giveDropdownWidth : Class -> Float -> Style
+giveDropdownWidth dropdownClass dropdownWidth =
+    withClass dropdownClass
+        [ width (px dropdownWidth)
+        , children
+            [ Css.class Option
+                [ width (px (dropdownWidth - 6)) ]
+            , Css.class Divider
+                [ children
+                    [ Css.class Strike
+                        [ width (px (dropdownWidth - 8)) ]
+                    ]
+                ]
+            ]
+        ]
+
+
+taskbarNamespace : String
+taskbarNamespace =
+    "Taskbar"
+
+
+
+-- VIEW --
+
+
+{ class, classList } =
+    Html.CssHelpers.withNamespace taskbarNamespace
 
 
 view : Model -> Html Msg
 view ({ taskbarDropped } as model) =
     div
-        [ class "top-tool-bar" ]
+        [ class [ Taskbar ] ]
         [ file model
         , edit model
         , transform model
@@ -31,21 +171,21 @@ view ({ taskbarDropped } as model) =
         ]
 
 
-invisibleWall : Maybe TaskbarDropDown -> Html Msg
+invisibleWall : Maybe DropDown -> Html Msg
 invisibleWall maybeTaskbarDropDown =
     case maybeTaskbarDropDown of
         Just _ ->
             div
-                [ class "invisible-wall"
-                , onClick (DropDown Nothing)
+                [ class [ InvisibleWall ]
+                , onClick DropDownClickedOut
                 ]
                 []
 
         Nothing ->
-            text ""
+            Html.text ""
 
 
-help : Maybe TaskbarDropDown -> Html Msg
+help : Maybe DropDown -> Html Msg
 help maybeHelp =
     case maybeHelp of
         Just Help ->
@@ -53,7 +193,7 @@ help maybeHelp =
             , option "Tutorial" "" (OpenNewWindow Tutorial)
             , option "Donate" "" (OpenNewWindow Donate)
             ]
-                |> taskbarButtonOpen "Help"
+                |> taskbarButtonOpen Help
 
         _ ->
             taskbarButtonClose Help
@@ -80,7 +220,7 @@ view_ model =
                 (getCmdStr model.quickKeys ToggleColorPicker)
                 (Command ToggleColorPicker)
             ]
-                |> taskbarButtonOpen "View"
+                |> taskbarButtonOpen View
 
         _ ->
             taskbarButtonClose View
@@ -152,7 +292,7 @@ transformOpen model =
         (getCmdStr model.quickKeys InitText)
         (Command InitText)
     ]
-        |> taskbarButtonOpen "Transform"
+        |> taskbarButtonOpen Transform
 
 
 
@@ -212,7 +352,7 @@ toolsDropped model =
         (getCmdStr model.quickKeys SetToolToRectangleFilled)
         (Command SetToolToRectangleFilled)
     ]
-        |> taskbarButtonOpen "Tools"
+        |> taskbarButtonOpen Tools
 
 
 
@@ -263,7 +403,7 @@ editDropped model =
         ""
         (OpenNewWindow Preferences)
     ]
-        |> taskbarButtonOpen "Edit"
+        |> taskbarButtonOpen Edit
 
 
 
@@ -297,7 +437,7 @@ fileDropped model =
     , divider
     , option "Imgur" "" InitImgur
     ]
-        |> taskbarButtonOpen "File"
+        |> taskbarButtonOpen File
 
 
 
@@ -314,28 +454,26 @@ getCmdStr cmdLookUp cmd =
             ""
 
 
-taskbarButtonClose : TaskbarDropDown -> Html Msg
+taskbarButtonClose : DropDown -> Html Msg
 taskbarButtonClose option =
     a
-        [ class "task-bar-button"
-        , onClick (DropDown (Just option))
+        [ class [ Button ]
+        , onClick (DropDownClicked option)
         , onMouseOver (HoverOnto option)
         ]
-        [ text (toString option) ]
+        [ Html.text (toString option) ]
 
 
-taskbarButtonOpen : String -> List (Html Msg) -> Html Msg
-taskbarButtonOpen labelStr children =
+taskbarButtonOpen : DropDown -> List (Html Msg) -> Html Msg
+taskbarButtonOpen dropdown children =
     a
-        [ class "task-bar-button current"
-        , onClick (DropDown Nothing)
+        [ class [ Button, Dropped ]
+        , onClick DropDownClickedOut
         ]
-        [ text labelStr
+        [ Html.text (toString dropdown)
         , seam
         , div
-            [ class
-                ("options " ++ String.toLower labelStr)
-            ]
+            [ class [ Options, DropDown dropdown ] ]
             children
         ]
 
@@ -343,15 +481,15 @@ taskbarButtonOpen labelStr children =
 divider : Html Msg
 divider =
     div
-        [ class "divider" ]
-        [ div [ class "strike" ] [] ]
+        [ class [ Divider ] ]
+        [ div [ class [ Strike ] ] [] ]
 
 
 option : String -> String -> Msg -> Html Msg
 option label cmdKeys message =
     div
         [ onClick message
-        , class "option"
+        , class [ Option ]
         ]
         [ p_ label
         , p_ cmdKeys
@@ -360,9 +498,9 @@ option label cmdKeys message =
 
 seam : Html Msg
 seam =
-    div [ class "seam" ] []
+    div [ class [ Seam ] ] []
 
 
 p_ : String -> Html Msg
 p_ =
-    text >> List.singleton >> p []
+    Html.text >> List.singleton >> p []

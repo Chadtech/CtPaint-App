@@ -1,22 +1,26 @@
-module Styles exposing (Class(..), css, helpers)
+module Html.Custom
+    exposing
+        ( cannotSelect
+        , card
+        , cardBody
+        , css
+        , header
+        , indent
+        , outdent
+        )
 
 import Chadtech.Colors exposing (..)
 import Css exposing (..)
 import Css.Elements exposing (a, body, canvas, form, p)
 import Css.Namespace exposing (namespace)
-import Html.CssHelpers exposing (Namespace)
+import Html exposing (Attribute, Html)
+import Html.CssHelpers
+import Html.Events exposing (onClick)
+import MouseEvents exposing (MouseEvent)
 import Tuple.Infix exposing ((:=))
-import Util exposing (toolbarWidth)
 
 
-helpers : Namespace String class id msg
-helpers =
-    Html.CssHelpers.withNamespace appNamespace
-
-
-appNamespace : String
-appNamespace =
-    "paintApp"
+-- STYLES --
 
 
 type Class
@@ -33,22 +37,6 @@ type Class
     | HasBottomMargin
     | TextAlignCenter
     | SpinnerContainer
-    | Main
-    | Gallery
-    | Screen
-    | Hand
-    | Sample
-    | Fill
-    | Select
-    | ZoomIn
-    | ZoomOut
-    | Pencil
-    | Line
-    | Rectangle
-    | RectangleFilled
-    | MainCanvas
-    | SelectionCanvas
-    | CanvasArea
 
 
 css : Stylesheet
@@ -60,15 +48,14 @@ css =
         ]
     , canvas
         [ property "image-rendering" "pixelated" ]
-    , main_
-    , card
+    , cardStyle
     , p <|
         List.append
             basicFont
             [ margin zero
             , padding zero
             ]
-    , header
+    , headerStyle
     , input
     , button
     , submit
@@ -80,78 +67,14 @@ css =
     , class TextAlignCenter
         [ textAlign center ]
     , spinnerContainer
-    , mainCanvas
-    , selectionCanvas
-    , screen
-    , canvasArea
     ]
         |> namespace appNamespace
         |> stylesheet
 
 
-main_ : Snippet
-main_ =
-    [ width (pct 100)
-    , withClass Gallery
-        [ cursor none
-        , children
-            [ canvas
-                [ display block
-                , margin2 zero auto
-                , transform (translateY (pct 50))
-                ]
-            ]
-        ]
-    ]
-        |> class Main
-
-
-
--- CANVAS --
-
-
-mainCanvas : Snippet
-mainCanvas =
-    [ position absolute
-    , border3 (px 2) solid ignorable2
-    ]
-        |> class MainCanvas
-
-
-selectionCanvas : Snippet
-selectionCanvas =
-    [ position absolute
-    , backgroundImage (url "https://cdn.rawgit.com/Chadtech/CtPaint-Shell/master/public/selection.gif")
-    , padding (px 1)
-    ]
-        |> class SelectionCanvas
-
-
-canvasArea : Snippet
-canvasArea =
-    [ position absolute
-    , overflow hidden
-    , width (calc (pct 100) minus (px toolbarWidth))
-    , left (px toolbarWidth)
-    , top (px toolbarWidth)
-    ]
-        |> class CanvasArea
-
-
-screen : Snippet
-screen =
-    [ position absolute
-    , width (calc (pct 100) minus (px toolbarWidth))
-    , left (px toolbarWidth)
-    , top (px toolbarWidth)
-    , cursor crosshair
-    , withClass Hand [ cursor move ]
-    ]
-        |> class Screen
-
-
-
--- SPINNER --
+appNamespace : String
+appNamespace =
+    "paintApp"
 
 
 spinnerContainer : Snippet
@@ -208,8 +131,8 @@ input =
         |> Css.Elements.input
 
 
-header : Snippet
-header =
+headerStyle : Snippet
+headerStyle =
     [ backgroundColor point
     , height (px 25)
     , width (calc (pct 100) minus (px 8))
@@ -225,13 +148,21 @@ header =
             , margin (px 0)
             , display inlineBlock
             ]
+        , a
+            [ height (px 21)
+            , width (px 21)
+            , lineHeight (px 21)
+            , padding (px 0)
+            , float right
+            , textAlign center
+            ]
         ]
     ]
         |> class Header
 
 
-card : Snippet
-card =
+cardStyle : Snippet
+cardStyle =
     [ backgroundColor ignorable2
     , borderTop3 (px 2) solid ignorable1
     , borderLeft3 (px 2) solid ignorable1
@@ -284,10 +215,6 @@ button =
         |> a
 
 
-
--- HELPERS --
-
-
 cannotSelect : List Style
 cannotSelect =
     [ "-webkit-user-select" := "none"
@@ -323,3 +250,40 @@ basicFont =
     , property "-webkit-font-smoothing" "none"
     , fontSize (px 32)
     ]
+
+
+
+-- VIEW --
+
+
+class_ : List Class -> Attribute msg
+class_ =
+    (Html.CssHelpers.withNamespace appNamespace).class
+
+
+type alias HeaderState msg =
+    { text : String
+    , headerMouseDown : MouseEvent -> msg
+    , xClick : msg
+    }
+
+
+card : List (Attribute msg) -> List (Html msg) -> Html msg
+card attrs =
+    Html.div (class_ [ Card ] :: attrs)
+
+
+cardBody : List (Attribute msg) -> List (Html msg) -> Html msg
+cardBody attrs =
+    Html.div (class_ [ Body ] :: attrs)
+
+
+header : HeaderState msg -> Html msg
+header { text, headerMouseDown, xClick } =
+    Html.div
+        [ class_ [ Header ]
+        , MouseEvents.onMouseDown headerMouseDown
+        ]
+        [ Html.p [] [ Html.text text ]
+        , Html.a [ onClick xClick ] [ Html.text "x" ]
+        ]

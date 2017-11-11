@@ -112,9 +112,15 @@ update message model =
             }
                 & Cmd.none
 
-        DropDown maybeOption ->
+        DropDownClicked option ->
             { model
-                | taskbarDropped = maybeOption
+                | taskbarDropped = Just option
+            }
+                & Cmd.none
+
+        DropDownClickedOut ->
+            { model
+                | taskbarDropped = Nothing
             }
                 & Cmd.none
 

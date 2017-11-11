@@ -1,7 +1,21 @@
-module ColorPicker exposing (..)
+module ColorPicker
+    exposing
+        ( Model
+        , Msg(..)
+        , Reply(..)
+        , css
+        , init
+        , subscriptions
+        , update
+        , view
+        )
 
 import Bool.Extra
+import Chadtech.Colors exposing (ignorable1, point)
 import Color exposing (Color)
+import Css exposing (..)
+import Css.Elements
+import Css.Namespace exposing (namespace)
 import Html
     exposing
         ( Attribute
@@ -21,6 +35,8 @@ import Html.Attributes
         , style
         , value
         )
+import Html.CssHelpers
+import Html.Custom exposing (card, cardBody, header, indent)
 import Html.Events
     exposing
         ( onBlur
@@ -29,11 +45,10 @@ import Html.Events
         , onInput
         , onSubmit
         )
-import Mouse exposing (Position)
+import Mouse
 import MouseEvents exposing (MouseEvent)
-import Styles exposing (Class(..))
 import Tuple.Infix exposing ((&), (:=))
-import Util exposing (left, toColor, top)
+import Util exposing (toColor)
 
 
 -- TYPES --
@@ -41,15 +56,15 @@ import Util exposing (left, toColor, top)
 
 type Reply
     = NoReply
-    | SetColor Int Color
-    | UpdateHistory Int Color
+    | SetColor Int Color.Color
+    | UpdateHistory Int Color.Color
     | StealFocus
     | ReturnFocus
 
 
 type WindowMsg
     = HeaderMouseDown MouseEvent
-    | HeaderMouseMove Position
+    | HeaderMouseMove Mouse.Position
     | HeaderMouseUp
     | Close
 
@@ -85,15 +100,15 @@ type alias Model =
 
 
 type alias Window =
-    { position : Position
-    , clickState : Maybe Position
+    { position : Mouse.Position
+    , clickState : Maybe Mouse.Position
     , focusedOn : Bool
     , show : Bool
     }
 
 
 type alias Picker =
-    { color : Color
+    { color : Color.Color
     , index : Int
     , redField : String
     , greenField : String
@@ -110,14 +125,14 @@ type alias Picker =
 -- INIT --
 
 
-init : Bool -> Int -> Color -> Model
+init : Bool -> Int -> Color.Color -> Model
 init show index color =
     { picker = initPicker index color
     , window = initWindow show
     }
 
 
-initPicker : Int -> Color -> Picker
+initPicker : Int -> Color.Color -> Picker
 initPicker index color =
     let
         { red, green, blue } =
@@ -181,7 +196,7 @@ subscriptions { window } =
 -- UTIL --
 
 
-doesntHaveHue : Color -> Bool
+doesntHaveHue : Color.Color -> Bool
 doesntHaveHue color =
     let
         { red, green, blue } =
@@ -404,7 +419,7 @@ fieldHandlerOk gradient str int picker =
                 |> cohereAndSet
 
 
-validateHue : Color -> Color -> Int -> Color
+validateHue : Color.Color -> Color.Color -> Int -> Color.Color
 validateHue oldColor newColor int =
     if doesntHaveHue newColor then
         let
@@ -564,33 +579,103 @@ cohereModel picker =
 
 
 
+-- STYLES --
+
+
+type Class
+    = ColorPicker
+    | Header
+    | Body
+    | Break
+    | Visualization
+    | SliderContainer
+    | Gradient
+    | Pointer
+    | Transparent
+
+
+css : Stylesheet
+css =
+    [ Css.class ColorPicker
+        [ width (px 323)
+        , height (px 223)
+        , position absolute
+        ]
+    , (Css.class Visualization << List.append indent)
+        [ height (px 20)
+        , width (px 241)
+        , verticalAlign top
+        , display inlineBlock
+        , marginTop (px 2)
+        ]
+    , Css.class SliderContainer
+        [ marginTop (px 2)
+        , width (pct 100)
+        , height (px 25)
+        , children
+            [ Css.Elements.p
+                [ display inlineBlock
+                , verticalAlign top
+                , marginTop (px 3)
+                , marginLeft (px 2)
+                ]
+            , Css.Elements.input
+                [ width (px 39)
+                , verticalAlign top
+                , marginLeft (px 2)
+                ]
+            ]
+        ]
+    , (Css.class Gradient << List.append indent)
+        [ height (px 20)
+        , width (px 256)
+        , display inlineBlock
+        , marginLeft (px 4)
+        , position relative
+        ]
+    , Css.class Pointer
+        [ position absolute
+        , height (px 20)
+        , borderLeft3 (px 2) solid point
+        , borderRight3 (px 2) solid ignorable1
+        , cursor pointer
+        ]
+    , Css.class Transparent
+        [ pointerEvents none ]
+    ]
+        |> namespace colorPickerNamespace
+        |> stylesheet
+
+
+colorPickerNamespace : String
+colorPickerNamespace =
+    "ColorPicker"
+
+
+
 -- VIEW --
---{ class, classList } =
---    Styles.helpers
+
+
+{ class, classList } =
+    Html.CssHelpers.withNamespace colorPickerNamespace
 
 
 view : Model -> Html Msg
 view model =
-    div
-        [ class "card color-picker"
+    card
+        [ class [ ColorPicker ]
         , style
-            [ left model.window.position.x
-            , top model.window.position.y
+            [ Util.left model.window.position.x
+            , Util.top model.window.position.y
             ]
         ]
-        [ div
-            [ class "header"
-            , MouseEvents.onMouseDown HeaderMouseDown
-            ]
-            [ p [] [ text "color picker" ]
-            , a
-                [ onClick Close ]
-                [ text "x" ]
-            ]
+        [ header
+            { text = "color picker"
+            , headerMouseDown = HeaderMouseDown
+            , xClick = Close
+            }
             |> Html.map HandleWindowMsg
-        , div
-            [ class "body" ]
-            (body model.picker)
+        , cardBody [] (body model.picker)
             |> Html.map HandlePickerMsg
         ]
 
@@ -602,7 +687,7 @@ view model =
 body : Picker -> List (Html PickerMsg)
 body ({ colorHexField, color } as model) =
     [ div
-        [ class "visualization"
+        [ class [ Visualization ]
         , style
             [ "background" := Util.toHexColor color ]
         ]
@@ -630,8 +715,8 @@ body ({ colorHexField, color } as model) =
 slider : String -> String -> Gradient -> Html PickerMsg -> Html PickerMsg
 slider label fieldContent gradient sliderGradient =
     div
-        [ class "slider-container" ]
-        [ p [] [ text label ]
+        [ class [ SliderContainer ] ]
+        [ p [] [ Html.text label ]
         , sliderGradient
         , input
             [ onInput (FieldUpdate gradient)
@@ -674,7 +759,7 @@ redGradient { color, gradientClickedOn } =
                 [ "pointer" := True
                 , "transparent" := (gradientClickedOn == Just Red)
                 ]
-            , style [ left (red - 2) ]
+            , style [ Util.left (red - 2) ]
             , Html.Events.onMouseDown (MouseDownOnPointer Red)
             ]
             []
@@ -708,7 +793,7 @@ greenGradient { color, gradientClickedOn } =
                 [ "pointer" := True
                 , "transparent" := (gradientClickedOn == Just Green)
                 ]
-            , style [ left (green - 2) ]
+            , style [ Util.left (green - 2) ]
             , Html.Events.onMouseDown (MouseDownOnPointer Green)
             ]
             []
@@ -742,7 +827,7 @@ blueGradient { color, gradientClickedOn } =
                 [ "pointer" := True
                 , "transparent" := (gradientClickedOn == Just Blue)
                 ]
-            , style [ left (blue - 2) ]
+            , style [ Util.left (blue - 2) ]
             , Html.Events.onMouseDown (MouseDownOnPointer Blue)
             ]
             []
@@ -766,7 +851,7 @@ hueGradient { color, gradientClickedOn } =
                     |> gradientStyle
             else
                 let
-                    atDegree : Float -> Color
+                    atDegree : Float -> Color.Color
                     atDegree degree =
                         Color.hsl
                             (degrees degree)
@@ -792,7 +877,7 @@ hueGradient { color, gradientClickedOn } =
                 , "transparent" := (gradientClickedOn == Just Hue)
                 ]
             , style
-                [ left (floor ((hue / (2 * pi)) * 255)) ]
+                [ Util.left (floor ((hue / (2 * pi)) * 255)) ]
             , Html.Events.onMouseDown (MouseDownOnPointer Hue)
             ]
             []
@@ -837,7 +922,7 @@ saturationGradient { color, gradientClickedOn } =
                 , "transparent" := (gradientClickedOn == Just Saturation)
                 ]
             , style
-                [ left (floor (saturation * 255) - 2) ]
+                [ Util.left (floor (saturation * 255) - 2) ]
             , Html.Events.onMouseDown (MouseDownOnPointer Saturation)
             ]
             []
@@ -879,7 +964,7 @@ lightnessGradient { color, gradientClickedOn } =
                 , "transparent" := (gradientClickedOn == Just Lightness)
                 ]
             , style
-                [ left (floor (lightness * 255) - 2) ]
+                [ Util.left (floor (lightness * 255) - 2) ]
             , Html.Events.onMouseDown (MouseDownOnPointer Lightness)
             ]
             []
@@ -892,7 +977,7 @@ lightnessGradient { color, gradientClickedOn } =
 
 gradientAttributes : ( String, String ) -> List (Attribute PickerMsg)
 gradientAttributes gradientStyle_ =
-    [ class "gradient"
+    [ class [ Gradient ]
     , style [ gradientStyle_ ]
     , Html.Events.onMouseUp SetNoGradientClickedOn
     ]
@@ -916,7 +1001,7 @@ addMouseMoveHandler attributes maybeGradient gradient =
             attributes
 
 
-gradientStyle : List Color -> ( String, String )
+gradientStyle : List Color.Color -> ( String, String )
 gradientStyle colors =
     [ "linear-gradient(to right, "
     , colors
@@ -928,7 +1013,7 @@ gradientStyle colors =
         |> (String.concat >> (,) "background")
 
 
-toCssString : Color -> String
+toCssString : Color.Color -> String
 toCssString color =
     let
         { red, green, blue } =

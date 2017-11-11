@@ -1,31 +1,42 @@
 module Palette exposing (..)
 
 import Array exposing (Array)
+import Chadtech.Colors
+    exposing
+        ( backgroundx2
+        , ignorable1
+        , ignorable2
+        , ignorable3
+        , point
+        )
 import Color exposing (Color)
+import Css exposing (..)
+import Css.Namespace exposing (namespace)
 import Draw
-import Html exposing (Attribute, Html, a, div, p, span, text)
+import Html exposing (Attribute, Html, a, div, p, span)
 import Html.Attributes exposing (class, classList, style)
+import Html.CssHelpers
+import Html.Custom exposing (cannotSelect, indent, outdent)
 import Html.Events exposing (onClick)
-import Mouse exposing (Position)
+import Mouse
 import Tool exposing (Tool(..))
 import Tuple.Infix exposing ((:=))
 import Types exposing (Model, Msg(..))
 import Util
     exposing
         ( background
-        , height
         , maybeCons
-        , px
         , tbw
         , toColor
         , toHex
+        , toolbarWidth
         )
 
 
 -- INIT --
 
 
-initPalette : Array Color
+initPalette : Array Color.Color
 initPalette =
     [ Color.rgba 176 166 154 255
     , Color.black
@@ -54,31 +65,145 @@ initSwatches =
 
 
 type alias Swatches =
-    { primary : Color
-    , first : Color
-    , second : Color
-    , third : Color
+    { primary : Color.Color
+    , first : Color.Color
+    , second : Color.Color
+    , third : Color.Color
     , keyIsDown : Bool
     }
+
+
+
+-- STYLES --
+
+
+type Class
+    = Palette
+    | SwatchesContainer
+    | Swatch
+    | Primary
+    | First
+    | Second
+    | Third
+    | Colors
+    | Square
+    | Selected
+    | Plus
+    | Edge
+    | Info
+
+
+css : Stylesheet
+css =
+    [ Css.class Palette
+        [ backgroundColor ignorable2
+        , position fixed
+        , bottom (px 0)
+        , left (px toolbarWidth)
+        , width (calc (pct 100) minus (px 29))
+        ]
+    , Css.class SwatchesContainer
+        [ marginLeft (px -27)
+        , position absolute
+        , top (px 4)
+        , left (px 0)
+        ]
+    , (Css.class Swatch << List.append indent)
+        [ position absolute
+        , height (px 20)
+        ]
+    , Css.class Primary
+        [ top (px 0)
+        , left (px 0)
+        , width (px 74)
+        ]
+    , Css.class First
+        [ top (px 28)
+        , left (px 0)
+        , width (px 20)
+        ]
+    , Css.class Second
+        [ top (px 28)
+        , left (px 27)
+        , width (px 20)
+        ]
+    , Css.class Third
+        [ top (px 28)
+        , left (px 54)
+        , width (px 20)
+        ]
+    , (Css.class Colors << List.append indent)
+        [ backgroundColor backgroundx2
+        , width (calc (pct 100) minus (px 360))
+        , position absolute
+        , left (px 55)
+        , top (px 4)
+        , overflowY auto
+        ]
+    , Css.class Square
+        [ height (px 20)
+        , width (px 20)
+        , borderTop3 (px 1) solid ignorable3
+        , borderLeft3 (px 1) solid ignorable3
+        , borderRight3 (px 1) solid ignorable1
+        , borderBottom3 (px 1) solid ignorable1
+        , display inlineBlock
+        , float left
+        ]
+    , (Css.class Plus << List.append outdent << List.append cannotSelect)
+        [ color point
+        , cursor pointer
+        , active indent
+        , fontFamilies [ "hfnss" ]
+        , property "-webkit-font-smoothing" "none"
+        , fontSize (em 2)
+        , height (px 18)
+        , width (px 18)
+        , backgroundColor ignorable2
+        , textAlign center
+        ]
+    , (Css.class Info << List.append indent)
+        [ backgroundColor backgroundx2
+        , width (px 290)
+        , position absolute
+        , left (calc (pct 100) minus (px 297))
+        , top (px 4)
+        , overflowY auto
+        ]
+    , Css.class Edge
+        [ height (px 3)
+        , borderTop3 (px 2) solid ignorable1
+        , top (px 0)
+        , left (px 0)
+        , cursor nsResize
+        ]
+    ]
+        |> namespace paletteNamespace
+        |> stylesheet
+
+
+paletteNamespace : String
+paletteNamespace =
+    "Palette"
 
 
 
 -- VIEW --
 
 
+{ class } =
+    Html.CssHelpers.withNamespace paletteNamespace
+
+
 view : Model -> Html Msg
 view model =
     div
-        [ class "horizontal-tool-bar"
-        , style
-            [ height model.horizontalToolbarHeight ]
+        [ class [ Palette ]
+        , style [ Util.height model.horizontalToolbarHeight ]
         ]
         [ edge
-        , div
-            [ class "palette" ]
-            [ swatchesView model.swatches
-            , generalPalette model
-            ]
+        , swatchesView model.swatches
+        , generalPalette model
         , infoBox model
         ]
 
@@ -90,7 +215,7 @@ view model =
 generalPalette : Model -> Html Msg
 generalPalette model =
     let
-        square : Int -> Color -> Html Msg
+        square : Int -> Color.Color -> Html Msg
         square =
             paletteSquare
                 model.colorPicker.window.show
@@ -102,9 +227,9 @@ generalPalette model =
                 |> Array.toList
     in
     div
-        [ class "general"
+        [ class [ Colors ]
         , style
-            [ height (model.horizontalToolbarHeight - 10) ]
+            [ Util.height (model.horizontalToolbarHeight - 10) ]
         ]
         (List.append paletteSquares [ addColor ])
 
@@ -112,20 +237,20 @@ generalPalette model =
 addColor : Html Msg
 addColor =
     div
-        [ class "square plus"
+        [ class [ Square, Plus ]
         , onClick AddPaletteSquare
         ]
-        [ text "+" ]
+        [ Html.text "+" ]
 
 
-paletteSquare : Bool -> Int -> Int -> Color -> Html Msg
+paletteSquare : Bool -> Int -> Int -> Color.Color -> Html Msg
 paletteSquare show selectedIndex index color =
     let
         isSelected =
             index == selectedIndex
     in
     div
-        [ class "square"
+        [ class [ Square ]
         , background color
         , OpenColorPicker color index
             |> Util.onContextMenu
@@ -138,7 +263,7 @@ highLight : Bool -> List (Html Msg)
 highLight show =
     if show then
         [ div
-            [ class "high-light" ]
+            [ class [ Selected ] ]
             []
         ]
     else
@@ -152,18 +277,18 @@ highLight show =
 swatchesView : Swatches -> Html Msg
 swatchesView { primary, first, second, third } =
     div
-        [ class "swatches" ]
-        [ swatch primary "primary"
-        , swatch first "first"
-        , swatch second "second"
-        , swatch third "third"
+        [ class [ SwatchesContainer ] ]
+        [ swatch primary Primary
+        , swatch first First
+        , swatch second Second
+        , swatch third Third
         ]
 
 
-swatch : Color -> String -> Html Msg
+swatch : Color.Color -> Class -> Html Msg
 swatch color quadrant =
     div
-        [ class ("swatch " ++ quadrant)
+        [ class [ Swatch, quadrant ]
         , background color
         ]
         []
@@ -175,9 +300,7 @@ swatch color quadrant =
 
 edge : Html Msg
 edge =
-    div
-        [ class "edge" ]
-        []
+    div [ class [ Edge ] ] []
 
 
 
@@ -187,16 +310,16 @@ edge =
 infoBox : Model -> Html Msg
 infoBox model =
     div
-        [ class "info-box"
+        [ class [ Info ]
         , style
-            [ height (model.horizontalToolbarHeight - 10) ]
+            [ Util.height (model.horizontalToolbarHeight - 10) ]
         ]
         (infoBoxContent model)
 
 
 infoView : String -> Html Msg
 infoView str =
-    p [] [ text str ]
+    p [] [ Html.text str ]
 
 
 infoBoxContent : Model -> List (Html Msg)
@@ -229,15 +352,15 @@ sampleColor model =
             in
             [ p
                 []
-                [ text "color("
+                [ Html.text "color("
                 , span
                     [ style
                         [ "color" := colorStr
                         , "background" := backgroundColor
                         ]
                     ]
-                    [ text colorStr ]
-                , text ")"
+                    [ Html.text colorStr ]
+                , Html.text ")"
                 ]
             ]
 
@@ -358,7 +481,7 @@ generalContent model =
         |> maybeCons (mouse model.mousePosition)
 
 
-mouse : Maybe Position -> Maybe String
+mouse : Maybe Mouse.Position -> Maybe String
 mouse maybePosition =
     case maybePosition of
         Just { x, y } ->

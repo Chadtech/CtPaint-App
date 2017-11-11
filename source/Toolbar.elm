@@ -1,18 +1,74 @@
-module Toolbar exposing (view)
+module Toolbar exposing (css, view)
 
-import Html exposing (Html, a, div, text)
-import Html.Attributes exposing (attribute, class, classList, title)
+import Chadtech.Colors exposing (ignorable2, ignorable3)
+import Css exposing (..)
+import Css.Namespace exposing (namespace)
+import Html exposing (Html, a, div)
+import Html.Attributes exposing (attribute, title)
+import Html.CssHelpers
+import Html.Custom exposing (indent, outdent)
 import Html.Events exposing (onClick)
 import Tool exposing (Tool(..))
 import Tuple.Infix exposing ((:=))
 import Types exposing (Command(..), Model, Msg(..))
+import Util exposing (toolbarWidth)
 
 
-view : Model -> Html Msg
-view model =
+-- STYLES --
+
+
+type Class
+    = Toolbar
+    | ToolButton
+    | Selected
+
+
+css : Stylesheet
+css =
+    [ Css.class Toolbar
+        [ backgroundColor ignorable2
+        , height (calc (pct 100) minus (px 30))
+        , borderRight3 (px 1) solid ignorable3
+        , paddingTop (px 30)
+        , top (px 0)
+        , left (px 0)
+        , width (px toolbarWidth)
+        ]
+    , (Css.class ToolButton << List.append outdent)
+        [ width (px 20)
+        , height (px 20)
+        , fontFamilies [ "icons" ]
+        , fontSize (em 1)
+        , textAlign center
+        , padding (px 0)
+        , lineHeight (px 20)
+        , marginLeft (px 2)
+        , active indent
+        , withClass Selected indent
+        ]
+    ]
+        |> namespace toolbarNamespace
+        |> stylesheet
+
+
+toolbarNamespace : String
+toolbarNamespace =
+    "Toolbar"
+
+
+
+-- VIEW --
+
+
+{ class, classList } =
+    Html.CssHelpers.withNamespace toolbarNamespace
+
+
+view : Tool -> Html Msg
+view tool =
     div
-        [ class "vertical-tool-bar" ]
-        (children model.tool)
+        [ class [ Toolbar ] ]
+        (children tool)
 
 
 
@@ -38,33 +94,33 @@ menus =
 menuButton : ( String, String, Command ) -> Html Msg
 menuButton ( icon, name, command ) =
     a
-        [ class "tool-button"
+        [ class [ ToolButton ]
         , onClick (Command command)
         , attribute "data-toggle" "tooltip"
         , title name
         ]
-        [ text icon ]
+        [ Html.text icon ]
 
 
 toolButton : Tool -> Tool -> Html Msg
-toolButton currentTool thisButtonsTool =
+toolButton selectedTool tool =
     a
         [ classList
-            [ "tool-button" := True
-            , "selected"
-                := isCurrentTool currentTool thisButtonsTool
+            [ ToolButton := True
+            , Selected
+                := isSelectedTool selectedTool tool
             ]
         , attribute "data-toggle" "tooltip"
-        , title (Tool.name thisButtonsTool)
-        , onClick (SetTool thisButtonsTool)
+        , title (Tool.name tool)
+        , onClick (SetTool tool)
         ]
-        [ text (Tool.icon thisButtonsTool) ]
+        [ Html.text (Tool.icon tool) ]
 
 
 
 -- HELPERS --
 
 
-isCurrentTool : Tool -> Tool -> Bool
-isCurrentTool currentTool tool =
+isSelectedTool : Tool -> Tool -> Bool
+isSelectedTool currentTool tool =
     Tool.name currentTool == Tool.name tool

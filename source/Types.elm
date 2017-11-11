@@ -4,6 +4,7 @@ import Array exposing (Array)
 import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Color exposing (Color)
 import ColorPicker
+import Data.Taskbar as Taskbar
 import Dict exposing (Dict)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline
@@ -134,7 +135,7 @@ type alias Model =
     , cmdKey : KeyPayload -> Bool
     , keyConfig : Dict String Command
     , quickKeys : Dict String String
-    , taskbarDropped : Maybe TaskbarDropDown
+    , taskbarDropped : Maybe Taskbar.DropDown
     , minimap : MinimapState
     , menu : Maybe Menu.Model
     , seed : Seed
@@ -158,8 +159,9 @@ type Msg
     | ScreenMouseMove MouseEvent
     | ScreenMouseExit
     | KeyboardEvent (Result String KeyPayload)
-    | DropDown (Maybe TaskbarDropDown)
-    | HoverOnto TaskbarDropDown
+    | DropDownClicked Taskbar.DropDown
+    | DropDownClickedOut
+    | HoverOnto Taskbar.DropDown
     | Command Command
     | PaletteSquareClick Color
     | OpenColorPicker Color Int
@@ -181,15 +183,6 @@ type alias KeyPayload =
     , shift : Bool
     , direction : Direction
     }
-
-
-type TaskbarDropDown
-    = File
-    | Edit
-    | Transform
-    | Tools
-    | View
-    | Help
 
 
 type Direction
