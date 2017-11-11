@@ -592,14 +592,27 @@ type Class
     | Gradient
     | Pointer
     | Transparent
+    | HexField
 
 
 css : Stylesheet
 css =
     [ Css.class ColorPicker
-        [ width (px 323)
-        , height (px 223)
+        [ width (px 334)
         , position absolute
+        ]
+    , Css.class HexField
+        [ margin (px 0)
+        , marginTop (px 2)
+        , display inlineBlock
+        , minWidth minContent
+        , verticalAlign top
+        , children
+            [ Css.Elements.input
+                [ width (px 71)
+                , marginLeft (px 2)
+                ]
+            ]
         ]
     , (Css.class Visualization << List.append indent)
         [ height (px 20)
@@ -641,7 +654,7 @@ css =
         , cursor pointer
         ]
     , Css.class Transparent
-        [ pointerEvents none ]
+        [ property "pointer-events" "none" ]
     ]
         |> namespace colorPickerNamespace
         |> stylesheet
@@ -693,7 +706,9 @@ body ({ colorHexField, color } as model) =
         ]
         []
     , form
-        [ onSubmit StealSubmit ]
+        [ class [ HexField ]
+        , onSubmit StealSubmit
+        ]
         [ input
             [ spellcheck False
             , onFocus (SetFocus True)
