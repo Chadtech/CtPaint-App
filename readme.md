@@ -10,36 +10,33 @@ This repo is organized as..
 ├── Canvas.elm
 ├── Clipboard.elm
 ├── ColorPicker.elm
-├── Command.elm
+├── Data
+│   └── Taskbar.elm
 ├── Download.elm
 ├── Draw.elm
 ├── Hfnss.elm
 ├── History.elm
+├── Html
+│   └── Custom.elm
 ├── Imgur.elm
 ├── Import.elm
+├── Login.elm
 ├── Menu.elm
 ├── Minimap.elm
+├── Msg.elm
 ├── Native
 │   └── Canvas.js
 ├── New.elm
+├── Op.elm
+├── Open.elm
 ├── PaintApp.elm
 ├── Palette.elm
 ├── Ports.elm
 ├── ReplaceColor.elm
+├── Reply.elm
 ├── Scale.elm
 ├── Styles
-│   ├── Main.styl
-│   ├── a.styl
-│   ├── card.styl
-│   ├── color-picker.styl
-│   ├── form.styl
-│   ├── menu.styl
-│   ├── minimap.styl
-│   ├── p.styl
-│   ├── palette.styl
-│   ├── tool-button.styl
-│   └── toolbar.styl
-├── Styles.elm
+│   └── Main.styl
 ├── Stylesheets.elm
 ├── Subscriptions.elm
 ├── Taskbar.elm
@@ -77,6 +74,5 @@ This repo is organized as..
 ├── Util.elm
 ├── View.elm
 └── app.js
-
 ```
 
