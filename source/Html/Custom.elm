@@ -277,7 +277,7 @@ menuButton attrs =
 
 field : List (Attribute msg) -> List (Html msg) -> Html msg
 field attrs =
-    Html.div (class [ Field ] :: attrs)
+    Html.form (class [ Field ] :: attrs)
 
 
 type alias ToolButtonState msg =

@@ -2,7 +2,7 @@ module Login exposing (..)
 
 import Data.User exposing (User)
 import Html exposing (Attribute, Html, div, input, p)
-import Html.Attributes exposing (placeholder, type_, value)
+import Html.Attributes exposing (hidden, placeholder, type_, value)
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Maybe.Extra
@@ -78,6 +78,7 @@ view model =
             , placeholder "name@email.com"
             ]
             []
+        , input [ type_ "submit", hidden True ] []
         ]
     , Html.Custom.field
         [ onSubmit FormSubmitted ]
@@ -88,6 +89,7 @@ view model =
             , type_ "password"
             ]
             []
+        , input [ type_ "submit", hidden True ] []
         ]
     , Html.Custom.menuButton
         [ onClick LoginButtonPressed ]
@@ -118,29 +120,28 @@ update msg model =
         FormSubmitted ->
             attemptLogin model
 
-        LoginFailed "UserNotFoundException: User does not exist." ->
-            { model
-                | responseError = Just IncorrectEmailOrPassword
-            }
-                & Cmd.none
-                & NoReply
-
-        LoginFailed "NotAuthorizedException: Incorrect username or password." ->
-            { model
-                | responseError = Just IncorrectEmailOrPassword
-            }
-                & Cmd.none
-                & NoReply
-
         LoginFailed err ->
             { model
-                | responseError = Just (Other (Debug.log "login err" err))
+                | responseError = Just (errorToProblem err)
             }
                 & Cmd.none
                 & NoReply
 
         LoginSucceeded user ->
             model & Cmd.none & NewUser user
+
+
+errorToProblem : String -> Problem
+errorToProblem err =
+    case err of
+        "UserNotFoundException: User does not exist." ->
+            IncorrectEmailOrPassword
+
+        "NotAuthorizedException: Incorrect username or password." ->
+            IncorrectEmailOrPassword
+
+        other ->
+            Other other
 
 
 attemptLogin : Model -> ( ( Model, Cmd Msg ), Reply )
