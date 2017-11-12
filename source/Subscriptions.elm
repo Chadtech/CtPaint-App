@@ -5,14 +5,14 @@ import ColorPicker
 import Json.Decode exposing (Value)
 import Menu
 import Minimap
+import Msg exposing (Msg(..))
 import Tool
 import Types
     exposing
         ( Direction(..)
         , MinimapState(..)
         , Model
-        , Msg(..)
-        , decodeKeyPayload
+        , decodeKeyEvent
         )
 import Window
 
@@ -22,13 +22,13 @@ port keyEvent : (Value -> msg) -> Sub msg
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    [ Window.resizes GetWindowSize
+    [ Window.resizes WindowSizeReceived
     , AnimationFrame.diffs Tick
     , Sub.map
         ColorPickerMsg
         (ColorPicker.subscriptions model.colorPicker)
     , minimap model.minimap
-    , keyEvent (KeyboardEvent << decodeKeyPayload)
+    , keyEvent (KeyboardEvent << decodeKeyEvent)
     , Sub.map ToolMsg (Tool.subscriptions model.tool)
     , menu model.menu
     ]

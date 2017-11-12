@@ -14,11 +14,12 @@ import Menu
 import Minimap
 import Mouse
 import MouseEvents exposing (onMouseMove)
+import Msg exposing (Msg(..))
 import Palette
 import Taskbar
 import Tool
 import Toolbar
-import Types exposing (MinimapState(..), Model, Msg(..))
+import Types exposing (MinimapState(..), Model)
 import Util exposing (toolbarWidth)
 
 
@@ -116,8 +117,8 @@ view model =
         in
         div
             [ class [ Main ] ]
-            [ Toolbar.view model.tool
-            , Taskbar.view model
+            [ Html.map ToolbarMsg (Toolbar.view model.tool)
+            , Html.map TaskbarMsg (Taskbar.view model)
             , Palette.view model
             , canvasArea canvasAreaHeight model
             , clickScreen canvasAreaHeight model

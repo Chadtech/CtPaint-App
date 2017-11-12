@@ -3,8 +3,14 @@ port module Stylesheets exposing (..)
 import ColorPicker
 import Css.File exposing (CssCompilerProgram, CssFileStructure)
 import Html.Custom
+import Import
+import Menu
+import Minimap
 import Palette
+import ReplaceColor
+import Scale
 import Taskbar
+import Text
 import Toolbar
 import Tuple.Infix exposing ((:=))
 import View
@@ -21,9 +27,15 @@ main =
     , Taskbar.css
     , Palette.css
     , ColorPicker.css
+    , Minimap.css
+    , Menu.css
+    , ReplaceColor.css
+    , Import.css
+    , Scale.css
+    , Text.css
     ]
         |> Css.File.compile
-        |> (,) "./development/paint-app-styles-1.css"
+        |> (,) "./development/paint-app-styles.css"
         |> List.singleton
         |> Css.File.toFileStructure
         |> Css.File.compiler files

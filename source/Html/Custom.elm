@@ -4,9 +4,12 @@ module Html.Custom
         , card
         , cardBody
         , css
+        , field
         , header
         , indent
+        , menuButton
         , outdent
+        , toolButton
         )
 
 import Chadtech.Colors exposing (..)
@@ -34,9 +37,9 @@ type Class
     | Long
     | Null
     | Error
-    | HasBottomMargin
-    | TextAlignCenter
     | SpinnerContainer
+    | ToolButton
+    | Button
 
 
 css : Stylesheet
@@ -57,15 +60,22 @@ css =
             ]
     , headerStyle
     , input
-    , button
+    , aStyle
     , submit
-    , field
+    , fieldStyle
     , form
         [ margin (px 0) ]
-    , class HasBottomMargin
-        [ marginBottom (px 8) ]
-    , class TextAlignCenter
-        [ textAlign center ]
+    , (Css.class ToolButton << List.append outdent)
+        [ width (px 20)
+        , height (px 20)
+        , fontFamilies [ "icons" ]
+        , fontSize (em 1)
+        , textAlign center
+        , padding (px 0)
+        , lineHeight (px 20)
+        , active indent
+        , withClass Selected indent
+        ]
     , spinnerContainer
     ]
         |> namespace appNamespace
@@ -87,11 +97,11 @@ spinnerContainer =
     , margin auto
     ]
         |> List.append indent
-        |> class SpinnerContainer
+        |> Css.class SpinnerContainer
 
 
-field : Snippet
-field =
+fieldStyle : Snippet
+fieldStyle =
     [ marginBottom (px 8)
     , children
         [ p
@@ -103,7 +113,7 @@ field =
             ]
         ]
     ]
-        |> class Field
+        |> Css.class Field
 
 
 submit : Snippet
@@ -111,7 +121,7 @@ submit =
     [ margin auto
     , display table
     ]
-        |> class Submit
+        |> Css.class Submit
 
 
 input : Snippet
@@ -158,7 +168,7 @@ headerStyle =
             ]
         ]
     ]
-        |> class Header
+        |> Css.class Header
 
 
 cardStyle : Snippet
@@ -169,7 +179,7 @@ cardStyle =
     , borderRight3 (px 2) solid ignorable3
     , borderBottom3 (px 2) solid ignorable3
     , children
-        [ class Body
+        [ Css.class Body
             [ marginTop (px 31)
             , padding (px 8)
             , children
@@ -183,11 +193,11 @@ cardStyle =
         , transform (translate2 (pct -50) (pct -50))
         ]
     ]
-        |> class Card
+        |> Css.class Card
 
 
-button : Snippet
-button =
+aStyle : Snippet
+aStyle =
     let
         mixins =
             [ outdent
@@ -256,9 +266,49 @@ basicFont =
 -- VIEW --
 
 
-class_ : List Class -> Attribute msg
-class_ =
-    (Html.CssHelpers.withNamespace appNamespace).class
+{ classList, class } =
+    Html.CssHelpers.withNamespace appNamespace
+
+
+menuButton : List (Attribute msg) -> List (Html msg) -> Html msg
+menuButton attrs =
+    Html.a (class [ Submit ] :: attrs)
+
+
+field : List (Attribute msg) -> List (Html msg) -> Html msg
+field attrs =
+    Html.div (class [ Field ] :: attrs)
+
+
+type alias ToolButtonState msg =
+    { icon : String
+    , selected : Bool
+    , attrs : List (Html.Attribute msg)
+    }
+
+
+toolButton : ToolButtonState msg -> Html msg
+toolButton state =
+    let
+        attrs =
+            [ classList
+                [ ToolButton := True
+                , Selected := state.selected
+                ]
+            ]
+                ++ state.attrs
+    in
+    Html.a attrs [ Html.text state.icon ]
+
+
+card : List (Attribute msg) -> List (Html msg) -> Html msg
+card attrs =
+    Html.div (class [ Card ] :: attrs)
+
+
+cardBody : List (Attribute msg) -> List (Html msg) -> Html msg
+cardBody attrs =
+    Html.div (class [ Body ] :: attrs)
 
 
 type alias HeaderState msg =
@@ -268,20 +318,10 @@ type alias HeaderState msg =
     }
 
 
-card : List (Attribute msg) -> List (Html msg) -> Html msg
-card attrs =
-    Html.div (class_ [ Card ] :: attrs)
-
-
-cardBody : List (Attribute msg) -> List (Html msg) -> Html msg
-cardBody attrs =
-    Html.div (class_ [ Body ] :: attrs)
-
-
 header : HeaderState msg -> Html msg
 header { text, headerMouseDown, xClick } =
     Html.div
-        [ class_ [ Header ]
+        [ class [ Header ]
         , MouseEvents.onMouseDown headerMouseDown
         ]
         [ Html.p [] [ Html.text text ]

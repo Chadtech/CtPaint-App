@@ -54,6 +54,10 @@ init =
     }
 
 
+
+-- VIEW --
+
+
 view : Model -> List (Html Msg)
 view model =
     []

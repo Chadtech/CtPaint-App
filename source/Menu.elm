@@ -1,12 +1,14 @@
 module Menu exposing (..)
 
 import About
-import Canvas exposing (Canvas)
 import Color exposing (Color)
+import Css exposing (..)
+import Css.Namespace exposing (namespace)
 import Download
 import Html exposing (Attribute, Html, a, div, p, text)
 import Html.Attributes exposing (class, style)
-import Html.Events exposing (onClick)
+import Html.CssHelpers
+import Html.Custom
 import Imgur
 import Import
 import Login
@@ -16,6 +18,7 @@ import New
 import Open
 import Random exposing (Seed)
 import ReplaceColor
+import Reply exposing (Reply(CloseMenu, NoReply))
 import Scale
 import Text
 import Tuple.Infix exposing ((&))
@@ -23,8 +26,11 @@ import Util exposing (height, left, top, width)
 import Window exposing (Size)
 
 
+-- TYPES --
+
+
 type alias Model =
-    { position : Position
+    { position : Mouse.Position
     , size : Size
     , click : ClickState
     , title : String
@@ -47,12 +53,12 @@ type Menu
 
 type ClickState
     = NoClick
-    | ClickAt Position
+    | ClickAt Mouse.Position
 
 
 type Msg
     = HeaderMouseDown MouseEvent
-    | HeaderMouseMove Position
+    | HeaderMouseMove Mouse.Position
     | HeaderMouseUp
     | XClick
     | ContentMsg ContentMsg
@@ -70,25 +76,15 @@ type ContentMsg
     | LoginMsg Login.Msg
 
 
-type ExternalMsg
-    = DoNothing
-    | Close
-    | Cmd (Cmd Msg)
-    | IncorporateImage Canvas
-    | ScaleTo Int Int
-    | AddText String
-    | Replace Color Color
-
-
 
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, ExternalMsg )
+update : Msg -> Model -> ( ( Model, Cmd Msg ), Reply )
 update msg model =
     case msg of
         XClick ->
-            model & Close
+            model & Cmd.none & CloseMenu
 
         HeaderMouseDown { targetPos, clientPos } ->
             { model
@@ -100,7 +96,8 @@ update msg model =
                     }
                         |> ClickAt
             }
-                & DoNothing
+                & Cmd.none
+                & NoReply
 
         HeaderMouseMove p ->
             case model.click of
@@ -111,168 +108,123 @@ update msg model =
                             , y = p.y - click.y
                             }
                     }
-                        & DoNothing
+                        & Cmd.none
+                        & NoReply
 
                 NoClick ->
-                    model & DoNothing
+                    model & Cmd.none & NoReply
 
         HeaderMouseUp ->
-            { model | click = NoClick } & DoNothing
+            { model | click = NoClick }
+                & Cmd.none
+                & NoReply
 
         ContentMsg subMsg ->
             updateContent subMsg model
 
 
-updateContent : ContentMsg -> Model -> ( Model, ExternalMsg )
+updateContent : ContentMsg -> Model -> ( ( Model, Cmd Msg ), Reply )
 updateContent msg model =
     case ( msg, model.content ) of
         ( DownloadMsg subMsg, Download subModel ) ->
             let
                 ( newSubModel, cmd ) =
                     Download.update subMsg subModel
-
-                contentCmd =
-                    Cmd.map
-                        (ContentMsg << DownloadMsg)
-                        cmd
             in
             { model
                 | content = Download newSubModel
             }
-                & Cmd contentCmd
+                & Cmd.map (ContentMsg << DownloadMsg) cmd
+                & NoReply
 
         ( ImportMsg subMsg, Import subModel ) ->
             let
-                importUpdate =
+                ( ( newSubModel, cmd ), reply ) =
                     Import.update subMsg subModel
             in
-            incorporateImport importUpdate model
+            { model | content = Import newSubModel }
+                & Cmd.map (ContentMsg << ImportMsg) cmd
+                & reply
 
         ( ScaleMsg subMsg, Scale subModel ) ->
             let
-                scaleUpdate =
+                ( newSubModel, reply ) =
                     Scale.update subMsg subModel
             in
-            incorporateScale scaleUpdate model
+            { model | content = Scale newSubModel }
+                & Cmd.none
+                & reply
 
         ( TextMsg subMsg, Text subModel ) ->
             let
-                textUpdate =
+                ( newSubModel, reply ) =
                     Text.update subMsg subModel
             in
-            incorporateText textUpdate model
+            { model | content = Text newSubModel }
+                & Cmd.none
+                & reply
 
         ( ReplaceColorMsg subMsg, ReplaceColor subModel ) ->
             let
-                replaceColorUpdate =
+                ( newSubModel, reply ) =
                     ReplaceColor.update subMsg subModel
             in
-            incorporateReplaceColor
-                replaceColorUpdate
-                model
+            { model | content = ReplaceColor newSubModel }
+                & Cmd.none
+                & reply
 
         _ ->
-            model & DoNothing
+            model & Cmd.none & NoReply
 
 
-incorporateReplaceColor :
-    ( ReplaceColor.Model, ReplaceColor.ExternalMsg )
-    -> Model
-    -> ( Model, ExternalMsg )
-incorporateReplaceColor ( subModel, externalMsg ) model =
-    case externalMsg of
-        ReplaceColor.DoNothing ->
-            { model
-                | content = ReplaceColor subModel
-            }
-                & DoNothing
 
-        ReplaceColor.Replace target replacement ->
-            model & Replace target replacement
+-- STYLES --
 
 
-incorporateText :
-    ( String, Text.ExternalMsg )
-    -> Model
-    -> ( Model, ExternalMsg )
-incorporateText ( subModel, externalMsg ) model =
-    case externalMsg of
-        Text.DoNothing ->
-            { model
-                | content = Text subModel
-            }
-                & DoNothing
-
-        Text.AddText text ->
-            model & AddText text
+type Class
+    = MenuContainer
 
 
-incorporateScale :
-    ( Scale.Model, Scale.ExternalMsg )
-    -> Model
-    -> ( Model, ExternalMsg )
-incorporateScale ( subModel, externalMsg ) model =
-    case externalMsg of
-        Scale.DoNothing ->
-            { model
-                | content = Scale subModel
-            }
-                & DoNothing
-
-        Scale.ScaleTo dw dh ->
-            model & ScaleTo dw dh
+css : Stylesheet
+css =
+    [ Css.class MenuContainer
+        [ position absolute ]
+    ]
+        |> namespace menuNamespace
+        |> stylesheet
 
 
-incorporateImport :
-    ( Import.Model, Import.ExternalMsg )
-    -> Model
-    -> ( Model, ExternalMsg )
-incorporateImport ( subModel, externalMsg ) model =
-    case externalMsg of
-        Import.DoNothing ->
-            { model
-                | content = Import subModel
-            }
-                & DoNothing
-
-        Import.IncorporateImage canvas ->
-            model & IncorporateImage canvas
-
-        Import.Cmd cmd ->
-            let
-                contentCmd =
-                    Cmd.map
-                        (ContentMsg << ImportMsg)
-                        cmd
-            in
-            { model
-                | content = Import subModel
-            }
-                & Cmd contentCmd
+menuNamespace : String
+menuNamespace =
+    "Menu"
 
 
 
 -- VIEW --
 
 
+{ class } =
+    Html.CssHelpers.withNamespace menuNamespace
+
+
 view : Model -> Html Msg
 view { position, size, title, content } =
-    let
-        children =
-            contentView content
-                |> List.map (Html.map ContentMsg)
-                |> (::) (header title)
-    in
-    div
-        [ class "card menu"
-        , style
-            [ top position.y
-            , left position.x
-            , width size.width
-            , height size.height
+    Html.Custom.card
+        [ style
+            [ Util.top position.y
+            , Util.left position.x
             ]
+        , class [ MenuContainer ]
         ]
-        children
+        [ Html.Custom.header
+            { text = title
+            , headerMouseDown = HeaderMouseDown
+            , xClick = XClick
+            }
+        , contentView content
+            |> Html.Custom.cardBody []
+            |> Html.map ContentMsg
+        ]
 
 
 contentView : Menu -> List (Html ContentMsg)
@@ -316,20 +268,6 @@ contentView menu =
         Login subModel ->
             List.map (Html.map LoginMsg) <|
                 Login.view subModel
-
-
-header : String -> Html Msg
-header title =
-    div
-        [ class "header" ]
-        [ div
-            [ class "click-screen"
-            , MouseEvents.onMouseDown HeaderMouseDown
-            ]
-            []
-        , p [] [ text title ]
-        , a [ onClick XClick ] [ text "x" ]
-        ]
 
 
 
@@ -454,7 +392,7 @@ initAbout windowSize =
     }
 
 
-initReplaceColor : Size -> Color -> Color -> List Color -> Model
+initReplaceColor : Size -> Color.Color -> Color.Color -> List Color.Color -> Model
 initReplaceColor windowSize target replacement palette =
     let
         size =

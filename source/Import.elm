@@ -1,9 +1,15 @@
 module Import exposing (..)
 
 import Canvas exposing (Canvas, Error)
+import Css exposing (..)
+import Css.Elements
+import Css.Namespace exposing (namespace)
 import Html exposing (Html, a, div, form, input, p, text)
 import Html.Attributes exposing (class, placeholder, value)
+import Html.CssHelpers
+import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
+import Reply exposing (Reply(IncorporateImage, NoReply))
 import Task
 import Tuple.Infix exposing ((&))
 
@@ -12,16 +18,11 @@ import Tuple.Infix exposing ((&))
 
 
 type Msg
-    = UpdateField String
-    | AttemptLoad
+    = FieldUpdated String
+    | ImportPressed
+    | Submitted
     | ImageLoaded (Result Error Canvas)
-    | TryAgain
-
-
-type ExternalMsg
-    = Cmd (Cmd Msg)
-    | IncorporateImage Canvas
-    | DoNothing
+    | TryAgainPressed
 
 
 type Model
@@ -31,53 +32,75 @@ type Model
 
 
 
+-- STYLES --
+
+
+type Class
+    = Field
+
+
+css : Stylesheet
+css =
+    [ Css.class Field
+        [ children
+            [ Css.Elements.input
+                [ width (px 360) ]
+            , Css.Elements.p
+                [ width (px 40) ]
+            ]
+        ]
+    ]
+        |> namespace importNamespace
+        |> stylesheet
+
+
+importNamespace : String
+importNamespace =
+    "Import"
+
+
+
 -- VIEW --
+
+
+{ class } =
+    Html.CssHelpers.withNamespace importNamespace
 
 
 normalView : String -> List (Html Msg)
 normalView str =
-    [ form
-        [ class "field import"
-        , onSubmit AttemptLoad
+    [ Html.Custom.field
+        [ class [ Field ]
+        , onSubmit Submitted
         ]
-        [ p [] [ text "url" ]
+        [ p [] [ Html.text "url" ]
         , input
-            [ onInput UpdateField
+            [ onInput FieldUpdated
             , value str
             , placeholder "http://"
             ]
             []
         ]
-    , a
-        [ class "submit-button"
-        , onClick AttemptLoad
-        ]
-        [ text "import" ]
+    , Html.Custom.menuButton
+        [ onClick ImportPressed ]
+        [ Html.text "import" ]
     ]
 
 
 errorView : List (Html Msg)
 errorView =
-    [ div
-        [ class "text-container" ]
-        [ p
-            []
-            [ text "Sorry, I couldnt load that image" ]
-        ]
-    , a
-        [ onClick TryAgain
-        , class "submit-button"
-        ]
-        [ text "Try Again" ]
+    [ p
+        []
+        [ Html.text "Sorry, I couldnt load that image" ]
+    , Html.Custom.menuButton
+        [ onClick TryAgainPressed ]
+        [ Html.text "Try Again" ]
     ]
 
 
 loadingView : List (Html Msg)
 loadingView =
-    [ div
-        [ class "text-container" ]
-        [ p [] [ text "Loading.." ] ]
-    ]
+    [ p [] [ Html.text "Loading.." ] ]
 
 
 view : Model -> List (Html Msg)
@@ -106,32 +129,47 @@ init =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, ExternalMsg )
+update : Msg -> Model -> ( ( Model, Cmd Msg ), Reply )
 update msg model =
     case msg of
-        UpdateField str ->
-            Url str & DoNothing
-
-        AttemptLoad ->
+        FieldUpdated str ->
             case model of
-                Url str ->
-                    attemptLoad str
+                Url _ ->
+                    Url str & Cmd.none & NoReply
 
                 _ ->
-                    model & DoNothing
+                    model & Cmd.none & NoReply
+
+        ImportPressed ->
+            attemptLoad model
+
+        Submitted ->
+            attemptLoad model
 
         ImageLoaded (Ok canvas) ->
-            model & IncorporateImage canvas
+            model
+                & Cmd.none
+                & IncorporateImage canvas
 
         ImageLoaded (Err err) ->
-            Fail & DoNothing
+            Fail & Cmd.none & NoReply
 
-        TryAgain ->
-            Url "" & DoNothing
+        TryAgainPressed ->
+            init & Cmd.none & NoReply
 
 
-attemptLoad : String -> ( Model, ExternalMsg )
-attemptLoad url =
+attemptLoad : Model -> ( ( Model, Cmd Msg ), Reply )
+attemptLoad model =
+    case model of
+        Url url ->
+            sendLoadCmd url
+
+        _ ->
+            model & Cmd.none & NoReply
+
+
+sendLoadCmd : String -> ( ( Model, Cmd Msg ), Reply )
+sendLoadCmd url =
     let
         cmd =
             [ "https://cors-anywhere.herokuapp.com/"
@@ -141,4 +179,4 @@ attemptLoad url =
                 |> Canvas.loadImage
                 |> Task.attempt ImageLoaded
     in
-    Loading & Cmd cmd
+    Loading & cmd & NoReply

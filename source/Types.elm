@@ -26,89 +26,6 @@ import Tuple.Infix exposing ((&), (:=))
 import Util exposing (tbw)
 
 
--- INIT --
-
-
-init : Value -> ( Model, Cmd Msg )
-init json =
-    let
-        windowSize : Size
-        windowSize =
-            decodeWindow json
-
-        ( canvas, menu ) =
-            case Err "dont load it right now" of
-                Ok canvas ->
-                    canvas & Nothing
-
-                Err err ->
-                    Canvas.initialize
-                        { width = 400
-                        , height = 400
-                        }
-                        |> fillBlack
-                        & Nothing
-
-        canvasSize : Size
-        canvasSize =
-            Canvas.getSize canvas
-
-        isMac : Bool
-        isMac =
-            decodeIsMac json
-    in
-    { user = Nothing
-    , canvas = canvas
-    , projectName = Nothing
-    , canvasPosition =
-        { x =
-            ((windowSize.width - tbw) - canvasSize.width) // 2
-        , y =
-            (windowSize.height - canvasSize.height) // 2
-        }
-    , pendingDraw = Canvas.batch []
-    , drawAtRender = Canvas.batch []
-    , swatches = initSwatches
-    , palette = initPalette
-    , horizontalToolbarHeight = 58
-    , windowSize = windowSize
-    , tool = Tool.init
-    , zoom = 1
-    , galleryView = False
-    , colorPicker =
-        case Array.get 0 initPalette of
-            Just color ->
-                ColorPicker.init
-                    False
-                    0
-                    color
-
-            Nothing ->
-                ColorPicker.init
-                    False
-                    0
-                    Color.black
-    , history = [ CanvasChange canvas ]
-    , future = []
-    , mousePosition = Nothing
-    , selection = Nothing
-    , clipboard = Nothing
-    , cmdKey =
-        if isMac then
-            .meta
-        else
-            .ctrl
-    , keyConfig = defaultConfig
-    , quickKeys = defaultQuickKeys isMac
-    , taskbarDropped = Nothing
-    , minimap = NoMinimap
-    , menu = menu
-    , seed = Random.initialSeed (decodeSeed json)
-    }
-        & Cmd.none
-
-
-
 -- TYPES --
 
 
@@ -132,13 +49,18 @@ type alias Model =
     , mousePosition : Maybe Position
     , selection : Maybe ( Position, Canvas )
     , clipboard : Maybe ( Position, Canvas )
-    , cmdKey : KeyPayload -> Bool
-    , keyConfig : Dict String Command
-    , quickKeys : Dict String String
-    , taskbarDropped : Maybe Taskbar.DropDown
+    , taskbarDropped : Maybe Taskbar.Dropdown
     , minimap : MinimapState
     , menu : Maybe Menu.Model
     , seed : Seed
+    , config : Config
+    }
+
+
+type alias Config =
+    { quickKeys : Dict String String
+    , keyOps : Dict String Op
+    , cmdKey : KeyEvent -> Bool
     }
 
 
@@ -148,35 +70,13 @@ type MinimapState
     | Closed Position
 
 
-type Msg
-    = GetWindowSize Size
-    | SetTool Tool
-    | ToolMsg Tool.Msg
-    | MenuMsg Menu.Msg
-    | Tick Time
-    | ColorPickerMsg ColorPicker.Msg
-    | MinimapMsg Minimap.Msg
-    | ScreenMouseMove MouseEvent
-    | ScreenMouseExit
-    | KeyboardEvent (Result String KeyPayload)
-    | DropDownClicked Taskbar.DropDown
-    | DropDownClickedOut
-    | HoverOnto Taskbar.DropDown
-    | Command Command
-    | PaletteSquareClick Color
-    | OpenColorPicker Color Int
-    | OpenNewWindow NewWindow
-    | AddPaletteSquare
-    | InitImgur
-
-
 type NewWindow
     = Preferences
     | Tutorial
     | Donate
 
 
-type alias KeyPayload =
+type alias KeyEvent =
     { code : KeyCode
     , meta : Bool
     , ctrl : Bool
@@ -202,7 +102,7 @@ type HistoryOp
     | ColorChange Int Color
 
 
-type Command
+type Op
     = SwatchesTurnLeft
     | SwatchesTurnRight
     | SwatchesQuickTurnLeft
@@ -232,6 +132,7 @@ type Command
     | InitScale
     | InitText
     | InitAbout
+    | InitImgur
     | InitReplaceColor
     | ToggleColorPicker
     | SwitchGalleryView
@@ -244,7 +145,7 @@ type Command
     | Rotate270
     | InvertColors
     | Save
-    | NoCommand
+    | NoOp
 
 
 type alias Swatches =
@@ -328,7 +229,7 @@ initSwatches =
 -- KEYBOARD --
 
 
-payloadToString : (KeyPayload -> Bool) -> KeyPayload -> String
+payloadToString : (KeyEvent -> Bool) -> KeyEvent -> String
 payloadToString cmdKey payload =
     let
         direction =
@@ -360,7 +261,7 @@ type alias QuickKey =
     ( Direction, Key, CmdState, ShiftState )
 
 
-defaultConfigBase : List ( QuickKey, Command )
+defaultConfigBase : List ( QuickKey, Op )
 defaultConfigBase =
     [ ( Down, Number2, CmdIsUp, ShiftIsUp ) := SwatchesQuickTurnLeft
     , ( Down, Number3, CmdIsUp, ShiftIsUp ) := SwatchesQuickTurnDown
@@ -404,8 +305,8 @@ defaultConfigBase =
     ]
 
 
-defaultConfig : Dict String Command
-defaultConfig =
+defaultKeyConfig : Dict String Op
+defaultKeyConfig =
     defaultConfigBase
         |> List.map (Tuple.mapFirst quickKeyToString)
         |> Dict.fromList
@@ -418,7 +319,7 @@ defaultQuickKeys isMac =
         |> Dict.fromList
 
 
-quickKeyLookUp : Bool -> ( QuickKey, Command ) -> ( String, String )
+quickKeyLookUp : Bool -> ( QuickKey, Op ) -> ( String, String )
 quickKeyLookUp isMac ( ( _, key, cmdKey, shift ), command ) =
     let
         commandStr =
@@ -587,14 +488,14 @@ fillBlackOp canvas =
 -- KEYPAYLOAD DECODER
 
 
-decodeKeyPayload : Value -> Result String KeyPayload
-decodeKeyPayload =
+decodeKeyEvent : Value -> Result String KeyEvent
+decodeKeyEvent =
     Decode.decodeValue keyPayloadDecoder
 
 
-keyPayloadDecoder : Decoder KeyPayload
+keyPayloadDecoder : Decoder KeyEvent
 keyPayloadDecoder =
-    decode KeyPayload
+    decode KeyEvent
         |> required "keyCode" Decode.int
         |> required "meta" Decode.bool
         |> required "ctrl" Decode.bool
@@ -653,25 +554,6 @@ decodeIsMac json =
 isMacDecoder : Decoder Bool
 isMacDecoder =
     Decode.field "isMac" Decode.bool
-
-
-
--- SEED DECODER --
-
-
-decodeSeed : Value -> Int
-decodeSeed json =
-    case Decode.decodeValue seedDecoder json of
-        Ok seed ->
-            seed
-
-        Err _ ->
-            1776
-
-
-seedDecoder : Decoder Int
-seedDecoder =
-    Decode.field "seed" Decode.int
 
 
 

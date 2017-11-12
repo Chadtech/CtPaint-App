@@ -1,4 +1,4 @@
-module Command exposing (..)
+module Op exposing (..)
 
 import Array
 import Canvas exposing (Canvas)
@@ -8,6 +8,7 @@ import Draw
 import History
 import Menu
 import Minimap
+import Msg exposing (Msg(..))
 import Ports exposing (JsMsg(..))
 import Tool exposing (Tool(..))
 import Tool.Zoom as Zoom
@@ -15,21 +16,21 @@ import Tool.Zoom.Util as Zoom
 import Tuple.Infix exposing ((&))
 import Types
     exposing
-        ( Command(..)
+        ( Config
         , Direction(..)
-        , KeyPayload
+        , KeyEvent
         , MinimapState(..)
         , Model
-        , Msg(..)
+        , Op(..)
         , payloadToString
         )
 import Util exposing (origin)
 
 
-update : Command -> Model -> ( Model, Cmd Msg )
-update cmd model =
-    case cmd of
-        NoCommand ->
+exec : Op -> Model -> ( Model, Cmd Msg )
+exec op model =
+    case op of
+        NoOp ->
             model & Cmd.none
 
         SetToolToPencil ->
@@ -253,6 +254,9 @@ update cmd model =
             }
                 & Cmd.none
 
+        InitImgur ->
+            model & Cmd.none
+
         InitReplaceColor ->
             { model
                 | menu =
@@ -388,11 +392,11 @@ setKeyAsDown ({ swatches } as model) =
     }
 
 
-fromKeyPayload : KeyPayload -> Model -> Command
-fromKeyPayload payload { cmdKey, keyConfig } =
-    case Dict.get (payloadToString cmdKey payload) keyConfig of
+fromKeyEvent : KeyEvent -> Config -> Op
+fromKeyEvent payload { cmdKey, keyOps } =
+    case Dict.get (payloadToString cmdKey payload) keyOps of
         Just command ->
             command
 
         Nothing ->
-            NoCommand
+            NoOp

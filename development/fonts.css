@@ -1,0 +1,24 @@
+@font-face {
+  font-family: HFNSS;
+  src: url("https://cdn.rawgit.com/Chadtech-Online-1/Chadtech-Online-1.github.io/master/HFNSS.ttf");
+}
+@font-face {
+  font-family: HFNSS1;
+  src: url("https://cdn.rawgit.com/Chadtech/personal-elm-boilerplate/34fb7992/development/HFNSSvector1.ttf");
+}
+@font-face {
+  font-family: HFGAM;
+  src: url("./hfgam.ttf");
+}
+@font-face {
+  font-family: HFTIN;
+  src: url("./hftin.ttf");
+}
+@font-face {
+  font-family: HFLLG;
+  src: url("https://cdn.rawgit.com/Chadtech-Online-1/Chadtech-Online-1.github.io/e7b402f9/HFLLG.ttf");
+}
+@font-face {
+  font-family: icons;
+  src: url("https://cdn.rawgit.com/Chadtech/ctpaint-demos/25021925/public/ctpaint-icons.ttf");
+}

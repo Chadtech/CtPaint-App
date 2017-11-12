@@ -19,9 +19,10 @@ import Html.CssHelpers
 import Html.Custom exposing (cannotSelect, indent, outdent)
 import Html.Events exposing (onClick)
 import Mouse
+import Msg exposing (Msg(..))
 import Tool exposing (Tool(..))
 import Tuple.Infix exposing ((:=))
-import Types exposing (Model, Msg(..))
+import Types exposing (Model)
 import Util
     exposing
         ( background

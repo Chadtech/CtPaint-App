@@ -1,4 +1,4 @@
-module Toolbar exposing (css, view)
+module Toolbar exposing (Msg(..), css, view)
 
 import Chadtech.Colors exposing (ignorable2, ignorable3)
 import Css exposing (..)
@@ -6,12 +6,20 @@ import Css.Namespace exposing (namespace)
 import Html exposing (Html, a, div)
 import Html.Attributes exposing (attribute, title)
 import Html.CssHelpers
-import Html.Custom exposing (indent, outdent)
+import Html.Custom
 import Html.Events exposing (onClick)
 import Tool exposing (Tool(..))
-import Tuple.Infix exposing ((:=))
-import Types exposing (Command(..), Model, Msg(..))
-import Util exposing (toolbarWidth)
+import Tuple.Infix exposing ((&))
+import Types exposing (Model, Op(..))
+
+
+-- TYPES --
+
+
+type Msg
+    = ToolButtonClicked Tool
+    | MenuButtonClicked Op
+
 
 
 -- STYLES --
@@ -19,8 +27,7 @@ import Util exposing (toolbarWidth)
 
 type Class
     = Toolbar
-    | ToolButton
-    | Selected
+    | Button
 
 
 css : Stylesheet
@@ -30,21 +37,15 @@ css =
         , height (calc (pct 100) minus (px 30))
         , borderRight3 (px 1) solid ignorable3
         , paddingTop (px 30)
+        , paddingLeft (px 2)
+        , paddingRight (px 2)
         , top (px 0)
         , left (px 0)
-        , width (px toolbarWidth)
+        , maxWidth fitContent
         ]
-    , (Css.class ToolButton << List.append outdent)
-        [ width (px 20)
-        , height (px 20)
-        , fontFamilies [ "icons" ]
-        , fontSize (em 1)
-        , textAlign center
-        , padding (px 0)
-        , lineHeight (px 20)
-        , marginLeft (px 2)
-        , active indent
-        , withClass Selected indent
+    , Css.class Button
+        [ display block
+        , marginBottom (px 1)
         ]
     ]
         |> namespace toolbarNamespace
@@ -83,7 +84,7 @@ children currentTool =
         |> List.concat
 
 
-menus : List ( String, String, Command )
+menus : List ( String, String, Op )
 menus =
     [ ( "\xEA19", "text", InitText )
     , ( "\xEA0F", "replace color", InitReplaceColor )
@@ -91,30 +92,32 @@ menus =
     ]
 
 
-menuButton : ( String, String, Command ) -> Html Msg
-menuButton ( icon, name, command ) =
-    a
-        [ class [ ToolButton ]
-        , onClick (Command command)
+menuButton : ( String, String, Op ) -> Html Msg
+menuButton ( icon, name, op ) =
+    { icon = icon
+    , selected = False
+    , attrs =
+        [ onClick (MenuButtonClicked op)
         , attribute "data-toggle" "tooltip"
         , title name
+        , class [ Button ]
         ]
-        [ Html.text icon ]
+    }
+        |> Html.Custom.toolButton
 
 
 toolButton : Tool -> Tool -> Html Msg
 toolButton selectedTool tool =
-    a
-        [ classList
-            [ ToolButton := True
-            , Selected
-                := isSelectedTool selectedTool tool
-            ]
-        , attribute "data-toggle" "tooltip"
+    { icon = Tool.icon tool
+    , selected = isSelectedTool selectedTool tool
+    , attrs =
+        [ attribute "data-toggle" "tooltip"
         , title (Tool.name tool)
-        , onClick (SetTool tool)
+        , onClick (ToolButtonClicked tool)
+        , class [ Button ]
         ]
-        [ Html.text (Tool.icon tool) ]
+    }
+        |> Html.Custom.toolButton
 
 
 

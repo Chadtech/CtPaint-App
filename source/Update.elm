@@ -3,19 +3,22 @@ module Update exposing (update)
 import Array
 import Canvas exposing (DrawOp(Batch))
 import ColorPicker
-import Command
 import Draw
 import History
 import Menu
 import Minimap
+import Msg exposing (Msg(..))
+import Op
 import Ports exposing (JsMsg(..))
+import Reply exposing (Reply(..))
+import Taskbar exposing (Option(..))
 import Tool.Update as Tool
+import Toolbar
 import Tuple.Infix exposing ((&))
 import Types
     exposing
         ( MinimapState(..)
         , Model
-        , Msg(..)
         , keyPayloadDecoder
         , toUrl
         )
@@ -25,6 +28,47 @@ import Util exposing (origin)
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
+        ToolbarMsg (Toolbar.ToolButtonClicked tool) ->
+            { model | tool = tool } & Cmd.none
+
+        ToolbarMsg (Toolbar.MenuButtonClicked op) ->
+            Op.exec op model
+
+        TaskbarMsg (Taskbar.OptionClickedOn (RunOp op)) ->
+            Op.exec op model
+
+        TaskbarMsg (Taskbar.OptionClickedOn (OpenNewWindow window)) ->
+            model & Cmd.none
+
+        TaskbarMsg (Taskbar.OptionClickedOn (SetTool tool)) ->
+            { model | tool = tool } & Cmd.none
+
+        TaskbarMsg Taskbar.DropdownClickedOut ->
+            { model
+                | taskbarDropped = Nothing
+            }
+                & Cmd.none
+
+        TaskbarMsg (Taskbar.DropdownClicked dropdown) ->
+            { model
+                | taskbarDropped = Just dropdown
+            }
+                & Cmd.none
+
+        TaskbarMsg (Taskbar.HoveredOnto dropdown) ->
+            case model.taskbarDropped of
+                Nothing ->
+                    model & Cmd.none
+
+                Just currentDropdown ->
+                    if currentDropdown == dropdown then
+                        model & Cmd.none
+                    else
+                        { model
+                            | taskbarDropped = Just dropdown
+                        }
+                            & Cmd.none
+
         ToolMsg subMsg ->
             Tool.update subMsg model & Cmd.none
 
@@ -32,25 +76,26 @@ update message model =
             case model.menu of
                 Just menu ->
                     let
-                        menuUpdate =
+                        ( ( newMenu, menuCmd ), reply ) =
                             Menu.update subMsg menu
+
+                        ( newModel, modelCmd ) =
+                            incorporateMenu reply newMenu model
                     in
-                    incorporateMenu menuUpdate model
+                    newModel
+                        & Cmd.batch
+                            [ modelCmd
+                            , Cmd.map MenuMsg menuCmd
+                            ]
 
                 Nothing ->
                     model & Cmd.none
 
-        GetWindowSize size ->
-            { model | windowSize = size }
-                & Cmd.none
-
-        SetTool tool ->
-            { model | tool = tool } & Cmd.none
+        WindowSizeReceived size ->
+            { model | windowSize = size } & Cmd.none
 
         KeyboardEvent (Ok payload) ->
-            Command.update
-                (Command.fromKeyPayload payload model)
-                model
+            Op.exec (Op.fromKeyEvent payload model.config) model
 
         KeyboardEvent (Err err) ->
             model & Cmd.none
@@ -112,35 +157,6 @@ update message model =
             }
                 & Cmd.none
 
-        DropDownClicked option ->
-            { model
-                | taskbarDropped = Just option
-            }
-                & Cmd.none
-
-        DropDownClickedOut ->
-            { model
-                | taskbarDropped = Nothing
-            }
-                & Cmd.none
-
-        HoverOnto option ->
-            case model.taskbarDropped of
-                Nothing ->
-                    model & Cmd.none
-
-                Just currentOption ->
-                    if currentOption == option then
-                        model & Cmd.none
-                    else
-                        { model
-                            | taskbarDropped = Just option
-                        }
-                            & Cmd.none
-
-        Command cmd ->
-            Command.update cmd model
-
         PaletteSquareClick color ->
             let
                 { swatches } =
@@ -161,23 +177,12 @@ update message model =
             }
                 & Cmd.none
 
-        OpenNewWindow window ->
-            model & Cmd.none
-
         AddPaletteSquare ->
             { model
                 | palette =
                     Array.push
                         model.swatches.second
                         model.palette
-            }
-                & Cmd.none
-
-        InitImgur ->
-            { model
-                | menu =
-                    Menu.initImgur model.windowSize
-                        |> Just
             }
                 & Cmd.none
 
@@ -202,29 +207,22 @@ incorporateMinimap ( minimap, externalMsg ) model =
                 & Cmd.none
 
 
-incorporateMenu :
-    ( Menu.Model, Menu.ExternalMsg )
-    -> Model
-    -> ( Model, Cmd Msg )
-incorporateMenu ( menu, externalMsg ) model =
-    case externalMsg of
-        Menu.DoNothing ->
+incorporateMenu : Reply -> Menu.Model -> Model -> ( Model, Cmd Msg )
+incorporateMenu reply menu model =
+    case reply of
+        NoReply ->
             { model
                 | menu = Just menu
             }
                 & Cmd.none
 
-        Menu.Close ->
+        CloseMenu ->
             { model
                 | menu = Nothing
             }
                 & Ports.send ReturnFocus
 
-        Menu.Cmd cmd ->
-            { model | menu = Just menu }
-                & Cmd.map MenuMsg cmd
-
-        Menu.IncorporateImage image ->
+        IncorporateImage image ->
             let
                 size =
                     Canvas.getSize image
@@ -246,7 +244,7 @@ incorporateMenu ( menu, externalMsg ) model =
             }
                 & Ports.send ReturnFocus
 
-        Menu.ScaleTo dw dh ->
+        ScaleTo dw dh ->
             case model.selection of
                 Nothing ->
                     { model
@@ -269,7 +267,7 @@ incorporateMenu ( menu, externalMsg ) model =
                     }
                         & Ports.send ReturnFocus
 
-        Menu.AddText str ->
+        AddText str ->
             { model
                 | menu = Nothing
                 , selection =
@@ -283,7 +281,7 @@ incorporateMenu ( menu, externalMsg ) model =
                 |> History.addCanvas
                 & Ports.send ReturnFocus
 
-        Menu.Replace target replacement ->
+        Replace target replacement ->
             case model.selection of
                 Just ( position, selection ) ->
                     { model

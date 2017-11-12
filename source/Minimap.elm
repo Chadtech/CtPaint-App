@@ -1,4 +1,14 @@
-module Minimap exposing (..)
+module Minimap
+    exposing
+        ( ExternalMsg(..)
+        , Model
+        , Msg
+        , css
+        , init
+        , subscriptions
+        , update
+        , view
+        )
 
 import Canvas
     exposing
@@ -6,15 +16,21 @@ import Canvas
         , DrawImageParams(..)
         , DrawOp(..)
         )
-import Html exposing (Attribute, Html, a, div, p, text)
-import Html.Attributes exposing (class, style)
+import Chadtech.Colors exposing (backgroundx2)
+import Css exposing (..)
+import Css.Elements
+import Css.Namespace exposing (namespace)
+import Html exposing (Attribute, Html, a, div, p)
+import Html.Attributes exposing (style)
+import Html.CssHelpers
+import Html.Custom exposing (card, cardBody, header, indent)
 import Html.Events exposing (onClick)
-import Mouse exposing (Position)
+import Mouse
 import MouseEvents exposing (MouseEvent)
 import Tool exposing (Tool(..))
 import Tool.Zoom.Util as Zoom
 import Tuple.Infix exposing ((&))
-import Util exposing (height, left, toPoint, top, width)
+import Util exposing (toPoint)
 import Window exposing (Size)
 
 
@@ -22,17 +38,16 @@ import Window exposing (Size)
 
 
 type alias Model =
-    { externalPosition : Position
-    , internalPosition : Position
-    , size : Size
+    { externalPosition : Mouse.Position
+    , internalPosition : Mouse.Position
     , zoom : Int
     , clickState : ClickState
     }
 
 
 type ClickState
-    = ClickedInHeaderAt Position
-    | ClickedInScreenAt Position
+    = ClickedInHeaderAt Mouse.Position
+    | ClickedInScreenAt Mouse.Position
     | NoClicks
 
 
@@ -51,7 +66,7 @@ type Msg
 type MouseHappening
     = HeaderMouseDown MouseEvent
     | ScreenMouseDown MouseEvent
-    | MouseMoved Position
+    | MouseMoved Mouse.Position
     | MouseUp
 
 
@@ -59,28 +74,21 @@ type MouseHappening
 -- INIT --
 
 
-init : Maybe Position -> Size -> Model
+init : Maybe Mouse.Position -> Size -> Model
 init maybeInitialPosition { width, height } =
-    let
-        minimapSize =
-            { width = 250 + extraWidth
-            , height = 250 + extraHeight
-            }
-    in
     { externalPosition =
         case maybeInitialPosition of
             Just position ->
                 position
 
             Nothing ->
-                { x = (width - minimapSize.width) // 2
-                , y = (height - minimapSize.height) // 2
+                { x = (width - floor minimapWidth) // 2
+                , y = (height - floor minimapHeight) // 2
                 }
     , internalPosition =
         { x = 0
         , y = 0
         }
-    , size = minimapSize
     , zoom = 1
     , clickState = NoClicks
     }
@@ -199,47 +207,118 @@ handleMouse event model =
 
 
 
+-- STYLES --
+
+
+type Class
+    = Minimap
+    | CanvasContainer
+    | Screen
+    | Button
+
+
+minimapWidth : Float
+minimapWidth =
+    250
+
+
+minimapHeight : Float
+minimapHeight =
+    250
+
+
+css : Stylesheet
+css =
+    [ Css.class Minimap
+        [ position absolute
+        , paddingBottom (px 2)
+        ]
+    , Css.class Screen
+        [ position absolute
+        , left (px 0)
+        , top (px 0)
+        , height (px minimapHeight)
+        , width (px minimapWidth)
+        ]
+    , (Css.class CanvasContainer << List.append indent)
+        [ position relative
+        , backgroundColor backgroundx2
+        , overflow hidden
+        , cursor move
+        , width (px minimapWidth)
+        , height (px minimapHeight)
+        , children
+            [ Css.Elements.canvas
+                [ position absolute ]
+            ]
+        ]
+    , Css.class Button
+        [ marginRight (px 1)
+        , marginTop (px 2)
+        ]
+    ]
+        |> namespace minimapNamespace
+        |> stylesheet
+
+
+minimapNamespace : String
+minimapNamespace =
+    "Minimap"
+
+
+
 -- VIEW --
 
 
-view : Model -> Canvas -> Maybe ( Position, Canvas ) -> Html Msg
+{ class, classList } =
+    Html.CssHelpers.withNamespace minimapNamespace
+
+
+view : Model -> Canvas -> Maybe ( Mouse.Position, Canvas ) -> Html Msg
 view model canvas maybeSelection =
-    div
-        [ class "card mini-map"
+    card
+        [ class [ Minimap ]
         , style
-            [ top model.externalPosition.y
-            , left model.externalPosition.x
-            , height model.size.height
-            , width model.size.width
+            [ Util.top model.externalPosition.y
+            , Util.left model.externalPosition.x
             ]
         ]
-        [ header model
-        , div
-            [ class "canvas-container"
-            , style
-                [ height (model.size.height - extraHeight)
-                , width (model.size.width - extraWidth)
+        [ header
+            { text = "mini map"
+            , headerMouseDown =
+                MouseDidSomething << HeaderMouseDown
+            , xClick = CloseClick
+            }
+        , cardBody
+            []
+            [ div
+                [ class [ CanvasContainer ] ]
+                [ Canvas.toHtml
+                    (canvasAttrs model canvas)
+                    (withSelection canvas maybeSelection)
+                , screen
                 ]
+            , Html.Custom.toolButton
+                { icon = Tool.icon ZoomIn
+                , selected = False
+                , attrs =
+                    [ class [ Button ]
+                    , onClick ZoomInClicked
+                    ]
+                }
+            , Html.Custom.toolButton
+                { icon = Tool.icon ZoomOut
+                , selected = False
+                , attrs =
+                    [ class [ Button ]
+                    , onClick ZoomOutClicked
+                    ]
+                }
             ]
-            [ Canvas.toHtml
-                (canvasAttrs model canvas)
-                (withSelection canvas maybeSelection)
-            , screen
-            ]
-        , a
-            [ class "tool-button"
-            , onClick ZoomInClicked
-            ]
-            [ text (Tool.icon ZoomIn) ]
-        , a
-            [ class "tool-button"
-            , onClick ZoomOutClicked
-            ]
-            [ text (Tool.icon ZoomOut) ]
         ]
 
 
-withSelection : Canvas -> Maybe ( Position, Canvas ) -> Canvas
+withSelection : Canvas -> Maybe ( Mouse.Position, Canvas ) -> Canvas
 withSelection canvas maybeSelection =
     case maybeSelection of
         Nothing ->
@@ -261,10 +340,10 @@ canvasAttrs { zoom, internalPosition } canvas =
         size =
             Canvas.getSize canvas
     in
-    [ left internalPosition.x
-    , top internalPosition.y
-    , height (zoom * size.height)
-    , width (zoom * size.width)
+    [ Util.left internalPosition.x
+    , Util.top internalPosition.y
+    , Util.height (zoom * size.height)
+    , Util.width (zoom * size.width)
     ]
         |> style
         |> List.singleton
@@ -273,21 +352,8 @@ canvasAttrs { zoom, internalPosition } canvas =
 screen : Html Msg
 screen =
     div
-        [ class "minimap-screen"
+        [ class [ Screen ]
         , MouseEvents.onMouseDown
             (MouseDidSomething << ScreenMouseDown)
         ]
         []
-
-
-header : Model -> Html Msg
-header model =
-    div
-        [ class "header"
-        , style [ width (model.size.width - extraWidth) ]
-        , MouseEvents.onMouseDown
-            (MouseDidSomething << HeaderMouseDown)
-        ]
-        [ p [] [ text "mini map" ]
-        , a [ onClick CloseClick ] [ text "x" ]
-        ]

@@ -2,9 +2,7 @@ var gulp = require("gulp");
 var source = require("vinyl-source-stream");
 var buffer = require("vinyl-buffer");
 var cp = require("child_process");
-var stylus = require("gulp-stylus");
 var browserify = require("browserify");
-var concat = require("gulp-concat");
 var util = require("gulp-util");
 
 paths = {
@@ -12,7 +10,6 @@ paths = {
   distribution: "./distribution",
   mainElm: "./source/PaintApp.elm",
   elm: "./source/**/*.elm",
-  css: "./source/**/*.styl",
   js: "./source/**/*.js"
 };
 
@@ -22,14 +19,6 @@ gulp.task("js", function() {
     .bundle()
     .pipe(source("paint-app.js"))
     .pipe(buffer())
-    .pipe(gulp.dest(paths.development));
-});
-
-gulp.task("stylus", function() {
-  return gulp
-    .src(["./source/Styles/main.styl", paths.css])
-    .pipe(concat("paint-app-styles.styl"))
-    .pipe(stylus())
     .pipe(gulp.dest(paths.development));
 });
 
@@ -93,11 +82,10 @@ gulp.task("server", function() {
 
 gulp.task("watch", function(){
     gulp.watch(paths.elm, ["elm"]);
-    gulp.watch(paths.css, ["stylus"]);
     gulp.watch(paths.js, ["js"]);
 
 });
 
-gulp.task("build", [ "elm",  "js", "stylus" ]);
-gulp.task("default", ["watch", "elm", "js",  "stylus", "server"]);
+gulp.task("build", [ "elm",  "js" ]);
+gulp.task("default", ["watch", "elm", "js", "server"]);
 

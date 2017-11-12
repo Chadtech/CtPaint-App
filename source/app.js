@@ -49,7 +49,7 @@ PaintApp = function(Client, flags) {
 
             case "download":
                 var canvas = document.getElementById("main-canvas");
-                var png = canvas.toDataUrl();
+                var png = canvas.toDataURL();
 
                 var a = document.createElement("a");
                 a.href = png;

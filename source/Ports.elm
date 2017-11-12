@@ -9,6 +9,7 @@ type JsMsg
     = StealFocus
     | ReturnFocus
     | SaveLocally Size String
+    | Download String
 
 
 jsMsg : String -> Value -> Cmd msg
@@ -42,6 +43,9 @@ send msg =
             ]
                 |> Encode.object
                 |> jsMsg "save"
+
+        Download fn ->
+            jsMsg "download" (Encode.string fn)
 
 
 port toJs : Value -> Cmd msg

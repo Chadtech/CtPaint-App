@@ -1,5 +1,8 @@
 module Scale exposing (..)
 
+import Css exposing (..)
+import Css.Elements
+import Css.Namespace exposing (namespace)
 import Html
     exposing
         ( Attribute
@@ -18,6 +21,8 @@ import Html.Attributes
         , type_
         , value
         )
+import Html.CssHelpers
+import Html.Custom
 import Html.Events
     exposing
         ( onClick
@@ -25,8 +30,9 @@ import Html.Events
         , onInput
         , onSubmit
         )
+import Reply exposing (Reply(NoReply, ScaleTo))
 import Tuple.Infix exposing ((&))
-import Util exposing (pct, px)
+import Util
 import Window exposing (Size)
 
 
@@ -48,14 +54,9 @@ type alias Model =
     }
 
 
-type ExternalMsg
-    = DoNothing
-    | ScaleTo Int Int
-
-
 type Msg
-    = UpdateField Field String
-    | Lock
+    = FieldUpdated Field String
+    | LockButtonClicked
     | FieldFocused Field
     | ScaleClick
 
@@ -68,37 +69,81 @@ type Field
 
 
 
+-- STYLES --
+
+
+type Class
+    = Lock
+    | LockContainer
+    | Field
+    | Column
+
+
+css : Stylesheet
+css =
+    [ Css.class LockContainer
+        [ display inlineBlock
+        , children
+            [ Css.Elements.p
+                [ display inlineBlock
+                , width (px 120)
+                ]
+            ]
+        ]
+    , Css.class Field [ margin4 (px 4) (px 0) (px 0) (px 0) ]
+    , Css.class Lock
+        [ width (px 24)
+        , height (px 24)
+        , borderRadius (px 0)
+        , paddingBottom (px 2)
+        , cursor pointer
+        , textAlign center
+        ]
+    , Css.class Column
+        [ float left
+        , marginRight (px 8)
+        ]
+    ]
+        |> namespace scaleNamespace
+        |> stylesheet
+
+
+scaleNamespace : String
+scaleNamespace =
+    "Scale"
+
+
+
 -- VIEW --
+
+
+{ class } =
+    Html.CssHelpers.withNamespace scaleNamespace
 
 
 view : Model -> List (Html Msg)
 view model =
-    [ div
-        [ class "select-body" ]
-        [ leftSide model
-        , rightSide model
-        , div
-            []
-            [ lock model.lockRatio
-            ]
-        , a
-            [ class "submit-button"
-            , onClick ScaleClick
-            ]
-            [ text "set size" ]
+    [ leftSide model
+    , rightSide model
+    , div
+        []
+        [ lock model.lockRatio
         ]
+    , Html.Custom.menuButton
+        [ onClick ScaleClick ]
+        [ Html.text "set size" ]
     ]
 
 
 lock : Bool -> Html Msg
 lock locked =
     form
-        [ class "field scale lock" ]
-        [ p [] [ text "lock" ]
+        [ class [ Field, LockContainer ] ]
+        [ p [] [ Html.text "lock" ]
         , input
-            [ class "ratio-lock"
+            [ class [ Lock ]
             , lockedValue locked
-            , onClick Lock
+            , onClick LockButtonClicked
             , type_ "button"
             ]
             []
@@ -116,31 +161,31 @@ lockedValue locked =
 leftSide : Model -> Html Msg
 leftSide model =
     div
-        [ class "column" ]
-        [ p [] [ text "percent" ]
+        [ class [ Column ] ]
+        [ p [] [ Html.text "percent" ]
         , field
-            [ p [] [ text "width" ]
+            [ p [] [ Html.text "width" ]
             , input
-                [ placeholder (pct model.percentWidth)
+                [ placeholder (Util.pct model.percentWidth)
                 , onFocus (FieldFocused PercentWidth)
                 , valueIfFocus
                     PercentWidth
                     model.focus
                     model.percentWidthField
-                , onInput (UpdateField PercentWidth)
+                , onInput (FieldUpdated PercentWidth)
                 ]
                 []
             ]
         , field
-            [ p [] [ text "height" ]
+            [ p [] [ Html.text "height" ]
             , input
-                [ placeholder (pct model.percentHeight)
+                [ placeholder (Util.pct model.percentHeight)
                 , onFocus (FieldFocused PercentHeight)
                 , valueIfFocus
                     PercentHeight
                     model.focus
                     model.percentHeightField
-                , onInput (UpdateField PercentHeight)
+                , onInput (FieldUpdated PercentHeight)
                 ]
                 []
             ]
@@ -163,31 +208,31 @@ valueIfFocus thisField maybeFocusedField str =
 rightSide : Model -> Html Msg
 rightSide model =
     div
-        [ class "column" ]
-        [ p [] [ text "absolute" ]
+        [ class [ Column ] ]
+        [ p [] [ Html.text "absolute" ]
         , field
-            [ p [] [ text "width" ]
+            [ p [] [ Html.text "width" ]
             , input
-                [ placeholder (px model.fixedWidth)
+                [ placeholder (Util.px model.fixedWidth)
                 , onFocus (FieldFocused FixedWidth)
                 , valueIfFocus
                     FixedWidth
                     model.focus
                     model.fixedWidthField
-                , onInput (UpdateField FixedWidth)
+                , onInput (FieldUpdated FixedWidth)
                 ]
                 []
             ]
         , field
-            [ p [] [ text "height" ]
+            [ p [] [ Html.text "height" ]
             , input
-                [ placeholder (px model.fixedHeight)
+                [ placeholder (Util.px model.fixedHeight)
                 , onFocus (FieldFocused FixedHeight)
                 , valueIfFocus
                     FixedHeight
                     model.focus
                     model.fixedHeightField
-                , onInput (UpdateField FixedHeight)
+                , onInput (FieldUpdated FixedHeight)
                 ]
                 []
             ]
@@ -196,8 +241,8 @@ rightSide model =
 
 field : List (Html Msg) -> Html Msg
 field =
-    form
-        [ class "field scale"
+    Html.Custom.field
+        [ class [ Field ]
         , onSubmit ScaleClick
         ]
 
@@ -206,24 +251,24 @@ field =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, ExternalMsg )
+update : Msg -> Model -> ( Model, Reply )
 update msg model =
     case msg of
-        UpdateField field str ->
-            updateField field str model
+        FieldUpdated field str ->
+            updateField field str model & NoReply
 
-        Lock ->
+        LockButtonClicked ->
             { model
                 | lockRatio =
                     not model.lockRatio
             }
-                & DoNothing
+                & NoReply
 
         FieldFocused field ->
             { model
                 | focus = Just field
             }
-                & DoNothing
+                & NoReply
 
         ScaleClick ->
             let
@@ -233,7 +278,7 @@ update msg model =
             model & ScaleTo fixedWidth fixedHeight
 
 
-updateField : Field -> String -> Model -> ( Model, ExternalMsg )
+updateField : Field -> String -> Model -> Model
 updateField field str model =
     case field of
         FixedWidth ->
@@ -248,7 +293,7 @@ updateField field str model =
                     cohereFixedWidth fixedWidth newModel
 
                 Err err ->
-                    newModel & DoNothing
+                    newModel
 
         FixedHeight ->
             let
@@ -262,7 +307,7 @@ updateField field str model =
                     cohereFixedHeight fixedHeight newModel
 
                 Err err ->
-                    newModel & DoNothing
+                    newModel
 
         PercentWidth ->
             let
@@ -276,7 +321,7 @@ updateField field str model =
                     coherePercentWidth percentWidth newModel
 
                 Err err ->
-                    newModel & DoNothing
+                    newModel
 
         PercentHeight ->
             let
@@ -290,10 +335,10 @@ updateField field str model =
                     coherePercentHeight percentHeight newModel
 
                 Err err ->
-                    newModel & DoNothing
+                    newModel
 
 
-cohereFixedWidth : Int -> Model -> ( Model, ExternalMsg )
+cohereFixedWidth : Int -> Model -> Model
 cohereFixedWidth fixedWidth model =
     { model
         | fixedWidth = fixedWidth
@@ -307,10 +352,9 @@ cohereFixedWidth fixedWidth model =
             in
             (fixedWidth_ / initialWidth) * 100
     }
-        & DoNothing
 
 
-cohereFixedHeight : Int -> Model -> ( Model, ExternalMsg )
+cohereFixedHeight : Int -> Model -> Model
 cohereFixedHeight fixedHeight model =
     { model
         | fixedHeight = fixedHeight
@@ -324,10 +368,9 @@ cohereFixedHeight fixedHeight model =
             in
             (fixedHeight_ / initialHeight) * 100
     }
-        & DoNothing
 
 
-coherePercentWidth : Float -> Model -> ( Model, ExternalMsg )
+coherePercentWidth : Float -> Model -> Model
 coherePercentWidth percentWidth model =
     { model
         | percentWidth = percentWidth
@@ -336,12 +379,11 @@ coherePercentWidth percentWidth model =
                 initialWidth =
                     toFloat model.initialSize.width
             in
-            round (initialWidth * (percentWidth / 100))
+            Basics.round (initialWidth * (percentWidth / 100))
     }
-        & DoNothing
 
 
-coherePercentHeight : Float -> Model -> ( Model, ExternalMsg )
+coherePercentHeight : Float -> Model -> Model
 coherePercentHeight percentHeight model =
     { model
         | percentHeight = percentHeight
@@ -350,9 +392,8 @@ coherePercentHeight percentHeight model =
                 initialHeight =
                     toFloat model.initialSize.height
             in
-            round (initialHeight * (percentHeight / 100))
+            Basics.round (initialHeight * (percentHeight / 100))
     }
-        & DoNothing
 
 
 

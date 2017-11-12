@@ -1,7 +1,7 @@
-module Data.Taskbar exposing (DropDown(..))
+module Data.Taskbar exposing (Dropdown(..))
 
 
-type DropDown
+type Dropdown
     = File
     | Edit
     | Transform

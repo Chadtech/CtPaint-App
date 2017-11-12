@@ -17,17 +17,10 @@
   "devDependencies": {
     "gulp-coffeelint": "^0.6.0",
     "browserify": "^13.0.0",
-    "coffee-script": "^1.12.4",
-    "coffeeify": "^2.1.0",
-    "coffeelint": "^1.16.0",
-    "coffeescope2": "^0.4.5",
     "express": "^4.13.4",
     "gulp": "^3.9.1",
-    "gulp-concat": "^2.6.1",
     "gulp-copy": "^1.0.0",
-    "gulp-stylus": "^2.3.1",
     "gulp-util": "^3.0.8",
-    "mocha": "^3.2.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },

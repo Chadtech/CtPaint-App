@@ -1,29 +1,25 @@
-port module Download exposing (..)
+module Download exposing (..)
 
 import Array exposing (Array)
 import Html exposing (Html, a, form, input, p, text)
 import Html.Attributes exposing (class, placeholder, value)
+import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
+import Ports exposing (JsMsg(Download))
 import Random exposing (Generator, Seed)
 import Tuple.Infix exposing ((&))
 
 
 type Msg
-    = UpdateField String
-    | Submit
+    = FieldUpdated String
+    | Submitted
+    | DownloadButtonPressed
 
 
 type alias Model =
-    { content : String
+    { field : String
     , placeholder : String
     }
-
-
-
--- PORTS --
-
-
-port download : String -> Cmd msg
 
 
 
@@ -33,20 +29,29 @@ port download : String -> Cmd msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        UpdateField field ->
-            { model | content = field } & Cmd.none
+        FieldUpdated str ->
+            { model | field = str } & Cmd.none
 
-        Submit ->
-            let
-                fileName =
-                    case model.content of
-                        "" ->
-                            model.placeholder
+        Submitted ->
+            model & download model
 
-                        content ->
-                            content
-            in
-            model & download fileName
+        DownloadButtonPressed ->
+            model & download model
+
+
+download : Model -> Cmd Msg
+download =
+    fileName >> Download >> Ports.send
+
+
+fileName : Model -> String
+fileName { field, placeholder } =
+    case field of
+        "" ->
+            placeholder
+
+        _ ->
+            field
 
 
 
@@ -55,23 +60,20 @@ update msg model =
 
 view : Model -> List (Html Msg)
 view model =
-    [ form
-        [ class "field"
-        , onSubmit Submit
+    [ Html.Custom.field
+        [ onSubmit Submitted
         ]
-        [ p [] [ text "file name" ]
+        [ p [] [ Html.text "file name" ]
         , input
-            [ onInput UpdateField
-            , value model.content
+            [ onInput FieldUpdated
+            , value model.field
             , placeholder model.placeholder
             ]
             []
         ]
-    , a
-        [ class "submit-button"
-        , onClick Submit
-        ]
-        [ text "download" ]
+    , Html.Custom.menuButton
+        [ onClick DownloadButtonPressed ]
+        [ Html.text "download" ]
     ]
 
 
@@ -97,7 +99,7 @@ fromSeed =
 
 fromString : String -> Model
 fromString projectName =
-    { content = ""
+    { field = ""
     , placeholder = projectName
     }
 
