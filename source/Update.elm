@@ -126,6 +126,9 @@ update message model =
             }
                 & Cmd.none
 
+        MsgDecodeFailed _ ->
+            model & Cmd.none
+
 
 incorporateMinimap :
     ( Minimap.Model, Minimap.ExternalMsg )
@@ -247,6 +250,9 @@ incorporateMenu reply menu model =
                                 model.canvas
                     }
                         & Cmd.none
+
+        NewUser user ->
+            { model | user = Just user } & Cmd.none
 
 
 incorporateColorPicker :

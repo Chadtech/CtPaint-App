@@ -10,6 +10,7 @@ type JsMsg
     | ReturnFocus
     | SaveLocally Size String
     | Download String
+    | AttemptLogin String String
 
 
 jsMsg : String -> Value -> Cmd msg
@@ -47,5 +48,15 @@ send msg =
         Download fn ->
             jsMsg "download" (Encode.string fn)
 
+        AttemptLogin email password ->
+            [ "email" := Encode.string email
+            , "password" := Encode.string password
+            ]
+                |> Encode.object
+                |> jsMsg "attempt login"
+
 
 port toJs : Value -> Cmd msg
+
+
+port fromJs : (Value -> msg) -> Sub msg

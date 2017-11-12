@@ -14,6 +14,7 @@ import Html.Custom exposing (outdent)
 import Html.Events exposing (onClick, onMouseOver)
 import Keys
 import Menu
+import Ports exposing (JsMsg(StealFocus))
 import Tool exposing (Tool)
 import Tuple.Infix exposing ((&))
 import Types
@@ -74,13 +75,13 @@ update msg model =
 
         LoginClicked ->
             { model
-                | menu = Just (Menu.initLogin model.windowSize)
+                | menu = Just Menu.initLogin
             }
-                & Cmd.none
+                & Ports.send StealFocus
 
         AboutClicked ->
             { model
-                | menu = Just (Menu.initAbout model.windowSize)
+                | menu = Just Menu.initAbout
             }
                 & Cmd.none
 

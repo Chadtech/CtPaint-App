@@ -40,7 +40,7 @@ update msg model =
 
         OtherButtonClicked Text ->
             { model
-                | menu = Just (Menu.initText model.windowSize)
+                | menu = Just Menu.initText
             }
 
         OtherButtonClicked Invert ->

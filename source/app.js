@@ -56,6 +56,25 @@ PaintApp = function(Client, flags) {
                 a.download = msg.payload;
                 a.click();
                 break;
+
+            case "attempt login":
+                Client.login(msg.payload, {
+                    onSuccess: function(result) {
+                        console.log(result);
+                    },
+                    onFailure: function(err) {
+                        app.ports.fromJs.send({
+                            type: "login failed",
+                            payload: String(err)
+                        })
+                        console.log(err);
+                    }
+                });
+                break;
+
+            default:
+                console.log("Unrecognized JsMsg type ->", msg.type);
+                break;
         }
     }
 

@@ -5,10 +5,9 @@ import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Color exposing (Color)
 import ColorPicker
 import Data.Config exposing (Config)
-import Data.Keys exposing (KeyCmd(..), KeyEvent)
+import Data.Palette exposing (Swatches)
 import Data.Taskbar exposing (Dropdown)
 import Data.User exposing (User)
-import Dict exposing (Dict)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline
     exposing
@@ -19,11 +18,8 @@ import Json.Decode.Pipeline
 import Menu
 import Minimap
 import Mouse exposing (Position)
-import MouseEvents exposing (MouseEvent)
 import Random exposing (Seed)
-import Time exposing (Time)
 import Tool exposing (Tool(..))
-import Util exposing (tbw)
 
 
 -- TYPES --
@@ -76,15 +72,6 @@ type NewWindow
 type HistoryOp
     = CanvasChange Canvas
     | ColorChange Int Color
-
-
-type alias Swatches =
-    { primary : Color
-    , first : Color
-    , second : Color
-    , third : Color
-    , keyIsDown : Bool
-    }
 
 
 

@@ -1,8 +1,15 @@
 module Login exposing (..)
 
-import Html exposing (Html, div)
+import Data.User exposing (User)
+import Html exposing (Attribute, Html, div, input, p)
+import Html.Attributes exposing (placeholder, type_, value)
+import Html.Custom
+import Html.Events exposing (onClick, onInput, onSubmit)
 import Maybe.Extra
+import Ports exposing (JsMsg(AttemptLogin))
+import Reply exposing (Reply(NewUser, NoReply))
 import Tuple.Infix exposing ((&))
+import Util
 
 
 -- TYPES --
@@ -18,15 +25,11 @@ type alias Model =
 
 
 type Msg
-    = FieldChanged Field String
+    = FieldUpdated Field String
     | LoginButtonPressed
     | FormSubmitted
     | LoginFailed String
-
-
-type Reply
-    = NoReply
-    | AttemptLogin String String
+    | LoginSucceeded User
 
 
 type Field
@@ -37,7 +40,8 @@ type Field
 type Problem
     = EmailIsBlank
     | PasswordIsBlank
-    | Unknown
+    | IncorrectEmailOrPassword
+    | Other String
 
 
 
@@ -60,21 +64,53 @@ init =
 
 view : Model -> List (Html Msg)
 view model =
-    []
+    let
+        value_ : String -> Attribute Msg
+        value_ =
+            Util.showField model.showFields >> value
+    in
+    [ Html.Custom.field
+        [ onSubmit FormSubmitted ]
+        [ p [] [ Html.text "email" ]
+        , input
+            [ onInput (FieldUpdated Email)
+            , value_ model.email
+            , placeholder "name@email.com"
+            ]
+            []
+        ]
+    , Html.Custom.field
+        [ onSubmit FormSubmitted ]
+        [ p [] [ Html.text "password" ]
+        , input
+            [ onInput (FieldUpdated Password)
+            , value_ model.password
+            , type_ "password"
+            ]
+            []
+        ]
+    , Html.Custom.menuButton
+        [ onClick LoginButtonPressed ]
+        [ Html.text "log in" ]
+    ]
 
 
 
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Reply )
+update : Msg -> Model -> ( ( Model, Cmd Msg ), Reply )
 update msg model =
     case msg of
-        FieldChanged Email email ->
-            { model | email = email } & NoReply
+        FieldUpdated Email email ->
+            { model | email = email }
+                & Cmd.none
+                & NoReply
 
-        FieldChanged Password password ->
-            { model | password = password } & NoReply
+        FieldUpdated Password password ->
+            { model | password = password }
+                & Cmd.none
+                & NoReply
 
         LoginButtonPressed ->
             attemptLogin model
@@ -82,16 +118,36 @@ update msg model =
         FormSubmitted ->
             attemptLogin model
 
-        LoginFailed err ->
+        LoginFailed "UserNotFoundException: User does not exist." ->
             { model
-                | responseError = Just Unknown
+                | responseError = Just IncorrectEmailOrPassword
             }
+                & Cmd.none
                 & NoReply
 
+        LoginFailed "NotAuthorizedException: Incorrect username or password." ->
+            { model
+                | responseError = Just IncorrectEmailOrPassword
+            }
+                & Cmd.none
+                & NoReply
 
-attemptLogin : Model -> ( Model, Reply )
+        LoginFailed err ->
+            { model
+                | responseError = Just (Other (Debug.log "login err" err))
+            }
+                & Cmd.none
+                & NoReply
+
+        LoginSucceeded user ->
+            model & Cmd.none & NewUser user
+
+
+attemptLogin : Model -> ( ( Model, Cmd Msg ), Reply )
 attemptLogin model =
-    validate model |> submitIfNoErrors
+    validate model
+        |> submitIfNoErrors
+        & NoReply
 
 
 validate : Model -> Model
@@ -117,9 +173,18 @@ check condition error =
         Nothing
 
 
-submitIfNoErrors : Model -> ( Model, Reply )
+submitIfNoErrors : Model -> ( Model, Cmd Msg )
 submitIfNoErrors model =
     if List.isEmpty model.errors then
-        model & AttemptLogin model.email model.password
+        let
+            cmd =
+                AttemptLogin model.email model.password
+                    |> Ports.send
+        in
+        { model
+            | showFields = False
+            , password = ""
+        }
+            & cmd
     else
-        model & NoReply
+        model & Cmd.none

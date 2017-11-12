@@ -7,6 +7,7 @@ import Json.Decode exposing (Value)
 import Menu
 import Minimap
 import Msg exposing (Msg(..))
+import Ports
 import Tool
 import Types
     exposing
@@ -30,6 +31,7 @@ subscriptions model =
     , keyEvent (KeyboardEvent << decodeKeyEvent)
     , Sub.map ToolMsg (Tool.subscriptions model.tool)
     , menu model.menu
+    , Ports.fromJs Msg.decode
     ]
         |> Sub.batch
 

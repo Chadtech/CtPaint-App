@@ -31,7 +31,6 @@ import Window exposing (Size)
 
 type alias Model =
     { position : Mouse.Position
-    , size : Size
     , click : ClickState
     , title : String
     , content : Menu
@@ -74,6 +73,11 @@ type ContentMsg
     | NewMsg New.Msg
     | OpenMsg Open.Msg
     | LoginMsg Login.Msg
+
+
+loginFailed : String -> Msg
+loginFailed =
+    Login.LoginFailed >> LoginMsg >> ContentMsg
 
 
 
@@ -173,6 +177,15 @@ updateContent msg model =
                 & Cmd.none
                 & reply
 
+        ( LoginMsg subMsg, Login subModel ) ->
+            let
+                ( ( newSubModel, cmd ), reply ) =
+                    Login.update subMsg subModel
+            in
+            { model | content = Login newSubModel }
+                & Cmd.map (ContentMsg << LoginMsg) cmd
+                & reply
+
         _ ->
             model & Cmd.none & NoReply
 
@@ -208,7 +221,7 @@ menuNamespace =
 
 
 view : Model -> Html Msg
-view { position, size, title, content } =
+view { position, title, content } =
     Html.Custom.card
         [ style
             [ Util.top position.y
@@ -274,117 +287,63 @@ contentView menu =
 -- INIT --
 
 
-initLogin : Size -> Model
-initLogin windowSize =
-    let
-        size =
-            { width = 200
-            , height = 200
-            }
-    in
-    { position =
-        { x = (windowSize.width - size.width) // 2
-        , y = (windowSize.height - size.height) // 2
-        }
-    , size = size
+defaultPosition : Mouse.Position
+defaultPosition =
+    { x = 50, y = 50 }
+
+
+initLogin : Model
+initLogin =
+    { position = defaultPosition
     , click = NoClick
     , title = "login"
     , content = Login Login.init
     }
 
 
-initNew : Size -> Model
-initNew windowSize =
-    let
-        size =
-            { width = 400
-            , height = 400
-            }
-    in
-    { position =
-        { x = (windowSize.width - size.width) // 2
-        , y = (windowSize.height - size.height) // 2
-        }
-    , size = size
+initNew : Model
+initNew =
+    { position = defaultPosition
     , click = NoClick
     , title = "new"
     , content = New New.init
     }
 
 
-initText : Size -> Model
-initText windowSize =
-    let
-        size =
-            { width = 500
-            , height = 308
-            }
-    in
-    { position =
-        { x = (windowSize.width - size.width) // 2
-        , y = (windowSize.height - size.height) // 2
-        }
-    , size = size
+initText : Model
+initText =
+    { position = defaultPosition
     , click = NoClick
     , title = "text"
     , content = Text Text.init
     }
 
 
-initScale : Size -> Size -> Model
-initScale canvasSize windowSize =
-    let
-        size =
-            { width = 384
-            , height = 196
-            }
-    in
-    { position =
-        { x = (windowSize.width - size.width) // 2
-        , y = (windowSize.height - size.height) // 2
-        }
-    , size = size
+initScale : Size -> Model
+initScale canvasSize =
+    { position = defaultPosition
     , click = NoClick
     , title = "scale"
     , content = Scale (Scale.init canvasSize)
     }
 
 
-initImport : Size -> Model
-initImport windowSize =
-    let
-        size =
-            { width = 416
-            , height = 112
-            }
-    in
-    { position =
-        { x = (windowSize.width - size.width) // 2
-        , y = (windowSize.height - size.height) // 2
-        }
-    , size = size
+initImport : Model
+initImport =
+    { position = defaultPosition
     , click = NoClick
     , title = "import"
     , content = Import Import.init
     }
 
 
-initDownload : Size -> Maybe String -> Seed -> ( Model, Seed )
-initDownload windowSize maybeProjectName seed =
+initDownload : Maybe String -> Seed -> ( Model, Seed )
+initDownload maybeProjectName seed =
     let
         ( menu, newSeed ) =
             Download.init maybeProjectName seed
-
-        size =
-            { width = 416
-            , height = 112
-            }
     in
-    { position =
-        { x = (windowSize.width - size.width) // 2
-        , y = (windowSize.height - size.height) // 2
-        }
-    , size = size
+    { position = defaultPosition
     , click = NoClick
     , title = "download"
     , content = Download menu
@@ -392,38 +351,18 @@ initDownload windowSize maybeProjectName seed =
         & newSeed
 
 
-initAbout : Size -> Model
-initAbout windowSize =
-    let
-        size =
-            { width = 400
-            , height = 400
-            }
-    in
-    { position =
-        { x = (windowSize.width - size.width) // 2
-        , y = (windowSize.height - size.height) // 2
-        }
-    , size = size
+initAbout : Model
+initAbout =
+    { position = defaultPosition
     , click = NoClick
     , title = "about"
     , content = About
     }
 
 
-initReplaceColor : Size -> Color.Color -> Color.Color -> List Color.Color -> Model
-initReplaceColor windowSize target replacement palette =
-    let
-        size =
-            { width = 196
-            , height = 338
-            }
-    in
-    { position =
-        { x = (windowSize.width - size.width) // 2
-        , y = (windowSize.height - size.height) // 2
-        }
-    , size = size
+initReplaceColor : Color.Color -> Color.Color -> List Color.Color -> Model
+initReplaceColor target replacement palette =
+    { position = defaultPosition
     , click = NoClick
     , title = "replace color"
     , content =
@@ -432,19 +371,9 @@ initReplaceColor windowSize target replacement palette =
     }
 
 
-initImgur : Size -> Model
-initImgur windowSize =
-    let
-        size =
-            { width = 400
-            , height = 400
-            }
-    in
-    { position =
-        { x = (windowSize.width - size.width) // 2
-        , y = (windowSize.height - size.height) // 2
-        }
-    , size = size
+initImgur : Model
+initImgur =
+    { position = defaultPosition
     , click = NoClick
     , title = "imgur"
     , content =

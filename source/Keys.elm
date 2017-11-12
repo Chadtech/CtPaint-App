@@ -191,9 +191,7 @@ exec keyCmd model =
         InitImport ->
             { model
                 | menu =
-                    model.windowSize
-                        |> Menu.initImport
-                        |> Just
+                    Just Menu.initImport
             }
                 & Ports.send StealFocus
 
@@ -201,7 +199,6 @@ exec keyCmd model =
             let
                 ( menuModel, seed ) =
                     Menu.initDownload
-                        model.windowSize
                         model.projectName
                         model.seed
             in
@@ -214,9 +211,7 @@ exec keyCmd model =
         InitText ->
             { model
                 | menu =
-                    model.windowSize
-                        |> Menu.initText
-                        |> Just
+                    Just Menu.initText
             }
                 & Ports.send StealFocus
 
@@ -227,13 +222,11 @@ exec keyCmd model =
                         Just ( _, selection ) ->
                             Menu.initScale
                                 (Canvas.getSize selection)
-                                model.windowSize
                                 |> Just
 
                         Nothing ->
                             Menu.initScale
                                 (Canvas.getSize model.canvas)
-                                model.windowSize
                                 |> Just
             in
             { model | menu = menu }

@@ -105,6 +105,14 @@ viewIf condition html =
         Html.text ""
 
 
+showField : Bool -> String -> String
+showField condition str =
+    if condition then
+        str
+    else
+        "********"
+
+
 px : Int -> String
 px int =
     toString int ++ "px"
