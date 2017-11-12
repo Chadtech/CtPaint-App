@@ -8,3 +8,4 @@ type Dropdown
     | Tools
     | View
     | Help
+    | User

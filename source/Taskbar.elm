@@ -1,23 +1,26 @@
-module Taskbar exposing (Msg(..), Option(..), css, view)
+module Taskbar exposing (Msg(..), css, update, view)
 
 import Chadtech.Colors exposing (ignorable1, ignorable2, ignorable3, point)
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
+import Data.Keys exposing (KeyCmd(..), QuickKey)
 import Data.Taskbar exposing (Dropdown(..))
+import Data.User exposing (User)
 import Dict exposing (Dict)
 import Html exposing (Attribute, Html, a, div, p)
 import Html.CssHelpers
 import Html.Custom exposing (outdent)
 import Html.Events exposing (onClick, onMouseOver)
+import Keys
+import Menu
 import Tool exposing (Tool)
+import Tuple.Infix exposing ((&))
 import Types
     exposing
         ( MinimapState(..)
         , Model
         , NewWindow(..)
-        , Op(..)
-        , QuickKey
         )
 import Util exposing (toolbarWidth)
 
@@ -26,16 +29,69 @@ import Util exposing (toolbarWidth)
 
 
 type Msg
-    = OptionClickedOn Option
-    | DropdownClickedOut
+    = DropdownClickedOut
     | DropdownClicked Dropdown
     | HoveredOnto Dropdown
+    | LoginClicked
+    | AboutClicked
+    | KeyCmdClicked KeyCmd
+    | NewWindowClicked NewWindow
+    | ToolClicked Tool
 
 
-type Option
-    = RunOp Op
-    | OpenNewWindow NewWindow
-    | SetTool Tool
+
+-- UPDATE --
+
+
+update : Msg -> Model -> ( Model, Cmd msg )
+update msg model =
+    case msg of
+        DropdownClickedOut ->
+            { model
+                | taskbarDropped = Nothing
+            }
+                & Cmd.none
+
+        DropdownClicked dropdown ->
+            { model
+                | taskbarDropped = Just dropdown
+            }
+                & Cmd.none
+
+        HoveredOnto dropdown ->
+            case model.taskbarDropped of
+                Nothing ->
+                    model & Cmd.none
+
+                Just currentDropdown ->
+                    if currentDropdown == dropdown then
+                        model & Cmd.none
+                    else
+                        { model
+                            | taskbarDropped = Just dropdown
+                        }
+                            & Cmd.none
+
+        LoginClicked ->
+            { model
+                | menu = Just (Menu.initLogin model.windowSize)
+            }
+                & Cmd.none
+
+        AboutClicked ->
+            { model
+                | menu = Just (Menu.initAbout model.windowSize)
+            }
+                & Cmd.none
+
+        KeyCmdClicked keyCmd ->
+            Keys.exec keyCmd model
+
+        NewWindowClicked window ->
+            model & Cmd.none
+
+        ToolClicked tool ->
+            { model | tool = tool } & Cmd.none
 
 
 
@@ -46,6 +102,7 @@ type Class
     = Taskbar
     | InvisibleWall
     | Button
+    | LoginButton
     | Dropped
     | Divider
     | Strike
@@ -80,6 +137,10 @@ css =
         , padding2 (px 2) (px 4)
         , withClass Dropped [ zIndex (int 3) ]
         , active outdent
+        ]
+    , Css.class LoginButton
+        [ float right
+        , marginRight (px 2)
         ]
     , Css.class Seam
         [ backgroundColor ignorable2
@@ -174,7 +235,7 @@ taskbarNamespace =
 
 
 view : Model -> Html Msg
-view ({ taskbarDropped } as model) =
+view ({ taskbarDropped, user } as model) =
     div
         [ class [ Taskbar ] ]
         [ file model
@@ -183,8 +244,44 @@ view ({ taskbarDropped } as model) =
         , tools model
         , view_ model
         , help taskbarDropped
+        , userButton user
         , invisibleWall taskbarDropped
         ]
+
+
+userButton : Maybe User -> Html Msg
+userButton maybeUser =
+    case maybeUser of
+        Just user ->
+            userOptions user
+
+        Nothing ->
+            loginButton
+
+
+userOptions : User -> Html Msg
+userOptions user =
+    a
+        [ class [ Button ] ]
+        [ Html.text user.name
+        , Util.viewIf user.optionsIsOpen seam
+        , Util.viewIf user.optionsIsOpen (userDropdown user)
+        ]
+
+
+userDropdown : User -> Html Msg
+userDropdown user =
+    []
+        |> dropdownView Data.Taskbar.User
+
+
+loginButton : Html Msg
+loginButton =
+    a
+        [ class [ Button, LoginButton ]
+        , onClick LoginClicked
+        ]
+        [ Html.text "login" ]
 
 
 invisibleWall : Maybe Dropdown -> Html Msg
@@ -205,14 +302,14 @@ help : Maybe Dropdown -> Html Msg
 help maybeHelp =
     case maybeHelp of
         Just Help ->
-            [ option "About" "" (RunOp InitAbout)
-            , option "Tutorial" "" (OpenNewWindow Tutorial)
-            , option "Donate" "" (OpenNewWindow Donate)
+            [ option "About" "" AboutClicked
+            , option "Tutorial" "" (NewWindowClicked Tutorial)
+            , option "Donate" "" (NewWindowClicked Donate)
             ]
-                |> taskbarButtonOpen Help
+                |> taskbarButtonOpen "help" Help
 
         _ ->
-            taskbarButtonClose Help
+            taskbarButtonClose "help" Help
 
 
 
@@ -226,20 +323,20 @@ view_ model =
             [ option
                 "Gallery view"
                 "tab"
-                (RunOp SwitchGalleryView)
+                (KeyCmdClicked SwitchGalleryView)
             , option
                 (minimapLabel model)
-                (getOpStr model.config.quickKeys ToggleMinimap)
-                (RunOp ToggleMinimap)
+                (getKeyCmdStr model.config.quickKeys ToggleMinimap)
+                (KeyCmdClicked ToggleMinimap)
             , option
                 "Color Picker"
-                (getOpStr model.config.quickKeys ToggleColorPicker)
-                (RunOp ToggleColorPicker)
+                (getKeyCmdStr model.config.quickKeys ToggleColorPicker)
+                (KeyCmdClicked ToggleColorPicker)
             ]
-                |> taskbarButtonOpen View
+                |> taskbarButtonOpen "view" View
 
         _ ->
-            taskbarButtonClose View
+            taskbarButtonClose "view" View
 
 
 minimapLabel : Model -> String
@@ -263,52 +360,52 @@ transform model =
             transformOpen model
 
         _ ->
-            taskbarButtonClose Transform
+            taskbarButtonClose "transform" Transform
 
 
 transformOpen : Model -> Html Msg
 transformOpen model =
     [ option
         "Flip Horiztonal"
-        (getOpStr model.config.quickKeys FlipHorizontal)
-        (RunOp FlipHorizontal)
+        (getKeyCmdStr model.config.quickKeys FlipHorizontal)
+        (KeyCmdClicked FlipHorizontal)
     , option
         "Flip Vertical"
-        (getOpStr model.config.quickKeys FlipVertical)
-        (RunOp FlipVertical)
+        (getKeyCmdStr model.config.quickKeys FlipVertical)
+        (KeyCmdClicked FlipVertical)
     , divider
     , option
         "Rotate 90"
-        (getOpStr model.config.quickKeys Rotate90)
-        (RunOp Rotate90)
+        (getKeyCmdStr model.config.quickKeys Rotate90)
+        (KeyCmdClicked Rotate90)
     , option
         "Rotate 180"
-        (getOpStr model.config.quickKeys Rotate180)
-        (RunOp Rotate180)
+        (getKeyCmdStr model.config.quickKeys Rotate180)
+        (KeyCmdClicked Rotate180)
     , option
         "Rotate 270"
-        (getOpStr model.config.quickKeys Rotate270)
-        (RunOp Rotate270)
+        (getKeyCmdStr model.config.quickKeys Rotate270)
+        (KeyCmdClicked Rotate270)
     , divider
     , option
         "Scale"
-        (getOpStr model.config.quickKeys InitScale)
-        (RunOp InitScale)
+        (getKeyCmdStr model.config.quickKeys InitScale)
+        (KeyCmdClicked InitScale)
     , option
         "Replace Color"
-        (getOpStr model.config.quickKeys InitReplaceColor)
-        (RunOp InitReplaceColor)
+        (getKeyCmdStr model.config.quickKeys InitReplaceColor)
+        (KeyCmdClicked InitReplaceColor)
     , option
         "Invert"
-        (getOpStr model.config.quickKeys InvertColors)
-        (RunOp InvertColors)
+        (getKeyCmdStr model.config.quickKeys InvertColors)
+        (KeyCmdClicked InvertColors)
     , divider
     , option
         "Text"
-        (getOpStr model.config.quickKeys InitText)
-        (RunOp InitText)
+        (getKeyCmdStr model.config.quickKeys InitText)
+        (KeyCmdClicked InitText)
     ]
-        |> taskbarButtonOpen Transform
+        |> taskbarButtonOpen "transform" Transform
 
 
 
@@ -322,53 +419,53 @@ tools model =
             toolsDropped model
 
         _ ->
-            taskbarButtonClose Tools
+            taskbarButtonClose "tools" Tools
 
 
 toolsDropped : Model -> Html Msg
 toolsDropped model =
     [ option
         "Select"
-        (getOpStr model.config.quickKeys SetToolToSelect)
-        (RunOp SetToolToSelect)
+        (getKeyCmdStr model.config.quickKeys SetToolToSelect)
+        (KeyCmdClicked SetToolToSelect)
     , option
         "Zoom In"
-        (getOpStr model.config.quickKeys ZoomIn)
-        (SetTool Tool.ZoomIn)
+        (getKeyCmdStr model.config.quickKeys ZoomIn)
+        (ToolClicked Tool.ZoomIn)
     , option
         "Zoom Out"
-        (getOpStr model.config.quickKeys ZoomOut)
-        (SetTool Tool.ZoomOut)
+        (getKeyCmdStr model.config.quickKeys ZoomOut)
+        (ToolClicked Tool.ZoomOut)
     , option
         "Hand"
-        (getOpStr model.config.quickKeys SetToolToHand)
-        (RunOp SetToolToHand)
+        (getKeyCmdStr model.config.quickKeys SetToolToHand)
+        (KeyCmdClicked SetToolToHand)
     , option
         "Sample"
-        (getOpStr model.config.quickKeys SetToolToSample)
-        (RunOp SetToolToSample)
+        (getKeyCmdStr model.config.quickKeys SetToolToSample)
+        (KeyCmdClicked SetToolToSample)
     , option
         "Fill"
-        (getOpStr model.config.quickKeys SetToolToFill)
-        (RunOp SetToolToFill)
+        (getKeyCmdStr model.config.quickKeys SetToolToFill)
+        (KeyCmdClicked SetToolToFill)
     , option
         "Pencil"
-        (getOpStr model.config.quickKeys SetToolToPencil)
-        (RunOp SetToolToPencil)
+        (getKeyCmdStr model.config.quickKeys SetToolToPencil)
+        (KeyCmdClicked SetToolToPencil)
     , option
         "Line"
-        (getOpStr model.config.quickKeys SetToolToLine)
-        (RunOp SetToolToLine)
+        (getKeyCmdStr model.config.quickKeys SetToolToLine)
+        (KeyCmdClicked SetToolToLine)
     , option
         "Rectangle"
-        (getOpStr model.config.quickKeys SetToolToRectangle)
-        (RunOp SetToolToRectangle)
+        (getKeyCmdStr model.config.quickKeys SetToolToRectangle)
+        (KeyCmdClicked SetToolToRectangle)
     , option
         "Rectangle Filled"
-        (getOpStr model.config.quickKeys SetToolToRectangleFilled)
-        (RunOp SetToolToRectangleFilled)
+        (getKeyCmdStr model.config.quickKeys SetToolToRectangleFilled)
+        (KeyCmdClicked SetToolToRectangleFilled)
     ]
-        |> taskbarButtonOpen Tools
+        |> taskbarButtonOpen "tools" Tools
 
 
 
@@ -382,44 +479,44 @@ edit model =
             editDropped model
 
         _ ->
-            taskbarButtonClose Edit
+            taskbarButtonClose "edit" Edit
 
 
 editDropped : Model -> Html Msg
 editDropped model =
     [ option
         "Undo"
-        (getOpStr model.config.quickKeys Undo)
-        (RunOp Undo)
+        (getKeyCmdStr model.config.quickKeys Undo)
+        (KeyCmdClicked Undo)
     , option
         "Redo"
-        (getOpStr model.config.quickKeys Redo)
-        (RunOp Redo)
+        (getKeyCmdStr model.config.quickKeys Redo)
+        (KeyCmdClicked Redo)
     , divider
     , option
         "Cut"
-        (getOpStr model.config.quickKeys Cut)
-        (RunOp Cut)
+        (getKeyCmdStr model.config.quickKeys Cut)
+        (KeyCmdClicked Cut)
     , option
         "Copy"
-        (getOpStr model.config.quickKeys Copy)
-        (RunOp Copy)
+        (getKeyCmdStr model.config.quickKeys Copy)
+        (KeyCmdClicked Copy)
     , option
         "Paste"
-        (getOpStr model.config.quickKeys Paste)
-        (RunOp Paste)
+        (getKeyCmdStr model.config.quickKeys Paste)
+        (KeyCmdClicked Paste)
     , divider
     , option
         "Select all"
-        (getOpStr model.config.quickKeys SelectAll)
-        (RunOp SelectAll)
+        (getKeyCmdStr model.config.quickKeys SelectAll)
+        (KeyCmdClicked SelectAll)
     , divider
     , option
         "Preferences"
         ""
-        (OpenNewWindow Preferences)
+        (NewWindowClicked Preferences)
     ]
-        |> taskbarButtonOpen Edit
+        |> taskbarButtonOpen "edit" Edit
 
 
 
@@ -433,35 +530,35 @@ file model =
             fileDropped model
 
         _ ->
-            taskbarButtonClose File
+            taskbarButtonClose "file" File
 
 
 fileDropped : Model -> Html Msg
 fileDropped model =
     [ option
         "Save"
-        (getOpStr model.config.quickKeys Save)
-        (RunOp Save)
+        (getKeyCmdStr model.config.quickKeys Save)
+        (KeyCmdClicked Save)
     , option
         "Download"
-        (getOpStr model.config.quickKeys InitDownload)
-        (RunOp InitDownload)
+        (getKeyCmdStr model.config.quickKeys InitDownload)
+        (KeyCmdClicked InitDownload)
     , option
         "Import"
-        (getOpStr model.config.quickKeys InitImport)
-        (RunOp InitImport)
+        (getKeyCmdStr model.config.quickKeys InitImport)
+        (KeyCmdClicked InitImport)
     , divider
-    , option "Imgur" "" (RunOp InitImgur)
+    , option "Imgur" "" (KeyCmdClicked InitImgur)
     ]
-        |> taskbarButtonOpen File
+        |> taskbarButtonOpen "file" File
 
 
 
 -- HELPERS --
 
 
-getOpStr : Dict String String -> Op -> String
-getOpStr cmdLookUp op =
+getKeyCmdStr : Dict String String -> KeyCmd -> String
+getKeyCmdStr cmdLookUp op =
     case Dict.get (toString op) cmdLookUp of
         Just keys ->
             keys
@@ -470,28 +567,31 @@ getOpStr cmdLookUp op =
             ""
 
 
-taskbarButtonClose : Dropdown -> Html Msg
-taskbarButtonClose dropdown =
+taskbarButtonClose : String -> Dropdown -> Html Msg
+taskbarButtonClose label dropdown =
     a
         [ class [ Button ]
         , onClick (DropdownClicked dropdown)
         , onMouseOver (HoveredOnto dropdown)
         ]
-        [ Html.text (toString option) ]
+        [ Html.text label ]
 
 
-taskbarButtonOpen : Dropdown -> List (Html Msg) -> Html Msg
-taskbarButtonOpen dropdown children =
+taskbarButtonOpen : String -> Dropdown -> List (Html Msg) -> Html Msg
+taskbarButtonOpen label dropdown children =
     a
         [ class [ Button, Dropped ]
         , onClick DropdownClickedOut
         ]
-        [ Html.text (toString dropdown)
+        [ Html.text label
         , seam
-        , div
-            [ class [ Options, Dropdown dropdown ] ]
-            children
+        , dropdownView dropdown children
         ]
+
+
+dropdownView : Dropdown -> List (Html Msg) -> Html Msg
+dropdownView dropdown =
+    div [ class [ Options, Dropdown dropdown ] ]
 
 
 divider : Html Msg
@@ -501,10 +601,10 @@ divider =
         [ div [ class [ Strike ] ] [] ]
 
 
-option : String -> String -> Option -> Html Msg
-option label cmdKeys option =
+option : String -> String -> Msg -> Html Msg
+option label cmdKeys clickListener =
     div
-        [ onClick (OptionClickedOn option)
+        [ onClick clickListener
         , class [ Option ]
         ]
         [ p_ label

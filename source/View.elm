@@ -119,7 +119,7 @@ view model =
             [ class [ Main ] ]
             [ Html.map ToolbarMsg (Toolbar.view model.tool)
             , Html.map TaskbarMsg (Taskbar.view model)
-            , Palette.view model
+            , Html.map PaletteMsg (Palette.view model)
             , canvasArea canvasAreaHeight model
             , clickScreen canvasAreaHeight model
             , colorPicker model

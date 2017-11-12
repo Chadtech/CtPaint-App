@@ -2,15 +2,15 @@ module Msg exposing (Msg(..))
 
 import Color exposing (Color)
 import ColorPicker
-import Data.Taskbar as Taskbar
+import Data.Keys exposing (KeyEvent)
 import Menu
 import Minimap
 import MouseEvents exposing (MouseEvent)
+import Palette
 import Taskbar
 import Time exposing (Time)
 import Tool exposing (Tool)
 import Toolbar
-import Types exposing (KeyEvent, NewWindow(..), Op(..))
 import Window exposing (Size)
 
 
@@ -18,6 +18,7 @@ type Msg
     = WindowSizeReceived Size
     | ToolbarMsg Toolbar.Msg
     | TaskbarMsg Taskbar.Msg
+    | PaletteMsg Palette.Msg
     | ToolMsg Tool.Msg
     | MenuMsg Menu.Msg
     | Tick Time
@@ -26,6 +27,3 @@ type Msg
     | ScreenMouseMove MouseEvent
     | ScreenMouseExit
     | KeyboardEvent (Result String KeyEvent)
-    | PaletteSquareClick Color
-    | OpenColorPicker Color Int
-    | AddPaletteSquare

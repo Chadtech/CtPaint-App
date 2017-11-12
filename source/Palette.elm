@@ -1,4 +1,4 @@
-module Palette exposing (..)
+module Palette exposing (Msg, css, update, view)
 
 import Array exposing (Array)
 import Chadtech.Colors
@@ -10,8 +10,10 @@ import Chadtech.Colors
         , point
         )
 import Color exposing (Color)
+import ColorPicker
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
+import Data.Palette exposing (Swatches)
 import Draw
 import Html exposing (Attribute, Html, a, div, p, span)
 import Html.Attributes exposing (class, classList, style)
@@ -19,7 +21,6 @@ import Html.CssHelpers
 import Html.Custom exposing (cannotSelect, indent, outdent)
 import Html.Events exposing (onClick)
 import Mouse
-import Msg exposing (Msg(..))
 import Tool exposing (Tool(..))
 import Tuple.Infix exposing ((:=))
 import Types exposing (Model)
@@ -34,44 +35,47 @@ import Util
         )
 
 
--- INIT --
-
-
-initPalette : Array Color.Color
-initPalette =
-    [ Color.rgba 176 166 154 255
-    , Color.black
-    , Color.white
-    , Color.rgba 241 29 35 255
-    , Color.black
-    , Color.black
-    , Color.black
-    , Color.black
-    ]
-        |> Array.fromList
-
-
-initSwatches : Swatches
-initSwatches =
-    { primary = Color.rgba 176 166 154 255
-    , first = Color.black
-    , second = Color.white
-    , third = Color.rgba 241 29 35 255
-    , keyIsDown = False
-    }
-
-
-
 -- TYPES --
 
 
-type alias Swatches =
-    { primary : Color.Color
-    , first : Color.Color
-    , second : Color.Color
-    , third : Color.Color
-    , keyIsDown : Bool
-    }
+type Msg
+    = PaletteSquareClick Color.Color
+    | OpenColorPicker Color.Color Int
+    | AddPaletteSquare
+
+
+
+-- UPDATE --
+
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        PaletteSquareClick color ->
+            let
+                { swatches } =
+                    model
+            in
+            { model
+                | swatches =
+                    { swatches
+                        | primary = color
+                    }
+            }
+
+        OpenColorPicker color index ->
+            { model
+                | colorPicker =
+                    ColorPicker.init True index color
+            }
+
+        AddPaletteSquare ->
+            { model
+                | palette =
+                    Array.push
+                        model.swatches.second
+                        model.palette
+            }
 
 
 

@@ -2,6 +2,7 @@ port module Subscriptions exposing (subscriptions)
 
 import AnimationFrame
 import ColorPicker
+import Data.Keys exposing (decodeKeyEvent)
 import Json.Decode exposing (Value)
 import Menu
 import Minimap
@@ -9,10 +10,8 @@ import Msg exposing (Msg(..))
 import Tool
 import Types
     exposing
-        ( Direction(..)
-        , MinimapState(..)
+        ( MinimapState(..)
         , Model
-        , decodeKeyEvent
         )
 import Window
 

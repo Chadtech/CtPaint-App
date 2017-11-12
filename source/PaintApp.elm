@@ -4,6 +4,9 @@ import Array exposing (Array)
 import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Color
 import ColorPicker
+import Data.Flags as Flags exposing (Flags)
+import Data.Keys exposing (defaultKeyCmdConfig, defaultQuickKeys)
+import Data.Palette exposing (initPalette, initSwatches)
 import Html
 import Json.Decode as Decode exposing (Decoder, Value, value)
 import Msg exposing (Msg(..))
@@ -16,13 +19,7 @@ import Types
         ( HistoryOp(..)
         , MinimapState(..)
         , Model
-        , decodeIsMac
-        , decodeWindow
-        , defaultKeyConfig
-        , defaultQuickKeys
         , fillBlack
-        , initPalette
-        , initSwatches
         )
 import Update exposing (update)
 import Util exposing (tbw)
@@ -48,11 +45,17 @@ main =
 
 init : Value -> ( Model, Cmd Msg )
 init json =
-    let
-        windowSize : Size
-        windowSize =
-            decodeWindow json
+    case Decode.decodeValue Flags.decoder json of
+        Ok flags ->
+            fromFlags flags
 
+        Err err ->
+            fromError (Debug.log "error" err)
+
+
+fromFlags : Flags -> ( Model, Cmd Msg )
+fromFlags flags =
+    let
         ( canvas, menu ) =
             case Err "dont load it right now" of
                 Ok canvas ->
@@ -69,26 +72,22 @@ init json =
         canvasSize : Size
         canvasSize =
             Canvas.getSize canvas
-
-        isMac : Bool
-        isMac =
-            decodeIsMac json
     in
     { user = Nothing
     , canvas = canvas
     , projectName = Nothing
     , canvasPosition =
         { x =
-            ((windowSize.width - tbw) - canvasSize.width) // 2
+            ((flags.windowSize.width - tbw) - canvasSize.width) // 2
         , y =
-            (windowSize.height - canvasSize.height) // 2
+            (flags.windowSize.height - canvasSize.height) // 2
         }
     , pendingDraw = Canvas.batch []
     , drawAtRender = Canvas.batch []
     , swatches = initSwatches
     , palette = initPalette
     , horizontalToolbarHeight = 58
-    , windowSize = windowSize
+    , windowSize = flags.windowSize
     , tool = Tool.init
     , zoom = 1
     , galleryView = False
@@ -112,13 +111,13 @@ init json =
     , clipboard = Nothing
     , taskbarDropped = Nothing
     , minimap = NoMinimap
-    , menu = menu
-    , seed = Random.initialSeed (decodeSeed json)
+    , menu = Nothing
+    , seed = flags.seed
     , config =
-        { keyOps = defaultKeyConfig
-        , quickKeys = defaultQuickKeys isMac
+        { keyCmds = defaultKeyCmdConfig
+        , quickKeys = defaultQuickKeys flags.isMac
         , cmdKey =
-            if isMac then
+            if flags.isMac then
                 .meta
             else
                 .ctrl
@@ -127,20 +126,55 @@ init json =
         & Cmd.none
 
 
+fromError : String -> ( Model, Cmd Msg )
+fromError err =
+    { user = Nothing
+    , canvas =
+        Canvas.initialize
+            { width = 400
+            , height = 400
+            }
+    , projectName = Nothing
+    , canvasPosition = { x = 0, y = 0 }
+    , pendingDraw = Canvas.batch []
+    , drawAtRender = Canvas.batch []
+    , swatches = initSwatches
+    , palette = initPalette
+    , horizontalToolbarHeight = 58
+    , windowSize = { width = 0, height = 0 }
+    , tool = Tool.init
+    , zoom = 1
+    , galleryView = False
+    , colorPicker =
+        case Array.get 0 initPalette of
+            Just color ->
+                ColorPicker.init
+                    False
+                    0
+                    color
 
--- SEED DECODER --
-
-
-decodeSeed : Value -> Int
-decodeSeed json =
-    case Decode.decodeValue seedDecoder json of
-        Ok seed ->
-            seed
-
-        Err _ ->
-            1776
-
-
-seedDecoder : Decoder Int
-seedDecoder =
-    Decode.field "seed" Decode.int
+            Nothing ->
+                ColorPicker.init
+                    False
+                    0
+                    Color.black
+    , history = []
+    , future = []
+    , mousePosition = Nothing
+    , selection = Nothing
+    , clipboard = Nothing
+    , taskbarDropped = Nothing
+    , minimap = NoMinimap
+    , menu = Nothing
+    , seed = Random.initialSeed 0
+    , config =
+        { keyCmds = defaultKeyCmdConfig
+        , quickKeys = defaultQuickKeys True
+        , cmdKey =
+            if True then
+                .meta
+            else
+                .ctrl
+        }
+    }
+        & Cmd.none

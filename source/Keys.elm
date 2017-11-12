@@ -1,14 +1,13 @@
-module Op exposing (..)
+module Keys exposing (..)
 
-import Array
+import Actions
 import Canvas exposing (Canvas)
 import Clipboard
-import Dict
+import Data.Keys exposing (KeyCmd(..))
 import Draw
 import History
 import Menu
 import Minimap
-import Msg exposing (Msg(..))
 import Ports exposing (JsMsg(..))
 import Tool exposing (Tool(..))
 import Tool.Zoom as Zoom
@@ -16,21 +15,16 @@ import Tool.Zoom.Util as Zoom
 import Tuple.Infix exposing ((&))
 import Types
     exposing
-        ( Config
-        , Direction(..)
-        , KeyEvent
-        , MinimapState(..)
+        ( MinimapState(..)
         , Model
-        , Op(..)
-        , payloadToString
         )
 import Util exposing (origin)
 
 
-exec : Op -> Model -> ( Model, Cmd Msg )
-exec op model =
-    case op of
-        NoOp ->
+exec : KeyCmd -> Model -> ( Model, Cmd msg )
+exec keyCmd model =
+    case keyCmd of
+        NoCmd ->
             model & Cmd.none
 
         SetToolToPencil ->
@@ -138,7 +132,7 @@ exec op model =
             }
                 & Cmd.none
 
-        Types.ZoomIn ->
+        Data.Keys.ZoomIn ->
             let
                 newZoom =
                     Zoom.next model.zoom
@@ -148,7 +142,7 @@ exec op model =
             else
                 Zoom.set newZoom model & Cmd.none
 
-        Types.ZoomOut ->
+        Data.Keys.ZoomOut ->
             let
                 newZoom =
                     Zoom.prev model.zoom
@@ -245,29 +239,11 @@ exec op model =
             { model | menu = menu }
                 & Ports.send StealFocus
 
-        InitAbout ->
-            { model
-                | menu =
-                    model.windowSize
-                        |> Menu.initAbout
-                        |> Just
-            }
-                & Cmd.none
-
         InitImgur ->
             model & Cmd.none
 
         InitReplaceColor ->
-            { model
-                | menu =
-                    Menu.initReplaceColor
-                        model.windowSize
-                        model.swatches.primary
-                        model.swatches.second
-                        (Array.toList model.palette)
-                        |> Just
-            }
-                & Cmd.none
+            Actions.initReplaceColor model & Cmd.none
 
         ToggleColorPicker ->
             let
@@ -329,7 +305,7 @@ exec op model =
             model & Ports.send jsMsg
 
 
-transform : (Canvas -> Canvas) -> Model -> ( Model, Cmd Msg )
+transform : (Canvas -> Canvas) -> Model -> ( Model, Cmd msg )
 transform transformation model =
     case model.selection of
         Just ( position, selection ) ->
@@ -390,13 +366,3 @@ setKeyAsDown ({ swatches } as model) =
         | swatches =
             { swatches | keyIsDown = True }
     }
-
-
-fromKeyEvent : KeyEvent -> Config -> Op
-fromKeyEvent payload { cmdKey, keyOps } =
-    case Dict.get (payloadToString cmdKey payload) keyOps of
-        Just command ->
-            command
-
-        Nothing ->
-            NoOp

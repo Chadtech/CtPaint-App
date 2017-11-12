@@ -1,5 +1,6 @@
-module Toolbar exposing (Msg(..), css, view)
+module Toolbar exposing (Msg(..), css, update, view)
 
+import Actions
 import Chadtech.Colors exposing (ignorable2, ignorable3)
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
@@ -8,9 +9,9 @@ import Html.Attributes exposing (attribute, title)
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick)
+import Menu
 import Tool exposing (Tool(..))
-import Tuple.Infix exposing ((&))
-import Types exposing (Model, Op(..))
+import Types exposing (Model)
 
 
 -- TYPES --
@@ -18,7 +19,35 @@ import Types exposing (Model, Op(..))
 
 type Msg
     = ToolButtonClicked Tool
-    | MenuButtonClicked Op
+    | OtherButtonClicked OtherThing
+
+
+type OtherThing
+    = Text
+    | Invert
+    | Replace
+
+
+
+-- UPDATE --
+
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        ToolButtonClicked tool ->
+            { model | tool = tool }
+
+        OtherButtonClicked Text ->
+            { model
+                | menu = Just (Menu.initText model.windowSize)
+            }
+
+        OtherButtonClicked Invert ->
+            model
+
+        OtherButtonClicked Replace ->
+            Actions.initReplaceColor model
 
 
 
@@ -79,25 +108,25 @@ view tool =
 children : Tool -> List (Html Msg)
 children currentTool =
     [ List.map (toolButton currentTool) Tool.all
-    , List.map menuButton menus
+    , List.map otherButton otherThings
     ]
         |> List.concat
 
 
-menus : List ( String, String, Op )
-menus =
-    [ ( "\xEA19", "text", InitText )
-    , ( "\xEA0F", "replace color", InitReplaceColor )
-    , ( "\xEA0E", "invert colors", InvertColors )
+otherThings : List ( String, String, OtherThing )
+otherThings =
+    [ ( "\xEA19", "text", Text )
+    , ( "\xEA0F", "replace color", Replace )
+    , ( "\xEA0E", "invert colors", Invert )
     ]
 
 
-menuButton : ( String, String, Op ) -> Html Msg
-menuButton ( icon, name, op ) =
+otherButton : ( String, String, OtherThing ) -> Html Msg
+otherButton ( icon, name, otherThing ) =
     { icon = icon
     , selected = False
     , attrs =
-        [ onClick (MenuButtonClicked op)
+        [ onClick (OtherButtonClicked otherThing)
         , attribute "data-toggle" "tooltip"
         , title name
         , class [ Button ]

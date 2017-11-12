@@ -4,7 +4,10 @@ import Array exposing (Array)
 import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Color exposing (Color)
 import ColorPicker
-import Data.Taskbar as Taskbar
+import Data.Config exposing (Config)
+import Data.Keys exposing (KeyCmd(..), KeyEvent)
+import Data.Taskbar exposing (Dropdown)
+import Data.User exposing (User)
 import Dict exposing (Dict)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline
@@ -13,8 +16,6 @@ import Json.Decode.Pipeline
         , required
         , requiredAt
         )
-import Keyboard exposing (KeyCode)
-import Keyboard.Extra exposing (Key(..))
 import Menu
 import Minimap
 import Mouse exposing (Position)
@@ -22,7 +23,6 @@ import MouseEvents exposing (MouseEvent)
 import Random exposing (Seed)
 import Time exposing (Time)
 import Tool exposing (Tool(..))
-import Tuple.Infix exposing ((&), (:=))
 import Util exposing (tbw)
 
 
@@ -49,18 +49,11 @@ type alias Model =
     , mousePosition : Maybe Position
     , selection : Maybe ( Position, Canvas )
     , clipboard : Maybe ( Position, Canvas )
-    , taskbarDropped : Maybe Taskbar.Dropdown
+    , taskbarDropped : Maybe Dropdown
     , minimap : MinimapState
     , menu : Maybe Menu.Model
     , seed : Seed
     , config : Config
-    }
-
-
-type alias Config =
-    { quickKeys : Dict String String
-    , keyOps : Dict String Op
-    , cmdKey : KeyEvent -> Bool
     }
 
 
@@ -76,76 +69,13 @@ type NewWindow
     | Donate
 
 
-type alias KeyEvent =
-    { code : KeyCode
-    , meta : Bool
-    , ctrl : Bool
-    , shift : Bool
-    , direction : Direction
-    }
 
-
-type Direction
-    = Up
-    | Down
-
-
-type alias User =
-    { email : String
-    , username : String
-    , profile : String
-    }
+-- KeyEvent --
 
 
 type HistoryOp
     = CanvasChange Canvas
     | ColorChange Int Color
-
-
-type Op
-    = SwatchesTurnLeft
-    | SwatchesTurnRight
-    | SwatchesQuickTurnLeft
-    | RevertQuickTurnLeft
-    | SwatchesQuickTurnRight
-    | RevertQuickTurnRight
-    | SwatchesQuickTurnDown
-    | RevertQuickTurnDown
-    | SetToolToPencil
-    | SetToolToHand
-    | SetToolToSelect
-    | SetToolToFill
-    | SetToolToSample
-    | SetToolToLine
-    | SetToolToRectangle
-    | SetToolToRectangleFilled
-    | Undo
-    | Redo
-    | Cut
-    | Copy
-    | SelectAll
-    | Paste
-    | ZoomIn
-    | ZoomOut
-    | InitDownload
-    | InitImport
-    | InitScale
-    | InitText
-    | InitAbout
-    | InitImgur
-    | InitReplaceColor
-    | ToggleColorPicker
-    | SwitchGalleryView
-    | ToggleMinimap
-    | Delete
-    | FlipHorizontal
-    | FlipVertical
-    | Rotate90
-    | Rotate180
-    | Rotate270
-    | InvertColors
-    | Save
-    | NoOp
 
 
 type alias Swatches =
@@ -172,265 +102,6 @@ toUrl window =
 
         Donate ->
             "https://www.twitter.com"
-
-
-
--- PALETTE --
-
-
-initPalette : Array Color
-initPalette =
-    [ Color.rgba 176 166 154 255
-    , Color.black
-    , Color.white
-    , Color.rgba 101 92 74 255
-    , Color.rgba 85 96 45 255
-    , Color.rgba 172 214 48 255
-    , Color.rgba 221 201 142 255
-    , Color.rgba 243 210 21 255
-    , Color.rgba 240 146 50 255
-    , Color.rgba 255 91 49 255
-    , Color.rgba 212 51 27 255
-    , Color.rgba 242 29 35 255
-    , Color.rgba 252 164 132 255
-    , Color.rgba 230 121 166 255
-    , Color.rgba 80 0 87 255
-    , Color.rgba 240 224 214 255
-    , Color.rgba 255 255 238 255
-    , Color.rgba 157 144 136 255
-    , Color.rgba 50 54 128 255
-    , Color.rgba 36 33 157 255
-    , Color.rgba 0 47 167 255
-    , Color.rgba 23 92 254 255
-    , Color.rgba 10 186 181 255
-    , Color.rgba 159 170 210 255
-    , Color.rgba 214 218 240 255
-    , Color.rgba 238 242 255 255
-    , Color.rgba 157 212 147 255
-    , Color.rgba 170 211 13 255
-    , Color.rgba 60 182 99 255
-    , Color.rgba 10 202 26 255
-    , Color.rgba 201 207 215 255
-    ]
-        |> Array.fromList
-
-
-initSwatches : Swatches
-initSwatches =
-    { primary = Color.rgba 176 166 154 255
-    , first = Color.black
-    , second = Color.white
-    , third = Color.rgba 241 29 35 255
-    , keyIsDown = False
-    }
-
-
-
--- KEYBOARD --
-
-
-payloadToString : (KeyEvent -> Bool) -> KeyEvent -> String
-payloadToString cmdKey payload =
-    let
-        direction =
-            toString payload.direction
-
-        code =
-            toString payload.code
-
-        shift =
-            toString payload.shift
-
-        cmd =
-            toString (cmdKey payload)
-    in
-    shift ++ cmd ++ code ++ direction
-
-
-type CmdState
-    = CmdIsDown
-    | CmdIsUp
-
-
-type ShiftState
-    = ShiftIsDown
-    | ShiftIsUp
-
-
-type alias QuickKey =
-    ( Direction, Key, CmdState, ShiftState )
-
-
-defaultConfigBase : List ( QuickKey, Op )
-defaultConfigBase =
-    [ ( Down, Number2, CmdIsUp, ShiftIsUp ) := SwatchesQuickTurnLeft
-    , ( Down, Number3, CmdIsUp, ShiftIsUp ) := SwatchesQuickTurnDown
-    , ( Down, Number4, CmdIsUp, ShiftIsUp ) := SwatchesQuickTurnRight
-    , ( Down, Number1, CmdIsUp, ShiftIsUp ) := SwatchesTurnLeft
-    , ( Up, Number2, CmdIsUp, ShiftIsUp ) := RevertQuickTurnLeft
-    , ( Up, Number3, CmdIsUp, ShiftIsUp ) := RevertQuickTurnDown
-    , ( Up, Number4, CmdIsUp, ShiftIsUp ) := RevertQuickTurnRight
-    , ( Down, Number5, CmdIsUp, ShiftIsUp ) := SwatchesTurnRight
-    , ( Down, CharP, CmdIsUp, ShiftIsUp ) := SetToolToPencil
-    , ( Down, CharH, CmdIsUp, ShiftIsUp ) := SetToolToHand
-    , ( Down, CharS, CmdIsUp, ShiftIsUp ) := SetToolToSelect
-    , ( Down, CharG, CmdIsUp, ShiftIsUp ) := SetToolToFill
-    , ( Down, CharI, CmdIsUp, ShiftIsUp ) := SetToolToSample
-    , ( Down, CharL, CmdIsUp, ShiftIsUp ) := SetToolToLine
-    , ( Down, CharU, CmdIsUp, ShiftIsUp ) := SetToolToRectangle
-    , ( Down, CharJ, CmdIsUp, ShiftIsUp ) := SetToolToRectangleFilled
-    , ( Down, CharZ, CmdIsDown, ShiftIsUp ) := Undo
-    , ( Down, CharY, CmdIsDown, ShiftIsUp ) := Redo
-    , ( Down, CharC, CmdIsDown, ShiftIsUp ) := Copy
-    , ( Down, CharX, CmdIsDown, ShiftIsUp ) := Cut
-    , ( Down, CharV, CmdIsDown, ShiftIsUp ) := Paste
-    , ( Down, CharA, CmdIsDown, ShiftIsUp ) := SelectAll
-    , ( Down, Equals, CmdIsUp, ShiftIsUp ) := ZoomIn
-    , ( Down, Minus, CmdIsUp, ShiftIsUp ) := ZoomOut
-    , ( Down, BackQuote, CmdIsUp, ShiftIsUp ) := ToggleMinimap
-    , ( Down, CharD, CmdIsUp, ShiftIsDown ) := InitDownload
-    , ( Down, CharI, CmdIsDown, ShiftIsUp ) := InitImport
-    , ( Down, CharD, CmdIsDown, ShiftIsDown ) := InitScale
-    , ( Down, CharT, CmdIsUp, ShiftIsUp ) := InitText
-    , ( Down, CharR, CmdIsUp, ShiftIsUp ) := InitReplaceColor
-    , ( Down, Tab, CmdIsUp, ShiftIsUp ) := SwitchGalleryView
-    , ( Down, BackSpace, CmdIsUp, ShiftIsUp ) := Delete
-    , ( Down, CharE, CmdIsUp, ShiftIsUp ) := ToggleColorPicker
-    , ( Down, CharH, CmdIsUp, ShiftIsDown ) := FlipHorizontal
-    , ( Down, CharV, CmdIsUp, ShiftIsDown ) := FlipVertical
-    , ( Down, CharR, CmdIsUp, ShiftIsDown ) := Rotate90
-    , ( Down, CharF, CmdIsUp, ShiftIsDown ) := Rotate180
-    , ( Down, CharE, CmdIsUp, ShiftIsDown ) := Rotate270
-    , ( Down, CharI, CmdIsUp, ShiftIsDown ) := InvertColors
-    ]
-
-
-defaultKeyConfig : Dict String Op
-defaultKeyConfig =
-    defaultConfigBase
-        |> List.map (Tuple.mapFirst quickKeyToString)
-        |> Dict.fromList
-
-
-defaultQuickKeys : Bool -> Dict String String
-defaultQuickKeys isMac =
-    defaultConfigBase
-        |> List.map (quickKeyLookUp isMac)
-        |> Dict.fromList
-
-
-quickKeyLookUp : Bool -> ( QuickKey, Op ) -> ( String, String )
-quickKeyLookUp isMac ( ( _, key, cmdKey, shift ), command ) =
-    let
-        commandStr =
-            toString command
-
-        cmdKeyStr =
-            case ( cmdKey, isMac ) of
-                ( CmdIsDown, True ) ->
-                    "Cmd + "
-
-                ( CmdIsDown, False ) ->
-                    "Ctrl + "
-
-                _ ->
-                    ""
-
-        shiftStr =
-            if shift == ShiftIsDown then
-                "Shift + "
-            else
-                ""
-
-        keyStr =
-            keyCodeToString (Keyboard.Extra.toCode key)
-    in
-    ( commandStr, cmdKeyStr ++ shiftStr ++ keyStr )
-
-
-quickKeyToString : QuickKey -> String
-quickKeyToString ( direction, key, cmd, shift ) =
-    let
-        code =
-            Keyboard.Extra.toCode key
-                |> toString
-
-        cmdStr =
-            cmd
-                == CmdIsDown
-                |> toString
-
-        shiftStr =
-            shift
-                == ShiftIsDown
-                |> toString
-    in
-    shiftStr ++ cmdStr ++ code ++ toString direction
-
-
-directionIsDown : QuickKey -> Bool
-directionIsDown ( direction, _, _, _ ) =
-    direction == Down
-
-
-directionIsUp : QuickKey -> Bool
-directionIsUp ( direction, _, _, _ ) =
-    direction == Up
-
-
-keyCodeToString : KeyCode -> String
-keyCodeToString key =
-    case Keyboard.Extra.fromCode key of
-        Control ->
-            "Ctrl"
-
-        QuestionMark ->
-            "?"
-
-        Equals ->
-            "="
-
-        Minus ->
-            "-"
-
-        Semicolon ->
-            ";"
-
-        Super ->
-            "Cmd"
-
-        Asterisk ->
-            "*"
-
-        Comma ->
-            ","
-
-        Dollar ->
-            "$"
-
-        BackQuote ->
-            "`"
-
-        other ->
-            let
-                otherAsStr =
-                    toString other
-
-                isChar =
-                    String.left 4 otherAsStr == "Char"
-
-                isNumber =
-                    String.left 6 otherAsStr == "Number"
-            in
-            case ( isChar, isNumber ) of
-                ( True, _ ) ->
-                    String.right 1 otherAsStr
-
-                ( _, True ) ->
-                    String.right 1 otherAsStr
-
-                _ ->
-                    otherAsStr
 
 
 
@@ -482,96 +153,3 @@ fillBlackOp canvas =
     , Canvas.Fill
     ]
         |> Canvas.batch
-
-
-
--- KEYPAYLOAD DECODER
-
-
-decodeKeyEvent : Value -> Result String KeyEvent
-decodeKeyEvent =
-    Decode.decodeValue keyPayloadDecoder
-
-
-keyPayloadDecoder : Decoder KeyEvent
-keyPayloadDecoder =
-    decode KeyEvent
-        |> required "keyCode" Decode.int
-        |> required "meta" Decode.bool
-        |> required "ctrl" Decode.bool
-        |> required "shift" Decode.bool
-        |> required "direction" directionDecoder
-
-
-directionDecoder : Decoder Direction
-directionDecoder =
-    Decode.string
-        |> Decode.andThen handleDirectionString
-
-
-handleDirectionString : String -> Decoder Direction
-handleDirectionString dir =
-    case dir of
-        "up" ->
-            Decode.succeed Up
-
-        "down" ->
-            Decode.succeed Down
-
-        _ ->
-            Decode.fail "Direction not up or down"
-
-
-
--- PLATFORM DECODERS --
-
-
-decodeIsChrome : Value -> Bool
-decodeIsChrome json =
-    case Decode.decodeValue isChromeDecoder json of
-        Ok isChrome ->
-            isChrome
-
-        Err _ ->
-            True
-
-
-isChromeDecoder : Decoder Bool
-isChromeDecoder =
-    Decode.field "isChrome" Decode.bool
-
-
-decodeIsMac : Value -> Bool
-decodeIsMac json =
-    case Decode.decodeValue isMacDecoder json of
-        Ok isMac ->
-            isMac
-
-        Err _ ->
-            False
-
-
-isMacDecoder : Decoder Bool
-isMacDecoder =
-    Decode.field "isMac" Decode.bool
-
-
-
--- WINDOW SIZE DECODER --
-
-
-decodeWindow : Value -> Size
-decodeWindow json =
-    case Decode.decodeValue windowDecoder json of
-        Ok ( w, h ) ->
-            Size w h
-
-        Err _ ->
-            Size 800 800
-
-
-windowDecoder : Decoder ( Int, Int )
-windowDecoder =
-    Decode.map2 (,)
-        (Decode.field "windowWidth" Decode.int)
-        (Decode.field "windowHeight" Decode.int)

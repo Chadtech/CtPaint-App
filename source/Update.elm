@@ -4,14 +4,16 @@ import Array
 import Canvas exposing (DrawOp(Batch))
 import ColorPicker
 import Draw
+import Helpers.Keys
 import History
+import Keys
 import Menu
 import Minimap
 import Msg exposing (Msg(..))
-import Op
+import Palette
 import Ports exposing (JsMsg(..))
 import Reply exposing (Reply(..))
-import Taskbar exposing (Option(..))
+import Taskbar
 import Tool.Update as Tool
 import Toolbar
 import Tuple.Infix exposing ((&))
@@ -19,7 +21,6 @@ import Types
     exposing
         ( MinimapState(..)
         , Model
-        , keyPayloadDecoder
         , toUrl
         )
 import Util exposing (origin)
@@ -28,49 +29,17 @@ import Util exposing (origin)
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
-        ToolbarMsg (Toolbar.ToolButtonClicked tool) ->
-            { model | tool = tool } & Cmd.none
+        ToolbarMsg subMsg ->
+            Toolbar.update subMsg model & Cmd.none
 
-        ToolbarMsg (Toolbar.MenuButtonClicked op) ->
-            Op.exec op model
-
-        TaskbarMsg (Taskbar.OptionClickedOn (RunOp op)) ->
-            Op.exec op model
-
-        TaskbarMsg (Taskbar.OptionClickedOn (OpenNewWindow window)) ->
-            model & Cmd.none
-
-        TaskbarMsg (Taskbar.OptionClickedOn (SetTool tool)) ->
-            { model | tool = tool } & Cmd.none
-
-        TaskbarMsg Taskbar.DropdownClickedOut ->
-            { model
-                | taskbarDropped = Nothing
-            }
-                & Cmd.none
-
-        TaskbarMsg (Taskbar.DropdownClicked dropdown) ->
-            { model
-                | taskbarDropped = Just dropdown
-            }
-                & Cmd.none
-
-        TaskbarMsg (Taskbar.HoveredOnto dropdown) ->
-            case model.taskbarDropped of
-                Nothing ->
-                    model & Cmd.none
-
-                Just currentDropdown ->
-                    if currentDropdown == dropdown then
-                        model & Cmd.none
-                    else
-                        { model
-                            | taskbarDropped = Just dropdown
-                        }
-                            & Cmd.none
+        TaskbarMsg subMsg ->
+            Taskbar.update subMsg model
 
         ToolMsg subMsg ->
             Tool.update subMsg model & Cmd.none
+
+        PaletteMsg subMsg ->
+            Palette.update subMsg model & Cmd.none
 
         MenuMsg subMsg ->
             case model.menu of
@@ -95,7 +64,7 @@ update message model =
             { model | windowSize = size } & Cmd.none
 
         KeyboardEvent (Ok payload) ->
-            Op.exec (Op.fromKeyEvent payload model.config) model
+            Keys.exec (Helpers.Keys.cmdFromEvent payload model.config) model
 
         KeyboardEvent (Err err) ->
             model & Cmd.none
@@ -154,35 +123,6 @@ update message model =
             { model
                 | mousePosition =
                     Nothing
-            }
-                & Cmd.none
-
-        PaletteSquareClick color ->
-            let
-                { swatches } =
-                    model
-            in
-            { model
-                | swatches =
-                    { swatches
-                        | primary = color
-                    }
-            }
-                & Cmd.none
-
-        OpenColorPicker color index ->
-            { model
-                | colorPicker =
-                    ColorPicker.init True index color
-            }
-                & Cmd.none
-
-        AddPaletteSquare ->
-            { model
-                | palette =
-                    Array.push
-                        model.swatches.second
-                        model.palette
             }
                 & Cmd.none
 

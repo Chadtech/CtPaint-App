@@ -274,6 +274,25 @@ contentView menu =
 -- INIT --
 
 
+initLogin : Size -> Model
+initLogin windowSize =
+    let
+        size =
+            { width = 200
+            , height = 200
+            }
+    in
+    { position =
+        { x = (windowSize.width - size.width) // 2
+        , y = (windowSize.height - size.height) // 2
+        }
+    , size = size
+    , click = NoClick
+    , title = "login"
+    , content = Login Login.init
+    }
+
+
 initNew : Size -> Model
 initNew windowSize =
     let
