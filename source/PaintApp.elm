@@ -9,6 +9,7 @@ import Data.Keys exposing (defaultKeyCmdConfig, defaultQuickKeys)
 import Data.Palette exposing (initPalette, initSwatches)
 import Html
 import Json.Decode as Decode exposing (Decoder, Value, value)
+import Menu
 import Msg exposing (Msg(..))
 import Random
 import Subscriptions exposing (subscriptions)
@@ -50,7 +51,7 @@ init json =
             fromFlags flags
 
         Err err ->
-            fromError (Debug.log "error" err)
+            fromError err
 
 
 fromFlags : Flags -> ( Model, Cmd Msg )
@@ -165,7 +166,10 @@ fromError err =
     , clipboard = Nothing
     , taskbarDropped = Nothing
     , minimap = NoMinimap
-    , menu = Nothing
+    , menu =
+        err
+            |> Menu.initError
+            |> Just
     , seed = Random.initialSeed 0
     , config =
         { keyCmds = defaultKeyCmdConfig

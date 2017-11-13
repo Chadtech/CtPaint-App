@@ -2,6 +2,7 @@ port module Stylesheets exposing (..)
 
 import ColorPicker
 import Css.File exposing (CssCompilerProgram, CssFileStructure)
+import Error
 import Html.Custom
 import Import
 import Menu
@@ -33,6 +34,7 @@ main =
     , Import.css
     , Scale.css
     , Text.css
+    , Error.css
     ]
         |> Css.File.compile
         |> (,) "./development/paint-app-styles.css"

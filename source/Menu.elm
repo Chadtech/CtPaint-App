@@ -5,6 +5,7 @@ import Color exposing (Color)
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Download
+import Error
 import Html exposing (Attribute, Html, a, div, p, text)
 import Html.Attributes exposing (class, style)
 import Html.CssHelpers
@@ -48,6 +49,7 @@ type Menu
     | New New.Model
     | Open Open.Model
     | Login Login.Model
+    | Error String
 
 
 type ClickState
@@ -282,6 +284,9 @@ contentView menu =
             List.map (Html.map LoginMsg) <|
                 Login.view subModel
 
+        Error subModel ->
+            Error.view subModel
+
 
 
 -- INIT --
@@ -290,6 +295,15 @@ contentView menu =
 defaultPosition : Mouse.Position
 defaultPosition =
     { x = 50, y = 50 }
+
+
+initError : String -> Model
+initError err =
+    { position = defaultPosition
+    , click = NoClick
+    , title = "error"
+    , content = Error err
+    }
 
 
 initLogin : Model
