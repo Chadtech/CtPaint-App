@@ -23,7 +23,7 @@ import Reply exposing (Reply(CloseMenu, NoReply))
 import Scale
 import Text
 import Tuple.Infix exposing ((&))
-import Util exposing (height, left, top, width)
+import Util
 import Window exposing (Size)
 
 
@@ -31,7 +31,7 @@ import Window exposing (Size)
 
 
 type alias Model =
-    { position : Mouse.Position
+    { position : Maybe Mouse.Position
     , click : ClickState
     , title : String
     , content : Menu
@@ -95,12 +95,11 @@ update msg model =
         HeaderMouseDown { targetPos, clientPos } ->
             { model
                 | click =
-                    { x =
-                        clientPos.x - targetPos.x
-                    , y =
-                        clientPos.y - targetPos.y
+                    { x = clientPos.x - targetPos.x
+                    , y = clientPos.y - targetPos.y
                     }
                         |> ClickAt
+                , position = Just targetPos
             }
                 & Cmd.none
                 & NoReply
@@ -113,6 +112,7 @@ update msg model =
                             { x = p.x - click.x
                             , y = p.y - click.y
                             }
+                                |> Just
                     }
                         & Cmd.none
                         & NoReply
@@ -198,12 +198,17 @@ updateContent msg model =
 
 type Class
     = MenuContainer
+    | Unpositioned
 
 
 css : Stylesheet
 css =
     [ Css.class MenuContainer
         [ position absolute ]
+    , Css.class Unpositioned
+        [ margin auto
+        , top (pct 50)
+        ]
     ]
         |> namespace menuNamespace
         |> stylesheet
@@ -225,12 +230,7 @@ menuNamespace =
 view : Model -> Html Msg
 view { position, title, content } =
     Html.Custom.card
-        [ style
-            [ Util.top position.y
-            , Util.left position.x
-            ]
-        , class [ MenuContainer ]
-        ]
+        (positioning position)
         [ Html.Custom.header
             { text = title
             , headerMouseDown = HeaderMouseDown
@@ -240,6 +240,24 @@ view { position, title, content } =
             |> Html.Custom.cardBody []
             |> Html.map ContentMsg
         ]
+
+
+positioning : Maybe Mouse.Position -> List (Attribute Msg)
+positioning maybePosition =
+    case maybePosition of
+        Just position ->
+            [ style
+                [ Util.top position.y
+                , Util.left position.x
+                ]
+            , class [ MenuContainer ]
+            ]
+
+        Nothing ->
+            [ class
+                [ Unpositioned
+                ]
+            ]
 
 
 contentView : Menu -> List (Html ContentMsg)
@@ -292,107 +310,69 @@ contentView menu =
 -- INIT --
 
 
-defaultPosition : Mouse.Position
-defaultPosition =
-    { x = 50, y = 50 }
+init : String -> Menu -> Model
+init title content =
+    { position = Nothing
+    , click = NoClick
+    , title = title
+    , content = content
+    }
 
 
 initError : String -> Model
 initError err =
-    { position = defaultPosition
-    , click = NoClick
-    , title = "error"
-    , content = Error err
-    }
+    init "error" (Error err)
 
 
 initLogin : Model
 initLogin =
-    { position = defaultPosition
-    , click = NoClick
-    , title = "login"
-    , content = Login Login.init
-    }
+    init "login" (Login Login.init)
 
 
 initNew : Model
 initNew =
-    { position = defaultPosition
-    , click = NoClick
-    , title = "new"
-    , content = New New.init
-    }
+    init "new" (New New.init)
 
 
 initText : Model
 initText =
-    { position = defaultPosition
-    , click = NoClick
-    , title = "text"
-    , content = Text Text.init
-    }
+    init "text" (Text Text.init)
 
 
 initScale : Size -> Model
 initScale canvasSize =
-    { position = defaultPosition
-    , click = NoClick
-    , title = "scale"
-    , content = Scale (Scale.init canvasSize)
-    }
+    canvasSize
+        |> Scale.init
+        |> Scale
+        |> init "scale"
 
 
 initImport : Model
 initImport =
-    { position = defaultPosition
-    , click = NoClick
-    , title = "import"
-    , content = Import Import.init
-    }
+    init "import" (Import Import.init)
 
 
 initDownload : Maybe String -> Seed -> ( Model, Seed )
 initDownload maybeProjectName seed =
-    let
-        ( menu, newSeed ) =
-            Download.init maybeProjectName seed
-    in
-    { position = defaultPosition
-    , click = NoClick
-    , title = "download"
-    , content = Download menu
-    }
-        & newSeed
+    Download.init maybeProjectName seed
+        |> Tuple.mapFirst (Download >> init "download")
 
 
 initAbout : Model
 initAbout =
-    { position = defaultPosition
-    , click = NoClick
-    , title = "about"
-    , content = About
-    }
+    init "about" About
 
 
 initReplaceColor : Color.Color -> Color.Color -> List Color.Color -> Model
 initReplaceColor target replacement palette =
-    { position = defaultPosition
-    , click = NoClick
-    , title = "replace color"
-    , content =
-        ReplaceColor.init target replacement palette
-            |> ReplaceColor
-    }
+    ReplaceColor.init target replacement palette
+        |> ReplaceColor
+        |> init "replace color"
 
 
 initImgur : Model
 initImgur =
-    { position = defaultPosition
-    , click = NoClick
-    , title = "imgur"
-    , content =
-        Imgur Imgur.init
-    }
+    init "imgur" (Imgur Imgur.init)
 
 
 

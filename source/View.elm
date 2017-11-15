@@ -124,7 +124,6 @@ view model =
             , clickScreen canvasAreaHeight model
             , colorPicker model
             , minimap model
-            , menu model.menu
             ]
 
 
@@ -186,10 +185,10 @@ colorPicker { colorPicker } =
 
 
 clickScreen : Int -> Model -> Html Msg
-clickScreen canvasAreaHeight { tool } =
+clickScreen canvasAreaHeight model =
     let
         attributes =
-            [ class [ Screen, toolClass tool ]
+            [ class [ Screen, toolClass model.tool ]
             , style [ Util.height canvasAreaHeight ]
             , onMouseLeave ScreenMouseExit
             , onMouseMove ScreenMouseMove
@@ -198,9 +197,11 @@ clickScreen canvasAreaHeight { tool } =
         toolAttrs =
             List.map
                 (Attributes.map ToolMsg)
-                (Tool.attributes tool)
+                (Tool.attributes model.tool)
     in
-    div (toolAttrs ++ attributes) []
+    div
+        (toolAttrs ++ attributes)
+        [ menu model.menu ]
 
 
 toolClass : Tool.Tool -> Class
