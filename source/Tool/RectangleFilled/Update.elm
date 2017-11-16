@@ -1,10 +1,10 @@
 module Tool.RectangleFilled.Update exposing (update)
 
 import Canvas exposing (Size)
+import Data.Tool exposing (Tool(..))
 import Draw exposing (makeRectParams)
 import History
 import Mouse exposing (Position)
-import Tool exposing (Tool(..))
 import Tool.RectangleFilled exposing (Msg(..))
 import Tool.Util exposing (adjustPosition)
 import Types exposing (Model)
@@ -21,8 +21,9 @@ update message toolModel model =
             in
             { model
                 | tool =
-                    RectangleFilled
-                        (Just adjustedPosition)
+                    adjustedPosition
+                        |> Just
+                        |> RectangleFilled
                 , drawAtRender =
                     Draw.filledRectangle
                         model.swatches.primary

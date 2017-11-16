@@ -32,25 +32,25 @@ update message toolModel model =
                 Just ( _, selection ) ->
                     let
                         x =
-                            List.sum
-                                [ initialPosition.x
-                                , (position.x - click.x)
-                                    // model.zoom
-                                ]
+                            [ initialPosition.x
+                            , (position.x - click.x)
+                                // model.zoom
+                            ]
+                                |> List.sum
 
                         y =
-                            List.sum
-                                [ initialPosition.y
-                                , (position.y - click.y)
-                                    // model.zoom
-                                ]
+                            [ initialPosition.y
+                            , (position.y - click.y)
+                                // model.zoom
+                            ]
+                                |> List.sum
                     in
                     { model
                         | selection =
-                            Just
-                                ( Position x y
-                                , selection
-                                )
+                            ( Position x y
+                            , selection
+                            )
+                                |> Just
                     }
                         & toolModel
 

@@ -14,6 +14,7 @@ import ColorPicker
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Data.Palette exposing (Swatches)
+import Data.Tool exposing (Tool(..))
 import Draw
 import Html exposing (Attribute, Html, a, div, p, span)
 import Html.Attributes exposing (class, classList, style)
@@ -21,7 +22,6 @@ import Html.CssHelpers
 import Html.Custom exposing (cannotSelect, indent, outdent)
 import Html.Events exposing (onClick)
 import Mouse
-import Tool exposing (Tool(..))
 import Tuple.Infix exposing ((:=))
 import Types exposing (Model)
 import Util

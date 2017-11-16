@@ -1,6 +1,7 @@
 module Tool.Update exposing (update)
 
-import Tool exposing (Msg(..), Tool(..))
+import Data.Tool exposing (Tool(..))
+import Tool exposing (Msg(..))
 import Tool.Fill as Fill
 import Tool.Hand.Update as Hand
 import Tool.Line.Update as Line

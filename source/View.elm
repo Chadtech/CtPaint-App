@@ -6,6 +6,8 @@ import ColorPicker
 import Css exposing (..)
 import Css.Elements exposing (canvas)
 import Css.Namespace exposing (namespace)
+import Data.Menu
+import Data.Tool
 import Html exposing (Html, div)
 import Html.Attributes as Attributes exposing (id, style)
 import Html.CssHelpers
@@ -109,11 +111,11 @@ view model =
     else
         let
             canvasAreaHeight =
-                List.sum
-                    [ model.windowSize.height
-                    , -model.horizontalToolbarHeight
-                    , -29
-                    ]
+                [ model.windowSize.height
+                , -model.horizontalToolbarHeight
+                , -(floor toolbarWidth)
+                ]
+                    |> List.sum
         in
         div
             [ class [ Main ] ]
@@ -138,7 +140,7 @@ galleryView model =
 -- MENU --
 
 
-menu : Maybe Menu.Model -> Html Msg
+menu : Maybe Data.Menu.Model -> Html Msg
 menu maybeMenuModel =
     case maybeMenuModel of
         Just menuModel ->
@@ -204,37 +206,37 @@ clickScreen canvasAreaHeight model =
         [ menu model.menu ]
 
 
-toolClass : Tool.Tool -> Class
+toolClass : Data.Tool.Tool -> Class
 toolClass tool =
     case tool of
-        Tool.Hand _ ->
+        Data.Tool.Hand _ ->
             Hand
 
-        Tool.Sample ->
+        Data.Tool.Sample ->
             Sample
 
-        Tool.Fill ->
+        Data.Tool.Fill ->
             Fill
 
-        Tool.Pencil _ ->
+        Data.Tool.Pencil _ ->
             Pencil
 
-        Tool.Line _ ->
+        Data.Tool.Line _ ->
             Line
 
-        Tool.Rectangle _ ->
+        Data.Tool.Rectangle _ ->
             Rectangle
 
-        Tool.RectangleFilled _ ->
+        Data.Tool.RectangleFilled _ ->
             RectangleFilled
 
-        Tool.Select _ ->
+        Data.Tool.Select _ ->
             Select
 
-        Tool.ZoomIn ->
+        Data.Tool.ZoomIn ->
             ZoomIn
 
-        Tool.ZoomOut ->
+        Data.Tool.ZoomOut ->
             ZoomOut
 
 

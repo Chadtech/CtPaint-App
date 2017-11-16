@@ -1,5 +1,6 @@
 module Tool exposing (..)
 
+import Data.Tool exposing (Tool(..))
 import Html exposing (Attribute)
 import Html.Attributes as Attributes
 import Mouse exposing (Position)
@@ -23,19 +24,6 @@ type Msg
     | SelectMsg Select.Msg
     | SampleAt MouseEvent
     | FillScreenMouseUp MouseEvent
-
-
-type Tool
-    = Hand (Maybe ( Position, Position ))
-    | Sample
-    | Fill
-    | Select (Maybe Position)
-    | ZoomIn
-    | ZoomOut
-    | Pencil (Maybe Position)
-    | Line (Maybe Position)
-    | Rectangle (Maybe Position)
-    | RectangleFilled (Maybe Position)
 
 
 

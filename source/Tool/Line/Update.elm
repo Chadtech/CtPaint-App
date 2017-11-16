@@ -1,10 +1,10 @@
 module Tool.Line.Update exposing (update)
 
 import Canvas exposing (Size)
+import Data.Tool exposing (Tool(Line))
 import Draw
 import History
 import Mouse exposing (Position)
-import Tool exposing (Tool(..))
 import Tool.Line exposing (Msg(..))
 import Tool.Util exposing (adjustPosition)
 import Types exposing (Model)

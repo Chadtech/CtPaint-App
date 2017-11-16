@@ -4,13 +4,14 @@ import Actions
 import Chadtech.Colors exposing (ignorable2, ignorable3)
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
+import Data.Tool exposing (Tool(..))
 import Html exposing (Html, a, div)
 import Html.Attributes exposing (attribute, title)
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick)
 import Menu
-import Tool exposing (Tool(..))
+import Tool
 import Types exposing (Model)
 
 

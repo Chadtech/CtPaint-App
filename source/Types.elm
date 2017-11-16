@@ -5,8 +5,10 @@ import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Color exposing (Color)
 import ColorPicker
 import Data.Config exposing (Config)
+import Data.Menu as Menu
 import Data.Palette exposing (Swatches)
 import Data.Taskbar exposing (Dropdown)
+import Data.Tool exposing (Tool(..))
 import Data.User exposing (User)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline
@@ -15,11 +17,9 @@ import Json.Decode.Pipeline
         , required
         , requiredAt
         )
-import Menu
 import Minimap
 import Mouse exposing (Position)
 import Random exposing (Seed)
-import Tool exposing (Tool(..))
 
 
 -- TYPES --

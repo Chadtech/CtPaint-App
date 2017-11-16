@@ -4,12 +4,12 @@ import Actions
 import Canvas exposing (Canvas)
 import Clipboard
 import Data.Keys exposing (KeyCmd(..))
+import Data.Tool as Tool exposing (Tool(..))
 import Draw
 import History
 import Menu
 import Minimap
 import Ports exposing (JsMsg(..))
-import Tool exposing (Tool(..))
 import Tool.Zoom as Zoom
 import Tool.Zoom.Util as Zoom
 import Tuple.Infix exposing ((&))

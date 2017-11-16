@@ -4,6 +4,7 @@ import About
 import Color exposing (Color)
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
+import Data.Menu exposing (Menu(..), Model)
 import Download
 import Error
 import Html exposing (Attribute, Html, a, div, p, text)
@@ -23,38 +24,11 @@ import Reply exposing (Reply(CloseMenu, NoReply))
 import Scale
 import Text
 import Tuple.Infix exposing ((&))
-import Util
+import Util exposing (ClickState(..), toolbarWidth)
 import Window exposing (Size)
 
 
 -- TYPES --
-
-
-type alias Model =
-    { position : Maybe Mouse.Position
-    , click : ClickState
-    , title : String
-    , content : Menu
-    }
-
-
-type Menu
-    = Download Download.Model
-    | Import Import.Model
-    | Scale Scale.Model
-    | Text String
-    | About
-    | ReplaceColor ReplaceColor.Model
-    | Imgur Imgur.Model
-    | New New.Model
-    | Open Open.Model
-    | Login Login.Model
-    | Error String
-
-
-type ClickState
-    = NoClick
-    | ClickAt Mouse.Position
 
 
 type Msg
@@ -95,11 +69,15 @@ update msg model =
         HeaderMouseDown { targetPos, clientPos } ->
             { model
                 | click =
-                    { x = clientPos.x - targetPos.x
-                    , y = clientPos.y - targetPos.y
+                    { x = clientPos.x - targetPos.x + floor toolbarWidth
+                    , y = clientPos.y - targetPos.y + floor toolbarWidth
                     }
                         |> ClickAt
-                , position = Just targetPos
+                , position =
+                    { x = targetPos.x - floor toolbarWidth - 4
+                    , y = targetPos.y - floor toolbarWidth - 4
+                    }
+                        |> Just
             }
                 & Cmd.none
                 & NoReply
@@ -207,7 +185,9 @@ css =
         [ position absolute ]
     , Css.class Unpositioned
         [ margin auto
-        , top (pct 50)
+        , top (pct 25)
+        , maxWidth fitContent
+        , position relative
         ]
     ]
         |> namespace menuNamespace
@@ -381,7 +361,7 @@ initImgur =
 
 subscriptions : Sub Msg
 subscriptions =
-    Sub.batch
-        [ Mouse.moves HeaderMouseMove
-        , Mouse.ups (always HeaderMouseUp)
-        ]
+    [ Mouse.moves HeaderMouseMove
+    , Mouse.ups (always HeaderMouseUp)
+    ]
+        |> Sub.batch

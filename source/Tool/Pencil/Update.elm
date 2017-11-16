@@ -1,10 +1,10 @@
 module Tool.Pencil.Update exposing (..)
 
 import Canvas exposing (DrawOp(..))
+import Data.Tool exposing (Tool(Pencil))
 import Draw
 import History
 import Mouse exposing (Position)
-import Tool exposing (Tool(..))
 import Tool.Pencil exposing (Msg(..))
 import Tool.Util exposing (adjustPosition)
 import Types exposing (Model)

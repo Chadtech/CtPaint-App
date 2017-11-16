@@ -20,6 +20,7 @@ import Chadtech.Colors exposing (backgroundx2)
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
+import Data.Tool exposing (Tool(..))
 import Html exposing (Attribute, Html, a, div, p)
 import Html.Attributes exposing (style)
 import Html.CssHelpers
@@ -27,7 +28,7 @@ import Html.Custom exposing (card, cardBody, header, indent)
 import Html.Events exposing (onClick)
 import Mouse
 import MouseEvents exposing (MouseEvent)
-import Tool exposing (Tool(..))
+import Tool
 import Tool.Zoom.Util as Zoom
 import Tuple.Infix exposing ((&))
 import Util exposing (toPoint)

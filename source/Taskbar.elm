@@ -6,6 +6,7 @@ import Css.Elements
 import Css.Namespace exposing (namespace)
 import Data.Keys exposing (KeyCmd(..), QuickKey)
 import Data.Taskbar exposing (Dropdown(..))
+import Data.Tool as Tool exposing (Tool)
 import Data.User exposing (User)
 import Dict exposing (Dict)
 import Html exposing (Attribute, Html, a, div, p)
@@ -15,7 +16,6 @@ import Html.Events exposing (onClick, onMouseOver)
 import Keys
 import Menu
 import Ports exposing (JsMsg(StealFocus))
-import Tool exposing (Tool)
 import Tuple.Infix exposing ((&))
 import Types
     exposing

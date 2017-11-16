@@ -3,6 +3,7 @@ module Update exposing (update)
 import Array
 import Canvas exposing (DrawOp(Batch))
 import ColorPicker
+import Data.Menu
 import Draw
 import Helpers.Keys
 import History
@@ -150,7 +151,7 @@ incorporateMinimap ( minimap, externalMsg ) model =
                 & Cmd.none
 
 
-incorporateMenu : Reply -> Menu.Model -> Model -> ( Model, Cmd Msg )
+incorporateMenu : Reply -> Data.Menu.Model -> Model -> ( Model, Cmd Msg )
 incorporateMenu reply menu model =
     case reply of
         NoReply ->

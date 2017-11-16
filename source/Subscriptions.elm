@@ -3,6 +3,7 @@ port module Subscriptions exposing (subscriptions)
 import AnimationFrame
 import ColorPicker
 import Data.Keys exposing (decodeKeyEvent)
+import Data.Menu
 import Json.Decode exposing (Value)
 import Menu
 import Minimap
@@ -55,7 +56,7 @@ minimap state =
 -- MENU --
 
 
-menu : Maybe Menu.Model -> Sub Msg
+menu : Maybe Data.Menu.Model -> Sub Msg
 menu maybeMenu =
     case maybeMenu of
         Just _ ->

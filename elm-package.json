@@ -15,6 +15,7 @@
         "Elm-Canvas/raster-shapes": "1.1.1 <= v < 2.0.0",
         "NoRedInk/elm-decode-pipeline": "3.0.0 <= v < 4.0.0",
         "NoRedInk/list-selection": "1.1.0 <= v < 2.0.0",
+        "debois/elm-dom": "1.2.3 <= v < 2.0.0",
         "elm-community/list-extra": "6.1.0 <= v < 7.0.0",
         "elm-community/maybe-extra": "4.0.0 <= v < 5.0.0",
         "elm-lang/animation-frame": "1.0.1 <= v < 2.0.0",

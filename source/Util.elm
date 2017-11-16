@@ -2,13 +2,20 @@ module Util exposing (..)
 
 import Canvas exposing (Canvas, Point)
 import Color exposing (Color)
+import DOM exposing (Rectangle)
 import Html exposing (Attribute, Html)
 import Html.Attributes exposing (style)
 import Html.Events
-import Json.Decode as Json
+import Json.Decode as Decode exposing (Decoder)
 import Mouse exposing (Position)
+import MouseEvents exposing (MouseEvent)
 import ParseInt
 import Window exposing (Size)
+
+
+type ClickState
+    = NoClick
+    | ClickAt Mouse.Position
 
 
 withIndex : List a -> List ( Int, a )
@@ -94,7 +101,7 @@ onContextMenu msg =
         { stopPropagation = False
         , preventDefault = True
         }
-        (Json.succeed msg)
+        (Decode.succeed msg)
 
 
 viewIf : Bool -> Html msg -> Html msg
