@@ -2,7 +2,6 @@ module Msg exposing (Msg(..), decode)
 
 import ColorPicker
 import Data.Keys exposing (KeyEvent)
-import Data.Tool exposing (Tool)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Menu
 import Minimap
