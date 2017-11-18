@@ -32,7 +32,6 @@ type Class
     = Field
     | Card
     | Submit
-    | Solitary
     | Body
     | Header
     | Selected
@@ -188,12 +187,7 @@ cardStyle =
                 []
             ]
         ]
-    , withClass Solitary
-        [ top (pct 50)
-        , left (pct 50)
-        , position absolute
-        , transform (translate2 (pct -50) (pct -50))
-        ]
+    , textAlign left
     ]
         |> Css.class Card
 

@@ -69,15 +69,10 @@ update msg model =
         HeaderMouseDown { targetPos, clientPos } ->
             { model
                 | click =
-                    { x = clientPos.x - targetPos.x + floor toolbarWidth
-                    , y = clientPos.y - targetPos.y + floor toolbarWidth
+                    { x = clientPos.x - targetPos.x
+                    , y = clientPos.y - targetPos.y
                     }
                         |> ClickAt
-                , position =
-                    { x = targetPos.x - floor toolbarWidth - 4
-                    , y = targetPos.y - floor toolbarWidth - 4
-                    }
-                        |> Just
             }
                 & Cmd.none
                 & NoReply
@@ -87,10 +82,9 @@ update msg model =
                 ClickAt click ->
                     { model
                         | position =
-                            { x = p.x - click.x
-                            , y = p.y - click.y
+                            { x = p.x - click.x - 4
+                            , y = p.y - click.y - 4
                             }
-                                |> Just
                     }
                         & Cmd.none
                         & NoReply
@@ -184,10 +178,10 @@ css =
     [ Css.class MenuContainer
         [ position absolute ]
     , Css.class Unpositioned
-        [ margin auto
+        [ left (pct 25)
         , top (pct 25)
-        , maxWidth fitContent
-        , position relative
+        , display inlineBlock
+        , position absolute
         ]
     ]
         |> namespace menuNamespace
@@ -222,22 +216,14 @@ view { position, title, content } =
         ]
 
 
-positioning : Maybe Mouse.Position -> List (Attribute Msg)
-positioning maybePosition =
-    case maybePosition of
-        Just position ->
-            [ style
-                [ Util.top position.y
-                , Util.left position.x
-                ]
-            , class [ MenuContainer ]
-            ]
-
-        Nothing ->
-            [ class
-                [ Unpositioned
-                ]
-            ]
+positioning : Mouse.Position -> List (Attribute Msg)
+positioning position =
+    [ style
+        [ Util.top position.y
+        , Util.left position.x
+        ]
+    , class [ MenuContainer ]
+    ]
 
 
 contentView : Menu -> List (Html ContentMsg)
@@ -290,69 +276,115 @@ contentView menu =
 -- INIT --
 
 
-init : String -> Menu -> Model
-init title content =
-    { position = Nothing
+init : String -> Menu -> Size -> Size -> Model
+init title content cardSize windowSize =
+    { position =
+        { x = (windowSize.width - cardSize.width) // 2
+        , y = (windowSize.height - cardSize.height) // 2
+        }
     , click = NoClick
     , title = title
     , content = content
     }
 
 
-initError : String -> Model
+initError : String -> Size -> Model
 initError err =
-    init "error" (Error err)
+    { width = 40
+    , height = 40
+    }
+        |> init "error" (Error err)
 
 
-initLogin : Model
+initLogin : Size -> Model
 initLogin =
-    init "login" (Login Login.init)
+    { width = 369
+    , height = 147
+    }
+        |> init "login" (Login Login.init)
 
 
-initNew : Model
+initNew : Size -> Model
 initNew =
-    init "new" (New New.init)
+    { width = 10
+    , height = 10
+    }
+        |> init "new" (New New.init)
 
 
-initText : Model
+initText : Size -> Model
 initText =
-    init "text" (Text Text.init)
+    { width = 506
+    , height = 313
+    }
+        |> init "text" (Text Text.init)
 
 
-initScale : Size -> Model
+initScale : Size -> Size -> Model
 initScale canvasSize =
-    canvasSize
-        |> Scale.init
-        |> Scale
-        |> init "scale"
+    let
+        scale =
+            canvasSize
+                |> Scale.init
+                |> Scale
+    in
+    { width = 730
+    , height = 152
+    }
+        |> init "scale" scale
 
 
-initImport : Model
+initImport : Size -> Model
 initImport =
-    init "import" (Import Import.init)
+    { width = 420
+    , height = 115
+    }
+        |> init "import" (Import Import.init)
 
 
-initDownload : Maybe String -> Seed -> ( Model, Seed )
-initDownload maybeProjectName seed =
-    Download.init maybeProjectName seed
-        |> Tuple.mapFirst (Download >> init "download")
+initDownload : Maybe String -> Seed -> Size -> ( Model, Seed )
+initDownload maybeProjectName seed windowSize =
+    let
+        ( downloadModel, newSeed ) =
+            Download.init maybeProjectName seed
+
+        cardSize =
+            { width = 365
+            , height = 115
+            }
+    in
+    init "download" (Download downloadModel) cardSize windowSize
+        & seed
 
 
-initAbout : Model
+initAbout : Size -> Model
 initAbout =
-    init "about" About
+    { width = 10
+    , height = 10
+    }
+        |> init "about" About
 
 
-initReplaceColor : Color.Color -> Color.Color -> List Color.Color -> Model
+initReplaceColor : Color.Color -> Color.Color -> List Color.Color -> Size -> Model
 initReplaceColor target replacement palette =
-    ReplaceColor.init target replacement palette
-        |> ReplaceColor
-        |> init "replace color"
+    let
+        replaceColor =
+            ReplaceColor.init target replacement palette
+                |> ReplaceColor
+    in
+    init "replace color"
+        replaceColor
+        { width = 308
+        , height = 196
+        }
 
 
-initImgur : Model
+initImgur : Size -> Model
 initImgur =
-    init "imgur" (Imgur Imgur.init)
+    { width = 10
+    , height = 10
+    }
+        |> init "imgur" (Imgur Imgur.init)
 
 
 

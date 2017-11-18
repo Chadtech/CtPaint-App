@@ -2,9 +2,17 @@ module Data.Palette exposing (Swatches, initPalette, initSwatches)
 
 import Array exposing (Array)
 import Color exposing (Color)
+import ColorPicker
 
 
 -- TYPES --
+
+
+type alias Model =
+    { colors : Array Color
+    , swatches : Swatches
+    , picker : ColorPicker.Model
+    }
 
 
 type alias Swatches =

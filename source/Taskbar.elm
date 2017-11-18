@@ -75,13 +75,19 @@ update msg model =
 
         LoginClicked ->
             { model
-                | menu = Just Menu.initLogin
+                | menu =
+                    model.windowSize
+                        |> Menu.initLogin
+                        |> Just
             }
                 & Ports.send StealFocus
 
         AboutClicked ->
             { model
-                | menu = Just Menu.initAbout
+                | menu =
+                    model.windowSize
+                        |> Menu.initAbout
+                        |> Just
             }
                 & Cmd.none
 

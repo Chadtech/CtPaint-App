@@ -167,8 +167,8 @@ fromError err =
     , taskbarDropped = Nothing
     , minimap = NoMinimap
     , menu =
-        err
-            |> Menu.initError
+        { width = 800, height = 800 }
+            |> Menu.initError err
             |> Just
     , seed = Random.initialSeed 0
     , config =

@@ -85,6 +85,7 @@ css =
         , top (px toolbarWidth)
         , cursor crosshair
         , withClass Hand [ cursor move ]
+        , textAlign center
         ]
     ]
         |> namespace mainViewNamespace
@@ -126,6 +127,7 @@ view model =
             , clickScreen canvasAreaHeight model
             , colorPicker model
             , minimap model
+            , menu model.menu
             ]
 
 
@@ -201,9 +203,7 @@ clickScreen canvasAreaHeight model =
                 (Attributes.map ToolMsg)
                 (Tool.attributes model.tool)
     in
-    div
-        (toolAttrs ++ attributes)
-        [ menu model.menu ]
+    div (toolAttrs ++ attributes) []
 
 
 toolClass : Data.Tool.Tool -> Class

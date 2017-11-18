@@ -9,7 +9,6 @@ import New
 import Open
 import ReplaceColor
 import Scale
-import Text
 import Util exposing (ClickState)
 
 
@@ -28,7 +27,7 @@ type Menu
 
 
 type alias Model =
-    { position : Maybe Position
+    { position : Position
     , click : ClickState
     , title : String
     , content : Menu

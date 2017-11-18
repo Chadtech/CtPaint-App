@@ -13,5 +13,6 @@ initReplaceColor model =
                 model.swatches.primary
                 model.swatches.second
                 (Array.toList model.palette)
+                model.windowSize
                 |> Just
     }
