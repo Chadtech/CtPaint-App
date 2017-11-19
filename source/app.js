@@ -114,7 +114,7 @@ PaintApp = function(Client) {
                         payload: null
                     });
                 }
-                
+
                 Client.logout({
                     onSuccess: succeed,
                     onFailure: function(err) {
@@ -132,6 +132,7 @@ PaintApp = function(Client) {
                         }
                     }
                 });
+                break;
 
             default:
                 console.log("Unrecognized JsMsg type ->", msg.type);

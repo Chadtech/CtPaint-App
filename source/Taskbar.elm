@@ -168,6 +168,16 @@ css =
     , Css.class UserButton
         [ float right
         , marginRight (px 2)
+        , children
+            [ Css.class Options
+                [ right (px -2)
+                , left unset
+                ]
+            , Css.class seam
+                [ right (px 0)
+                , left unset
+                ]
+            ]
         ]
     , Css.class Seam
         [ backgroundColor ignorable2
