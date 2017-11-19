@@ -83,15 +83,15 @@ update msg model =
 
         UserClicked ->
             case model.user of
-                Just user ->
+                User.LoggedIn user ->
                     { model
                         | user =
                             User.toggleOptionsDropped user
-                                |> Just
+                                |> User.LoggedIn
                     }
                         & Cmd.none
 
-                Nothing ->
+                _ ->
                     model & Cmd.none
 
         LogoutClicked ->
@@ -126,6 +126,7 @@ type Class
     | Button
     | LoginButton
     | UserButton
+    | Null
     | Dropped
     | Divider
     | Strike
@@ -179,6 +180,8 @@ css =
                 ]
             ]
         ]
+    , Css.class Null
+        [ backgroundColor ignorable3 ]
     , Css.class Seam
         [ backgroundColor ignorable2
         , height (px 2)
@@ -286,14 +289,35 @@ view ({ taskbarDropped, user } as model) =
         ]
 
 
-userButton : Maybe User -> Html Msg
-userButton maybeUser =
-    case maybeUser of
-        Just user ->
+userButton : User.Model -> Html Msg
+userButton userModel =
+    case userModel of
+        User.NoSession ->
+            loginButton
+
+        User.Offline ->
+            offlineButton
+
+        User.LoggingIn ->
+            spinner
+
+        User.LoggingOut ->
+            spinner
+
+        User.LoggedIn user ->
             userOptions user
 
-        Nothing ->
-            loginButton
+
+spinner : Html Msg
+spinner =
+    Html.text ""
+
+
+offlineButton : Html Msg
+offlineButton =
+    a
+        [ class [ Button, UserButton, Null ] ]
+        [ Html.text "offline" ]
 
 
 userOptions : User -> Html Msg

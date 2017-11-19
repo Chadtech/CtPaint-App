@@ -27,7 +27,7 @@ import Random exposing (Seed)
 
 
 type alias Model =
-    { user : Maybe User
+    { user : Data.User.Model
     , canvas : Canvas
     , projectName : Maybe String
     , canvasPosition : Position

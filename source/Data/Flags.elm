@@ -12,7 +12,7 @@ type alias Flags =
     , seed : Seed
     , isMac : Bool
     , isChrome : Bool
-    , user : Maybe User
+    , user : User.Model
     }
 
 
@@ -27,7 +27,7 @@ decoder =
         |> optional "seed" seedDecoder (Random.initialSeed 1776)
         |> optional "isMac" Decode.bool True
         |> optional "isChrome" Decode.bool True
-        |> required "user" (Decode.nullable User.decoder)
+        |> required "user" User.decoder
 
 
 seedDecoder : Decoder Seed

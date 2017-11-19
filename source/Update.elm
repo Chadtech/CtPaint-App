@@ -5,6 +5,7 @@ import Canvas exposing (DrawOp(Batch))
 import ColorPicker
 import Data.Menu
 import Data.Minimap exposing (State(..))
+import Data.User as User
 import Draw
 import Helpers.Keys
 import History
@@ -246,7 +247,7 @@ incorporateMenu reply menu model =
                         & Cmd.none
 
         NewUser user ->
-            { model | user = Just user } & Cmd.none
+            { model | user = User.LoggedIn user } & Cmd.none
 
 
 incorporateColorPicker :

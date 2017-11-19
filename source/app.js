@@ -158,7 +158,7 @@ PaintApp = function(Client) {
                     break;
 
                 case "NetworkingError: Network Failure":
-                    init({ user: null });
+                    init({ user: "offline" });
                     break;
 
                 default : 

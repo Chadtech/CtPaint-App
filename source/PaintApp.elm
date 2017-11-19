@@ -8,6 +8,7 @@ import Data.Flags as Flags exposing (Flags)
 import Data.Keys exposing (defaultKeyCmdConfig, defaultQuickKeys)
 import Data.Minimap
 import Data.Palette exposing (initPalette, initSwatches)
+import Data.User
 import Html
 import Json.Decode as Decode exposing (Decoder, Value, value)
 import Menu
@@ -122,7 +123,7 @@ fromFlags flags =
 
 fromError : String -> ( Model, Cmd Msg )
 fromError err =
-    { user = Nothing
+    { user = Data.User.NoSession
     , canvas =
         Canvas.initialize
             { width = 400

@@ -1,4 +1,10 @@
-module Data.User exposing (User, decoder, toggleOptionsDropped)
+module Data.User
+    exposing
+        ( Model(..)
+        , User
+        , decoder
+        , toggleOptionsDropped
+        )
 
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline
@@ -25,8 +31,25 @@ type alias User =
     }
 
 
-decoder : Decoder User
+decoder : Decoder Model
 decoder =
+    [ Decode.null NoSession
+    , Decode.string |> Decode.andThen offlineDecoder
+    , userDecoder |> Decode.map LoggedIn
+    ]
+        |> Decode.oneOf
+
+
+offlineDecoder : String -> Decoder Model
+offlineDecoder str =
+    if str == "offline" then
+        Decode.succeed Offline
+    else
+        Decode.fail "not offline"
+
+
+userDecoder : Decoder User
+userDecoder =
     decode User
         |> required "email" Decode.string
         |> required "nickname" Decode.string
