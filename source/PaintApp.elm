@@ -74,7 +74,7 @@ fromFlags flags =
         canvasSize =
             Canvas.getSize canvas
     in
-    { user = Nothing
+    { user = flags.user
     , canvas = canvas
     , projectName = Nothing
     , canvasPosition =

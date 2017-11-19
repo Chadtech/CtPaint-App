@@ -1,5 +1,6 @@
 module Data.Flags exposing (Flags, decoder)
 
+import Data.User as User exposing (User)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (custom, decode, optional, required)
 import Random exposing (Seed)
@@ -11,6 +12,7 @@ type alias Flags =
     , seed : Seed
     , isMac : Bool
     , isChrome : Bool
+    , user : Maybe User
     }
 
 
@@ -25,6 +27,7 @@ decoder =
         |> optional "seed" seedDecoder (Random.initialSeed 1776)
         |> optional "isMac" Decode.bool True
         |> optional "isChrome" Decode.bool True
+        |> required "user" (Decode.nullable User.decoder)
 
 
 seedDecoder : Decoder Seed

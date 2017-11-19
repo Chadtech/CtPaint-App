@@ -34,6 +34,7 @@ type Msg
     | DropdownClicked Dropdown
     | HoveredOnto Dropdown
     | LoginClicked
+    | UserClicked
     | AboutClicked
     | KeyCmdClicked KeyCmd
     | NewWindowClicked NewWindow
@@ -82,6 +83,22 @@ update msg model =
             }
                 & Ports.send StealFocus
 
+        UserClicked ->
+            case model.user of
+                Just user ->
+                    { model
+                        | user =
+                            { user
+                                | optionsDropped =
+                                    not user.optionsDropped
+                            }
+                                |> Just
+                    }
+                        & Cmd.none
+
+                Nothing ->
+                    model & Cmd.none
+
         AboutClicked ->
             { model
                 | menu =
@@ -110,6 +127,7 @@ type Class
     | InvisibleWall
     | Button
     | LoginButton
+    | UserButton
     | Dropped
     | Divider
     | Strike
@@ -146,6 +164,10 @@ css =
         , active outdent
         ]
     , Css.class LoginButton
+        [ float right
+        , marginRight (px 2)
+        ]
+    , Css.class UserButton
         [ float right
         , marginRight (px 2)
         ]
@@ -269,10 +291,10 @@ userButton maybeUser =
 userOptions : User -> Html Msg
 userOptions user =
     a
-        [ class [ Button ] ]
+        [ class [ Button, UserButton ] ]
         [ Html.text user.name
-        , Util.viewIf user.optionsIsOpen seam
-        , Util.viewIf user.optionsIsOpen (userDropdown user)
+        , Util.viewIf user.optionsDropped seam
+        , Util.viewIf user.optionsDropped (userDropdown user)
         ]
 
 
