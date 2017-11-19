@@ -1,13 +1,13 @@
 PaintApp = function(Client) {
 
-    function flags(user){
+    function flags(extraFlags){
         return {
           windowHeight: window.innerHeight,
           windowWidth: window.innerWidth,
           seed: Math.round(Math.random() * 999999999999),
           isMac: (window.navigator.userAgent.indexOf("Mac")) !== -1,
           isChrome: (window.navigator.userAgent.indexOf("Chrome")) !== -1,
-          user: user
+          user: extraFlags.user
         };
     }
 
@@ -24,7 +24,7 @@ PaintApp = function(Client) {
 
     window.onbeforeunload = function(event) { return ""; };
 
-    function userAttributesToPayload(attributes) {
+    function toUser(attributes) {
         var payload = {};
 
         for (i = 0; i < attributes.length; i++) {
@@ -65,10 +65,9 @@ PaintApp = function(Client) {
             } else {
                 app.ports.fromJs.send({
                     type: "login succeeded",
-                    payload: userAttributesToPayload(attributes)
+                    payload: toUser(attributes)
                 });
             }
-            app.ports.toJs.subscribe(jsMsgHandler);
         });
     }
 
@@ -114,16 +113,25 @@ PaintApp = function(Client) {
         }
     }
 
+    function init(extraFlags) {
+        app = Elm.PaintApp.fullscreen(flags(extraFlags));
+        app.ports.toJs.subscribe(jsMsgHandler);
+    }
+
     Client.getSession({
         onSuccess: function(attributes) {
-            app = Elm.PaintApp.fullscreen(flags(
-                userAttributesToPayload(attributes)
-            ));
+            init({
+                user: toUser(attributes)
+            });
         },
         onFailure: function(err) {
             switch (err) {
                 case "no session" :
-                    app = Elm.PaintApp.fullscreen(flags(null));
+                    init({ user: null });
+                    break;
+
+                case "NetworkingError: Network Failure":
+                    init({ user: null });
                     break;
 
                 default : 

@@ -16,11 +16,9 @@ import Chadtech.Colors exposing (..)
 import Css exposing (..)
 import Css.Elements exposing (a, body, canvas, form, p)
 import Css.Namespace exposing (namespace)
-import DOM exposing (Rectangle)
 import Html exposing (Attribute, Html)
 import Html.CssHelpers
-import Html.Events exposing (onClick)
-import Json.Decode as Decode exposing (Decoder)
+import Html.Events exposing (onMouseDown)
 import MouseEvents exposing (MouseEvent, Position)
 import Tuple.Infix exposing ((:=))
 
@@ -318,32 +316,8 @@ header : HeaderState msg -> Html msg
 header { text, headerMouseDown, xClick } =
     Html.div
         [ class [ Header ]
-        , onMouseDownNoPropagation headerMouseDown
+        , MouseEvents.onMouseDown headerMouseDown
         ]
         [ Html.p [] [ Html.text text ]
-        , Html.a [ onClick xClick ] [ Html.text "x" ]
+        , Html.a [ onMouseDown xClick ] [ Html.text "x" ]
         ]
-
-
-onMouseDownNoPropagation : (MouseEvent -> msg) -> Html.Attribute msg
-onMouseDownNoPropagation target =
-    Html.Events.onWithOptions
-        "mousedown"
-        { stopPropagation = True, preventDefault = False }
-        (Decode.map target mouseEventDecoder)
-
-
-mouseEvent : Int -> Int -> Rectangle -> MouseEvent
-mouseEvent clientX clientY target =
-    { clientPos = Position clientX clientY
-    , targetPos = Position (truncate target.left) (truncate target.top)
-    }
-
-
-mouseEventDecoder : Decode.Decoder MouseEvent
-mouseEventDecoder =
-    Decode.map3
-        mouseEvent
-        (Decode.field "clientX" Decode.int)
-        (Decode.field "clientY" Decode.int)
-        (Decode.field "target" DOM.boundingClientRect)

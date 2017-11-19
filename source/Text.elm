@@ -50,6 +50,7 @@ css =
         , width (px 486)
         , height (px 222)
         , marginBottom (px 8)
+        , property "-webkit-font-smoothing" "none"
         ]
     ]
         |> namespace textNamespace
