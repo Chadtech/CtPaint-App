@@ -107,6 +107,32 @@ PaintApp = function(Client) {
                 });
                 break;
 
+            case "logout":
+                function succeed(){
+                    app.ports.fromJs.send({
+                        type: "logout succeeded",
+                        payload: null
+                    });
+                }
+                
+                Client.logout({
+                    onSuccess: succeed,
+                    onFailure: function(err) {
+                        switch (err) {
+                            case "user was not signed in":
+                                succeed();
+                                break;
+
+                            default:
+                                app.ports.fromJs.send({
+                                    type: "logout failed",
+                                    payload: err
+                                });
+                                break;
+                        }
+                    }
+                });
+
             default:
                 console.log("Unrecognized JsMsg type ->", msg.type);
                 break;

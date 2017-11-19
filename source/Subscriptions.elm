@@ -4,17 +4,14 @@ import AnimationFrame
 import ColorPicker
 import Data.Keys exposing (decodeKeyEvent)
 import Data.Menu
+import Data.Minimap exposing (State(..))
 import Json.Decode exposing (Value)
 import Menu
 import Minimap
 import Msg exposing (Msg(..))
 import Ports
 import Tool
-import Types
-    exposing
-        ( MinimapState(..)
-        , Model
-        )
+import Types exposing (Model)
 import Window
 
 
@@ -41,10 +38,10 @@ subscriptions model =
 -- MINIMAP --
 
 
-minimap : MinimapState -> Sub Msg
+minimap : Data.Minimap.State -> Sub Msg
 minimap state =
     case state of
-        Minimap model ->
+        Opened model ->
             Minimap.subscriptions model
                 |> Sub.map MinimapMsg
 

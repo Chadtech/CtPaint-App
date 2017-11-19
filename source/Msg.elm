@@ -2,9 +2,9 @@ module Msg exposing (Msg(..), decode)
 
 import ColorPicker
 import Data.Keys exposing (KeyEvent)
+import Data.Minimap as Minimap
 import Json.Decode as Decode exposing (Decoder, Value)
 import Menu
-import Minimap
 import MouseEvents exposing (MouseEvent)
 import Palette
 import Taskbar

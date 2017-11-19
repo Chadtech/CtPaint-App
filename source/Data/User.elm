@@ -1,4 +1,4 @@
-module Data.User exposing (User, decoder)
+module Data.User exposing (User, decoder, toggleOptionsDropped)
 
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline
@@ -7,6 +7,14 @@ import Json.Decode.Pipeline
         , hardcoded
         , required
         )
+
+
+type Model
+    = NoSession
+    | Offline
+    | LoggingIn
+    | LoggingOut
+    | LoggedIn User
 
 
 type alias User =
@@ -24,3 +32,12 @@ decoder =
         |> required "nickname" Decode.string
         |> hardcoded "no profile pic yet"
         |> hardcoded False
+
+
+
+-- HELPERS --
+
+
+toggleOptionsDropped : User -> User
+toggleOptionsDropped user =
+    { user | optionsDropped = not user.optionsDropped }

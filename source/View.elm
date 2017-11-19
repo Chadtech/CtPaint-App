@@ -7,6 +7,7 @@ import Css exposing (..)
 import Css.Elements exposing (canvas)
 import Css.Namespace exposing (namespace)
 import Data.Menu
+import Data.Minimap exposing (State(..))
 import Data.Tool
 import Html exposing (Html, div)
 import Html.Attributes as Attributes exposing (id, style)
@@ -21,7 +22,7 @@ import Palette
 import Taskbar
 import Tool
 import Toolbar
-import Types exposing (MinimapState(..), Model)
+import Types exposing (Model)
 import Util exposing (toolbarWidth)
 
 
@@ -159,7 +160,7 @@ menu maybeMenuModel =
 minimap : Model -> Html Msg
 minimap model =
     case model.minimap of
-        Minimap minimapModel ->
+        Opened minimapModel ->
             Minimap.view
                 minimapModel
                 model.canvas

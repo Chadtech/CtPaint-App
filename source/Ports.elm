@@ -11,6 +11,7 @@ type JsMsg
     | SaveLocally Size String
     | Download String
     | AttemptLogin String String
+    | Logout
 
 
 jsMsg : String -> Value -> Cmd msg
@@ -54,6 +55,9 @@ send msg =
             ]
                 |> Encode.object
                 |> jsMsg "attempt login"
+
+        Logout ->
+            jsMsg "logout" Encode.null
 
 
 port toJs : Value -> Cmd msg

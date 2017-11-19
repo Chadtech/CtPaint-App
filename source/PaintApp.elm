@@ -6,6 +6,7 @@ import Color
 import ColorPicker
 import Data.Flags as Flags exposing (Flags)
 import Data.Keys exposing (defaultKeyCmdConfig, defaultQuickKeys)
+import Data.Minimap
 import Data.Palette exposing (initPalette, initSwatches)
 import Html
 import Json.Decode as Decode exposing (Decoder, Value, value)
@@ -18,9 +19,7 @@ import Tuple.Infix exposing ((&))
 import Types
     exposing
         ( HistoryOp(..)
-        , MinimapState(..)
         , Model
-        , fillBlack
         )
 import Update exposing (update)
 import Util exposing (tbw)
@@ -57,18 +56,12 @@ init json =
 fromFlags : Flags -> ( Model, Cmd Msg )
 fromFlags flags =
     let
-        ( canvas, menu ) =
-            case Err "dont load it right now" of
-                Ok canvas ->
-                    canvas & Nothing
-
-                Err err ->
-                    Canvas.initialize
-                        { width = 400
-                        , height = 400
-                        }
-                        |> fillBlack
-                        & Nothing
+        canvas =
+            { width = 400
+            , height = 400
+            }
+                |> Canvas.initialize
+                |> fillBlack
 
         canvasSize : Size
         canvasSize =
@@ -111,7 +104,7 @@ fromFlags flags =
     , selection = Nothing
     , clipboard = Nothing
     , taskbarDropped = Nothing
-    , minimap = NoMinimap
+    , minimap = Data.Minimap.NotInitialized
     , menu = Nothing
     , seed = flags.seed
     , config =
@@ -165,7 +158,7 @@ fromError err =
     , selection = Nothing
     , clipboard = Nothing
     , taskbarDropped = Nothing
-    , minimap = NoMinimap
+    , minimap = Data.Minimap.NotInitialized
     , menu =
         { width = 800, height = 800 }
             |> Menu.initError err
@@ -182,3 +175,22 @@ fromError err =
         }
     }
         & Cmd.none
+
+
+
+-- FILL BLACK --
+
+
+fillBlack : Canvas -> Canvas
+fillBlack canvas =
+    Canvas.draw (fillBlackOp canvas) canvas
+
+
+fillBlackOp : Canvas -> DrawOp
+fillBlackOp canvas =
+    [ BeginPath
+    , Rect (Point 0 0) (Canvas.getSize canvas)
+    , FillStyle Color.black
+    , Canvas.Fill
+    ]
+        |> Canvas.batch

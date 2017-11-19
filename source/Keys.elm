@@ -4,6 +4,7 @@ import Actions
 import Canvas exposing (Canvas)
 import Clipboard
 import Data.Keys exposing (KeyCmd(..))
+import Data.Minimap exposing (State(..))
 import Data.Tool as Tool exposing (Tool(..))
 import Draw
 import History
@@ -13,11 +14,7 @@ import Ports exposing (JsMsg(..))
 import Tool.Zoom as Zoom
 import Tool.Zoom.Util as Zoom
 import Tuple.Infix exposing ((&))
-import Types
-    exposing
-        ( MinimapState(..)
-        , Model
-        )
+import Types exposing (Model)
 import Util exposing (origin)
 
 
@@ -154,7 +151,7 @@ exec keyCmd model =
 
         ToggleMinimap ->
             case model.minimap of
-                Minimap minimapModel ->
+                Opened minimapModel ->
                     { model
                         | minimap =
                             minimapModel.externalPosition
@@ -165,20 +162,18 @@ exec keyCmd model =
                 Closed position ->
                     { model
                         | minimap =
-                            Minimap.init
-                                (Just position)
-                                model.windowSize
-                                |> Minimap
+                            model.windowSize
+                                |> Minimap.init (Just position)
+                                |> Opened
                     }
                         & Cmd.none
 
-                NoMinimap ->
+                NotInitialized ->
                     { model
                         | minimap =
-                            Minimap.init
-                                Nothing
-                                model.windowSize
-                                |> Minimap
+                            model.windowSize
+                                |> Minimap.init Nothing
+                                |> Opened
                     }
                         & Cmd.none
 

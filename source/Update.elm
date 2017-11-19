@@ -4,6 +4,7 @@ import Array
 import Canvas exposing (DrawOp(Batch))
 import ColorPicker
 import Data.Menu
+import Data.Minimap exposing (State(..))
 import Draw
 import Helpers.Keys
 import History
@@ -18,12 +19,7 @@ import Taskbar
 import Tool.Update as Tool
 import Toolbar
 import Tuple.Infix exposing ((&))
-import Types
-    exposing
-        ( MinimapState(..)
-        , Model
-        , toUrl
-        )
+import Types exposing (Model)
 import Util exposing (origin)
 
 
@@ -93,7 +89,7 @@ update message model =
 
         MinimapMsg subMsg ->
             case model.minimap of
-                Minimap minimap ->
+                Opened minimap ->
                     let
                         minimapUpdate =
                             Minimap.update subMsg minimap
@@ -131,19 +127,16 @@ update message model =
             model & Cmd.none
 
 
-incorporateMinimap :
-    ( Minimap.Model, Minimap.ExternalMsg )
-    -> Model
-    -> ( Model, Cmd Msg )
+incorporateMinimap : ( Data.Minimap.Model, Data.Minimap.Reply ) -> Model -> ( Model, Cmd Msg )
 incorporateMinimap ( minimap, externalMsg ) model =
     case externalMsg of
-        Minimap.DoNothing ->
+        Data.Minimap.NoReply ->
             { model
-                | minimap = Minimap minimap
+                | minimap = Opened minimap
             }
                 & Cmd.none
 
-        Minimap.Close ->
+        Data.Minimap.Close ->
             { model
                 | minimap =
                     Closed minimap.externalPosition

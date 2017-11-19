@@ -1,9 +1,6 @@
 module Minimap
     exposing
-        ( ExternalMsg(..)
-        , Model
-        , Msg
-        , css
+        ( css
         , init
         , subscriptions
         , update
@@ -20,6 +17,14 @@ import Chadtech.Colors exposing (backgroundx2)
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
+import Data.Minimap
+    exposing
+        ( ClickState(..)
+        , Model
+        , MouseHappening(..)
+        , Msg(..)
+        , Reply(..)
+        )
 import Data.Tool exposing (Tool(..))
 import Html exposing (Attribute, Html, a, div, p)
 import Html.Attributes exposing (style)
@@ -33,43 +38,6 @@ import Tool.Zoom.Util as Zoom
 import Tuple.Infix exposing ((&))
 import Util exposing (toPoint)
 import Window exposing (Size)
-
-
--- TYPES --
-
-
-type alias Model =
-    { externalPosition : Mouse.Position
-    , internalPosition : Mouse.Position
-    , zoom : Int
-    , clickState : ClickState
-    }
-
-
-type ClickState
-    = ClickedInHeaderAt Mouse.Position
-    | ClickedInScreenAt Mouse.Position
-    | NoClicks
-
-
-type ExternalMsg
-    = Close
-    | DoNothing
-
-
-type Msg
-    = CloseClick
-    | ZoomInClicked
-    | ZoomOutClicked
-    | MouseDidSomething MouseHappening
-
-
-type MouseHappening
-    = HeaderMouseDown MouseEvent
-    | ScreenMouseDown MouseEvent
-    | MouseMoved Mouse.Position
-    | MouseUp
-
 
 
 -- INIT --
@@ -128,7 +96,7 @@ subscriptions model =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, ExternalMsg )
+update : Msg -> Model -> ( Model, Reply )
 update message model =
     case message of
         CloseClick ->
@@ -138,19 +106,19 @@ update message model =
             { model
                 | zoom = Zoom.next model.zoom
             }
-                & DoNothing
+                & NoReply
 
         ZoomOutClicked ->
             { model
                 | zoom = Zoom.prev model.zoom
             }
-                & DoNothing
+                & NoReply
 
         MouseDidSomething mouseHappening ->
             handleMouse mouseHappening model
 
 
-handleMouse : MouseHappening -> Model -> ( Model, ExternalMsg )
+handleMouse : MouseHappening -> Model -> ( Model, Reply )
 handleMouse event model =
     case event of
         ScreenMouseDown { targetPos, clientPos } ->
@@ -165,7 +133,7 @@ handleMouse event model =
                     }
                         |> ClickedInScreenAt
             }
-                & DoNothing
+                & NoReply
 
         HeaderMouseDown { targetPos, clientPos } ->
             { model
@@ -175,12 +143,12 @@ handleMouse event model =
                     }
                         |> ClickedInHeaderAt
             }
-                & DoNothing
+                & NoReply
 
         MouseMoved position ->
             case model.clickState of
                 NoClicks ->
-                    model & DoNothing
+                    model & NoReply
 
                 ClickedInHeaderAt originalClick ->
                     { model
@@ -189,7 +157,7 @@ handleMouse event model =
                             , y = position.y - originalClick.y
                             }
                     }
-                        & DoNothing
+                        & NoReply
 
                 ClickedInScreenAt originalClick ->
                     { model
@@ -198,13 +166,13 @@ handleMouse event model =
                             , y = position.y - originalClick.y
                             }
                     }
-                        & DoNothing
+                        & NoReply
 
         MouseUp ->
             { model
                 | clickState = NoClicks
             }
-                & DoNothing
+                & NoReply
 
 
 

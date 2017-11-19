@@ -5,9 +5,11 @@ import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
 import Data.Keys exposing (KeyCmd(..), QuickKey)
+import Data.Minimap exposing (State(..))
 import Data.Taskbar exposing (Dropdown(..))
 import Data.Tool as Tool exposing (Tool)
-import Data.User exposing (User)
+import Data.User as User exposing (User)
+import Data.Window exposing (Window(..))
 import Dict exposing (Dict)
 import Html exposing (Attribute, Html, a, div, p)
 import Html.CssHelpers
@@ -15,14 +17,9 @@ import Html.Custom exposing (outdent)
 import Html.Events exposing (onClick, onMouseOver)
 import Keys
 import Menu
-import Ports exposing (JsMsg(StealFocus))
+import Ports exposing (JsMsg(Logout, StealFocus))
 import Tuple.Infix exposing ((&))
-import Types
-    exposing
-        ( MinimapState(..)
-        , Model
-        , NewWindow(..)
-        )
+import Types exposing (Model)
 import Util exposing (toolbarWidth)
 
 
@@ -35,9 +32,10 @@ type Msg
     | HoveredOnto Dropdown
     | LoginClicked
     | UserClicked
+    | LogoutClicked
     | AboutClicked
     | KeyCmdClicked KeyCmd
-    | NewWindowClicked NewWindow
+    | NewWindowClicked Window
     | ToolClicked Tool
 
 
@@ -88,16 +86,16 @@ update msg model =
                 Just user ->
                     { model
                         | user =
-                            { user
-                                | optionsDropped =
-                                    not user.optionsDropped
-                            }
+                            User.toggleOptionsDropped user
                                 |> Just
                     }
                         & Cmd.none
 
                 Nothing ->
                     model & Cmd.none
+
+        LogoutClicked ->
+            model & Ports.send Logout
 
         AboutClicked ->
             { model
@@ -290,17 +288,31 @@ userButton maybeUser =
 
 userOptions : User -> Html Msg
 userOptions user =
-    a
-        [ class [ Button, UserButton ] ]
-        [ Html.text user.name
-        , Util.viewIf user.optionsDropped seam
-        , Util.viewIf user.optionsDropped (userDropdown user)
-        ]
+    if user.optionsDropped then
+        a
+            [ class [ Button, UserButton ]
+            , onClick UserClicked
+            ]
+            [ Html.text user.name
+            , seam
+            , userDropdown user
+            ]
+    else
+        a
+            [ class [ Button, UserButton ]
+            , onClick UserClicked
+            ]
+            [ Html.text user.name
+            ]
 
 
 userDropdown : User -> Html Msg
 userDropdown user =
-    []
+    [ option "preferences" "" (NewWindowClicked Preferences)
+    , option "home" "" (NewWindowClicked Home)
+    , divider
+    , option "log out" "" LogoutClicked
+    ]
         |> dropdownView Data.Taskbar.User
 
 
@@ -371,7 +383,7 @@ view_ model =
 minimapLabel : Model -> String
 minimapLabel model =
     case model.minimap of
-        Minimap _ ->
+        Opened _ ->
             "Hide Mini Map"
 
         _ ->
