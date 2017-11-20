@@ -2,104 +2,40 @@ module History exposing (..)
 
 import Array
 import Color exposing (Color)
-import Types exposing (HistoryOp(..), Model)
+import Data.History exposing (Event(..), Model)
 
 
 -- HISTORY --
 
 
-add : HistoryOp -> Model -> Model
-add historyOp model =
+add : Event -> Model -> Model
+add event model =
     { model
         | future = []
     }
-        |> passToHistory historyOp
-
-
-addCanvas : Model -> Model
-addCanvas model =
-    add (CanvasChange model.canvas) model
-
-
-addColor : Int -> Color -> Model -> Model
-addColor index color model =
-    add (ColorChange index color) model
+        |> passToPast event
 
 
 
--- REDO --
-
-
-redo : Model -> Model
-redo model =
-    case model.future of
-        f :: rest ->
-            case f of
-                CanvasChange canvas ->
-                    { model
-                        | canvas = canvas
-                        , future = rest
-                    }
-                        |> passToHistory (CanvasChange model.canvas)
-
-                ColorChange index color ->
-                    case Array.get index model.palette of
-                        Just existingColor ->
-                            handleColor index color model
-                                |> passToHistory (ColorChange index existingColor)
-                                |> setFuture rest
-
-                        Nothing ->
-                            model
-
-        [] ->
-            model
-
-
-
--- UNDO --
-
-
-undo : Model -> Model
-undo model =
-    case model.history of
-        h :: rest ->
-            case h of
-                CanvasChange canvas ->
-                    { model
-                        | canvas = canvas
-                        , history = rest
-                    }
-                        |> passToFuture (CanvasChange model.canvas)
-
-                ColorChange index color ->
-                    case Array.get index model.palette of
-                        Just existingColor ->
-                            handleColor index color model
-                                |> passToFuture (ColorChange index existingColor)
-                                |> setHistory rest
-
-                        Nothing ->
-                            model
-
-        [] ->
-            model
-
-
-
+--addCanvas : Model -> Model
+--addCanvas model =
+--    add (CanvasChange model.canvas) model
+--addColor : Int -> Color -> Model -> Model
+--addColor index color model =
+--    add (ColorChange index color) model
 -- HISTORY --
 
 
-setHistory : List HistoryOp -> Model -> Model
-setHistory historyOps model =
-    { model | history = historyOps }
+setPast : List Event -> Model -> Model
+setPast past model =
+    { model | past = past }
 
 
-passToHistory : HistoryOp -> Model -> Model
-passToHistory historyOp model =
+passToPast : Event -> Model -> Model
+passToPast event model =
     { model
-        | history =
-            List.take 15 (historyOp :: model.history)
+        | past =
+            List.take 15 (event :: model.past)
     }
 
 
@@ -107,40 +43,14 @@ passToHistory historyOp model =
 -- FUTURE --
 
 
-setFuture : List HistoryOp -> Model -> Model
-setFuture historyOps model =
-    { model | future = historyOps }
+setFuture : List Event -> Model -> Model
+setFuture future model =
+    { model | future = future }
 
 
-passToFuture : HistoryOp -> Model -> Model
-passToFuture historyOp model =
+passToFuture : Event -> Model -> Model
+passToFuture event model =
     { model
         | future =
-            List.take 15 (historyOp :: model.future)
-    }
-
-
-
--- COLOR HELPER --
-
-
-handleColor : Int -> Color -> Model -> Model
-handleColor index color ({ colorPicker, palette } as model) =
-    { model
-        | palette =
-            Array.set index color palette
-        , colorPicker =
-            let
-                { picker } =
-                    colorPicker
-            in
-            if picker.index == index then
-                { colorPicker
-                    | picker =
-                        { picker
-                            | color = color
-                        }
-                }
-            else
-                colorPicker
+            List.take 15 (event :: model.future)
     }

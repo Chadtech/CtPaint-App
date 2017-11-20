@@ -246,8 +246,11 @@ incorporateMenu reply menu model =
                     }
                         & Cmd.none
 
-        NewUser user ->
+        SetUser user ->
             { model | user = User.LoggedIn user } & Cmd.none
+
+        SetToNoSession ->
+            { model | user = User.NoSession } & Cmd.none
 
 
 incorporateColorPicker :

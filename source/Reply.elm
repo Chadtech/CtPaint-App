@@ -12,4 +12,5 @@ type Reply
     | ScaleTo Int Int
     | AddText String
     | Replace Color Color
-    | NewUser User
+    | SetUser User
+    | SetToNoSession

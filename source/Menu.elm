@@ -4,7 +4,13 @@ import About
 import Color exposing (Color)
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
-import Data.Menu exposing (Menu(..), Model)
+import Data.Menu
+    exposing
+        ( ContentMsg(..)
+        , Menu(..)
+        , Model
+        , Msg(..)
+        )
 import Download
 import Error
 import Html exposing (Attribute, Html, a, div, p, text)
@@ -15,7 +21,6 @@ import Imgur
 import Import
 import Login
 import Mouse exposing (Position)
-import MouseEvents exposing (MouseEvent)
 import New
 import Open
 import Random exposing (Seed)
@@ -26,35 +31,6 @@ import Text
 import Tuple.Infix exposing ((&))
 import Util exposing (ClickState(..), toolbarWidth)
 import Window exposing (Size)
-
-
--- TYPES --
-
-
-type Msg
-    = HeaderMouseDown MouseEvent
-    | HeaderMouseMove Mouse.Position
-    | HeaderMouseUp
-    | XClick
-    | ContentMsg ContentMsg
-
-
-type ContentMsg
-    = DownloadMsg Download.Msg
-    | ImportMsg Import.Msg
-    | ScaleMsg Scale.Msg
-    | TextMsg Text.Msg
-    | ReplaceColorMsg ReplaceColor.Msg
-    | ImgurMsg Imgur.Msg
-    | NewMsg New.Msg
-    | OpenMsg Open.Msg
-    | LoginMsg Login.Msg
-
-
-loginFailed : String -> Msg
-loginFailed =
-    Login.LoginFailed >> LoginMsg >> ContentMsg
-
 
 
 -- UPDATE --

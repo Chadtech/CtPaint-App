@@ -5,20 +5,13 @@ import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Color exposing (Color)
 import ColorPicker
 import Data.Config exposing (Config)
+import Data.History
 import Data.Menu as Menu
 import Data.Minimap as Minimap
 import Data.Palette exposing (Swatches)
 import Data.Taskbar exposing (Dropdown)
 import Data.Tool exposing (Tool(..))
 import Data.User exposing (User)
-import Json.Decode as Decode exposing (Decoder, Value)
-import Json.Decode.Pipeline
-    exposing
-        ( decode
-        , required
-        , requiredAt
-        )
-import Minimap
 import Mouse exposing (Position)
 import Random exposing (Seed)
 
@@ -41,8 +34,7 @@ type alias Model =
     , zoom : Int
     , galleryView : Bool
     , colorPicker : ColorPicker.Model
-    , history : List HistoryOp
-    , future : List HistoryOp
+    , history : Data.History.Model
     , mousePosition : Maybe Position
     , selection : Maybe ( Position, Canvas )
     , clipboard : Maybe ( Position, Canvas )
@@ -52,12 +44,3 @@ type alias Model =
     , seed : Seed
     , config : Config
     }
-
-
-
--- KeyEvent --
-
-
-type HistoryOp
-    = CanvasChange Canvas
-    | ColorChange Int Color
