@@ -7,8 +7,8 @@ import Data.Menu
 import Data.Minimap exposing (State(..))
 import Data.User as User
 import Draw
+import Helpers.History as History
 import Helpers.Keys
-import History
 import Keys
 import Menu
 import Minimap
@@ -190,7 +190,7 @@ incorporateMenu reply menu model =
                         , canvas =
                             Canvas.scale dw dh model.canvas
                     }
-                        |> History.addCanvas
+                        |> History.canvas
                         & Ports.send ReturnFocus
 
                 Just ( pos, selection ) ->
@@ -216,7 +216,6 @@ incorporateMenu reply menu model =
                     )
                         |> Just
             }
-                |> History.addCanvas
                 & Ports.send ReturnFocus
 
         Replace target replacement ->
@@ -253,10 +252,7 @@ incorporateMenu reply menu model =
             { model | user = User.NoSession } & Cmd.none
 
 
-incorporateColorPicker :
-    Model
-    -> ( ColorPicker.Model, ColorPicker.Reply )
-    -> ( Model, Cmd Msg )
+incorporateColorPicker : Model -> ( ColorPicker.Model, ColorPicker.Reply ) -> ( Model, Cmd Msg )
 incorporateColorPicker model ( colorPicker, reply ) =
     case reply of
         ColorPicker.NoReply ->
@@ -280,7 +276,7 @@ incorporateColorPicker model ( colorPicker, reply ) =
             { model
                 | colorPicker = colorPicker
             }
-                |> History.addColor index color
+                |> History.color index color
                 & Cmd.none
 
         ColorPicker.StealFocus ->

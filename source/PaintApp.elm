@@ -5,6 +5,7 @@ import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Color
 import ColorPicker
 import Data.Flags as Flags exposing (Flags)
+import Data.History
 import Data.Keys exposing (defaultKeyCmdConfig, defaultQuickKeys)
 import Data.Minimap
 import Data.Palette exposing (initPalette, initSwatches)
@@ -17,11 +18,7 @@ import Random
 import Subscriptions exposing (subscriptions)
 import Tool
 import Tuple.Infix exposing ((&))
-import Types
-    exposing
-        ( HistoryOp(..)
-        , Model
-        )
+import Types exposing (Model)
 import Update exposing (update)
 import Util exposing (tbw)
 import View exposing (view)
@@ -99,8 +96,7 @@ fromFlags flags =
                     False
                     0
                     Color.black
-    , history = [ CanvasChange canvas ]
-    , future = []
+    , history = Data.History.init canvas
     , mousePosition = Nothing
     , selection = Nothing
     , clipboard = Nothing
@@ -153,8 +149,10 @@ fromError err =
                     False
                     0
                     Color.black
-    , history = []
-    , future = []
+    , history =
+        { past = []
+        , future = []
+        }
     , mousePosition = Nothing
     , selection = Nothing
     , clipboard = Nothing

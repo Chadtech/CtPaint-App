@@ -2,7 +2,7 @@ module Tool.Select.Update exposing (update)
 
 import Canvas
 import Draw
-import History
+import Helpers.History as History
 import Tool.Select exposing (Msg(..), SelectModel)
 import Tool.Util exposing (adjustPosition)
 import Tuple.Infix exposing ((&))
@@ -93,7 +93,7 @@ handleExistingSelection model =
                         |> Canvas.batch
                 , selection = Nothing
             }
-                |> History.addCanvas
+                |> History.canvas
 
         Nothing ->
             model

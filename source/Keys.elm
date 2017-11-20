@@ -7,7 +7,7 @@ import Data.Keys exposing (KeyCmd(..))
 import Data.Minimap exposing (State(..))
 import Data.Tool as Tool exposing (Tool(..))
 import Draw
-import History
+import Helpers.History as History
 import Menu
 import Minimap
 import Ports exposing (JsMsg(..))

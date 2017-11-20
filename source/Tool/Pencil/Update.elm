@@ -3,7 +3,7 @@ module Tool.Pencil.Update exposing (..)
 import Canvas exposing (DrawOp(..))
 import Data.Tool exposing (Tool(Pencil))
 import Draw
-import History
+import Helpers.History as History
 import Mouse exposing (Position)
 import Tool.Pencil exposing (Msg(..))
 import Tool.Util exposing (adjustPosition)
@@ -30,7 +30,7 @@ update message tool model =
                             adjustedPosition
                         ]
             }
-                |> History.addCanvas
+                |> History.canvas
 
         ( SubMouseMove position, Just priorPosition ) ->
             let

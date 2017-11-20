@@ -3,7 +3,7 @@ module Tool.RectangleFilled.Update exposing (update)
 import Canvas exposing (Size)
 import Data.Tool exposing (Tool(..))
 import Draw exposing (makeRectParams)
-import History
+import Helpers.History as History
 import Mouse exposing (Position)
 import Tool.RectangleFilled exposing (Msg(..))
 import Tool.Util exposing (adjustPosition)
@@ -30,7 +30,7 @@ update message toolModel model =
                         (Size 1 1)
                         adjustedPosition
             }
-                |> History.addCanvas
+                |> History.canvas
 
         ( SubMouseMove position, Just priorPosition ) ->
             let

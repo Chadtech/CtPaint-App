@@ -2,7 +2,7 @@ module Tool.Fill exposing (..)
 
 import Canvas exposing (DrawOp(..))
 import Draw
-import History
+import Helpers.History as History
 import MouseEvents exposing (MouseEvent)
 import Tool.Util exposing (adjustPosition)
 import Types exposing (Model)
@@ -30,6 +30,6 @@ screenMouseUp { clientPos } model =
                         (toPoint positionOnCanvas)
                     ]
         }
-            |> History.addCanvas
+            |> History.canvas
     else
         model
