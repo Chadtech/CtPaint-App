@@ -1,9 +1,6 @@
-module Actions exposing (..)
+module Helpers.Menu exposing (..)
 
 import Array
-import Color exposing (Color)
-import Data.History exposing (Event(..))
-import History
 import Menu
 import Types exposing (Model)
 

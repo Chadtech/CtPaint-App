@@ -1,6 +1,5 @@
 module Keys exposing (..)
 
-import Actions
 import Canvas exposing (Canvas)
 import Clipboard
 import Data.Keys exposing (KeyCmd(..))
@@ -8,6 +7,7 @@ import Data.Minimap exposing (State(..))
 import Data.Tool as Tool exposing (Tool(..))
 import Draw
 import Helpers.History as History
+import Helpers.Menu
 import Menu
 import Minimap
 import Ports exposing (JsMsg(..))
@@ -238,7 +238,7 @@ exec keyCmd model =
             model & Cmd.none
 
         InitReplaceColor ->
-            Actions.initReplaceColor model & Cmd.none
+            Helpers.Menu.initReplaceColor model & Cmd.none
 
         ToggleColorPicker ->
             let

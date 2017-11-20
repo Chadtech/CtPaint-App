@@ -1,10 +1,10 @@
 module Toolbar exposing (Msg(..), css, update, view)
 
-import Actions
 import Chadtech.Colors exposing (ignorable2, ignorable3)
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Data.Tool exposing (Tool(..))
+import Helpers.Menu
 import Html exposing (Html, a, div)
 import Html.Attributes exposing (attribute, title)
 import Html.CssHelpers
@@ -51,7 +51,7 @@ update msg model =
             model
 
         OtherButtonClicked Replace ->
-            Actions.initReplaceColor model
+            Helpers.Menu.initReplaceColor model
 
 
 
