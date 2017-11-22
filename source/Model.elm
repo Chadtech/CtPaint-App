@@ -1,7 +1,7 @@
-module Types exposing (..)
+module Model exposing (Model)
 
 import Array exposing (Array)
-import Canvas exposing (Canvas, DrawOp(..), Point, Size)
+import Canvas exposing (Canvas, DrawOp, Point, Size)
 import Color exposing (Color)
 import ColorPicker
 import Data.Config exposing (Config)
@@ -10,7 +10,7 @@ import Data.Menu as Menu
 import Data.Minimap as Minimap
 import Data.Palette exposing (Swatches)
 import Data.Taskbar exposing (Dropdown)
-import Data.Tool exposing (Tool(..))
+import Data.Tool exposing (Tool)
 import Data.User exposing (User)
 import Mouse exposing (Position)
 import Random exposing (Seed)

@@ -1,6 +1,6 @@
 module Clipboard exposing (..)
 
-import Types exposing (Model)
+import Model exposing (Model)
 
 
 copy : Model -> Model

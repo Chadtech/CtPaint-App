@@ -2,7 +2,7 @@ module Helpers.Menu exposing (..)
 
 import Array
 import Menu
-import Types exposing (Model)
+import Model exposing (Model)
 
 
 initReplaceColor : Model -> Model

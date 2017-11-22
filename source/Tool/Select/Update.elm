@@ -3,10 +3,10 @@ module Tool.Select.Update exposing (update)
 import Canvas
 import Draw
 import Helpers.History as History
+import Model exposing (Model)
 import Tool.Select exposing (Msg(..), SelectModel)
 import Tool.Util exposing (adjustPosition)
 import Tuple.Infix exposing ((&))
-import Types exposing (Model)
 import Util exposing (positionMin, tbw)
 
 

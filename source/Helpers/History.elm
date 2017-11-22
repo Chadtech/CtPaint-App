@@ -4,7 +4,7 @@ import Array
 import Color exposing (Color)
 import Data.History exposing (Event(..))
 import History
-import Types exposing (Model)
+import Model exposing (Model)
 
 
 undo : Model -> Model

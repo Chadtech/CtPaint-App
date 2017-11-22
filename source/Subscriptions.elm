@@ -8,10 +8,10 @@ import Data.Minimap exposing (State(..))
 import Json.Decode exposing (Value)
 import Menu
 import Minimap
+import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Ports
 import Tool
-import Types exposing (Model)
 import Window
 
 

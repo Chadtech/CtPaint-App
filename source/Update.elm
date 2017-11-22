@@ -12,6 +12,7 @@ import Helpers.Keys
 import Keys
 import Menu
 import Minimap
+import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Palette
 import Ports exposing (JsMsg(..))
@@ -20,7 +21,6 @@ import Taskbar
 import Tool.Update as Tool
 import Toolbar
 import Tuple.Infix exposing ((&))
-import Types exposing (Model)
 import Util exposing (origin)
 
 

@@ -4,10 +4,10 @@ import Canvas
 import Data.Tool exposing (Tool(..))
 import Draw
 import Helpers.History as History
+import Model exposing (Model)
 import Mouse exposing (Position)
 import Tool.Rectangle exposing (Msg(..))
 import Tool.Util exposing (adjustPosition)
-import Types exposing (Model)
 import Util exposing (tbw)
 
 

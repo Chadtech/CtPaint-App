@@ -13,12 +13,12 @@ import Data.User
 import Html
 import Json.Decode as Decode exposing (Decoder, Value, value)
 import Menu
+import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Random
 import Subscriptions exposing (subscriptions)
 import Tool
 import Tuple.Infix exposing ((&))
-import Types exposing (Model)
 import Update exposing (update)
 import Util exposing (tbw)
 import View exposing (view)

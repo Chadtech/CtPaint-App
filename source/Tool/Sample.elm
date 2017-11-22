@@ -1,9 +1,9 @@
 module Tool.Sample exposing (..)
 
 import Draw
+import Model exposing (Model)
 import MouseEvents exposing (MouseEvent)
 import Tool.Util exposing (adjustPosition)
-import Types exposing (Model)
 import Util exposing (tbw)
 
 

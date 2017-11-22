@@ -15,6 +15,7 @@ import Html.CssHelpers
 import Html.Events exposing (onMouseLeave)
 import Menu
 import Minimap
+import Model exposing (Model)
 import Mouse
 import MouseEvents exposing (onMouseMove)
 import Msg exposing (Msg(..))
@@ -22,7 +23,6 @@ import Palette
 import Taskbar
 import Tool
 import Toolbar
-import Types exposing (Model)
 import Util exposing (toolbarWidth)
 
 

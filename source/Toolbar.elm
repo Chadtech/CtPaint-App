@@ -11,8 +11,8 @@ import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick)
 import Menu
+import Model exposing (Model)
 import Tool
-import Types exposing (Model)
 
 
 -- TYPES --

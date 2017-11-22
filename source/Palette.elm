@@ -21,9 +21,9 @@ import Html.Attributes exposing (class, classList, style)
 import Html.CssHelpers
 import Html.Custom exposing (cannotSelect, indent, outdent)
 import Html.Events exposing (onClick)
+import Model exposing (Model)
 import Mouse
 import Tuple.Infix exposing ((:=))
-import Types exposing (Model)
 import Util
     exposing
         ( background

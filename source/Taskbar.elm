@@ -17,9 +17,9 @@ import Html.Custom exposing (outdent)
 import Html.Events exposing (onClick, onMouseOver)
 import Keys
 import Menu
+import Model exposing (Model)
 import Ports exposing (JsMsg(Logout, StealFocus))
 import Tuple.Infix exposing ((&))
-import Types exposing (Model)
 import Util exposing (toolbarWidth)
 
 

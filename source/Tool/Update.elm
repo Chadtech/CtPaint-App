@@ -1,6 +1,7 @@
 module Tool.Update exposing (update)
 
 import Data.Tool exposing (Tool(..))
+import Model exposing (Model)
 import Tool exposing (Msg(..))
 import Tool.Fill as Fill
 import Tool.Hand.Update as Hand
@@ -11,7 +12,6 @@ import Tool.RectangleFilled.Update as RectangleFilled
 import Tool.Sample as Sample
 import Tool.Select.Update as Select
 import Tool.Zoom exposing (zoomInScreenMouseUp, zoomOutScreenMouseUp)
-import Types exposing (Model)
 
 
 update : Msg -> Model -> Model

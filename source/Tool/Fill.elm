@@ -3,9 +3,9 @@ module Tool.Fill exposing (..)
 import Canvas exposing (DrawOp(..))
 import Draw
 import Helpers.History as History
+import Model exposing (Model)
 import MouseEvents exposing (MouseEvent)
 import Tool.Util exposing (adjustPosition)
-import Types exposing (Model)
 import Util exposing (tbw, toPoint)
 
 

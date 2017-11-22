@@ -10,11 +10,11 @@ import Helpers.History as History
 import Helpers.Menu
 import Menu
 import Minimap
+import Model exposing (Model)
 import Ports exposing (JsMsg(..))
 import Tool.Zoom as Zoom
 import Tool.Zoom.Util as Zoom
 import Tuple.Infix exposing ((&))
-import Types exposing (Model)
 import Util exposing (origin)
 
 
