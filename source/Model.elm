@@ -9,6 +9,7 @@ import Data.History
 import Data.Menu as Menu
 import Data.Minimap as Minimap
 import Data.Palette exposing (Swatches)
+import Data.Project exposing (Project)
 import Data.Taskbar exposing (Dropdown)
 import Data.Tool exposing (Tool)
 import Data.User exposing (User)
@@ -22,7 +23,7 @@ import Random exposing (Seed)
 type alias Model =
     { user : Data.User.Model
     , canvas : Canvas
-    , projectName : Maybe String
+    , project : Maybe Project
     , canvasPosition : Position
     , pendingDraw : DrawOp
     , drawAtRender : DrawOp

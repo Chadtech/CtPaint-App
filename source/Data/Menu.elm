@@ -33,6 +33,7 @@ type Menu
     | Open Open.Model
     | Login Login.Model
     | Error String
+    | Loading String
 
 
 type alias Model =

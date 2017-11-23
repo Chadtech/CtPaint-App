@@ -19,6 +19,7 @@ import Html.CssHelpers
 import Html.Custom
 import Imgur
 import Import
+import Loading
 import Login
 import Mouse exposing (Position)
 import New
@@ -147,6 +148,7 @@ updateContent msg model =
 type Class
     = MenuContainer
     | Unpositioned
+    | ImportCard
 
 
 css : Stylesheet
@@ -159,6 +161,8 @@ css =
         , display inlineBlock
         , position absolute
         ]
+    , Css.class ImportCard
+        [ width (px 420) ]
     ]
         |> namespace menuNamespace
         |> stylesheet
@@ -178,9 +182,9 @@ menuNamespace =
 
 
 view : Model -> Html Msg
-view { position, title, content } =
+view ({ title, content } as model) =
     Html.Custom.card
-        (positioning position)
+        (cardAttrs model)
         [ Html.Custom.header
             { text = title
             , headerMouseDown = HeaderMouseDown
@@ -192,14 +196,26 @@ view { position, title, content } =
         ]
 
 
-positioning : Mouse.Position -> List (Attribute Msg)
-positioning position =
+cardAttrs : Model -> List (Attribute Msg)
+cardAttrs ({ position } as model) =
     [ style
         [ Util.top position.y
         , Util.left position.x
         ]
-    , class [ MenuContainer ]
+    , [ MenuContainer ]
+        |> Util.maybeCons (extraClass model)
+        |> class
     ]
+
+
+extraClass : Model -> Maybe Class
+extraClass model =
+    case Debug.log "content" model.content of
+        Import _ ->
+            Just ImportCard
+
+        _ ->
+            Nothing
 
 
 contentView : Menu -> List (Html ContentMsg)
@@ -246,6 +262,9 @@ contentView menu =
 
         Error subModel ->
             Error.view subModel
+
+        Loading subModel ->
+            Loading.view subModel
 
 
 

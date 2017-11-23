@@ -9,6 +9,7 @@ module Html.Custom
         , indent
         , menuButton
         , outdent
+        , spinner
         , toolButton
         )
 
@@ -17,6 +18,7 @@ import Css exposing (..)
 import Css.Elements exposing (a, body, canvas, form, p)
 import Css.Namespace exposing (namespace)
 import Html exposing (Attribute, Html)
+import Html.Attributes
 import Html.CssHelpers
 import Html.Events exposing (onMouseDown)
 import MouseEvents exposing (MouseEvent, Position)
@@ -320,4 +322,14 @@ header { text, headerMouseDown, xClick } =
         ]
         [ Html.p [] [ Html.text text ]
         , Html.a [ onMouseDown xClick ] [ Html.text "x" ]
+        ]
+
+
+spinner : Html msg
+spinner =
+    Html.div
+        [ class [ SpinnerContainer ] ]
+        [ Html.div
+            [ Html.Attributes.class "spinner" ]
+            []
         ]

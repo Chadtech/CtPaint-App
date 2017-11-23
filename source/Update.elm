@@ -251,6 +251,13 @@ incorporateMenu reply menu model =
         SetToNoSession ->
             { model | user = User.NoSession } & Cmd.none
 
+        SetProject id project ->
+            { model
+                | project = Just project
+                , menu = Nothing
+            }
+                & Cmd.none
+
 
 incorporateColorPicker : Model -> ( ColorPicker.Model, ColorPicker.Reply ) -> ( Model, Cmd Msg )
 incorporateColorPicker model ( colorPicker, reply ) =

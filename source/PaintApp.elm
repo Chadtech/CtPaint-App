@@ -67,7 +67,7 @@ fromFlags flags =
     in
     { user = flags.user
     , canvas = canvas
-    , projectName = Nothing
+    , project = Nothing
     , canvasPosition =
         { x =
             ((flags.windowSize.width - tbw) - canvasSize.width) // 2
@@ -125,7 +125,7 @@ fromError err =
             { width = 400
             , height = 400
             }
-    , projectName = Nothing
+    , project = Nothing
     , canvasPosition = { x = 0, y = 0 }
     , pendingDraw = Canvas.batch []
     , drawAtRender = Canvas.batch []

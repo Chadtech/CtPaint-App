@@ -196,7 +196,7 @@ exec keyCmd model =
             let
                 ( menuModel, seed ) =
                     Menu.initDownload
-                        model.projectName
+                        (Maybe.map .name model.project)
                         model.seed
                         model.windowSize
             in

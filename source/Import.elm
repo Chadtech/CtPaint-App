@@ -37,6 +37,8 @@ type Model
 
 type Class
     = Field
+    | LoadingText
+    | FailText
 
 
 css : Stylesheet
@@ -48,6 +50,14 @@ css =
             , Css.Elements.p
                 [ width (px 40) ]
             ]
+        ]
+    , Css.class LoadingText
+        [ textAlign center
+        , marginTop (px 8)
+        ]
+    , Css.class FailText
+        [ textAlign center
+        , marginBottom (px 8)
         ]
     ]
         |> namespace importNamespace
@@ -90,17 +100,21 @@ normalView str =
 errorView : List (Html Msg)
 errorView =
     [ p
-        []
+        [ class [ FailText ] ]
         [ Html.text "Sorry, I couldnt load that image" ]
     , Html.Custom.menuButton
         [ onClick TryAgainPressed ]
-        [ Html.text "Try Again" ]
+        [ Html.text "try again" ]
     ]
 
 
 loadingView : List (Html Msg)
 loadingView =
-    [ p [] [ Html.text "Loading.." ] ]
+    [ Html.Custom.spinner
+    , p
+        [ class [ LoadingText ] ]
+        [ Html.text "Loading.." ]
+    ]
 
 
 view : Model -> List (Html Msg)
