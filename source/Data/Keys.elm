@@ -14,7 +14,6 @@ import Json.Decode.Pipeline
     exposing
         ( decode
         , required
-        , requiredAt
         )
 import Keyboard exposing (KeyCode)
 import Keyboard.Extra exposing (Key(..))
@@ -202,16 +201,6 @@ quickKeyToString ( direction, key, cmd, shift ) =
                 |> toString
     in
     shiftStr ++ cmdStr ++ code ++ toString direction
-
-
-directionIsDown : QuickKey -> Bool
-directionIsDown ( direction, _, _, _ ) =
-    direction == Down
-
-
-directionIsUp : QuickKey -> Bool
-directionIsUp ( direction, _, _, _ ) =
-    direction == Up
 
 
 keyCodeToString : KeyCode -> String

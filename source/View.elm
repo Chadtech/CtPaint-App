@@ -10,7 +10,7 @@ import Data.Menu
 import Data.Minimap exposing (State(..))
 import Data.Tool
 import Html exposing (Html, div)
-import Html.Attributes as Attributes exposing (id, style)
+import Html.Attributes as Attributes exposing (style)
 import Html.CssHelpers
 import Html.Events exposing (onMouseLeave)
 import Menu

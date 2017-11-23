@@ -11,23 +11,41 @@ This repo is organized as..
 ├── Clipboard.elm
 ├── ColorPicker.elm
 ├── Data
-│   └── Taskbar.elm
+│   ├── Config.elm
+│   ├── Flags.elm
+│   ├── History.elm
+│   ├── Keys.elm
+│   ├── Menu.elm
+│   ├── Minimap.elm
+│   ├── Palette.elm
+│   ├── Project.elm
+│   ├── Taskbar.elm
+│   ├── Tool.elm
+│   ├── User.elm
+│   └── Window.elm
 ├── Download.elm
 ├── Draw.elm
+├── Error.elm
+├── Helpers
+│   ├── History.elm
+│   ├── Keys.elm
+│   └── Menu.elm
 ├── Hfnss.elm
 ├── History.elm
 ├── Html
 │   └── Custom.elm
 ├── Imgur.elm
 ├── Import.elm
+├── Keys.elm
+├── Loading.elm
 ├── Login.elm
 ├── Menu.elm
 ├── Minimap.elm
+├── Model.elm
 ├── Msg.elm
 ├── Native
 │   └── Canvas.js
 ├── New.elm
-├── Op.elm
 ├── Open.elm
 ├── PaintApp.elm
 ├── Palette.elm
@@ -35,8 +53,6 @@ This repo is organized as..
 ├── ReplaceColor.elm
 ├── Reply.elm
 ├── Scale.elm
-├── Styles
-│   └── Main.styl
 ├── Stylesheets.elm
 ├── Subscriptions.elm
 ├── Taskbar.elm
@@ -69,7 +85,6 @@ This repo is organized as..
 │   └── Zoom.elm
 ├── Tool.elm
 ├── Toolbar.elm
-├── Types.elm
 ├── Update.elm
 ├── Util.elm
 ├── View.elm

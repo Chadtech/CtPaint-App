@@ -12,7 +12,7 @@ module ColorPicker
 
 import Bool.Extra
 import Chadtech.Colors exposing (ignorable1, point)
-import Color exposing (Color)
+import Color
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
@@ -20,18 +20,14 @@ import Html
     exposing
         ( Attribute
         , Html
-        , a
         , div
         , form
         , input
         , p
-        , text
         )
 import Html.Attributes
     exposing
-        ( class
-        , classList
-        , spellcheck
+        ( spellcheck
         , style
         , value
         )
@@ -40,7 +36,6 @@ import Html.Custom exposing (card, cardBody, header, indent)
 import Html.Events
     exposing
         ( onBlur
-        , onClick
         , onFocus
         , onInput
         , onSubmit
@@ -584,9 +579,6 @@ cohereModel picker =
 
 type Class
     = ColorPicker
-    | Header
-    | Body
-    | Break
     | Visualization
     | SliderContainer
     | Gradient
