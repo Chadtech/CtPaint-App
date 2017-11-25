@@ -1,14 +1,14 @@
 module Helpers.Keys exposing (getCmd, getKeysLabel)
 
 import Data.Config exposing (Config)
-import Data.Keys exposing (KeyCmd(NoCmd), KeyEvent)
+import Data.Keys as Key exposing (Cmd(NoCmd))
 import Dict
 
 
 -- keyCmd from Event --
 
 
-getCmd : Config -> KeyEvent -> KeyCmd
+getCmd : Config -> Key.Event -> Key.Cmd
 getCmd { keyCmds, cmdKey } event =
     case Dict.get (eventToString cmdKey event) keyCmds of
         Just cmd ->
@@ -18,7 +18,7 @@ getCmd { keyCmds, cmdKey } event =
             NoCmd
 
 
-eventToString : (KeyEvent -> Bool) -> KeyEvent -> String
+eventToString : (Key.Event -> Bool) -> Key.Event -> String
 eventToString cmdKey payload =
     let
         direction =
@@ -40,7 +40,7 @@ eventToString cmdKey payload =
 -- Keys from Cmd --
 
 
-getKeysLabel : Config -> KeyCmd -> String
+getKeysLabel : Config -> Key.Cmd -> String
 getKeysLabel { cmdKey, quickKeys } cmd =
     quickKeys
         |> Dict.get (toString cmd)

@@ -4,7 +4,7 @@ import Chadtech.Colors exposing (ignorable1, ignorable2, ignorable3, point)
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
-import Data.Keys exposing (KeyCmd(..), QuickKey)
+import Data.Keys as Key exposing (Cmd(..), QuickKey)
 import Data.Minimap exposing (State(..))
 import Data.Taskbar exposing (Dropdown(..))
 import Data.Tool as Tool exposing (Tool)
@@ -18,6 +18,7 @@ import Html.Events exposing (onClick, onMouseOver)
 import Keys
 import Menu
 import Model exposing (Model)
+import Platform.Cmd as Platform
 import Ports exposing (JsMsg(Logout, StealFocus))
 import Tuple.Infix exposing ((&))
 import Util exposing (toolbarWidth)
@@ -34,7 +35,7 @@ type Msg
     | UserClicked
     | LogoutClicked
     | AboutClicked
-    | KeyCmdClicked KeyCmd
+    | KeyCmdClicked Key.Cmd
     | NewWindowClicked Window
     | ToolClicked Tool
 
@@ -43,7 +44,7 @@ type Msg
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Cmd msg )
+update : Msg -> Model -> ( Model, Platform.Cmd msg )
 update msg model =
     case msg of
         DropdownClickedOut ->
@@ -632,7 +633,7 @@ fileDropped model =
 -- HELPERS --
 
 
-keysLabel : Model -> KeyCmd -> String
+keysLabel : Model -> Key.Cmd -> String
 keysLabel model =
     Helpers.Keys.getKeysLabel model.config
 

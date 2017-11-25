@@ -1,7 +1,7 @@
 module Msg exposing (Msg(..), decode)
 
 import ColorPicker
-import Data.Keys exposing (KeyEvent)
+import Data.Keys as Key
 import Data.Menu as Menu
 import Data.Minimap as Minimap
 import Json.Decode as Decode exposing (Decoder, Value)
@@ -26,7 +26,7 @@ type Msg
     | MinimapMsg Minimap.Msg
     | ScreenMouseMove MouseEvent
     | ScreenMouseExit
-    | KeyboardEvent (Result String KeyEvent)
+    | KeyboardEvent (Result String Key.Event)
     | MsgDecodeFailed DecodeProblem
 
 

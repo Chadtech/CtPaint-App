@@ -2,7 +2,7 @@ module Keys exposing (..)
 
 import Canvas exposing (Canvas)
 import Clipboard
-import Data.Keys exposing (KeyCmd(..))
+import Data.Keys as Key exposing (Cmd(..))
 import Data.Minimap exposing (State(..))
 import Data.Tool as Tool exposing (Tool(..))
 import Draw
@@ -11,6 +11,7 @@ import Helpers.Menu
 import Menu
 import Minimap
 import Model exposing (Model)
+import Platform.Cmd as Platform
 import Ports exposing (JsMsg(..))
 import Tool.Zoom as Zoom
 import Tool.Zoom.Util as Zoom
@@ -18,7 +19,7 @@ import Tuple.Infix exposing ((&))
 import Util exposing (origin)
 
 
-exec : KeyCmd -> Model -> ( Model, Cmd msg )
+exec : Key.Cmd -> Model -> ( Model, Platform.Cmd msg )
 exec keyCmd model =
     case keyCmd of
         NoCmd ->
@@ -129,7 +130,7 @@ exec keyCmd model =
             }
                 & Cmd.none
 
-        Data.Keys.ZoomIn ->
+        Key.ZoomIn ->
             let
                 newZoom =
                     Zoom.next model.zoom
@@ -139,7 +140,7 @@ exec keyCmd model =
             else
                 Zoom.set newZoom model & Cmd.none
 
-        Data.Keys.ZoomOut ->
+        Key.ZoomOut ->
             let
                 newZoom =
                     Zoom.prev model.zoom
@@ -300,7 +301,7 @@ exec keyCmd model =
             model & Ports.send jsMsg
 
 
-transform : (Canvas -> Canvas) -> Model -> ( Model, Cmd msg )
+transform : (Canvas -> Canvas) -> Model -> ( Model, Platform.Cmd msg )
 transform transformation model =
     case model.selection of
         Just ( position, selection ) ->

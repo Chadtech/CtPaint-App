@@ -3,7 +3,6 @@ module Tool exposing (..)
 import Data.Tool exposing (Tool(..))
 import Html exposing (Attribute)
 import Html.Attributes as Attributes
-import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent, onMouseUp)
 import Tool.Hand as Hand
 import Tool.Line as Line

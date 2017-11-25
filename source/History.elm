@@ -1,7 +1,5 @@
 module History exposing (..)
 
-import Array
-import Color exposing (Color)
 import Data.History exposing (Event(..), Model)
 
 
@@ -17,13 +15,7 @@ add event model =
 
 
 
---addCanvas : Model -> Model
---addCanvas model =
---    add (CanvasChange model.canvas) model
---addColor : Int -> Color -> Model -> Model
---addColor index color model =
---    add (ColorChange index color) model
--- HISTORY --
+-- PAST --
 
 
 setPast : List Event -> Model -> Model
