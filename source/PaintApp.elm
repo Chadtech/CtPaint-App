@@ -4,12 +4,13 @@ import Array exposing (Array)
 import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Color
 import ColorPicker
+import Data.Config as Config
 import Data.Flags as Flags exposing (Flags)
 import Data.History
-import Data.Keys exposing (defaultKeyCmdConfig, defaultQuickKeys)
 import Data.Minimap
 import Data.Palette exposing (initPalette, initSwatches)
 import Data.User
+import Dict
 import Html
 import Json.Decode as Decode exposing (Decoder, Value, value)
 import Menu
@@ -104,15 +105,7 @@ fromFlags flags =
     , minimap = Data.Minimap.NotInitialized
     , menu = Nothing
     , seed = flags.seed
-    , config =
-        { keyCmds = defaultKeyCmdConfig
-        , quickKeys = defaultQuickKeys flags.isMac
-        , cmdKey =
-            if flags.isMac then
-                .meta
-            else
-                .ctrl
-        }
+    , config = Config.init flags
     }
         & Cmd.none
 
@@ -164,13 +157,9 @@ fromError err =
             |> Just
     , seed = Random.initialSeed 0
     , config =
-        { keyCmds = defaultKeyCmdConfig
-        , quickKeys = defaultQuickKeys True
-        , cmdKey =
-            if True then
-                .meta
-            else
-                .ctrl
+        { keyCmds = Dict.empty
+        , quickKeys = Dict.empty
+        , cmdKey = always False
         }
     }
         & Cmd.none

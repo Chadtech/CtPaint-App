@@ -2,10 +2,10 @@ port module Subscriptions exposing (subscriptions)
 
 import AnimationFrame
 import ColorPicker
-import Data.Keys exposing (decodeKeyEvent)
+import Data.Keys as Keys
 import Data.Menu
 import Data.Minimap exposing (State(..))
-import Json.Decode exposing (Value)
+import Json.Decode as Decode exposing (Value)
 import Menu
 import Minimap
 import Model exposing (Model)
@@ -26,7 +26,7 @@ subscriptions model =
         ColorPickerMsg
         (ColorPicker.subscriptions model.colorPicker)
     , minimap model.minimap
-    , keyEvent (KeyboardEvent << decodeKeyEvent)
+    , keyEvent (KeyboardEvent << Decode.decodeValue Keys.eventDecoder)
     , Sub.map ToolMsg (Tool.subscriptions model.tool)
     , menu model.menu
     , Ports.fromJs Msg.decode

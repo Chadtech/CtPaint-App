@@ -10,7 +10,7 @@ import Data.Taskbar exposing (Dropdown(..))
 import Data.Tool as Tool exposing (Tool)
 import Data.User as User exposing (User)
 import Data.Window exposing (Window(..))
-import Dict exposing (Dict)
+import Helpers.Keys
 import Html exposing (Attribute, Html, a, div, p)
 import Html.CssHelpers
 import Html.Custom exposing (outdent)
@@ -401,11 +401,11 @@ view_ model =
                 (KeyCmdClicked SwitchGalleryView)
             , option
                 (minimapLabel model)
-                (getKeyCmdStr model.config.quickKeys ToggleMinimap)
+                (keysLabel model ToggleMinimap)
                 (KeyCmdClicked ToggleMinimap)
             , option
                 "Color Picker"
-                (getKeyCmdStr model.config.quickKeys ToggleColorPicker)
+                (keysLabel model ToggleColorPicker)
                 (KeyCmdClicked ToggleColorPicker)
             ]
                 |> taskbarButtonOpen "view" View
@@ -442,42 +442,42 @@ transformOpen : Model -> Html Msg
 transformOpen model =
     [ option
         "Flip Horiztonal"
-        (getKeyCmdStr model.config.quickKeys FlipHorizontal)
+        (keysLabel model FlipHorizontal)
         (KeyCmdClicked FlipHorizontal)
     , option
         "Flip Vertical"
-        (getKeyCmdStr model.config.quickKeys FlipVertical)
+        (keysLabel model FlipVertical)
         (KeyCmdClicked FlipVertical)
     , divider
     , option
         "Rotate 90"
-        (getKeyCmdStr model.config.quickKeys Rotate90)
+        (keysLabel model Rotate90)
         (KeyCmdClicked Rotate90)
     , option
         "Rotate 180"
-        (getKeyCmdStr model.config.quickKeys Rotate180)
+        (keysLabel model Rotate180)
         (KeyCmdClicked Rotate180)
     , option
         "Rotate 270"
-        (getKeyCmdStr model.config.quickKeys Rotate270)
+        (keysLabel model Rotate270)
         (KeyCmdClicked Rotate270)
     , divider
     , option
         "Scale"
-        (getKeyCmdStr model.config.quickKeys InitScale)
+        (keysLabel model InitScale)
         (KeyCmdClicked InitScale)
     , option
         "Replace Color"
-        (getKeyCmdStr model.config.quickKeys InitReplaceColor)
+        (keysLabel model InitReplaceColor)
         (KeyCmdClicked InitReplaceColor)
     , option
         "Invert"
-        (getKeyCmdStr model.config.quickKeys InvertColors)
+        (keysLabel model InvertColors)
         (KeyCmdClicked InvertColors)
     , divider
     , option
         "Text"
-        (getKeyCmdStr model.config.quickKeys InitText)
+        (keysLabel model InitText)
         (KeyCmdClicked InitText)
     ]
         |> taskbarButtonOpen "transform" Transform
@@ -501,43 +501,43 @@ toolsDropped : Model -> Html Msg
 toolsDropped model =
     [ option
         "Select"
-        (getKeyCmdStr model.config.quickKeys SetToolToSelect)
+        (keysLabel model SetToolToSelect)
         (KeyCmdClicked SetToolToSelect)
     , option
         "Zoom In"
-        (getKeyCmdStr model.config.quickKeys ZoomIn)
+        (keysLabel model ZoomIn)
         (ToolClicked Tool.ZoomIn)
     , option
         "Zoom Out"
-        (getKeyCmdStr model.config.quickKeys ZoomOut)
+        (keysLabel model ZoomOut)
         (ToolClicked Tool.ZoomOut)
     , option
         "Hand"
-        (getKeyCmdStr model.config.quickKeys SetToolToHand)
+        (keysLabel model SetToolToHand)
         (KeyCmdClicked SetToolToHand)
     , option
         "Sample"
-        (getKeyCmdStr model.config.quickKeys SetToolToSample)
+        (keysLabel model SetToolToSample)
         (KeyCmdClicked SetToolToSample)
     , option
         "Fill"
-        (getKeyCmdStr model.config.quickKeys SetToolToFill)
+        (keysLabel model SetToolToFill)
         (KeyCmdClicked SetToolToFill)
     , option
         "Pencil"
-        (getKeyCmdStr model.config.quickKeys SetToolToPencil)
+        (keysLabel model SetToolToPencil)
         (KeyCmdClicked SetToolToPencil)
     , option
         "Line"
-        (getKeyCmdStr model.config.quickKeys SetToolToLine)
+        (keysLabel model SetToolToLine)
         (KeyCmdClicked SetToolToLine)
     , option
         "Rectangle"
-        (getKeyCmdStr model.config.quickKeys SetToolToRectangle)
+        (keysLabel model SetToolToRectangle)
         (KeyCmdClicked SetToolToRectangle)
     , option
         "Rectangle Filled"
-        (getKeyCmdStr model.config.quickKeys SetToolToRectangleFilled)
+        (keysLabel model SetToolToRectangleFilled)
         (KeyCmdClicked SetToolToRectangleFilled)
     ]
         |> taskbarButtonOpen "tools" Tools
@@ -561,29 +561,29 @@ editDropped : Model -> Html Msg
 editDropped model =
     [ option
         "Undo"
-        (getKeyCmdStr model.config.quickKeys Undo)
+        (keysLabel model Undo)
         (KeyCmdClicked Undo)
     , option
         "Redo"
-        (getKeyCmdStr model.config.quickKeys Redo)
+        (keysLabel model Redo)
         (KeyCmdClicked Redo)
     , divider
     , option
         "Cut"
-        (getKeyCmdStr model.config.quickKeys Cut)
+        (keysLabel model Cut)
         (KeyCmdClicked Cut)
     , option
         "Copy"
-        (getKeyCmdStr model.config.quickKeys Copy)
+        (keysLabel model Copy)
         (KeyCmdClicked Copy)
     , option
         "Paste"
-        (getKeyCmdStr model.config.quickKeys Paste)
+        (keysLabel model Paste)
         (KeyCmdClicked Paste)
     , divider
     , option
         "Select all"
-        (getKeyCmdStr model.config.quickKeys SelectAll)
+        (keysLabel model SelectAll)
         (KeyCmdClicked SelectAll)
     , divider
     , option
@@ -612,15 +612,15 @@ fileDropped : Model -> Html Msg
 fileDropped model =
     [ option
         "Save"
-        (getKeyCmdStr model.config.quickKeys Save)
+        (keysLabel model Save)
         (KeyCmdClicked Save)
     , option
         "Download"
-        (getKeyCmdStr model.config.quickKeys InitDownload)
+        (keysLabel model InitDownload)
         (KeyCmdClicked InitDownload)
     , option
         "Import"
-        (getKeyCmdStr model.config.quickKeys InitImport)
+        (keysLabel model InitImport)
         (KeyCmdClicked InitImport)
     , divider
     , option "Imgur" "" (KeyCmdClicked InitImgur)
@@ -632,14 +632,9 @@ fileDropped model =
 -- HELPERS --
 
 
-getKeyCmdStr : Dict String String -> KeyCmd -> String
-getKeyCmdStr cmdLookUp op =
-    case Dict.get (toString op) cmdLookUp of
-        Just keys ->
-            keys
-
-        Nothing ->
-            ""
+keysLabel : Model -> KeyCmd -> String
+keysLabel model =
+    Helpers.Keys.getKeysLabel model.config
 
 
 taskbarButtonClose : String -> Dropdown -> Html Msg

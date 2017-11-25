@@ -6,6 +6,7 @@ module Data.User
         , toggleOptionsDropped
         )
 
+import Data.Keys as Keys
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline
     exposing
@@ -28,6 +29,7 @@ type alias User =
     , name : String
     , profilePic : String
     , optionsDropped : Bool
+    , keyConfig : Keys.Config
     }
 
 
@@ -55,6 +57,7 @@ userDecoder =
         |> required "nickname" Decode.string
         |> hardcoded "no profile pic yet"
         |> hardcoded False
+        |> required "key-config" Keys.configDecoder
 
 
 

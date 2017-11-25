@@ -1,11 +1,14 @@
 module Data.Keys
     exposing
-        ( KeyCmd(..)
+        ( Config
+        , KeyCmd(..)
         , KeyEvent
         , QuickKey
-        , decodeKeyEvent
-        , defaultKeyCmdConfig
-        , defaultQuickKeys
+        , configDecoder
+        , defaultConfig
+        , eventDecoder
+        , initCmdLookUp
+        , initQuickKeysLookUp
         )
 
 import Dict exposing (Dict)
@@ -96,8 +99,12 @@ type alias QuickKey =
     ( Direction, Key, CmdState, ShiftState )
 
 
-defaultConfigBase : List ( QuickKey, KeyCmd )
-defaultConfigBase =
+type alias Config =
+    List ( QuickKey, KeyCmd )
+
+
+defaultConfig : List ( QuickKey, KeyCmd )
+defaultConfig =
     [ ( Down, Number2, CmdIsUp, ShiftIsUp ) := SwatchesQuickTurnLeft
     , ( Down, Number3, CmdIsUp, ShiftIsUp ) := SwatchesQuickTurnDown
     , ( Down, Number4, CmdIsUp, ShiftIsUp ) := SwatchesQuickTurnRight
@@ -140,16 +147,19 @@ defaultConfigBase =
     ]
 
 
-defaultKeyCmdConfig : Dict String KeyCmd
-defaultKeyCmdConfig =
-    defaultConfigBase
-        |> List.map (Tuple.mapFirst quickKeyToString)
-        |> Dict.fromList
+
+-- Cmd Look Up --
 
 
-defaultQuickKeys : Bool -> Dict String String
-defaultQuickKeys isMac =
-    defaultConfigBase
+initCmdLookUp : Config -> Dict String KeyCmd
+initCmdLookUp =
+    List.map (Tuple.mapFirst quickKeyToString)
+        >> Dict.fromList
+
+
+initQuickKeysLookUp : Config -> Bool -> Dict String String
+initQuickKeysLookUp config isMac =
+    config
         |> List.map (quickKeyLookUp isMac)
         |> Dict.fromList
 
@@ -178,7 +188,9 @@ quickKeyLookUp isMac ( ( _, key, cmdKey, shift ), command ) =
                 ""
 
         keyStr =
-            keyCodeToString (Keyboard.Extra.toCode key)
+            key
+                |> Keyboard.Extra.toCode
+                |> keyCodeToString
     in
     ( commandStr, cmdKeyStr ++ shiftStr ++ keyStr )
 
@@ -259,16 +271,11 @@ keyCodeToString key =
 
 
 
--- KEYPAYLOAD DECODER
+-- DECODER --
 
 
-decodeKeyEvent : Value -> Result String KeyEvent
-decodeKeyEvent =
-    Decode.decodeValue keyEventDecoder
-
-
-keyEventDecoder : Decoder KeyEvent
-keyEventDecoder =
+eventDecoder : Decoder KeyEvent
+eventDecoder =
     decode KeyEvent
         |> required "keyCode" Decode.int
         |> required "meta" Decode.bool
@@ -280,12 +287,12 @@ keyEventDecoder =
 directionDecoder : Decoder Direction
 directionDecoder =
     Decode.string
-        |> Decode.andThen handleDirectionString
+        |> Decode.andThen toDirection
 
 
-handleDirectionString : String -> Decoder Direction
-handleDirectionString dir =
-    case dir of
+toDirection : String -> Decoder Direction
+toDirection str =
+    case str of
         "up" ->
             Decode.succeed Up
 
@@ -294,3 +301,8 @@ handleDirectionString dir =
 
         _ ->
             Decode.fail "Direction not up or down"
+
+
+configDecoder : Decoder Config
+configDecoder =
+    Decode.succeed defaultConfig

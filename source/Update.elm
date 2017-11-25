@@ -61,8 +61,8 @@ update message model =
         WindowSizeReceived size ->
             { model | windowSize = size } & Cmd.none
 
-        KeyboardEvent (Ok payload) ->
-            Keys.exec (Helpers.Keys.cmdFromEvent payload model.config) model
+        KeyboardEvent (Ok event) ->
+            Keys.exec (Helpers.Keys.getCmd model.config event) model
 
         KeyboardEvent (Err err) ->
             model & Cmd.none

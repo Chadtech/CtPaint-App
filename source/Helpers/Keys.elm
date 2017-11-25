@@ -1,15 +1,18 @@
-module Helpers.Keys exposing (cmdFromEvent)
+module Helpers.Keys exposing (getCmd, getKeysLabel)
 
 import Data.Config exposing (Config)
 import Data.Keys exposing (KeyCmd(NoCmd), KeyEvent)
 import Dict
 
 
-cmdFromEvent : KeyEvent -> Config -> KeyCmd
-cmdFromEvent event { cmdKey, keyCmds } =
+-- keyCmd from Event --
+
+
+getCmd : Config -> KeyEvent -> KeyCmd
+getCmd { keyCmds, cmdKey } event =
     case Dict.get (eventToString cmdKey event) keyCmds of
-        Just keyCmd ->
-            keyCmd
+        Just cmd ->
+            cmd
 
         Nothing ->
             NoCmd
@@ -31,3 +34,14 @@ eventToString cmdKey payload =
             toString (cmdKey payload)
     in
     shift ++ cmd ++ code ++ direction
+
+
+
+-- Keys from Cmd --
+
+
+getKeysLabel : Config -> KeyCmd -> String
+getKeysLabel { cmdKey, quickKeys } cmd =
+    quickKeys
+        |> Dict.get (toString cmd)
+        |> Maybe.withDefault ""
