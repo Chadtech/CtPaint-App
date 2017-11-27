@@ -9,6 +9,7 @@ type JsMsg
     = StealFocus
     | ReturnFocus
     | SaveLocally Size String
+    | SaveToAws
     | Download String
     | AttemptLogin String String
     | Logout
@@ -45,6 +46,9 @@ send msg =
             ]
                 |> Encode.object
                 |> jsMsg "save"
+
+        SaveToAws ->
+            jsMsg "save to aws" Encode.null
 
         Download fn ->
             jsMsg "download" (Encode.string fn)

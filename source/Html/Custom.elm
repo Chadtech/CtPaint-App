@@ -4,6 +4,7 @@ module Html.Custom
         , card
         , cardBody
         , css
+        , error
         , field
         , header
         , indent
@@ -78,6 +79,10 @@ css =
         , withClass Selected indent
         ]
     , spinnerContainer
+    , Css.class Error
+        [ backgroundColor lowWarning
+        , padding (px 8)
+        ]
     ]
         |> namespace appNamespace
         |> stylesheet
@@ -332,4 +337,14 @@ spinner =
         [ Html.div
             [ Html.Attributes.class "spinner" ]
             []
+        ]
+
+
+error : String -> Html msg
+error errMsg =
+    Html.div
+        [ class [ Error ] ]
+        [ Html.p
+            []
+            [ Html.text errMsg ]
         ]
