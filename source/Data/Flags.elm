@@ -13,7 +13,14 @@ type alias Flags =
     , isMac : Bool
     , isChrome : Bool
     , user : User.Model
+    , init : Init
     }
+
+
+type Init
+    = New
+    | Existing String
+    | None
 
 
 
@@ -28,6 +35,32 @@ decoder =
         |> optional "isMac" Decode.bool True
         |> optional "isChrome" Decode.bool True
         |> required "user" User.decoder
+        |> required "init" initDecoder
+
+
+initDecoder : Decoder Init
+initDecoder =
+    Decode.string
+        |> Decode.field "type"
+        |> Decode.andThen toInit
+
+
+toInit : String -> Decoder Init
+toInit type_ =
+    case type_ of
+        "new" ->
+            Decode.succeed New
+
+        "image" ->
+            Decode.string
+                |> Decode.field "id"
+                |> Decode.map Existing
+
+        "none" ->
+            Decode.succeed None
+
+        _ ->
+            Decode.fail ("Unknown init type : " ++ type_)
 
 
 seedDecoder : Decoder Seed

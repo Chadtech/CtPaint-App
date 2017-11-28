@@ -210,7 +210,7 @@ cardAttrs ({ position } as model) =
 
 extraClass : Model -> Maybe Class
 extraClass model =
-    case Debug.log "content" model.content of
+    case model.content of
         Import _ ->
             Just ImportCard
 

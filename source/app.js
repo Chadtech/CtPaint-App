@@ -1,13 +1,21 @@
-PaintApp = function(Client) {
+PaintApp = function(initType, Client) {
+
+    /*
+        initTypes 
+        { type : "new" }
+        { type : "image", id: "id"}
+        { type : "none" }
+    */
 
     function flags(extraFlags){
         return {
-          windowHeight: window.innerHeight,
-          windowWidth: window.innerWidth,
-          seed: Math.round(Math.random() * 999999999999),
-          isMac: (window.navigator.userAgent.indexOf("Mac")) !== -1,
-          isChrome: (window.navigator.userAgent.indexOf("Chrome")) !== -1,
-          user: extraFlags.user
+            windowHeight: window.innerHeight,
+            windowWidth: window.innerWidth,
+            seed: Math.round(Math.random() * 999999999999),
+            isMac: window.navigator.userAgent.indexOf("Mac") !== -1,
+            isChrome: window.navigator.userAgent.indexOf("Chrome") !== -1,
+            user: extraFlags.user,
+            init: extraFlags.init
         };
     }
 
@@ -148,17 +156,18 @@ PaintApp = function(Client) {
     Client.getSession({
         onSuccess: function(attributes) {
             init({
-                user: toUser(attributes)
+                user: toUser(attributes),
+                init: initType
             });
         },
         onFailure: function(err) {
             switch (err) {
                 case "no session" :
-                    init({ user: null });
+                    init({ user: null, init: initType });
                     break;
 
                 case "NetworkingError: Network Failure":
-                    init({ user: "offline" });
+                    init({ user: "offline", init: initType });
                     break;
 
                 default : 

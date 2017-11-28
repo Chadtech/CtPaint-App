@@ -26,7 +26,7 @@ jsMsg type_ payload =
 
 send : JsMsg -> Cmd msg
 send msg =
-    case Debug.log "js msg" msg of
+    case msg of
         StealFocus ->
             jsMsg "steal focus" Encode.null
 
