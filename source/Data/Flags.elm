@@ -19,7 +19,8 @@ type alias Flags =
 
 type Init
     = New
-    | Existing String
+    | Drawing String
+    | Image String
     | None
 
 
@@ -48,13 +49,18 @@ initDecoder =
 toInit : String -> Decoder Init
 toInit type_ =
     case type_ of
-        "new" ->
+        "init new drawing" ->
             Decode.succeed New
 
-        "image" ->
+        "init image" ->
             Decode.string
-                |> Decode.field "id"
-                |> Decode.map Existing
+                |> Decode.field "payload"
+                |> Decode.map Image
+
+        "init drawing" ->
+            Decode.string
+                |> Decode.field "payload"
+                |> Decode.map Drawing
 
         "none" ->
             Decode.succeed None

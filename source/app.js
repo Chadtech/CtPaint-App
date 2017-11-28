@@ -1,10 +1,11 @@
-PaintApp = function(initType, Client) {
+PaintApp = function(initMsg, Client) {
 
     /*
-        initTypes 
-        { type : "new" }
-        { type : "image", id: "id"}
-        { type : "none" }
+        initMsgs 
+        { type : "init paint app" }
+        { type : "init new drawing" }
+        { type : "init drawing", payload: "id" }
+        { type : "init image", payload: "url" }
     */
 
     function flags(extraFlags){
@@ -157,17 +158,17 @@ PaintApp = function(initType, Client) {
         onSuccess: function(attributes) {
             init({
                 user: toUser(attributes),
-                init: initType
+                init: initMsg
             });
         },
         onFailure: function(err) {
             switch (err) {
                 case "no session" :
-                    init({ user: null, init: initType });
+                    init({ user: null, init: initMsg });
                     break;
 
                 case "NetworkingError: Network Failure":
-                    init({ user: "offline", init: initType });
+                    init({ user: "offline", init: initMsg });
                     break;
 
                 default : 
