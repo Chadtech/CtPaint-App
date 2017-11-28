@@ -8,6 +8,7 @@ module Html.Custom
         , field
         , header
         , indent
+        , makeNamespace
         , menuButton
         , outdent
         , spinner
@@ -261,6 +262,11 @@ basicFont =
     , property "-webkit-font-smoothing" "none"
     , fontSize (px 32)
     ]
+
+
+makeNamespace : String -> String
+makeNamespace namespace =
+    appNamespace ++ namespace
 
 
 

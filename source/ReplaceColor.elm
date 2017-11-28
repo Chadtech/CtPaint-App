@@ -100,7 +100,7 @@ css =
 
 replaceNamespace : String
 replaceNamespace =
-    "Replace"
+    Html.Custom.makeNamespace "Replace"
 
 
 

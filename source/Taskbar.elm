@@ -264,7 +264,7 @@ giveDropdownWidth dropdownClass dropdownWidth =
 
 taskbarNamespace : String
 taskbarNamespace =
-    "Taskbar"
+    Html.Custom.makeNamespace "Taskbar"
 
 
 

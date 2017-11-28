@@ -189,7 +189,7 @@ css =
 
 paletteNamespace : String
 paletteNamespace =
-    "Palette"
+    Html.Custom.makeNamespace "Palette"
 
 
 

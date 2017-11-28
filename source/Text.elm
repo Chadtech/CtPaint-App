@@ -59,7 +59,7 @@ css =
 
 textNamespace : String
 textNamespace =
-    "Text"
+    Html.Custom.makeNamespace "Text"
 
 
 

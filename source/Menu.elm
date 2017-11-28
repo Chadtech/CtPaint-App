@@ -170,7 +170,7 @@ css =
 
 menuNamespace : String
 menuNamespace =
-    "Menu"
+    Html.Custom.makeNamespace "Menu"
 
 
 

@@ -232,7 +232,7 @@ css =
 
 minimapNamespace : String
 minimapNamespace =
-    "Minimap"
+    Html.Custom.makeNamespace "Minimap"
 
 
 

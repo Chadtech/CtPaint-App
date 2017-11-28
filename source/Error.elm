@@ -11,6 +11,7 @@ import Css.Elements
 import Css.Namespace exposing (namespace)
 import Html exposing (Attribute, Html, div, p)
 import Html.CssHelpers
+import Html.Custom
 
 
 -- STYLES --
@@ -50,7 +51,7 @@ css =
 
 errorNamespace : String
 errorNamespace =
-    "Error"
+    Html.Custom.makeNamespace "Error"
 
 
 

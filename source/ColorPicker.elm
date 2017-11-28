@@ -654,7 +654,7 @@ css =
 
 colorPickerNamespace : String
 colorPickerNamespace =
-    "ColorPicker"
+    Html.Custom.makeNamespace "ColorPicker"
 
 
 

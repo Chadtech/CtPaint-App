@@ -110,7 +110,7 @@ css =
 
 scaleNamespace : String
 scaleNamespace =
-    "Scale"
+    Html.Custom.makeNamespace "Scale"
 
 
 

@@ -12,6 +12,7 @@ import Data.Tool
 import Html exposing (Html, div)
 import Html.Attributes as Attributes exposing (style)
 import Html.CssHelpers
+import Html.Custom
 import Html.Events exposing (onMouseLeave)
 import Menu
 import Minimap
@@ -95,7 +96,7 @@ css =
 
 mainViewNamespace : String
 mainViewNamespace =
-    "MainView"
+    Html.Custom.makeNamespace "MainView"
 
 
 

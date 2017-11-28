@@ -5,6 +5,7 @@ import Css.Namespace exposing (namespace)
 import Data.Project exposing (Project)
 import Html exposing (Html, p)
 import Html.CssHelpers
+import Html.Custom
 import Reply exposing (Reply(SetProject))
 
 
@@ -32,7 +33,7 @@ css =
 
 loadingNamespace : String
 loadingNamespace =
-    "Loading"
+    Html.Custom.makeNamespace "Loading"
 
 
 

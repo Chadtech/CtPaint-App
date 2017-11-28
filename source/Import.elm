@@ -66,7 +66,7 @@ css =
 
 importNamespace : String
 importNamespace =
-    "Import"
+    Html.Custom.makeNamespace "Import"
 
 
 

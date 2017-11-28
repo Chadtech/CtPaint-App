@@ -87,7 +87,7 @@ css =
 
 toolbarNamespace : String
 toolbarNamespace =
-    "Toolbar"
+    Html.Custom.makeNamespace "Toolbar"
 
 
 
