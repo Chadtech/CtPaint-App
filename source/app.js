@@ -1,22 +1,42 @@
+/*
+    initMsgs 
+    { type : "init paint app" }
+    OR
+    { type : "init new drawing" }
+    OR
+    { type : "init drawing", payload: "id" }
+    OR
+    { type : "init image", payload: "url" }
+*/
+/*
+    existing state
+    null
+    OR
+    { data: String
+    , width: Int
+    , height: Int
+    , project: 
+        null
+        OR
+        { payload: Project }
+    }
+*/
+
 PaintApp = function(initMsg, Client) {
 
-    /*
-        initMsgs 
-        { type : "init paint app" }
-        { type : "init new drawing" }
-        { type : "init drawing", payload: "id" }
-        { type : "init image", payload: "url" }
-    */
-
-    function flags(extraFlags){
+    function flags(mixins){
+        var localState = localStorage.getItem("local state");
+        console.log('local state js side', localState);
+        console.log('user', mixins.user);
         return {
             windowHeight: window.innerHeight,
             windowWidth: window.innerWidth,
             seed: Math.round(Math.random() * 999999999999),
             isMac: window.navigator.userAgent.indexOf("Mac") !== -1,
             isChrome: window.navigator.userAgent.indexOf("Chrome") !== -1,
-            user: extraFlags.user,
-            init: extraFlags.init
+            user: mixins.user,
+            init: initMsg,
+            localState: JSON.parse(localState),
         };
     }
 
@@ -82,8 +102,8 @@ PaintApp = function(initMsg, Client) {
 
     function jsMsgHandler(msg) {
         switch (msg.type) {
-            case "save":
-                localStorage.setItem("canvas", JSON.stringify(msg.payload));
+            case "save locally":
+                localStorage.setItem("local state", JSON.stringify(msg.payload));
                 break;
 
             case "steal focus":
@@ -149,26 +169,23 @@ PaintApp = function(initMsg, Client) {
         }
     }
 
-    function init(extraFlags) {
-        app = Elm.PaintApp.fullscreen(flags(extraFlags));
+    function init(mixins) {
+        app = Elm.PaintApp.fullscreen(flags(mixins));
         app.ports.toJs.subscribe(jsMsgHandler);
-    }
+    };
 
     Client.getSession({
         onSuccess: function(attributes) {
-            init({
-                user: toUser(attributes),
-                init: initMsg
-            });
+            init({ user: toUser(attributes) });
         },
         onFailure: function(err) {
             switch (err) {
                 case "no session" :
-                    init({ user: null, init: initMsg });
+                    init({ user: null });
                     break;
 
                 case "NetworkingError: Network Failure":
-                    init({ user: "offline", init: initMsg });
+                    init({ user: "offline" });
                     break;
 
                 default : 

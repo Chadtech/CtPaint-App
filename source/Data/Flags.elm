@@ -1,8 +1,16 @@
 module Data.Flags exposing (Flags, decoder)
 
+import Data.Project as Project exposing (Project)
 import Data.User as User
 import Json.Decode as Decode exposing (Decoder)
-import Json.Decode.Pipeline exposing (custom, decode, optional, required)
+import Json.Decode.Pipeline
+    exposing
+        ( custom
+        , decode
+        , hardcoded
+        , optional
+        , required
+        )
 import Random exposing (Seed)
 import Window exposing (Size)
 
@@ -14,14 +22,20 @@ type alias Flags =
     , isChrome : Bool
     , user : User.Model
     , init : Init
+    , localState : LocalState
     }
 
 
+type LocalState
+    = NoLocalState
+    | ExistingState (Maybe Project) String
+
+
 type Init
-    = New
+    = NoInit
+    | New
     | Drawing String
     | Image String
-    | None
 
 
 
@@ -37,12 +51,27 @@ decoder =
         |> optional "isChrome" Decode.bool True
         |> required "user" User.decoder
         |> required "init" initDecoder
+        |> required "localState" localStateDecoder
+
+
+localStateDecoder : Decoder LocalState
+localStateDecoder =
+    [ Decode.null NoLocalState
+    , existingLocalStateDecoder
+    ]
+        |> Decode.oneOf
+
+
+existingLocalStateDecoder : Decoder LocalState
+existingLocalStateDecoder =
+    decode ExistingState
+        |> optional "project" (Decode.map Just Project.decoder) Nothing
+        |> required "data" Decode.string
 
 
 initDecoder : Decoder Init
 initDecoder =
-    Decode.string
-        |> Decode.field "type"
+    Decode.field "type" Decode.string
         |> Decode.andThen toInit
 
 
@@ -62,8 +91,8 @@ toInit type_ =
                 |> Decode.field "payload"
                 |> Decode.map Drawing
 
-        "none" ->
-            Decode.succeed None
+        "init paint app" ->
+            Decode.succeed NoInit
 
         _ ->
             Decode.fail ("Unknown init type : " ++ type_)

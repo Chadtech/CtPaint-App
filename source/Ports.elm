@@ -1,18 +1,31 @@
 port module Ports exposing (..)
 
-import Canvas exposing (Size)
+import Canvas exposing (Canvas, Size)
+import Data.Project as Project exposing (Project)
 import Json.Encode as Encode exposing (Value)
+import Json.Encode.Extra as Encode
 import Tuple.Infix exposing ((:=))
 
 
 type JsMsg
     = StealFocus
     | ReturnFocus
-    | SaveLocally Size String
+    | SaveLocally LocalSavePayload
     | SaveToAws
     | Download String
     | AttemptLogin String String
     | Logout
+
+
+type alias LocalSavePayload =
+    { canvas : Canvas
+    , project : Maybe Project
+    }
+
+
+encodeCanvas : Canvas -> Value
+encodeCanvas =
+    Canvas.toDataUrl "image/png" 1 >> Encode.string
 
 
 jsMsg : String -> Value -> Cmd msg
@@ -33,19 +46,18 @@ send msg =
         ReturnFocus ->
             jsMsg "return focus" Encode.null
 
-        SaveLocally { width, height } data ->
+        SaveLocally { canvas, project } ->
             let
-                sizeJson =
-                    [ "width" := Encode.int width
-                    , "height" := Encode.int height
-                    ]
-                        |> Encode.object
+                { width, height } =
+                    Canvas.getSize canvas
             in
-            [ "size" := sizeJson
-            , "data" := Encode.string data
+            [ "width" := Encode.int width
+            , "height" := Encode.int height
+            , "data" := encodeCanvas canvas
+            , "project" := Encode.maybe Project.encode project
             ]
                 |> Encode.object
-                |> jsMsg "save"
+                |> jsMsg "save locally"
 
         SaveToAws ->
             jsMsg "save to aws" Encode.null

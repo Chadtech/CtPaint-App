@@ -294,9 +294,10 @@ exec keyCmd model =
         Save ->
             let
                 jsMsg =
-                    SaveLocally
-                        (Canvas.getSize model.canvas)
-                        (Util.getImageDataString model.canvas)
+                    { canvas = model.canvas
+                    , project = model.project
+                    }
+                        |> SaveLocally
             in
             model & Ports.send jsMsg
 

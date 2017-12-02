@@ -40,6 +40,7 @@ type alias Model =
     , selection : Maybe ( Position, Canvas )
     , clipboard : Maybe ( Position, Canvas )
     , taskbarDropped : Maybe Dropdown
+    , taskbarTitle : Maybe String
     , minimap : Minimap.State
     , menu : Maybe Menu.Model
     , seed : Seed

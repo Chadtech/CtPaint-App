@@ -65,6 +65,9 @@ fromFlags flags =
         canvasSize : Size
         canvasSize =
             Canvas.getSize canvas
+
+        _ =
+            Debug.log "local state" flags.localState
     in
     { user = flags.user
     , canvas = canvas
@@ -101,6 +104,7 @@ fromFlags flags =
     , mousePosition = Nothing
     , selection = Nothing
     , clipboard = Nothing
+    , taskbarTitle = Nothing
     , taskbarDropped = Nothing
     , minimap = Data.Minimap.NotInitialized
     , menu = Nothing
@@ -149,6 +153,7 @@ fromError err =
     , mousePosition = Nothing
     , selection = Nothing
     , clipboard = Nothing
+    , taskbarTitle = Nothing
     , taskbarDropped = Nothing
     , minimap = Data.Minimap.NotInitialized
     , menu =

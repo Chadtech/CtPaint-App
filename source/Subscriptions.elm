@@ -22,9 +22,9 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     [ Window.resizes WindowSizeReceived
     , AnimationFrame.diffs Tick
-    , Sub.map
-        ColorPickerMsg
-        (ColorPicker.subscriptions model.colorPicker)
+    , model.colorPicker
+        |> ColorPicker.subscriptions
+        |> Sub.map ColorPickerMsg
     , minimap model.minimap
     , keyEvent (KeyboardEvent << Decode.decodeValue Keys.eventDecoder)
     , Sub.map ToolMsg (Tool.subscriptions model.tool)

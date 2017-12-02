@@ -211,17 +211,3 @@ toPosition { x, y } =
 toPoint : Position -> Point
 toPoint { x, y } =
     Point (toFloat x) (toFloat y)
-
-
-
--- CANVAS --
-
-
-getImageDataString : Canvas -> String
-getImageDataString canvas =
-    canvas
-        |> Canvas.getImageData
-            { x = 0, y = 0 }
-            (Canvas.getSize canvas)
-        |> List.map toHex
-        |> String.concat
