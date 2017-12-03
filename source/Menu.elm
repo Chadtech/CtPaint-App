@@ -1,6 +1,7 @@
 module Menu exposing (..)
 
 import About
+import AllowanceExceeded
 import Color exposing (Color)
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
@@ -137,6 +138,9 @@ updateContent msg model =
                 & Cmd.map (ContentMsg << LoginMsg) cmd
                 & reply
 
+        ( AllowanceExceededMsg subMsg, AllowanceExceeded ) ->
+            model & Cmd.none & AllowanceExceeded.update subMsg
+
         _ ->
             model & Cmd.none & NoReply
 
@@ -265,6 +269,10 @@ contentView menu =
 
         Loading subModel ->
             Loading.view subModel
+
+        AllowanceExceeded ->
+            List.map (Html.map AllowanceExceededMsg) <|
+                AllowanceExceeded.view
 
 
 

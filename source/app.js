@@ -150,6 +150,10 @@ PaintApp = function(initMsg, Client) {
                 });
                 break;
 
+            case "open new window":
+                window.open(msg.payload);
+                break;
+
             default:
                 console.log("Unrecognized JsMsg type ->", msg.type);
                 break;

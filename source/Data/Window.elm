@@ -1,4 +1,4 @@
-module Data.Window exposing (Window(..))
+module Data.Window exposing (Window(..), toUrl)
 
 
 type Window
@@ -6,6 +6,7 @@ type Window
     | Home
     | Donate
     | Tutorial
+    | Register
 
 
 toUrl : Window -> String

@@ -2,6 +2,7 @@ port module Ports exposing (..)
 
 import Canvas exposing (Canvas, Size)
 import Data.Project as Project exposing (Project)
+import Data.Window as Window exposing (Window)
 import Json.Encode as Encode exposing (Value)
 import Json.Encode.Extra as Encode
 import Tuple.Infix exposing ((:=))
@@ -15,6 +16,7 @@ type JsMsg
     | Download String
     | AttemptLogin String String
     | Logout
+    | OpenNewWindow Window
 
 
 type alias LocalSavePayload =
@@ -68,6 +70,12 @@ send msg =
 
         Logout ->
             jsMsg "logout" Encode.null
+
+        OpenNewWindow window ->
+            window
+                |> Window.toUrl
+                |> Encode.string
+                |> jsMsg "open new window"
 
 
 port toJs : Value -> Cmd msg
