@@ -70,7 +70,7 @@ css =
         ]
     , Css.class SelectionCanvas
         [ position absolute
-        , backgroundImage (url "https://cdn.rawgit.com/Chadtech/CtPaint-Shell/master/public/selection.gif")
+        , backgroundImage (url "./selection.gif")
         , padding (px 1)
         ]
     , Css.class CanvasArea

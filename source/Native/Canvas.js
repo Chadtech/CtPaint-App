@@ -102,12 +102,16 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     return model;
   }
 
-  function scale(dw, hw, model) {
+  function scale(w, h, model) {
     model = cloneModel(model);
 
     var ctx = model.canvas().getContext("2d");
-
-    var imageData = ctx.getImageData(0,0,model.width, model.height);
+    var imageData = ctx.getImageData(
+      0,
+      0,
+      model.width, 
+      model.height
+    );
 
     var i = 0;
     var data = [];
@@ -116,20 +120,21 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
       i++;
     }
 
-    var rows = groupBy(groupBy(data, 4), model.width);
+    var rows = groupBy(groupBy(data, 4), originalWidth);
 
     i = 0;
     while (i < rows.length) {
-      rows[i] = scaleBy(dw, rows[i]);
+      rows[i] = scaleBy(w / originalWidth, rows[i]);
       i++;
     }
 
-    data = flatten(flatten(scaleBy(hw, rows)));
-    console.log(data);
-    var newImageData = ctx.createImageData(
-        rows[0].length,
-        rows.length
-    );
+    var scaledData = scaleBy(h / originalHeight, rows);
+    data = flatten(flatten(scaledData));
+
+    var newModel = initialize({ width: w, height: h});
+    ctx = newModel.canvas().getContext("2d");
+
+    var newImageData = ctx.createImageData(w, h);
 
     i = 0;
     while (i < data.length) {
@@ -137,9 +142,9 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
       i++;
     }
 
-    ctx.putImageData(newImageData,0,0);
+    ctx.putImageData(newImageData, 0, 0);
 
-    return model;
+    return newModel;
   }
 
   function scaleBy(factor, items) {
@@ -148,8 +153,8 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     var i = 0;
     while (i < items.length) {
       var j = 0;
-      var repeats = Math.floor((j + 1) * factor) - Math.floor(j * factor);
-      while (j <= repeats) {
+      var repeats = Math.floor((i + 1) * factor) - Math.floor(i * factor);
+      while (j < repeats) {
         newItems.push(items[i]);
         j++;
       }
@@ -169,15 +174,30 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     return output;
   }
 
-  function flatten(input) {
-    var output = [];
+  function flatten(array, mutable) {
+      var toString = Object.prototype.toString;
+      var arrayTypeStr = '[object Array]';
+      
+      var result = [];
+      var nodes = (mutable && array) || array.slice();
+      var node;
 
-    var index = 0;
-    while (index < input.length) {
-      output = output.concat(input[index]);
-      index++;
-    }
-    return output;
+      if (!array.length) {
+          return result;
+      }
+
+      node = nodes.pop();
+      
+      do {
+          if (toString.call(node) === arrayTypeStr) {
+              nodes.push.apply(nodes, node);
+          } else {
+              result.push(node);
+          }
+      } while (nodes.length && (node = nodes.pop()) !== undefined);
+
+      result.reverse(); // we reverse result to restore the original order
+      return result;
   }
 
   function handleDrawOp (ctx, drawOp) {

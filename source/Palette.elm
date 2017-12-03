@@ -12,6 +12,7 @@ import Chadtech.Colors
 import Color exposing (Color)
 import ColorPicker
 import Css exposing (..)
+import Css.Elements
 import Css.Namespace exposing (namespace)
 import Data.Palette exposing (Swatches)
 import Data.Tool exposing (Tool(..))
@@ -174,6 +175,12 @@ css =
         , left (calc (pct 100) minus (px 297))
         , top (px 4)
         , overflowY auto
+        , children
+            [ Css.Elements.p
+                [ float left
+                , marginRight (px 8)
+                ]
+            ]
         ]
     , Css.class Edge
         [ height (px 3)

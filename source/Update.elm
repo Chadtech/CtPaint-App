@@ -21,7 +21,7 @@ import Taskbar
 import Tool.Update as Tool
 import Toolbar
 import Tuple.Infix exposing ((&))
-import Util exposing (origin)
+import Util exposing ((|&), origin)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -189,26 +189,25 @@ incorporateMenu reply menu model =
             }
                 & Ports.send ReturnFocus
 
-        ScaleTo dw dh ->
+        ScaleTo w h ->
             case model.selection of
                 Nothing ->
                     { model
                         | menu = Nothing
                         , canvas =
-                            Canvas.scale dw dh model.canvas
+                            Canvas.scale w h model.canvas
                     }
                         |> History.canvas
                         & Ports.send ReturnFocus
 
                 Just ( pos, selection ) ->
-                    let
-                        newSelection =
-                            Canvas.scale dw dh selection
-                    in
                     { model
                         | menu = Nothing
                         , selection =
-                            Just ( pos, newSelection )
+                            selection
+                                |> Canvas.scale w h
+                                |& pos
+                                |> Just
                     }
                         & Ports.send ReturnFocus
 
@@ -250,6 +249,7 @@ incorporateMenu reply menu model =
                                 replacement
                                 model.canvas
                     }
+                        |> History.canvas
                         & Cmd.none
 
         SetUser user ->
