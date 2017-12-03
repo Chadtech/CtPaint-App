@@ -11,18 +11,20 @@ import Data.Menu as Menu
 import Data.Minimap
 import Data.Palette exposing (initPalette, initSwatches)
 import Data.User as User
+import Data.Window as Window
 import Dict
 import Html
 import Json.Decode as Decode exposing (Decoder, Value, value)
 import Menu
 import Model exposing (Model)
 import Msg exposing (Msg(..))
+import Ports exposing (JsMsg(RedirectPageTo))
 import Random
 import Subscriptions exposing (subscriptions)
 import Tool
 import Tuple.Infix exposing ((&))
 import Update exposing (update)
-import Util exposing (tbw)
+import Util exposing ((|&), tbw)
 import View exposing (view)
 
 
@@ -144,10 +146,11 @@ checkUser : Flags -> Maybe InitBehavior
 checkUser flags =
     case flags.user of
         User.AllowanceExceeded ->
-            flags.windowSize
-                |> Menu.initAllowanceExceeded
-                |> Just
-                & Cmd.none
+            Window.AllowanceExceeded
+                |> Window.toUrl flags.mountPath
+                |> RedirectPageTo
+                |> Ports.send
+                |& Nothing
                 |> Just
 
         _ ->

@@ -6,7 +6,6 @@ import ColorPicker
 import Data.Menu
 import Data.Minimap exposing (State(..))
 import Data.User as User
-import Data.Window as Window
 import Draw
 import Helpers.History as History
 import Helpers.Keys
@@ -280,16 +279,6 @@ incorporateMenu reply menu model =
                 , menu = Nothing
             }
                 & Cmd.none
-
-        GoToRegisterPage ->
-            let
-                cmd =
-                    Window.Register
-                        |> Window.toUrl model.config
-                        |> OpenNewWindow
-                        |> Ports.send
-            in
-            model & cmd
 
 
 incorporateColorPicker : Model -> ( ColorPicker.Model, ColorPicker.Reply ) -> ( Model, Cmd Msg )

@@ -1,7 +1,5 @@
 module Data.Window exposing (Window(..), toUrl)
 
-import Data.Config exposing (Config)
-
 
 type Window
     = Settings
@@ -9,10 +7,11 @@ type Window
     | Donate
     | Tutorial
     | Register
+    | AllowanceExceeded
 
 
-toUrl : Config -> Window -> String
-toUrl { mountPath } window =
+toUrl : String -> Window -> String
+toUrl mountPath window =
     case window of
         Settings ->
             mountPath ++ "/settings"
@@ -22,6 +21,9 @@ toUrl { mountPath } window =
 
         Register ->
             mountPath ++ "/register"
+
+        AllowanceExceeded ->
+            mountPath ++ "/allowance-exceeded"
 
         _ ->
             "asd"

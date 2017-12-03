@@ -16,6 +16,7 @@ type JsMsg
     | AttemptLogin String String
     | Logout
     | OpenNewWindow String
+    | RedirectPageTo String
 
 
 type alias LocalSavePayload =
@@ -74,6 +75,11 @@ send msg =
             url
                 |> Encode.string
                 |> jsMsg "open new window"
+
+        RedirectPageTo url ->
+            url
+                |> Encode.string
+                |> jsMsg "redirect page to"
 
 
 port toJs : Value -> Cmd msg

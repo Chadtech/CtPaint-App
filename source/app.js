@@ -161,6 +161,12 @@ PaintApp = function(manifest) {
                 window.open(msg.payload);
                 break;
 
+            case "redirect page to":
+                window.onbeforeunload = null;
+                console.log(msg.payload);
+                window.location = msg.payload;
+                break;
+
             default:
                 console.log("Unrecognized JsMsg type ->", msg.type);
                 break;

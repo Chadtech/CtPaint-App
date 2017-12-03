@@ -8,7 +8,6 @@ module Data.Menu
         , loginSucceeded
         )
 
-import AllowanceExceeded
 import Data.User exposing (User)
 import Download
 import Imgur
@@ -37,7 +36,6 @@ type Menu
     | Login Login.Model
     | Error String
     | Loading String
-    | AllowanceExceeded
 
 
 type alias Model =
@@ -66,7 +64,6 @@ type ContentMsg
     | NewMsg New.Msg
     | OpenMsg Open.Msg
     | LoginMsg Login.Msg
-    | AllowanceExceededMsg AllowanceExceeded.Msg
 
 
 loginFailed : String -> Msg

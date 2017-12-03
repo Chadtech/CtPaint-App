@@ -17,4 +17,3 @@ type Reply
     | AttemptingLogin
     | SetToNoSession
     | SetProject String Project
-    | GoToRegisterPage
