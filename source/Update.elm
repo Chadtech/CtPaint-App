@@ -282,7 +282,14 @@ incorporateMenu reply menu model =
                 & Cmd.none
 
         GoToRegisterPage ->
-            model & Ports.send (OpenNewWindow Window.Register)
+            let
+                cmd =
+                    Window.Register
+                        |> Window.toUrl model.config
+                        |> OpenNewWindow
+                        |> Ports.send
+            in
+            model & cmd
 
 
 incorporateColorPicker : Model -> ( ColorPicker.Model, ColorPicker.Reply ) -> ( Model, Cmd Msg )

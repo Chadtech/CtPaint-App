@@ -10,6 +10,7 @@ type alias Config =
     { quickKeys : Dict String String
     , keyCmds : Dict String Key.Cmd
     , cmdKey : Key.Event -> Bool
+    , mountPath : String
     }
 
 
@@ -26,6 +27,7 @@ init flags =
             .meta
         else
             .ctrl
+    , mountPath = flags.mountPath
     }
 
 

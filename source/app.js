@@ -31,12 +31,19 @@
     OR
     "allowance exceeded"
 */
+/*
+    manifest
+    initMsg: initMsg
+    Client: Client
+    mountPath: String
+*/
 
 var Allowance = require("./Js/Allowance");
 var User = require("./Js/User");
 var Flags = require("./Js/Flags");
 
-PaintApp = function(initMsg, Client) {
+PaintApp = function(manifest) {
+    var Client = manifest.Client;
 
     var app;
 
@@ -169,7 +176,7 @@ PaintApp = function(initMsg, Client) {
         onSuccess: function(attributes) {
             init({ 
                 user: User.fromAttributes(attributes),
-                init: initMsg
+                manifest: manifest
             });
         },
         onFailure: function(err) {
@@ -180,21 +187,21 @@ PaintApp = function(initMsg, Client) {
                 case "no session" :
                     init({ 
                         user: null,
-                        init: initMsg
+                        manifest: manifest
                     });
                     break;
 
                 case "NetworkingError: Network Failure":
                     init({ 
                         user: "offline",
-                        init: initMsg
+                        manifest: manifest
                     });
                     break;
 
                 case "allowance exceeded":
                     init({ 
                         user: "allowance exceeded",
-                        init: initMsg
+                        manifest: manifest
                     });
                     break;
 

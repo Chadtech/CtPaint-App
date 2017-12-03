@@ -171,6 +171,7 @@ fromError err =
         { keyCmds = Dict.empty
         , quickKeys = Dict.empty
         , cmdKey = always False
+        , mountPath = ""
         }
     }
         & Cmd.none

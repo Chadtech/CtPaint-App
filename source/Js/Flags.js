@@ -8,8 +8,9 @@ module.exports = {
             isMac: window.navigator.userAgent.indexOf("Mac") !== -1,
             isChrome: window.navigator.userAgent.indexOf("Chrome") !== -1,
             user: mixins.user,
-            init: mixins.init,
+            init: mixins.manifest.initMsg,
             localWork: JSON.parse(localWork),
+            mountPath: mixins.manifest.mountPath,
         }; 
     }
 }

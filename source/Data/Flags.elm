@@ -23,6 +23,7 @@ type alias Flags =
     , user : User.Model
     , init : Init
     , localWork : LocalWork
+    , mountPath : String
     }
 
 
@@ -52,6 +53,7 @@ decoder =
         |> required "user" User.modelDecoder
         |> required "init" initDecoder
         |> required "localWork" localWorkDecoder
+        |> required "mountPath" Decode.string
 
 
 localWorkDecoder : Decoder LocalWork

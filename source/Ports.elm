@@ -16,7 +16,7 @@ type JsMsg
     | Download String
     | AttemptLogin String String
     | Logout
-    | OpenNewWindow Window
+    | OpenNewWindow String
 
 
 type alias LocalSavePayload =
@@ -71,9 +71,8 @@ send msg =
         Logout ->
             jsMsg "logout" Encode.null
 
-        OpenNewWindow window ->
-            window
-                |> Window.toUrl
+        OpenNewWindow url ->
+            url
                 |> Encode.string
                 |> jsMsg "open new window"
 

@@ -15,7 +15,11 @@
   </body>
   <script type="text/javascript" src="./paint-app.js"></script>
   <script type="text/javascript">
-    PaintApp({ type: "init paint app" }, Client);
+    PaintApp({ 
+      initMsg: { type: "init paint app" }, 
+      Client: Client,
+      mountPath: "localhost:2970"
+    });
   </script>
 
 </html>
