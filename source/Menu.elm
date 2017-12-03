@@ -390,6 +390,14 @@ initImgur =
         |> init "imgur" (Imgur Imgur.init)
 
 
+initAllowanceExceeded : Size -> Model
+initAllowanceExceeded =
+    { width = 10
+    , height = 10
+    }
+        |> init "problem" AllowanceExceeded
+
+
 
 -- SUBSCRIPTIONS --
 

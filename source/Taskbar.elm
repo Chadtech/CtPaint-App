@@ -352,7 +352,7 @@ userOptions user =
 
 userDropdown : User -> Html Msg
 userDropdown user =
-    [ option "preferences" "" (NewWindowClicked Preferences)
+    [ option "preferences" "" (NewWindowClicked Settings)
     , option "home" "" (NewWindowClicked Home)
     , divider
     , option "log out" "" LogoutClicked
@@ -597,9 +597,9 @@ editDropped model =
         (KeyCmdClicked SelectAll)
     , divider
     , option
-        "Preferences"
+        "Settings"
         ""
-        (NewWindowClicked Preferences)
+        (NewWindowClicked Settings)
     ]
         |> taskbarButtonOpen "edit" Edit
 

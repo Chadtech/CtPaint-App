@@ -10,7 +10,7 @@ import Data.History
 import Data.Menu as Menu
 import Data.Minimap
 import Data.Palette exposing (initPalette, initSwatches)
-import Data.User
+import Data.User as User
 import Dict
 import Html
 import Json.Decode as Decode exposing (Decoder, Value, value)
@@ -115,14 +115,48 @@ fromFlags flags =
         & cmd
 
 
-getInitialMenu : Flags -> ( Maybe Menu.Model, Cmd Msg )
-getInitialMenu { localWork } =
-    ( Nothing, Cmd.none )
+type alias InitBehavior =
+    ( Maybe Menu.Model, Cmd Msg )
+
+
+getInitialMenu : Flags -> InitBehavior
+getInitialMenu flags =
+    [ checkUser ]
+        |> checkConditions flags
+
+
+checkConditions : Flags -> List (Flags -> Maybe InitBehavior) -> InitBehavior
+checkConditions flags conditions =
+    case conditions of
+        [] ->
+            ( Nothing, Cmd.none )
+
+        first :: rest ->
+            case first flags of
+                Just behavior ->
+                    behavior
+
+                Nothing ->
+                    checkConditions flags rest
+
+
+checkUser : Flags -> Maybe InitBehavior
+checkUser flags =
+    case flags.user of
+        User.AllowanceExceeded ->
+            flags.windowSize
+                |> Menu.initAllowanceExceeded
+                |> Just
+                & Cmd.none
+                |> Just
+
+        _ ->
+            Nothing
 
 
 fromError : String -> ( Model, Cmd Msg )
 fromError err =
-    { user = Data.User.NoSession
+    { user = User.NoSession
     , canvas =
         Canvas.initialize
             { width = 400

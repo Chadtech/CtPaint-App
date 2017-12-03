@@ -4,7 +4,7 @@ import Data.Config exposing (Config)
 
 
 type Window
-    = Preferences
+    = Settings
     | Home
     | Donate
     | Tutorial
@@ -14,11 +14,11 @@ type Window
 toUrl : Config -> Window -> String
 toUrl { mountPath } window =
     case window of
-        Preferences ->
-            "https://www.twitter.com"
+        Settings ->
+            mountPath ++ "/settings"
 
         Home ->
-            "https://www.twitter.com"
+            mountPath ++ "/"
 
         Register ->
             mountPath ++ "/register"
