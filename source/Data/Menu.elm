@@ -5,8 +5,10 @@ module Data.Menu
         , Model
         , Msg(..)
         , loginFailed
+        , loginSucceeded
         )
 
+import Data.User exposing (User)
 import Download
 import Imgur
 import Import
@@ -67,3 +69,8 @@ type ContentMsg
 loginFailed : String -> Msg
 loginFailed =
     Login.LoginFailed >> LoginMsg >> ContentMsg
+
+
+loginSucceeded : User -> Msg
+loginSucceeded =
+    Login.LoginSucceeded >> LoginMsg >> ContentMsg

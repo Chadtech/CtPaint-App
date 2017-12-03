@@ -22,7 +22,7 @@ gulp.task("js", function() {
     .pipe(gulp.dest(paths.development));
 });
 
-gulp.task("elm", ["elm-make", "elm-css" ]);
+gulp.task("elm", [ "elm-make", "elm-css" ]);
 
 gulp.task("elm-make", function() {
   var cmd = [

@@ -4,6 +4,7 @@ import ColorPicker
 import Data.Keys as Key
 import Data.Menu as Menu
 import Data.Minimap as Minimap
+import Data.User as User exposing (User)
 import Json.Decode as Decode exposing (Decoder, Value)
 import MouseEvents exposing (MouseEvent)
 import Palette
@@ -27,6 +28,8 @@ type Msg
     | ScreenMouseMove MouseEvent
     | ScreenMouseExit
     | KeyboardEvent (Result String Key.Event)
+    | LogoutSucceeded
+    | LogoutFailed String
     | MsgDecodeFailed DecodeProblem
 
 
@@ -52,23 +55,32 @@ decode json =
 decoder : Value -> Decoder Msg
 decoder json =
     Decode.field "type" Decode.string
-        |> Decode.map (toMsg json)
+        |> Decode.andThen toMsg
 
 
-toMsg : Value -> String -> Msg
-toMsg json type_ =
+toMsg : String -> Decoder Msg
+toMsg type_ =
     case type_ of
+        "login succeeded" ->
+            payload User.decoder
+                |> Decode.map (Menu.loginSucceeded >> MenuMsg)
+
         "login failed" ->
-            json
-                |> decodePayload Decode.string
-                |> Result.withDefault "couldnt decode error"
-                |> Menu.loginFailed
-                |> MenuMsg
+            payload Decode.string
+                |> Decode.map (Menu.loginFailed >> MenuMsg)
+
+        "logout succeeded" ->
+            Decode.succeed LogoutSucceeded
+
+        "logout failed" ->
+            payload Decode.string
+                |> Decode.map LogoutFailed
 
         _ ->
             MsgDecodeFailed UnrecognizedMsgType
+                |> Decode.succeed
 
 
-decodePayload : Decoder a -> Value -> Result String a
-decodePayload decoder =
-    Decode.decodeValue (Decode.field "payload" decoder)
+payload : Decoder a -> Decoder a
+payload =
+    Decode.field "payload"

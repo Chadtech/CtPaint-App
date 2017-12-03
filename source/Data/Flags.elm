@@ -22,13 +22,13 @@ type alias Flags =
     , isChrome : Bool
     , user : User.Model
     , init : Init
-    , localState : LocalState
+    , localWork : LocalWork
     }
 
 
-type LocalState
-    = NoLocalState
-    | ExistingState (Maybe Project) String
+type LocalWork
+    = NoLocalWork
+    | ExistingWork (Maybe Project) String
 
 
 type Init
@@ -49,22 +49,22 @@ decoder =
         |> optional "seed" seedDecoder (Random.initialSeed 1776)
         |> optional "isMac" Decode.bool True
         |> optional "isChrome" Decode.bool True
-        |> required "user" User.decoder
+        |> required "user" User.modelDecoder
         |> required "init" initDecoder
-        |> required "localState" localStateDecoder
+        |> required "localWork" localWorkDecoder
 
 
-localStateDecoder : Decoder LocalState
-localStateDecoder =
-    [ Decode.null NoLocalState
-    , existingLocalStateDecoder
+localWorkDecoder : Decoder LocalWork
+localWorkDecoder =
+    [ Decode.null NoLocalWork
+    , existingLocalWorkDecoder
     ]
         |> Decode.oneOf
 
 
-existingLocalStateDecoder : Decoder LocalState
-existingLocalStateDecoder =
-    decode ExistingState
+existingLocalWorkDecoder : Decoder LocalWork
+existingLocalWorkDecoder =
+    decode ExistingWork
         |> optional "project" (Decode.map Just Project.decoder) Nothing
         |> required "data" Decode.string
 

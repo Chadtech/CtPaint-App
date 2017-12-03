@@ -7,7 +7,7 @@ import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Maybe.Extra
 import Ports exposing (JsMsg(AttemptLogin))
-import Reply exposing (Reply(NoReply, SetToNoSession, SetUser))
+import Reply exposing (Reply(AttemptingLogin, NoReply, SetToNoSession, SetUser))
 import Tuple.Infix exposing ((&))
 import Util
 
@@ -148,7 +148,7 @@ attemptLogin : Model -> ( ( Model, Cmd Msg ), Reply )
 attemptLogin model =
     validate model
         |> submitIfNoErrors
-        & NoReply
+        & AttemptingLogin
 
 
 validate : Model -> Model

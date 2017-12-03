@@ -21,13 +21,21 @@
         { payload: Project }
     }
 */
+/*
+    user
+    null
+    OR
+    "offline"
+    OR
+    User
+    OR
+    "allowance exceeded"
+*/
 
 PaintApp = function(initMsg, Client) {
 
     function flags(mixins){
-        var localState = localStorage.getItem("local state");
-        console.log('local state js side', localState);
-        console.log('user', mixins.user);
+        var localWork = localStorage.getItem("local work");
         return {
             windowHeight: window.innerHeight,
             windowWidth: window.innerWidth,
@@ -36,7 +44,7 @@ PaintApp = function(initMsg, Client) {
             isChrome: window.navigator.userAgent.indexOf("Chrome") !== -1,
             user: mixins.user,
             init: initMsg,
-            localState: JSON.parse(localState),
+            localWork: JSON.parse(localWork),
         };
     }
 
@@ -174,11 +182,44 @@ PaintApp = function(initMsg, Client) {
         app.ports.toJs.subscribe(jsMsgHandler);
     };
 
+    function allowanceExceeded() {
+
+        var lastVisit = localStorage.getItem("date last visit");
+        var today = new Date().toISOString().slice(0,10);
+        if (lastVisit === null) {
+            localStorage.setItem("date of last visit", today);
+            lastVisit = today;
+        }
+
+        var dayVisitsThisMonth = localStorage.getItem("day visits this month");
+        if (dayVisitsThisMonth === null) {
+            localStorage.setItem("day visits this month", 1);
+            dayVisitsThisMonth = 1;
+        }
+
+        var thisMonth = today.slice(0, 7);
+        var monthOfLastVisit = lastVisit.slice(0, 7);
+        if (thisMonth !== monthOfLastVisit) {
+            dayVisitsThisMonth = 0;
+        }
+
+        if (lastVisit !== today) {
+            dayVisitsThisMonth = dayVisitsThisMonth + 1;
+            localStorage.setItem("day visits this month", dayVisitsThisMonth);
+        }
+
+        return dayVisitsThisMonth > 4;
+
+    }
+
     Client.getSession({
         onSuccess: function(attributes) {
             init({ user: toUser(attributes) });
         },
         onFailure: function(err) {
+            if (allowanceExceeded()) {
+                err = "allowance exceeded";
+            }
             switch (err) {
                 case "no session" :
                     init({ user: null });
@@ -186,6 +227,10 @@ PaintApp = function(initMsg, Client) {
 
                 case "NetworkingError: Network Failure":
                     init({ user: "offline" });
+                    break;
+
+                case "allowance exceeded":
+                    init({ user: "allowance exceeded" });
                     break;
 
                 default : 

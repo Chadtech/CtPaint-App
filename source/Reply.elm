@@ -14,5 +14,6 @@ type Reply
     | AddText String
     | Replace Color Color
     | SetUser User
+    | AttemptingLogin
     | SetToNoSession
     | SetProject String Project

@@ -7,6 +7,7 @@ import ColorPicker
 import Data.Config as Config
 import Data.Flags as Flags exposing (Flags)
 import Data.History
+import Data.Menu as Menu
 import Data.Minimap
 import Data.Palette exposing (initPalette, initSwatches)
 import Data.User
@@ -30,12 +31,12 @@ import View exposing (view)
 
 main : Program Value Model Msg
 main =
-    Html.programWithFlags
-        { init = init
-        , view = view
-        , update = update
-        , subscriptions = subscriptions
-        }
+    { init = init
+    , view = view
+    , update = update
+    , subscriptions = subscriptions
+    }
+        |> Html.programWithFlags
 
 
 
@@ -66,8 +67,8 @@ fromFlags flags =
         canvasSize =
             Canvas.getSize canvas
 
-        _ =
-            Debug.log "local state" flags.localState
+        ( menu, cmd ) =
+            getInitialMenu flags
     in
     { user = flags.user
     , canvas = canvas
@@ -107,11 +108,16 @@ fromFlags flags =
     , taskbarTitle = Nothing
     , taskbarDropped = Nothing
     , minimap = Data.Minimap.NotInitialized
-    , menu = Nothing
+    , menu = menu
     , seed = flags.seed
     , config = Config.init flags
     }
-        & Cmd.none
+        & cmd
+
+
+getInitialMenu : Flags -> ( Maybe Menu.Model, Cmd Msg )
+getInitialMenu { localWork } =
+    ( Nothing, Cmd.none )
 
 
 fromError : String -> ( Model, Cmd Msg )

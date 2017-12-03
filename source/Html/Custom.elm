@@ -336,10 +336,10 @@ header { text, headerMouseDown, xClick } =
         ]
 
 
-spinner : Html msg
-spinner =
+spinner : List (Attribute msg) -> Html msg
+spinner attrs =
     Html.div
-        [ class [ SpinnerContainer ] ]
+        (class [ SpinnerContainer ] :: attrs)
         [ Html.div
             [ Html.Attributes.class "spinner" ]
             []

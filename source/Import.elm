@@ -110,7 +110,7 @@ errorView =
 
 loadingView : List (Html Msg)
 loadingView =
-    [ Html.Custom.spinner
+    [ Html.Custom.spinner []
     , p
         [ class [ LoadingText ] ]
         [ Html.text "Loading.." ]

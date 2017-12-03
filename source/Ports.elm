@@ -47,13 +47,7 @@ send msg =
             jsMsg "return focus" Encode.null
 
         SaveLocally { canvas, project } ->
-            let
-                { width, height } =
-                    Canvas.getSize canvas
-            in
-            [ "width" := Encode.int width
-            , "height" := Encode.int height
-            , "data" := encodeCanvas canvas
+            [ "data" := encodeCanvas canvas
             , "project" := Encode.maybe Project.encode project
             ]
                 |> Encode.object

@@ -3,6 +3,7 @@ module Data.User
         ( Model(..)
         , User
         , decoder
+        , modelDecoder
         , toggleOptionsDropped
         )
 
@@ -20,6 +21,7 @@ import Json.Decode.Pipeline
 type Model
     = NoSession
     | Offline
+    | AllowanceExceeded
     | LoggingIn
     | LoggingOut
     | LoggedIn User
@@ -34,25 +36,30 @@ type alias User =
     }
 
 
-decoder : Decoder Model
-decoder =
+modelDecoder : Decoder Model
+modelDecoder =
     [ Decode.null NoSession
-    , Decode.string |> Decode.andThen offlineDecoder
-    , userDecoder |> Decode.map LoggedIn
+    , Decode.string |> Decode.andThen fromString
+    , decoder |> Decode.map LoggedIn
     ]
         |> Decode.oneOf
 
 
-offlineDecoder : String -> Decoder Model
-offlineDecoder str =
-    if str == "offline" then
-        Decode.succeed Offline
-    else
-        Decode.fail "not offline"
+fromString : String -> Decoder Model
+fromString str =
+    case str of
+        "offline" ->
+            Decode.succeed Offline
+
+        "allowance exceeded" ->
+            Decode.succeed AllowanceExceeded
+
+        _ ->
+            Decode.fail "not offline or allowance exceeded"
 
 
-userDecoder : Decoder User
-userDecoder =
+decoder : Decoder User
+decoder =
     decode User
         |> required "email" Decode.string
         |> required "name" Decode.string

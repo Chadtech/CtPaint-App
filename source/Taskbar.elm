@@ -96,7 +96,8 @@ update msg model =
                     model & Cmd.none
 
         LogoutClicked ->
-            model & Ports.send Logout
+            { model | user = User.LoggingOut }
+                & Ports.send Logout
 
         AboutClicked ->
             { model
@@ -135,6 +136,7 @@ type Class
     | Options
     | Seam
     | Dropdown Dropdown
+    | Spinner
 
 
 css : Stylesheet
@@ -240,6 +242,10 @@ css =
                 ]
             ]
         ]
+    , Css.class Spinner
+        [ height (px 24)
+        , float right
+        ]
     ]
         |> namespace taskbarNamespace
         |> stylesheet
@@ -299,6 +305,9 @@ userButton userModel =
         User.Offline ->
             offlineButton
 
+        User.AllowanceExceeded ->
+            loginButton
+
         User.LoggingIn ->
             spinner
 
@@ -311,7 +320,7 @@ userButton userModel =
 
 spinner : Html Msg
 spinner =
-    Html.text ""
+    Html.Custom.spinner [ class [ Spinner ] ]
 
 
 offlineButton : Html Msg

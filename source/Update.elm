@@ -124,6 +124,13 @@ update message model =
             }
                 & Cmd.none
 
+        LogoutSucceeded ->
+            { model | user = User.NoSession }
+                & Cmd.none
+
+        LogoutFailed err ->
+            model & Cmd.none
+
         MsgDecodeFailed _ ->
             model & Cmd.none
 
@@ -246,10 +253,25 @@ incorporateMenu reply menu model =
                         & Cmd.none
 
         SetUser user ->
-            { model | user = User.LoggedIn user } & Cmd.none
+            { model
+                | user = User.LoggedIn user
+                , menu = Nothing
+            }
+                & Cmd.none
+
+        AttemptingLogin ->
+            { model
+                | user = User.LoggingIn
+                , menu = Just menu
+            }
+                & Cmd.none
 
         SetToNoSession ->
-            { model | user = User.NoSession } & Cmd.none
+            { model
+                | user = User.NoSession
+                , menu = Just menu
+            }
+                & Cmd.none
 
         SetProject id project ->
             { model
