@@ -32,22 +32,13 @@
     "allowance exceeded"
 */
 
+var Allowance = require("./Js/Allowance");
+var User = require("./Js/User");
+var Flags = require("./Js/Flags");
+
 PaintApp = function(initMsg, Client) {
 
-    function flags(mixins){
-        var localWork = localStorage.getItem("local work");
-        return {
-            windowHeight: window.innerHeight,
-            windowWidth: window.innerWidth,
-            seed: Math.round(Math.random() * 999999999999),
-            isMac: window.navigator.userAgent.indexOf("Mac") !== -1,
-            isChrome: window.navigator.userAgent.indexOf("Chrome") !== -1,
-            user: mixins.user,
-            init: initMsg,
-            localWork: JSON.parse(localWork),
-        };
-    }
-
+    var app;
 
     function listenToKeyEvents (keydown, keyup) {
         window.addEventListener("keydown", keydown);
@@ -60,18 +51,6 @@ PaintApp = function(initMsg, Client) {
     }
 
     window.onbeforeunload = function(event) { return ""; };
-
-    function toUser(attributes) {
-        var payload = {};
-
-        for (i = 0; i < attributes.length; i++) {
-            payload[ attributes[i].getName() ] = attributes[i].getValue();
-        }
-
-        return payload;
-    }
-
-    var app;
 
     function makeKeyHandler (direction) {
         return function(event) {
@@ -102,7 +81,7 @@ PaintApp = function(initMsg, Client) {
             } else {
                 app.ports.fromJs.send({
                     type: "login succeeded",
-                    payload: toUser(attributes)
+                    payload: User.fromAttributes(attributes)
                 });
             }
         });
@@ -178,59 +157,41 @@ PaintApp = function(initMsg, Client) {
     }
 
     function init(mixins) {
-        app = Elm.PaintApp.fullscreen(flags(mixins));
+        app = Elm.PaintApp.fullscreen(Flags.make(mixins));
         app.ports.toJs.subscribe(jsMsgHandler);
     };
 
-    function allowanceExceeded() {
-
-        var lastVisit = localStorage.getItem("date last visit");
-        var today = new Date().toISOString().slice(0,10);
-        if (lastVisit === null) {
-            localStorage.setItem("date of last visit", today);
-            lastVisit = today;
-        }
-
-        var dayVisitsThisMonth = localStorage.getItem("day visits this month");
-        if (dayVisitsThisMonth === null) {
-            localStorage.setItem("day visits this month", 1);
-            dayVisitsThisMonth = 1;
-        }
-
-        var thisMonth = today.slice(0, 7);
-        var monthOfLastVisit = lastVisit.slice(0, 7);
-        if (thisMonth !== monthOfLastVisit) {
-            dayVisitsThisMonth = 0;
-        }
-
-        if (lastVisit !== today) {
-            dayVisitsThisMonth = dayVisitsThisMonth + 1;
-            localStorage.setItem("day visits this month", dayVisitsThisMonth);
-        }
-
-        return dayVisitsThisMonth > 4;
-
-    }
-
     Client.getSession({
         onSuccess: function(attributes) {
-            init({ user: toUser(attributes) });
+            init({ 
+                user: User.fromAttributes(attributes),
+                init: initMsg
+            });
         },
         onFailure: function(err) {
-            if (allowanceExceeded()) {
+            if (Allowance.exceeded()) {
                 err = "allowance exceeded";
             }
             switch (err) {
                 case "no session" :
-                    init({ user: null });
+                    init({ 
+                        user: null,
+                        init: initMsg
+                    });
                     break;
 
                 case "NetworkingError: Network Failure":
-                    init({ user: "offline" });
+                    init({ 
+                        user: "offline",
+                        init: initMsg
+                    });
                     break;
 
                 case "allowance exceeded":
-                    init({ user: "allowance exceeded" });
+                    init({ 
+                        user: "allowance exceeded",
+                        init: initMsg
+                    });
                     break;
 
                 default : 
