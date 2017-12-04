@@ -20,8 +20,8 @@ import Reply exposing (Reply(..))
 import Taskbar
 import Tool.Update as Tool
 import Toolbar
-import Tuple.Infix exposing ((&))
-import Util exposing ((|&), origin)
+import Tuple.Infix exposing ((&), (|&))
+import Util exposing (origin)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -230,12 +230,9 @@ incorporateMenu reply menu model =
                     { model
                         | menu = Nothing
                         , selection =
-                            ( position
-                            , Draw.replace
-                                target
-                                replacement
-                                selection
-                            )
+                            selection
+                                |> Draw.replace target replacement
+                                |& position
                                 |> Just
                     }
                         & Cmd.none

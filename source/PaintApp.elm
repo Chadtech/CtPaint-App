@@ -22,9 +22,9 @@ import Ports exposing (JsMsg(RedirectPageTo))
 import Random
 import Subscriptions exposing (subscriptions)
 import Tool
-import Tuple.Infix exposing ((&))
+import Tuple.Infix exposing ((&), (|&))
 import Update exposing (update)
-import Util exposing ((|&), tbw)
+import Util exposing (tbw)
 import View exposing (view)
 
 

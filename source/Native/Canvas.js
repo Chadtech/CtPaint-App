@@ -66,6 +66,37 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
 
     handleDrawOp(ctx, drawOp);
 
+    return model;
+  }
+
+  function transparentColor(targetColor, model) {
+    model = cloneModel(model);
+
+    var target = _elm_lang$core$Color$toRgb(targetColor);
+
+    var ctx = model.canvas().getContext("2d");
+
+    var imageData = ctx.getImageData(0,0,model.width, model.height);
+    var data = imageData.data;
+
+    var redSame, blueSame, greenSame;
+    var index = 0;
+    while (index < data.length) {
+      redSame = data[ index ] === target.red;
+      greenSame = data[ index + 1 ] == target.green;
+      blueSame = data[ index + 2 ] == target.blue;
+
+      if (redSame && greenSame && blueSame) {
+        data[ index ] = 0;
+        data[ index + 1 ] = 0;
+        data[ index + 2 ] = 0;
+        data[ index + 3 ] = 0;
+      }
+
+      index += 4;
+    }
+
+    ctx.putImageData(imageData, 0, 0);
 
     return model;
   }
@@ -757,6 +788,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
     clone: cloneModel,
     draw: F2(draw),
     scale: F3(scale),
+    transparentColor: F2(transparentColor),
     replace: F3(replace),
     toDataURL: F3(toDataURL) // eslint-disable-line no-undef
   };

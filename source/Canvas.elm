@@ -17,6 +17,7 @@ module Canvas
         , setSize
         , toDataUrl
         , toHtml
+        , transparentColor
         )
 
 {-| The canvas html element is a very simple way to render 2D graphics. Check out these examples, and get an explanation of the canvas element [here](https://github.com/elm-community/canvas). Furthermore, If you havent heard of [Elm-Graphics](http://package.elm-lang.org/packages/evancz/elm-graphics/latest), I recommend checking that out first, because its probably what you need. Elm-Canvas is for when you need unusually direct and low level access to the canvas element.
@@ -178,6 +179,11 @@ draw =
 scale : Int -> Int -> Canvas -> Canvas
 scale =
     Native.Canvas.scale
+
+
+transparentColor : Color -> Canvas -> Canvas
+transparentColor =
+    Native.Canvas.transparentColor
 
 
 replace : Color -> Color -> Canvas -> Canvas

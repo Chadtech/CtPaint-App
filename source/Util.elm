@@ -11,12 +11,6 @@ import ParseInt
 import Window exposing (Size)
 
 
-(|&) : b -> a -> ( a, b )
-(|&) b a =
-    ( a, b )
-infixl 0 |&
-
-
 type ClickState
     = NoClick
     | ClickAt Mouse.Position

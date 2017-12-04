@@ -1,5 +1,6 @@
 module Toolbar exposing (Msg(..), css, update, view)
 
+import Canvas
 import Chadtech.Colors exposing (ignorable2, ignorable3)
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
@@ -13,6 +14,7 @@ import Html.Events exposing (onClick)
 import Menu
 import Model exposing (Model)
 import Tool
+import Tuple.Infix exposing ((|&))
 
 
 -- TYPES --
@@ -27,6 +29,7 @@ type OtherThing
     = Text
     | Invert
     | Replace
+    | Transparency
 
 
 
@@ -52,6 +55,21 @@ update msg model =
 
         OtherButtonClicked Replace ->
             Helpers.Menu.initReplaceColor model
+
+        OtherButtonClicked Transparency ->
+            case model.selection of
+                Just ( pos, selection ) ->
+                    { model
+                        | selection =
+                            selection
+                                |> Canvas.transparentColor
+                                    model.swatches.second
+                                |& pos
+                                |> Just
+                    }
+
+                Nothing ->
+                    model
 
 
 
@@ -122,6 +140,7 @@ otherThings =
     [ ( "\xEA19", "text", Text )
     , ( "\xEA0F", "replace color", Replace )
     , ( "\xEA0E", "invert colors", Invert )
+    , ( "\xEA12", "transparency", Transparency )
     ]
 
 
