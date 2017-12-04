@@ -120,15 +120,15 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
       i++;
     }
 
-    var rows = groupBy(groupBy(data, 4), originalWidth);
+    var rows = groupBy(groupBy(data, 4), model.width);
 
     i = 0;
     while (i < rows.length) {
-      rows[i] = scaleBy(w / originalWidth, rows[i]);
+      rows[i] = scaleBy(w / model.width, rows[i]);
       i++;
     }
 
-    var scaledData = scaleBy(h / originalHeight, rows);
+    var scaledData = scaleBy(h / model.height, rows);
     data = flatten(flatten(scaledData));
 
     var newModel = initialize({ width: w, height: h});
