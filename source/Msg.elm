@@ -77,6 +77,14 @@ toMsg type_ =
             payload Decode.string
                 |> Decode.map LogoutFailed
 
+        "file read" ->
+            payload Decode.string
+                |> Decode.map (Menu.fileRead >> MenuMsg)
+
+        "file not image" ->
+            MenuMsg Menu.fileNotImage
+                |> Decode.succeed
+
         _ ->
             MsgDecodeFailed UnrecognizedMsgType
                 |> Decode.succeed

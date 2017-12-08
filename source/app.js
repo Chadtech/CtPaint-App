@@ -167,8 +167,8 @@ PaintApp = function(manifest) {
                 break;
 
             case "open up file upload":
-                console.log("A")
                 var input = document.getElementById("uploader");
+                console.log("A", input);
                 input.click();
                 break;
 
@@ -178,7 +178,7 @@ PaintApp = function(manifest) {
                 
                 reader.onload = function(){
                     var dataURL = reader.result;
-                    app.ports.send.fromJs({
+                    app.ports.fromJs.send({
                         type: "file read",
                         payload: reader.result
                     });
@@ -192,7 +192,7 @@ PaintApp = function(manifest) {
                 if (imageIndex !== -1) {
                     reader.readAsDataURL(input.files[0]);
                 } else {
-                    app.ports.send.fromJs({
+                    app.ports.fromJs.send({
                         type: "file not image",
                         payload: null
                     });

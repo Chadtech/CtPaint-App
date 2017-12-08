@@ -131,7 +131,13 @@ update message model =
             model & Cmd.none
 
         FileUploaderChanged ->
-            model & Ports.send ReadFile
+            { model
+                | menu =
+                    model.windowSize
+                        |> Menu.initUpload
+                        |> Just
+            }
+                & Ports.send ReadFile
 
         MsgDecodeFailed _ ->
             model & Cmd.none

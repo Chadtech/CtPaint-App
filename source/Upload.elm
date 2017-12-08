@@ -2,6 +2,8 @@ module Upload
     exposing
         ( Model
         , Msg(..)
+        , Problem(..)
+        , css
         , init
         , update
         , view
@@ -39,6 +41,7 @@ type Msg
 type Problem
     = Other String
     | CouldNotReadDataUrl
+    | FileNotImage
 
 
 type Model
@@ -56,9 +59,22 @@ init =
 -- STYLES --
 
 
+type Class
+    = LoadingText
+    | FailText
+
+
 css : Stylesheet
 css =
-    []
+    [ Css.class LoadingText
+        [ textAlign center
+        , marginTop (px 8)
+        ]
+    , Css.class FailText
+        [ textAlign center
+        , marginBottom (px 8)
+        ]
+    ]
         |> namespace uploadNamespace
         |> stylesheet
 
@@ -91,7 +107,11 @@ view model =
 
 loadingView : List (Html Msg)
 loadingView =
-    []
+    [ Html.Custom.spinner []
+    , p
+        [ class [ LoadingText ] ]
+        [ Html.text "Loading.." ]
+    ]
 
 
 loadedView : Canvas -> List (Html Msg)

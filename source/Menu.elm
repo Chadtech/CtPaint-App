@@ -410,6 +410,14 @@ initImgur =
         |> init "imgur" (Imgur Imgur.init)
 
 
+initUpload : Size -> Model
+initUpload =
+    { width = 10
+    , height = 10
+    }
+        |> init "upload" (Upload Upload.init)
+
+
 
 -- SUBSCRIPTIONS --
 

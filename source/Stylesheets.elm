@@ -14,6 +14,7 @@ import Taskbar
 import Text
 import Toolbar
 import Tuple.Infix exposing ((:=))
+import Upload
 import View
 
 
@@ -35,6 +36,7 @@ main =
     , Scale.css
     , Text.css
     , Error.css
+    , Upload.css
     ]
         |> Css.File.compile
         |> (,) "./development/paint-app-styles.css"

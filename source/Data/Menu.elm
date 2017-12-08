@@ -5,6 +5,8 @@ module Data.Menu
         , Menu(..)
         , Model
         , Msg(..)
+        , fileNotImage
+        , fileRead
         , loginFailed
         , loginSucceeded
         )
@@ -74,6 +76,19 @@ type ContentMsg
     | OpenMsg Open.Msg
     | LoginMsg Login.Msg
     | UploadMsg Upload.Msg
+
+
+fileRead : String -> Msg
+fileRead =
+    Upload.GotDataUrl >> UploadMsg >> ContentMsg
+
+
+fileNotImage : Msg
+fileNotImage =
+    Upload.FileNotImage
+        |> Upload.UploadFailed
+        |> UploadMsg
+        |> ContentMsg
 
 
 loginFailed : String -> Msg
