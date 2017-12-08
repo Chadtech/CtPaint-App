@@ -174,11 +174,6 @@ toolbarWidth =
 -- POSITION AND POINT --
 
 
-origin : Position
-origin =
-    { x = 0, y = 0 }
-
-
 toSize : Position -> Position -> Size
 toSize p q =
     let

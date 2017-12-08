@@ -27,7 +27,6 @@ import Html.Events
         ( onMouseDown
         , onMouseUp
         )
-import Json.Decode as Decode
 import MouseEvents exposing (MouseEvent, Position)
 import Tuple.Infix exposing ((:=))
 

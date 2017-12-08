@@ -15,8 +15,7 @@ import Platform.Cmd as Platform
 import Ports exposing (JsMsg(..))
 import Tool.Zoom as Zoom
 import Tool.Zoom.Util as Zoom
-import Tuple.Infix exposing ((&))
-import Util exposing (origin)
+import Tuple.Infix exposing ((&), (|&))
 
 
 exec : Key.Cmd -> Model -> ( Model, Platform.Cmd msg )
@@ -115,14 +114,14 @@ exec keyCmd model =
 
         SelectAll ->
             { model
-                | selection = Just ( origin, model.canvas )
+                | selection = Just ( { x = 0, y = 0 }, model.canvas )
                 , canvas =
                     let
                         drawOp =
                             Draw.filledRectangle
                                 model.swatches.second
                                 (Canvas.getSize model.canvas)
-                                origin
+                                { x = 0, y = 0 }
                     in
                     Canvas.getSize model.canvas
                         |> Canvas.initialize
@@ -292,14 +291,32 @@ exec keyCmd model =
             transform Draw.invert model
 
         Save ->
-            let
-                jsMsg =
-                    { canvas = model.canvas
-                    , project = model.project
+            { canvas = model.canvas
+            , project = model.project
+            }
+                |> SaveLocally
+                |> Ports.send
+                |& model
+
+        SetTransparency ->
+            case model.selection of
+                Nothing ->
+                    model & Cmd.none
+
+                Just ( pos, selection ) ->
+                    { model
+                        | selection =
+                            selection
+                                |> Canvas.transparentColor model.swatches.second
+                                |& pos
+                                |> Just
                     }
-                        |> SaveLocally
-            in
-            model & Ports.send jsMsg
+                        & Cmd.none
+
+        Upload ->
+            OpenUpFileUpload
+                |> Ports.send
+                |& model
 
 
 transform : (Canvas -> Canvas) -> Model -> ( Model, Platform.Cmd msg )

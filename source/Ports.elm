@@ -17,6 +17,7 @@ type JsMsg
     | Logout
     | OpenNewWindow String
     | RedirectPageTo String
+    | OpenUpFileUpload
 
 
 type alias LocalSavePayload =
@@ -80,6 +81,9 @@ send msg =
             url
                 |> Encode.string
                 |> jsMsg "redirect page to"
+
+        OpenUpFileUpload ->
+            jsMsg "open up file upload" Encode.null
 
 
 port toJs : Value -> Cmd msg

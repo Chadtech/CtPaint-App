@@ -21,7 +21,6 @@ import Taskbar
 import Tool.Update as Tool
 import Toolbar
 import Tuple.Infix exposing ((&), (|&))
-import Util exposing (origin)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -215,7 +214,7 @@ incorporateMenu reply menu model =
             { model
                 | menu = Nothing
                 , selection =
-                    ( origin
+                    ( { x = 0, y = 0 }
                     , Draw.text
                         str
                         model.swatches.primary

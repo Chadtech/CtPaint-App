@@ -19,7 +19,7 @@ import Keys
 import Menu
 import Model exposing (Model)
 import Platform.Cmd as Platform
-import Ports exposing (JsMsg(Logout, StealFocus))
+import Ports exposing (JsMsg(Logout, OpenUpFileUpload, StealFocus))
 import Tuple.Infix exposing ((&))
 import Util exposing (toolbarWidth)
 
@@ -37,6 +37,7 @@ type Msg
     | AboutClicked
     | KeyCmdClicked Key.Cmd
     | NewWindowClicked Window
+    | UploadClicked
     | ToolClicked Tool
 
 
@@ -113,6 +114,9 @@ update msg model =
 
         NewWindowClicked window ->
             model & Cmd.none
+
+        UploadClicked ->
+            model & Ports.send OpenUpFileUpload
 
         ToolClicked tool ->
             { model | tool = tool } & Cmd.none
@@ -628,6 +632,10 @@ fileDropped model =
         "Download"
         (keysLabel model InitDownload)
         (KeyCmdClicked InitDownload)
+    , option
+        "Upload"
+        (keysLabel model Upload)
+        (KeyCmdClicked Upload)
     , option
         "Import"
         (keysLabel model InitImport)
