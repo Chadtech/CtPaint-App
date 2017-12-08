@@ -130,6 +130,9 @@ update message model =
         LogoutFailed err ->
             model & Cmd.none
 
+        FileUploaderChanged ->
+            model & Ports.send ReadFile
+
         MsgDecodeFailed _ ->
             model & Cmd.none
 
@@ -166,7 +169,7 @@ incorporateMenu reply menu model =
             }
                 & Ports.send ReturnFocus
 
-        IncorporateImage image ->
+        IncorporateImageAsSelection image ->
             let
                 size =
                     Canvas.getSize image
@@ -183,7 +186,18 @@ incorporateMenu reply menu model =
             in
             { model
                 | selection =
-                    Just ( imagePosition, image )
+                    { x = (canvas.width - size.width) // 2
+                    , y = (canvas.height - size.height) // 2
+                    }
+                        & image
+                        |> Just
+                , menu = Nothing
+            }
+                & Ports.send ReturnFocus
+
+        IncorporateImageAsCanvas image ->
+            { model
+                | canvas = image
                 , menu = Nothing
             }
                 & Ports.send ReturnFocus

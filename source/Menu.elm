@@ -31,6 +31,7 @@ import Reply exposing (Reply(CloseMenu, NoReply))
 import Scale
 import Text
 import Tuple.Infix exposing ((&))
+import Upload
 import Util exposing (toolbarWidth)
 import Window exposing (Size)
 
@@ -148,6 +149,15 @@ updateContent msg model =
             in
             { model | content = Login newSubModel }
                 & Cmd.map (ContentMsg << LoginMsg) cmd
+                & reply
+
+        ( UploadMsg subMsg, Upload subModel ) ->
+            let
+                ( ( newSubModel, cmd ), reply ) =
+                    Upload.update subMsg subModel
+            in
+            { model | content = Upload newSubModel }
+                & Cmd.map (ContentMsg << UploadMsg) cmd
                 & reply
 
         _ ->
@@ -279,6 +289,10 @@ contentView menu =
 
         Loading subModel ->
             Loading.view subModel
+
+        Upload subModel ->
+            List.map (Html.map UploadMsg) <|
+                Upload.view subModel
 
 
 

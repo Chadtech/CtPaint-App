@@ -21,6 +21,7 @@ import Open
 import ReplaceColor
 import Scale
 import Text
+import Upload
 
 
 type Menu
@@ -36,6 +37,7 @@ type Menu
     | Login Login.Model
     | Error String
     | Loading String
+    | Upload Upload.Model
 
 
 type alias Model =
@@ -71,6 +73,7 @@ type ContentMsg
     | NewMsg New.Msg
     | OpenMsg Open.Msg
     | LoginMsg Login.Msg
+    | UploadMsg Upload.Msg
 
 
 loginFailed : String -> Msg

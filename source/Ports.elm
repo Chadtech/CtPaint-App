@@ -18,6 +18,7 @@ type JsMsg
     | OpenNewWindow String
     | RedirectPageTo String
     | OpenUpFileUpload
+    | ReadFile
 
 
 type alias LocalSavePayload =
@@ -84,6 +85,9 @@ send msg =
 
         OpenUpFileUpload ->
             jsMsg "open up file upload" Encode.null
+
+        ReadFile ->
+            jsMsg "read file" Encode.null
 
 
 port toJs : Value -> Cmd msg

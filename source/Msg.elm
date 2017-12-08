@@ -30,6 +30,7 @@ type Msg
     | KeyboardEvent (Result String Key.Event)
     | LogoutSucceeded
     | LogoutFailed String
+    | FileUploaderChanged
     | MsgDecodeFailed DecodeProblem
 
 

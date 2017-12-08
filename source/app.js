@@ -163,8 +163,40 @@ PaintApp = function(manifest) {
 
             case "redirect page to":
                 window.onbeforeunload = null;
-                console.log(msg.payload);
                 window.location = msg.payload;
+                break;
+
+            case "open up file upload":
+                console.log("A")
+                var input = document.getElementById("uploader");
+                input.click();
+                break;
+
+            case "read file":
+                var input = document.getElementById("uploader");    
+                var reader = new FileReader();
+                
+                reader.onload = function(){
+                    var dataURL = reader.result;
+                    app.ports.send.fromJs({
+                        type: "file read",
+                        payload: reader.result
+                    });
+                };
+                
+                var imageIndex = [
+                    "image/png",
+                    "image/jpeg"
+                ].indexOf(input.files[0].type);
+
+                if (imageIndex !== -1) {
+                    reader.readAsDataURL(input.files[0]);
+                } else {
+                    app.ports.send.fromJs({
+                        type: "file not image",
+                        payload: null
+                    });
+                }
                 break;
 
             default:

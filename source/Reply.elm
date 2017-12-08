@@ -9,7 +9,8 @@ import Data.User exposing (User)
 type Reply
     = NoReply
     | CloseMenu
-    | IncorporateImage Canvas
+    | IncorporateImageAsSelection Canvas
+    | IncorporateImageAsCanvas Canvas
     | ScaleTo Int Int
     | AddText String
     | Replace Color Color

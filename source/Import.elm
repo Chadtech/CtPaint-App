@@ -9,7 +9,13 @@ import Html.Attributes exposing (class, placeholder, value)
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Reply exposing (Reply(IncorporateImage, NoReply))
+import Reply
+    exposing
+        ( Reply
+            ( IncorporateImageAsSelection
+            , NoReply
+            )
+        )
 import Task
 import Tuple.Infix exposing ((&))
 
@@ -163,7 +169,7 @@ update msg model =
         ImageLoaded (Ok canvas) ->
             model
                 & Cmd.none
-                & IncorporateImage canvas
+                & IncorporateImageAsSelection canvas
 
         ImageLoaded (Err err) ->
             Fail & Cmd.none & NoReply
