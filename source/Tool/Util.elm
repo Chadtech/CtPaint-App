@@ -2,23 +2,24 @@ module Tool.Util exposing (adjustPosition)
 
 import Model exposing (Model)
 import Mouse exposing (Position)
+import Util exposing (tbw)
 
 
-adjustPosition : Model -> Int -> Position -> Position
-adjustPosition { canvasPosition, zoom } offset position =
+adjustPosition : Model -> Position -> Position
+adjustPosition { canvasPosition, zoom } position =
     let
         x =
             List.sum
                 [ position.x
                 , -canvasPosition.x
-                , -offset
+                , -tbw
                 ]
 
         y =
             List.sum
                 [ position.y
                 , -canvasPosition.y
-                , -offset
+                , -tbw
                 ]
     in
     { x = x // zoom, y = y // zoom }

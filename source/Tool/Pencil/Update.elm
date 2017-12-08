@@ -8,7 +8,6 @@ import Model exposing (Model)
 import Mouse exposing (Position)
 import Tool.Pencil exposing (Msg(..))
 import Tool.Util exposing (adjustPosition)
-import Util exposing (tbw)
 
 
 update : Msg -> Maybe Position -> Model -> Model
@@ -17,7 +16,7 @@ update message tool model =
         ( ScreenMouseDown { clientPos }, Nothing ) ->
             let
                 adjustedPosition =
-                    adjustPosition model tbw clientPos
+                    adjustPosition model clientPos
             in
             { model
                 | tool = Pencil (Just adjustedPosition)
@@ -35,7 +34,7 @@ update message tool model =
         ( SubMouseMove position, Just priorPosition ) ->
             let
                 adjustedPosition =
-                    adjustPosition model tbw position
+                    adjustPosition model position
             in
             { model
                 | tool = Pencil (Just adjustedPosition)

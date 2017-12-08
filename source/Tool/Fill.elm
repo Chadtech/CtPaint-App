@@ -13,7 +13,7 @@ screenMouseUp : MouseEvent -> Model -> Model
 screenMouseUp { clientPos } model =
     let
         positionOnCanvas =
-            adjustPosition model tbw clientPos
+            adjustPosition model clientPos
 
         colorAtPosition =
             Draw.colorAt

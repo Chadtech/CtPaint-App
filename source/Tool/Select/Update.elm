@@ -7,7 +7,7 @@ import Model exposing (Model)
 import Tool.Select exposing (Msg(..), SelectModel)
 import Tool.Util exposing (adjustPosition)
 import Tuple.Infix exposing ((&))
-import Util exposing (positionMin, tbw)
+import Util exposing (positionMin)
 
 
 update : Msg -> SelectModel -> Model -> ( Model, SelectModel )
@@ -16,7 +16,7 @@ update message selectModel model =
         ( ScreenMouseDown { clientPos }, Nothing ) ->
             let
                 adjustedPosition =
-                    adjustPosition model tbw clientPos
+                    adjustPosition model clientPos
 
                 newModel =
                     { model
@@ -36,14 +36,14 @@ update message selectModel model =
                     Draw.rectangle
                         model.swatches.second
                         priorPosition
-                        (adjustPosition model tbw position)
+                        (adjustPosition model position)
             }
                 & selectModel
 
         ( SubMouseUp position, Just priorPosition ) ->
             let
                 adjustedPosition =
-                    adjustPosition model tbw position
+                    adjustPosition model position
             in
             if adjustedPosition == priorPosition then
                 { model | drawAtRender = Canvas.batch [] }
