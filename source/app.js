@@ -168,7 +168,7 @@ PaintApp = function(manifest) {
 
             case "open up file upload":
                 var input = document.getElementById("uploader");
-                console.log("A", input);
+                console.log("A", input, input.click);
                 input.click();
                 break;
 
