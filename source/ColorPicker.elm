@@ -61,7 +61,8 @@ type WindowMsg
     = HeaderMouseDown MouseEvent
     | HeaderMouseMove Mouse.Position
     | HeaderMouseUp
-    | Close
+    | XButtonMouseDown
+    | XButtonMouseUp
 
 
 type PickerMsg
@@ -96,10 +97,16 @@ type alias Model =
 
 type alias Window =
     { position : Mouse.Position
-    , clickState : Maybe Mouse.Position
+    , clickState : ClickState
     , focusedOn : Bool
     , show : Bool
     }
+
+
+type ClickState
+    = NoClicks
+    | ClickAt Mouse.Position
+    | XButtonIsDown
 
 
 type alias Picker =
@@ -164,7 +171,7 @@ initPicker index color =
 initWindow : Bool -> Window
 initWindow show =
     { position = { x = 50, y = 350 }
-    , clickState = Nothing
+    , clickState = NoClicks
     , focusedOn = False
     , show = show
     }
@@ -176,7 +183,7 @@ initWindow show =
 
 subscriptions : Model -> Sub Msg
 subscriptions { window } =
-    if window.show && window.clickState /= Nothing then
+    if window.show && window.clickState /= NoClicks then
         Sub.batch
             [ Mouse.moves
                 (HandleWindowMsg << HeaderMouseMove)
@@ -278,21 +285,29 @@ updateWindow : WindowMsg -> Window -> ( Window, Reply )
 updateWindow msg window =
     case msg of
         HeaderMouseDown { targetPos, clientPos } ->
-            { window
-                | clickState =
-                    { x = clientPos.x - targetPos.x
-                    , y = clientPos.y - targetPos.y
+            case window.clickState of
+                XButtonIsDown ->
+                    window & NoReply
+
+                _ ->
+                    { window
+                        | clickState =
+                            { x = clientPos.x - targetPos.x
+                            , y = clientPos.y - targetPos.y
+                            }
+                                |> ClickAt
                     }
-                        |> Just
-            }
-                & NoReply
+                        & NoReply
 
         HeaderMouseMove position ->
             case window.clickState of
-                Nothing ->
+                NoClicks ->
                     window & NoReply
 
-                Just originalClick ->
+                XButtonIsDown ->
+                    window & NoReply
+
+                ClickAt originalClick ->
                     { window
                         | position =
                             { x = position.x - originalClick.x
@@ -302,11 +317,19 @@ updateWindow msg window =
                         & NoReply
 
         HeaderMouseUp ->
-            { window | clickState = Nothing }
+            { window | clickState = NoClicks }
                 & NoReply
 
-        Close ->
-            { window | show = False } & NoReply
+        XButtonMouseDown ->
+            { window | clickState = XButtonIsDown }
+                & NoReply
+
+        XButtonMouseUp ->
+            { window
+                | show = False
+                , clickState = NoClicks
+            }
+                & NoReply
 
 
 update : Msg -> Model -> ( Model, Reply )
@@ -674,12 +697,12 @@ view model =
             , Util.top model.window.position.y
             ]
         ]
-        [ header
+        [ (header >> Html.map HandleWindowMsg)
             { text = "color picker"
             , headerMouseDown = HeaderMouseDown
-            , xClick = Close
+            , xButtonMouseDown = XButtonMouseDown
+            , xButtonMouseUp = XButtonMouseUp
             }
-            |> Html.map HandleWindowMsg
         , cardBody [] (body model.picker)
             |> Html.map HandlePickerMsg
         ]

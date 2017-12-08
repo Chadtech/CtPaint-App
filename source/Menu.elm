@@ -6,7 +6,8 @@ import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Data.Menu
     exposing
-        ( ContentMsg(..)
+        ( ClickState(..)
+        , ContentMsg(..)
         , Menu(..)
         , Model
         , Msg(..)
@@ -30,7 +31,7 @@ import Reply exposing (Reply(CloseMenu, NoReply))
 import Scale
 import Text
 import Tuple.Infix exposing ((&))
-import Util exposing (ClickState(..), toolbarWidth)
+import Util exposing (toolbarWidth)
 import Window exposing (Size)
 
 
@@ -40,19 +41,31 @@ import Window exposing (Size)
 update : Msg -> Model -> ( ( Model, Cmd Msg ), Reply )
 update msg model =
     case msg of
-        XClick ->
-            model & Cmd.none & CloseMenu
-
-        HeaderMouseDown { targetPos, clientPos } ->
+        XButtonMouseDown ->
             { model
-                | click =
-                    { x = clientPos.x - targetPos.x
-                    , y = clientPos.y - targetPos.y
-                    }
-                        |> ClickAt
+                | click = XButtonIsDown
             }
                 & Cmd.none
                 & NoReply
+
+        XButtonMouseUp ->
+            model & Cmd.none & CloseMenu
+
+        HeaderMouseDown { targetPos, clientPos } ->
+            case model.click of
+                XButtonIsDown ->
+                    model & Cmd.none & NoReply
+
+                _ ->
+                    { model
+                        | click =
+                            { x = clientPos.x - targetPos.x
+                            , y = clientPos.y - targetPos.y
+                            }
+                                |> ClickAt
+                    }
+                        & Cmd.none
+                        & NoReply
 
         HeaderMouseMove p ->
             case model.click of
@@ -66,7 +79,7 @@ update msg model =
                         & Cmd.none
                         & NoReply
 
-                NoClick ->
+                _ ->
                     model & Cmd.none & NoReply
 
         HeaderMouseUp ->
@@ -188,7 +201,8 @@ view ({ title, content } as model) =
         [ Html.Custom.header
             { text = title
             , headerMouseDown = HeaderMouseDown
-            , xClick = XClick
+            , xButtonMouseDown = XButtonMouseDown
+            , xButtonMouseUp = XButtonMouseUp
             }
         , contentView content
             |> Html.Custom.cardBody []

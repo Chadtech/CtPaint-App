@@ -28,7 +28,10 @@ import Util
 
 replace : Color -> Color -> Canvas -> Canvas
 replace target replacement canvas =
-    Canvas.replace target replacement canvas
+    if target /= replacement then
+        Canvas.replace target replacement canvas
+    else
+        canvas
 
 
 

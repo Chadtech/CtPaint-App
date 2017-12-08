@@ -1,6 +1,7 @@
 module Data.Menu
     exposing
-        ( ContentMsg(..)
+        ( ClickState(..)
+        , ContentMsg(..)
         , Menu(..)
         , Model
         , Msg(..)
@@ -20,7 +21,6 @@ import Open
 import ReplaceColor
 import Scale
 import Text
-import Util exposing (ClickState)
 
 
 type Menu
@@ -46,11 +46,18 @@ type alias Model =
     }
 
 
+type ClickState
+    = NoClick
+    | XButtonIsDown
+    | ClickAt Position
+
+
 type Msg
     = HeaderMouseDown MouseEvent
     | HeaderMouseMove Mouse.Position
     | HeaderMouseUp
-    | XClick
+    | XButtonMouseDown
+    | XButtonMouseUp
     | ContentMsg ContentMsg
 
 

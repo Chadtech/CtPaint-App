@@ -21,7 +21,6 @@ import Data.Minimap
     exposing
         ( ClickState(..)
         , Model
-        , MouseHappening(..)
         , Msg(..)
         , Reply(..)
         )
@@ -84,12 +83,10 @@ subscriptions model =
             Sub.none
 
         _ ->
-            Sub.batch
-                [ Mouse.moves
-                    (MouseDidSomething << MouseMoved)
-                , Mouse.ups
-                    (always (MouseDidSomething MouseUp))
-                ]
+            [ Mouse.moves MouseMoved
+            , Mouse.ups (always MouseUp)
+            ]
+                |> Sub.batch
 
 
 
@@ -99,8 +96,14 @@ subscriptions model =
 update : Msg -> Model -> ( Model, Reply )
 update message model =
     case message of
-        CloseClick ->
+        XButtonMouseUp ->
             model & Close
+
+        XButtonMouseDown ->
+            { model
+                | clickState = XButtonIsDown
+            }
+                & NoReply
 
         ZoomInClicked ->
             { model
@@ -114,13 +117,6 @@ update message model =
             }
                 & NoReply
 
-        MouseDidSomething mouseHappening ->
-            handleMouse mouseHappening model
-
-
-handleMouse : MouseHappening -> Model -> ( Model, Reply )
-handleMouse event model =
-    case event of
         ScreenMouseDown { targetPos, clientPos } ->
             { model
                 | clickState =
@@ -136,18 +132,26 @@ handleMouse event model =
                 & NoReply
 
         HeaderMouseDown { targetPos, clientPos } ->
-            { model
-                | clickState =
-                    { x = clientPos.x - targetPos.x
-                    , y = clientPos.y - targetPos.y
+            case model.clickState of
+                XButtonIsDown ->
+                    model & NoReply
+
+                _ ->
+                    { model
+                        | clickState =
+                            { x = clientPos.x - targetPos.x
+                            , y = clientPos.y - targetPos.y
+                            }
+                                |> ClickedInHeaderAt
                     }
-                        |> ClickedInHeaderAt
-            }
-                & NoReply
+                        & NoReply
 
         MouseMoved position ->
             case model.clickState of
                 NoClicks ->
+                    model & NoReply
+
+                XButtonIsDown ->
                     model & NoReply
 
                 ClickedInHeaderAt originalClick ->
@@ -254,9 +258,9 @@ view model canvas maybeSelection =
         ]
         [ header
             { text = "mini map"
-            , headerMouseDown =
-                MouseDidSomething << HeaderMouseDown
-            , xClick = CloseClick
+            , headerMouseDown = HeaderMouseDown
+            , xButtonMouseDown = XButtonMouseDown
+            , xButtonMouseUp = XButtonMouseUp
             }
         , cardBody
             []
@@ -322,7 +326,6 @@ screen : Html Msg
 screen =
     div
         [ class [ Screen ]
-        , MouseEvents.onMouseDown
-            (MouseDidSomething << ScreenMouseDown)
+        , MouseEvents.onMouseDown ScreenMouseDown
         ]
         []

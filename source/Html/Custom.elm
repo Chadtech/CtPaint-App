@@ -22,7 +22,12 @@ import Css.Namespace exposing (namespace)
 import Html exposing (Attribute, Html)
 import Html.Attributes
 import Html.CssHelpers
-import Html.Events exposing (onMouseDown)
+import Html.Events
+    exposing
+        ( onMouseDown
+        , onMouseUp
+        )
+import Json.Decode as Decode
 import MouseEvents exposing (MouseEvent, Position)
 import Tuple.Infix exposing ((:=))
 
@@ -321,18 +326,23 @@ cardBody attrs =
 type alias HeaderState msg =
     { text : String
     , headerMouseDown : MouseEvent -> msg
-    , xClick : msg
+    , xButtonMouseDown : msg
+    , xButtonMouseUp : msg
     }
 
 
 header : HeaderState msg -> Html msg
-header { text, headerMouseDown, xClick } =
+header { text, headerMouseDown, xButtonMouseDown, xButtonMouseUp } =
     Html.div
         [ class [ Header ]
         , MouseEvents.onMouseDown headerMouseDown
         ]
         [ Html.p [] [ Html.text text ]
-        , Html.a [ onMouseDown xClick ] [ Html.text "x" ]
+        , Html.a
+            [ onMouseUp xButtonMouseUp
+            , onMouseDown xButtonMouseDown
+            ]
+            [ Html.text "x" ]
         ]
 
 

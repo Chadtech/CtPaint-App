@@ -2,7 +2,6 @@ module Data.Minimap
     exposing
         ( ClickState(..)
         , Model
-        , MouseHappening(..)
         , Msg(..)
         , Reply(..)
         , State(..)
@@ -29,6 +28,7 @@ type alias Model =
 type ClickState
     = ClickedInHeaderAt Position
     | ClickedInScreenAt Position
+    | XButtonIsDown
     | NoClicks
 
 
@@ -38,14 +38,11 @@ type Reply
 
 
 type Msg
-    = CloseClick
+    = XButtonMouseDown
+    | XButtonMouseUp
     | ZoomInClicked
     | ZoomOutClicked
-    | MouseDidSomething MouseHappening
-
-
-type MouseHappening
-    = HeaderMouseDown MouseEvent
+    | HeaderMouseDown MouseEvent
     | ScreenMouseDown MouseEvent
     | MouseMoved Position
     | MouseUp
