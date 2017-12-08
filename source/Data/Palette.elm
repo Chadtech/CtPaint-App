@@ -30,46 +30,46 @@ type alias Swatches =
 
 initPalette : Array Color
 initPalette =
-    [ Color.rgba 176 166 154 255
+    [ Color.rgb 176 166 154
     , Color.black
     , Color.white
-    , Color.rgba 101 92 74 255
-    , Color.rgba 85 96 45 255
-    , Color.rgba 172 214 48 255
-    , Color.rgba 221 201 142 255
-    , Color.rgba 243 210 21 255
-    , Color.rgba 240 146 50 255
-    , Color.rgba 255 91 49 255
-    , Color.rgba 212 51 27 255
-    , Color.rgba 242 29 35 255
-    , Color.rgba 252 164 132 255
-    , Color.rgba 230 121 166 255
-    , Color.rgba 80 0 87 255
-    , Color.rgba 240 224 214 255
-    , Color.rgba 255 255 238 255
-    , Color.rgba 157 144 136 255
-    , Color.rgba 50 54 128 255
-    , Color.rgba 36 33 157 255
-    , Color.rgba 0 47 167 255
-    , Color.rgba 23 92 254 255
-    , Color.rgba 10 186 181 255
-    , Color.rgba 159 170 210 255
-    , Color.rgba 214 218 240 255
-    , Color.rgba 238 242 255 255
-    , Color.rgba 157 212 147 255
-    , Color.rgba 170 211 13 255
-    , Color.rgba 60 182 99 255
-    , Color.rgba 10 202 26 255
-    , Color.rgba 201 207 215 255
+    , Color.rgb 101 92 74
+    , Color.rgb 85 96 45
+    , Color.rgb 172 214 48
+    , Color.rgb 221 201 142
+    , Color.rgb 243 210 21
+    , Color.rgb 240 146 50
+    , Color.rgb 255 91 49
+    , Color.rgb 212 51 27
+    , Color.rgb 242 29 35
+    , Color.rgb 252 164 132
+    , Color.rgb 230 121 166
+    , Color.rgb 80 0 87
+    , Color.rgb 240 224 214
+    , Color.rgb 255 255 238
+    , Color.rgb 157 144 136
+    , Color.rgb 50 54 128
+    , Color.rgb 36 33 157
+    , Color.rgb 0 47 167
+    , Color.rgb 23 92 254
+    , Color.rgb 10 186 181
+    , Color.rgb 159 170 210
+    , Color.rgb 214 218 240
+    , Color.rgb 238 242 255
+    , Color.rgb 157 212 147
+    , Color.rgb 170 211 13
+    , Color.rgb 60 182 99
+    , Color.rgb 10 202 26
+    , Color.rgb 201 207 215
     ]
         |> Array.fromList
 
 
 initSwatches : Swatches
 initSwatches =
-    { primary = Color.rgba 176 166 154 255
+    { primary = Color.rgb 176 166 154
     , first = Color.black
     , second = Color.white
-    , third = Color.rgba 241 29 35 255
+    , third = Color.rgb 241 29 35
     , keyIsDown = False
     }
