@@ -299,7 +299,7 @@ incorporateMenu reply menu model =
                         model.swatches.second
                         model.canvas
             }
-                & Cmd.none
+                & Ports.send ReturnFocus
 
 
 incorporateColorPicker : Model -> ( ColorPicker.Model, ColorPicker.Reply ) -> ( Model, Cmd Msg )

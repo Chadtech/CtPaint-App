@@ -137,6 +137,7 @@ type Class
     | Divider
     | Strike
     | Option
+    | Disabled
     | Options
     | Seam
     | Dropdown Dropdown
@@ -201,11 +202,12 @@ css =
         [ position absolute
         , left (px -2)
         , backgroundColor ignorable2
-        , width (px 300)
+        , width (px 340)
         , giveDropdownWidth (Dropdown Help) 110
         , giveDropdownWidth (Dropdown View) 200
         , giveDropdownWidth (Dropdown Edit) 220
         , giveDropdownWidth (Dropdown File) 220
+        , giveDropdownWidth (Dropdown Tools) 300
         , hover [ color point ]
         , padding (px 4)
         ]
@@ -218,13 +220,13 @@ css =
         , top (px 6)
         , left (px 4)
         , height (px 0)
-        , width (px 292)
+        , width (px 332)
         , borderTop3 (px 2) solid ignorable3
         , borderBottom3 (px 2) solid ignorable1
         ]
     , Css.class Option
         [ height (px 32)
-        , width (px 296)
+        , width (px 336)
         , position relative
         , justifyContent spaceBetween
         , verticalAlign middle
@@ -245,6 +247,8 @@ css =
                     [ color ignorable3 ]
                 ]
             ]
+        , Css.withClass Disabled
+            []
         ]
     , Css.class Spinner
         [ height (px 24)
@@ -481,6 +485,10 @@ transformOpen model =
         (keysLabel model InitScale)
         (KeyCmdClicked InitScale)
     , option
+        "Resize Canvas"
+        (keysLabel model InitResize)
+        (KeyCmdClicked InitResize)
+    , option
         "Replace Color"
         (keysLabel model InitReplaceColor)
         (KeyCmdClicked InitReplaceColor)
@@ -493,6 +501,11 @@ transformOpen model =
         "Text"
         (keysLabel model InitText)
         (KeyCmdClicked InitText)
+    , optionIf
+        (model.selection /= Nothing)
+        "Transparency"
+        (keysLabel model SetTransparency)
+        (KeyCmdClicked SetTransparency)
     ]
         |> taskbarButtonOpen "transform" Transform
 
@@ -634,8 +647,8 @@ fileDropped model =
         (KeyCmdClicked InitDownload)
     , option
         "Upload"
-        (keysLabel model Upload)
-        (KeyCmdClicked Upload)
+        (keysLabel model InitUpload)
+        (KeyCmdClicked InitUpload)
     , option
         "Import"
         (keysLabel model InitImport)
@@ -687,6 +700,23 @@ divider =
     div
         [ class [ Divider ] ]
         [ div [ class [ Strike ] ] [] ]
+
+
+optionIf : Bool -> String -> String -> Msg -> Html Msg
+optionIf condition label cmdKeys clickListener =
+    if condition then
+        option label cmdKeys clickListener
+    else
+        disabledOption label cmdKeys
+
+
+disabledOption : String -> String -> Html Msg
+disabledOption label cmdKeys =
+    div
+        [ class [ Option, Disabled ] ]
+        [ p_ label
+        , p_ cmdKeys
+        ]
 
 
 option : String -> String -> Msg -> Html Msg

@@ -432,6 +432,15 @@ initUpload =
         |> init "upload" (Upload Upload.init)
 
 
+initResize : Size -> Size -> Model
+initResize canvasSize =
+    init "resize"
+        (Resize (Resize.init canvasSize))
+        { width = 10
+        , height = 10
+        }
+
+
 
 -- SUBSCRIPTIONS --
 

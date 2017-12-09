@@ -313,7 +313,7 @@ exec keyCmd model =
                     }
                         & Cmd.none
 
-        Upload ->
+        InitUpload ->
             { model
                 | menu =
                     model.windowSize
@@ -321,6 +321,16 @@ exec keyCmd model =
                         |> Just
             }
                 & Ports.send OpenUpFileUpload
+
+        InitResize ->
+            { model
+                | menu =
+                    model.windowSize
+                        |> Menu.initResize
+                            (Canvas.getSize model.canvas)
+                        |> Just
+            }
+                & Ports.send StealFocus
 
 
 transform : (Canvas -> Canvas) -> Model -> ( Model, Platform.Cmd msg )
