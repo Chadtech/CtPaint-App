@@ -94,6 +94,9 @@ PaintApp = function(manifest) {
         });
     }
 
+    var fileUploader = document.createElement("input");
+    fileUploader.type = "file";
+
     function jsMsgHandler(msg) {
         switch (msg.type) {
             case "save locally":
@@ -167,13 +170,10 @@ PaintApp = function(manifest) {
                 break;
 
             case "open up file upload":
-                var input = document.getElementById("uploader");
-                console.log("A", input, input.click);
-                input.click();
+                fileUploader.click();
                 break;
 
-            case "read file":
-                var input = document.getElementById("uploader");    
+            case "read file":  
                 var reader = new FileReader();
                 
                 reader.onload = function(){
@@ -187,10 +187,10 @@ PaintApp = function(manifest) {
                 var imageIndex = [
                     "image/png",
                     "image/jpeg"
-                ].indexOf(input.files[0].type);
+                ].indexOf(fileUploader.files[0].type);
 
                 if (imageIndex !== -1) {
-                    reader.readAsDataURL(input.files[0]);
+                    reader.readAsDataURL(fileUploader.files[0]);
                 } else {
                     app.ports.fromJs.send({
                         type: "file not image",

@@ -14,7 +14,6 @@ import Html.Attributes as Attributes exposing (style)
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (on, onMouseLeave)
-import Json.Decode as Decode
 import Menu
 import Minimap
 import Model exposing (Model)
@@ -131,13 +130,6 @@ view model =
             , colorPicker model
             , minimap model
             , menu model.menu
-            , input
-                [ Attributes.hidden True
-                , Attributes.type_ "file"
-                , Attributes.id "uploader"
-                , on "change" (Decode.succeed FileUploaderChanged)
-                ]
-                []
             ]
 
 

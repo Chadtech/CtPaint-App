@@ -17,9 +17,6 @@ import Mouse exposing (Position)
 import Random exposing (Seed)
 
 
--- TYPES --
-
-
 type alias Model =
     { user : Data.User.Model
     , canvas : Canvas
