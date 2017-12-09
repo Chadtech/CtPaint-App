@@ -28,6 +28,7 @@ import Open
 import Random exposing (Seed)
 import ReplaceColor
 import Reply exposing (Reply(CloseMenu, NoReply))
+import Resize
 import Scale
 import Text
 import Tuple.Infix exposing ((&))
@@ -97,14 +98,14 @@ updateContent msg model =
     case ( msg, model.content ) of
         ( DownloadMsg subMsg, Download subModel ) ->
             let
-                ( newSubModel, cmd ) =
+                ( ( newSubModel, cmd ), reply ) =
                     Download.update subMsg subModel
             in
             { model
                 | content = Download newSubModel
             }
                 & Cmd.map (ContentMsg << DownloadMsg) cmd
-                & NoReply
+                & reply
 
         ( ImportMsg subMsg, Import subModel ) ->
             let
@@ -158,6 +159,15 @@ updateContent msg model =
             in
             { model | content = Upload newSubModel }
                 & Cmd.map (ContentMsg << UploadMsg) cmd
+                & reply
+
+        ( ResizeMsg subMsg, Resize subModel ) ->
+            let
+                ( newSubModel, reply ) =
+                    Resize.update subMsg subModel
+            in
+            { model | content = Resize newSubModel }
+                & Cmd.none
                 & reply
 
         _ ->
@@ -293,6 +303,10 @@ contentView menu =
         Upload subModel ->
             List.map (Html.map UploadMsg) <|
                 Upload.view subModel
+
+        Resize subModel ->
+            List.map (Html.map ResizeMsg) <|
+                Resize.view subModel
 
 
 

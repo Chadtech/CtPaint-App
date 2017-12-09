@@ -7,7 +7,8 @@ import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Ports exposing (JsMsg(Download))
 import Random exposing (Generator, Seed)
-import Tuple.Infix exposing ((&))
+import Reply exposing (Reply(CloseMenu, NoReply))
+import Tuple.Infix exposing ((&), (|&))
 
 
 type Msg
@@ -26,22 +27,29 @@ type alias Model =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> ( ( Model, Cmd Msg ), Reply )
 update msg model =
     case msg of
         FieldUpdated str ->
-            { model | field = str } & Cmd.none
+            { model | field = str }
+                & Cmd.none
+                & NoReply
 
         Submitted ->
-            model & download model
+            download model
 
         DownloadButtonPressed ->
-            model & download model
+            download model
 
 
-download : Model -> Cmd Msg
-download =
-    fileName >> Download >> Ports.send
+download : Model -> ( ( Model, Cmd Msg ), Reply )
+download model =
+    model
+        |> fileName
+        |> Download
+        |> Ports.send
+        |& model
+        & CloseMenu
 
 
 fileName : Model -> String

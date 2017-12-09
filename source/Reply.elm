@@ -18,3 +18,4 @@ type Reply
     | AttemptingLogin
     | SetToNoSession
     | SetProject String Project
+    | ResizeTo Int Int Int Int

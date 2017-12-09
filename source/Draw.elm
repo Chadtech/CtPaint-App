@@ -23,15 +23,30 @@ import Util
         )
 
 
+-- RESIZE --
+
+
+resize : Int -> Int -> Int -> Int -> Color -> Canvas -> Canvas
+resize left top width height fillerColor canvas =
+    let
+        size =
+            { width = width
+            , height = height
+            }
+    in
+    size
+        |> Canvas.initialize
+        |> Canvas.draw (filledRectangle fillerColor size { x = 0, y = 0 })
+        |> Canvas.draw (pasteSelection { x = left, y = top } canvas)
+
+
+
 -- REPLACE --
 
 
 replace : Color -> Color -> Canvas -> Canvas
 replace target replacement canvas =
-    if target /= replacement then
-        Canvas.replace target replacement canvas
-    else
-        canvas
+    Canvas.replace target replacement canvas
 
 
 

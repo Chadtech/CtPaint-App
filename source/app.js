@@ -96,6 +96,32 @@ PaintApp = function(manifest) {
 
     var fileUploader = document.createElement("input");
     fileUploader.type = "file";
+    fileUploader.addEventListener("change", function(event) {
+        var reader = new FileReader();
+        
+        reader.onload = function(){
+            var dataURL = reader.result;
+            app.ports.fromJs.send({
+                type: "file read",
+                payload: reader.result
+            });
+        };
+        
+        var imageIndex = [
+            "image/png",
+            "image/jpeg"
+        ].indexOf(fileUploader.files[0].type);
+        console.log(fileUploader.files);
+
+        if (imageIndex !== -1) {
+            reader.readAsDataURL(fileUploader.files[0]);
+        } else {
+            app.ports.fromJs.send({
+                type: "file not image",
+                payload: null
+            });
+        }
+    })
 
     function jsMsgHandler(msg) {
         switch (msg.type) {
@@ -171,32 +197,6 @@ PaintApp = function(manifest) {
 
             case "open up file upload":
                 fileUploader.click();
-                break;
-
-            case "read file":  
-                var reader = new FileReader();
-                
-                reader.onload = function(){
-                    var dataURL = reader.result;
-                    app.ports.fromJs.send({
-                        type: "file read",
-                        payload: reader.result
-                    });
-                };
-                
-                var imageIndex = [
-                    "image/png",
-                    "image/jpeg"
-                ].indexOf(fileUploader.files[0].type);
-
-                if (imageIndex !== -1) {
-                    reader.readAsDataURL(fileUploader.files[0]);
-                } else {
-                    app.ports.fromJs.send({
-                        type: "file not image",
-                        payload: null
-                    });
-                }
                 break;
 
             default:

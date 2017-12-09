@@ -130,15 +130,6 @@ update message model =
         LogoutFailed err ->
             model & Cmd.none
 
-        FileUploaderChanged ->
-            { model
-                | menu =
-                    model.windowSize
-                        |> Menu.initUpload
-                        |> Just
-            }
-                & Ports.send ReadFile
-
         MsgDecodeFailed _ ->
             model & Cmd.none
 
@@ -293,6 +284,20 @@ incorporateMenu reply menu model =
             { model
                 | project = Just project
                 , menu = Nothing
+            }
+                & Cmd.none
+
+        ResizeTo left top width height ->
+            { model
+                | menu = Nothing
+                , canvas =
+                    Draw.resize
+                        left
+                        top
+                        width
+                        height
+                        model.swatches.second
+                        model.canvas
             }
                 & Cmd.none
 

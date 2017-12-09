@@ -314,9 +314,13 @@ exec keyCmd model =
                         & Cmd.none
 
         Upload ->
-            OpenUpFileUpload
-                |> Ports.send
-                |& model
+            { model
+                | menu =
+                    model.windowSize
+                        |> Menu.initUpload
+                        |> Just
+            }
+                & Ports.send OpenUpFileUpload
 
 
 transform : (Canvas -> Canvas) -> Model -> ( Model, Platform.Cmd msg )
