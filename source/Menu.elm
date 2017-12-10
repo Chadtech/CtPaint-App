@@ -18,7 +18,6 @@ import Html exposing (Attribute, Html, a, div, p, text)
 import Html.Attributes exposing (class, style)
 import Html.CssHelpers
 import Html.Custom
-import Imgur
 import Import
 import Loading
 import Login
@@ -278,10 +277,6 @@ contentView menu =
             List.map (Html.map ReplaceColorMsg) <|
                 ReplaceColor.view subModel
 
-        Imgur subModel ->
-            List.map (Html.map ImgurMsg) <|
-                Imgur.view subModel
-
         New subModel ->
             List.map (Html.map NewMsg) <|
                 New.view subModel
@@ -414,14 +409,6 @@ initReplaceColor target replacement palette =
         { width = 308
         , height = 196
         }
-
-
-initImgur : Size -> Model
-initImgur =
-    { width = 10
-    , height = 10
-    }
-        |> init "imgur" (Imgur Imgur.init)
 
 
 initUpload : Size -> Model

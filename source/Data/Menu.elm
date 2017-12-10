@@ -13,7 +13,6 @@ module Data.Menu
 
 import Data.User exposing (User)
 import Download
-import Imgur
 import Import
 import Login
 import Mouse exposing (Position)
@@ -34,7 +33,6 @@ type Menu
     | Text String
     | About
     | ReplaceColor ReplaceColor.Model
-    | Imgur Imgur.Model
     | New New.Model
     | Open Open.Model
     | Login Login.Model
@@ -73,7 +71,6 @@ type ContentMsg
     | ScaleMsg Scale.Msg
     | TextMsg Text.Msg
     | ReplaceColorMsg ReplaceColor.Msg
-    | ImgurMsg Imgur.Msg
     | NewMsg New.Msg
     | OpenMsg Open.Msg
     | LoginMsg Login.Msg
