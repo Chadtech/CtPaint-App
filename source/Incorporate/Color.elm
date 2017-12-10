@@ -6,8 +6,8 @@ module Incorporate.Color
 
 import Array
 import Color exposing (Color)
-import ColorPicker
 import Data.Color exposing (Model)
+import Data.Picker as Picker
 import Ports exposing (JsMsg(ReturnFocus, StealFocus))
 import Tuple.Infix exposing ((&))
 
@@ -17,15 +17,15 @@ type Reply
     | ColorHistory Int Color
 
 
-picker : Model -> ( ColorPicker.Model, ColorPicker.Reply ) -> ( ( Model, Cmd msg ), Reply )
+picker : Model -> ( Picker.Model, Picker.Reply ) -> ( ( Model, Cmd msg ), Reply )
 picker model ( picker, reply ) =
     case reply of
-        ColorPicker.NoReply ->
+        Picker.NoReply ->
             { model | picker = picker }
                 & Cmd.none
                 & NoReply
 
-        ColorPicker.SetColor index color ->
+        Picker.SetColor index color ->
             { model
                 | picker = picker
                 , palette =
@@ -34,13 +34,13 @@ picker model ( picker, reply ) =
                 & Cmd.none
                 & NoReply
 
-        ColorPicker.UpdateHistory index color ->
+        Picker.UpdateHistory index color ->
             { model | picker = picker }
                 & Cmd.none
                 & ColorHistory index color
 
-        ColorPicker.StealFocus ->
+        Picker.StealFocus ->
             model & Ports.send StealFocus & NoReply
 
-        ColorPicker.ReturnFocus ->
+        Picker.ReturnFocus ->
             model & Ports.send ReturnFocus & NoReply

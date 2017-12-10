@@ -1,9 +1,9 @@
 module Msg exposing (Msg(..), decode)
 
-import ColorPicker
 import Data.Keys as Key
 import Data.Menu as Menu
 import Data.Minimap as Minimap
+import Data.Picker as Picker
 import Data.User as User exposing (User)
 import Json.Decode as Decode exposing (Decoder, Value)
 import MouseEvents exposing (MouseEvent)
@@ -23,7 +23,7 @@ type Msg
     | ToolMsg Tool.Msg
     | MenuMsg Menu.Msg
     | Tick Time
-    | ColorPickerMsg ColorPicker.Msg
+    | ColorPickerMsg Picker.Msg
     | MinimapMsg Minimap.Msg
     | ScreenMouseMove MouseEvent
     | ScreenMouseExit
