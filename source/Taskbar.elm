@@ -297,6 +297,7 @@ view ({ taskbarDropped, user } as model) =
         , edit model
         , transform model
         , tools model
+        , colors model
         , view_ model
         , help taskbarDropped
         , userButton user
@@ -508,6 +509,47 @@ transformOpen model =
         (KeyCmdClicked SetTransparency)
     ]
         |> taskbarButtonOpen "transform" Transform
+
+
+
+-- COLORS --
+
+
+colors : Model -> Html Msg
+colors model =
+    case model.taskbarDropped of
+        Just Colors ->
+            colorsDropped model
+
+        _ ->
+            taskbarButtonClose "colors" Colors
+
+
+colorsDropped : Model -> Html Msg
+colorsDropped model =
+    [ option
+        "Turn Swatches Left"
+        (keysLabel model SwatchesTurnLeft)
+        (KeyCmdClicked SwatchesTurnLeft)
+    , option
+        "Turn Swatches Right"
+        (keysLabel model SwatchesTurnRight)
+        (KeyCmdClicked SwatchesTurnRight)
+    , divider
+    , option
+        (colorPickerLabel model)
+        (keysLabel model ToggleColorPicker)
+        (KeyCmdClicked ToggleColorPicker)
+    ]
+        |> taskbarButtonOpen "colors" Colors
+
+
+colorPickerLabel : Model -> String
+colorPickerLabel model =
+    if model.colorPicker.window.show then
+        "Hide Color Picker"
+    else
+        "Show Color Picker"
 
 
 

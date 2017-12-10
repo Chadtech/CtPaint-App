@@ -6,6 +6,7 @@ type Dropdown
     | Edit
     | Transform
     | Tools
+    | Colors
     | View
     | Help
     | User
