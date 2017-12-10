@@ -10,8 +10,9 @@
     "native-modules": true,
     "dependencies": {
         "Chadtech/ct-colors": "1.0.1 <= v < 2.0.0",
-        "Chadtech/ctpaint-keys": "3.0.0 <= v < 4.0.0",
+        "Chadtech/ctpaint-keys": "4.0.0 <= v < 5.0.0",
         "Chadtech/elm-bool-extra": "1.2.1 <= v < 2.0.0",
+        "Chadtech/hfnss": "1.0.1 <= v < 2.0.0",
         "Chadtech/tuple-infix": "1.1.1 <= v < 2.0.0",
         "Elm-Canvas/raster-shapes": "1.1.1 <= v < 2.0.0",
         "NoRedInk/elm-decode-pipeline": "3.0.0 <= v < 4.0.0",

@@ -234,9 +234,6 @@ exec keyCmd model =
             { model | menu = menu }
                 & Ports.send StealFocus
 
-        InitImgur ->
-            model & Cmd.none
-
         InitReplaceColor ->
             Helpers.Menu.initReplaceColor model & Cmd.none
 

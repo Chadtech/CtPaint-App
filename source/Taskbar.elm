@@ -653,8 +653,6 @@ fileDropped model =
         "Import"
         (keysLabel model InitImport)
         (KeyCmdClicked InitImport)
-    , divider
-    , option "Imgur" "" (KeyCmdClicked InitImgur)
     ]
         |> taskbarButtonOpen "file" File
 

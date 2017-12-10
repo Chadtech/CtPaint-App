@@ -9,7 +9,6 @@ module Resize
         )
 
 import Css exposing (..)
-import Css.Elements
 import Css.Namespace exposing (namespace)
 import Html
     exposing
