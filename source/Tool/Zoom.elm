@@ -1,10 +1,10 @@
 module Tool.Zoom exposing (..)
 
 import Canvas exposing (Size)
+import Helpers.Zoom as Zoom
 import Model exposing (Model)
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
-import Tool.Zoom.Util as Zoom
 import Util exposing (tbw)
 
 

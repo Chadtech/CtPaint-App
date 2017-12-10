@@ -9,6 +9,7 @@ import Data.User as User
 import Draw
 import Helpers.History as History
 import Helpers.Keys
+import Helpers.Zoom as Zoom
 import Keys
 import Menu
 import Minimap
@@ -92,7 +93,10 @@ update message model =
                 Opened minimap ->
                     let
                         minimapUpdate =
-                            Minimap.update subMsg minimap
+                            Minimap.update
+                                subMsg
+                                minimap
+                                model.canvas
                     in
                     incorporateMinimap minimapUpdate model
 
@@ -222,17 +226,7 @@ incorporateMenu reply menu model =
                         & Ports.send ReturnFocus
 
         AddText str ->
-            { model
-                | menu = Nothing
-                , selection =
-                    ( { x = 0, y = 0 }
-                    , Draw.text
-                        str
-                        model.swatches.primary
-                    )
-                        |> Just
-            }
-                & Ports.send ReturnFocus
+            addText str model
 
         Replace target replacement ->
             case model.selection of
@@ -300,6 +294,33 @@ incorporateMenu reply menu model =
                         model.canvas
             }
                 & Ports.send ReturnFocus
+
+
+addText : String -> Model -> ( Model, Cmd Msg )
+addText str model =
+    let
+        selection =
+            Draw.text str model.swatches.primary
+
+        position =
+            Zoom.pointInMiddle
+                model.windowSize
+                model.zoom
+                model.canvasPosition
+
+        { width, height } =
+            Canvas.getSize selection
+    in
+    { model
+        | menu = Nothing
+        , selection =
+            { x = position.x - (width // 2)
+            , y = position.y - (height // 2)
+            }
+                & selection
+                |> Just
+    }
+        & Ports.send ReturnFocus
 
 
 incorporateColorPicker : Model -> ( ColorPicker.Model, ColorPicker.Reply ) -> ( Model, Cmd Msg )

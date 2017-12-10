@@ -25,6 +25,7 @@ import Data.Minimap
         , Reply(..)
         )
 import Data.Tool exposing (Tool(..))
+import Helpers.Zoom as Zoom
 import Html exposing (Attribute, Html, a, div, p)
 import Html.Attributes exposing (style)
 import Html.CssHelpers
@@ -33,7 +34,6 @@ import Html.Events exposing (onClick)
 import Mouse
 import MouseEvents exposing (MouseEvent)
 import Tool
-import Tool.Zoom.Util as Zoom
 import Tuple.Infix exposing ((&))
 import Util exposing (toPoint)
 import Window exposing (Size)
@@ -93,8 +93,8 @@ subscriptions model =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Reply )
-update message model =
+update : Msg -> Model -> Canvas -> ( Model, Reply )
+update message model canvas =
     case message of
         XButtonMouseUp ->
             model & Close
@@ -106,16 +106,10 @@ update message model =
                 & NoReply
 
         ZoomInClicked ->
-            { model
-                | zoom = Zoom.next model.zoom
-            }
-                & NoReply
+            zoomIn canvas model & NoReply
 
         ZoomOutClicked ->
-            { model
-                | zoom = Zoom.prev model.zoom
-            }
-                & NoReply
+            zoomOut canvas model & NoReply
 
         ScreenMouseDown { targetPos, clientPos } ->
             { model
@@ -177,6 +171,33 @@ update message model =
                 | clickState = NoClicks
             }
                 & NoReply
+
+
+zoomOut : Canvas -> Model -> Model
+zoomOut canvas model =
+    { model
+        | zoom = Zoom.prev model.zoom
+    }
+
+
+zoomIn : Canvas -> Model -> Model
+zoomIn canvas model =
+    let
+        nextZoom =
+            Zoom.next model.zoom
+
+        { width, height } =
+            Canvas.getSize canvas
+
+        dw =
+            width * (nextZoom - model.zoom)
+
+        dh =
+            height * (nextZoom - model.zoom)
+    in
+    { model
+        | zoom = nextZoom
+    }
 
 
 

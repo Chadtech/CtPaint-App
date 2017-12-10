@@ -76,7 +76,7 @@ type Class
     = Lock
     | LockContainer
     | Field
-    | Column
+    | Row
 
 
 css : Stylesheet
@@ -90,7 +90,15 @@ css =
                 ]
             ]
         ]
-    , Css.class Field [ margin4 (px 4) (px 0) (px 0) (px 0) ]
+    , Css.class Field
+        [ margin4 (px 4) (px 0) (px 0) (px 0)
+        , children
+            [ Css.Elements.input
+                [ width (px 80) ]
+            , Css.Elements.p
+                [ width (px 80) ]
+            ]
+        ]
     , Css.class Lock
         [ width (px 24)
         , height (px 24)
@@ -98,9 +106,14 @@ css =
         , paddingBottom (px 2)
         , cursor pointer
         , textAlign center
+        , marginBottom (px 8)
+        , children
+            [ Css.Elements.input
+                [ width auto ]
+            ]
         ]
-    , Css.class Column
-        [ float left
+    , Css.class Row
+        [ marginBottom (px 8)
         , marginRight (px 8)
         ]
     ]
@@ -123,8 +136,8 @@ scaleNamespace =
 
 view : Model -> List (Html Msg)
 view model =
-    [ leftSide model
-    , rightSide model
+    [ percentScaling model
+    , absoluteScaling model
     , div
         []
         [ lock model.lockRatio
@@ -158,10 +171,10 @@ lockedValue locked =
         value " "
 
 
-leftSide : Model -> Html Msg
-leftSide model =
+percentScaling : Model -> Html Msg
+percentScaling model =
     div
-        [ class [ Column ] ]
+        [ class [ Row ] ]
         [ p [] [ Html.text "percent" ]
         , field
             [ p [] [ Html.text "width" ]
@@ -205,10 +218,10 @@ valueIfFocus thisField maybeFocusedField str =
             value ""
 
 
-rightSide : Model -> Html Msg
-rightSide model =
+absoluteScaling : Model -> Html Msg
+absoluteScaling model =
     div
-        [ class [ Column ] ]
+        [ class [ Row ] ]
         [ p [] [ Html.text "absolute" ]
         , field
             [ p [] [ Html.text "width" ]

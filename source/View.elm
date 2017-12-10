@@ -1,6 +1,6 @@
 module View exposing (css, view)
 
-import Canvas exposing (Canvas)
+import Canvas exposing (Canvas, DrawOp)
 import Chadtech.Colors exposing (ignorable2)
 import ColorPicker
 import Css exposing (..)
@@ -9,6 +9,7 @@ import Css.Namespace exposing (namespace)
 import Data.Menu
 import Data.Minimap exposing (State(..))
 import Data.Tool
+import Draw
 import Html exposing (Html, div, input)
 import Html.Attributes as Attributes exposing (style)
 import Html.CssHelpers
@@ -86,7 +87,12 @@ css =
         , left (px toolbarWidth)
         , top (px toolbarWidth)
         , cursor crosshair
-        , withClass Hand [ cursor move ]
+        , withClass Hand
+            [ cursor move ]
+        , withClass ZoomIn
+            [ property "cursor" "-webkit-zoom-in" ]
+        , withClass ZoomOut
+            [ property "cursor" "-webkit-zoom-out" ]
         , textAlign center
         ]
     ]
@@ -258,9 +264,35 @@ canvasArea canvasAreaHeight model =
             , Attributes.id "main-canvas"
             , style (canvasStyles model)
             ]
-            (Canvas.draw model.drawAtRender model.canvas)
+            (mainCanvas model)
         , selection model
         ]
+
+
+mainCanvas : Model -> Canvas
+mainCanvas model =
+    case model.mousePosition of
+        Just position ->
+            [ model.drawAtRender
+            , toolAtRender model position
+            ]
+                |> Canvas.batch
+                |> flip Canvas.draw model.canvas
+
+        Nothing ->
+            Canvas.draw model.drawAtRender model.canvas
+
+
+toolAtRender : Model -> Mouse.Position -> DrawOp
+toolAtRender model position =
+    case model.tool of
+        Data.Tool.Pencil _ ->
+            position
+                |> Util.toPoint
+                |> Draw.pixel model.swatches.primary
+
+        _ ->
+            Canvas.batch []
 
 
 canvasStyles : Model -> List ( String, String )

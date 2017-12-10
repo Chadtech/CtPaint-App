@@ -8,13 +8,13 @@ import Data.Tool as Tool exposing (Tool(..))
 import Draw
 import Helpers.History as History
 import Helpers.Menu
+import Helpers.Zoom as Zoom
 import Menu
 import Minimap
 import Model exposing (Model)
 import Platform.Cmd as Platform
 import Ports exposing (JsMsg(..))
 import Tool.Zoom as Zoom
-import Tool.Zoom.Util as Zoom
 import Tuple.Infix exposing ((&), (|&))
 
 
@@ -307,7 +307,8 @@ exec keyCmd model =
                     { model
                         | selection =
                             selection
-                                |> Canvas.transparentColor model.swatches.second
+                                |> Canvas.transparentColor
+                                    model.swatches.second
                                 |& pos
                                 |> Just
                     }
