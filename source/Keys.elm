@@ -6,6 +6,7 @@ import Data.Keys as Key exposing (Cmd(..))
 import Data.Minimap exposing (State(..))
 import Data.Tool as Tool exposing (Tool(..))
 import Draw
+import Helpers.Color
 import Helpers.History as History
 import Helpers.Menu
 import Helpers.Zoom as Zoom
@@ -55,7 +56,7 @@ exec keyCmd model =
             swatchesTurnRight model & Cmd.none
 
         SwatchesQuickTurnLeft ->
-            if model.swatches.keyIsDown then
+            if model.color.swatches.keyIsDown then
                 model & Cmd.none
             else
                 model
@@ -68,7 +69,7 @@ exec keyCmd model =
                 & Cmd.none
 
         SwatchesQuickTurnRight ->
-            if model.swatches.keyIsDown then
+            if model.color.swatches.keyIsDown then
                 model & Cmd.none
             else
                 model
@@ -81,7 +82,7 @@ exec keyCmd model =
                 & Cmd.none
 
         SwatchesQuickTurnDown ->
-            if model.swatches.keyIsDown then
+            if model.color.swatches.keyIsDown then
                 model & Cmd.none
             else
                 model
@@ -119,7 +120,7 @@ exec keyCmd model =
                     let
                         drawOp =
                             Draw.filledRectangle
-                                model.swatches.second
+                                model.color.swatches.second
                                 (Canvas.getSize model.canvas)
                                 { x = 0, y = 0 }
                     in
@@ -238,23 +239,9 @@ exec keyCmd model =
             Helpers.Menu.initReplaceColor model & Cmd.none
 
         ToggleColorPicker ->
-            let
-                { colorPicker } =
-                    model
-
-                { window } =
-                    colorPicker
-
-                newWindow =
-                    { window
-                        | show = not window.show
-                    }
-            in
             { model
-                | colorPicker =
-                    { colorPicker
-                        | window = newWindow
-                    }
+                | color =
+                    Helpers.Color.toggleColorPicker model.color
             }
                 & Cmd.none
 
@@ -305,7 +292,7 @@ exec keyCmd model =
                         | selection =
                             selection
                                 |> Canvas.transparentColor
-                                    model.swatches.second
+                                    model.color.swatches.second
                                 |& pos
                                 |> Just
                     }
@@ -353,42 +340,30 @@ transform transformation model =
 
 
 swatchesTurnLeft : Model -> Model
-swatchesTurnLeft ({ swatches } as model) =
+swatchesTurnLeft model =
     { model
-        | swatches =
-            { swatches
-                | primary = model.swatches.first
-                , first = model.swatches.second
-                , second = model.swatches.third
-                , third = model.swatches.primary
-            }
+        | color =
+            Helpers.Color.swatchesTurnLeft model.color
     }
 
 
 swatchesTurnRight : Model -> Model
-swatchesTurnRight ({ swatches } as model) =
+swatchesTurnRight model =
     { model
-        | swatches =
-            { swatches
-                | primary = model.swatches.third
-                , first = model.swatches.primary
-                , second = model.swatches.first
-                , third = model.swatches.second
-            }
+        | color =
+            Helpers.Color.swatchesTurnRight model.color
     }
 
 
 setKeyAsUp : Model -> Model
-setKeyAsUp ({ swatches } as model) =
+setKeyAsUp model =
     { model
-        | swatches =
-            { swatches | keyIsDown = False }
+        | color = Helpers.Color.setKeyAsUp model.color
     }
 
 
 setKeyAsDown : Model -> Model
-setKeyAsDown ({ swatches } as model) =
+setKeyAsDown model =
     { model
-        | swatches =
-            { swatches | keyIsDown = True }
+        | color = Helpers.Color.setKeyAsDown model.color
     }

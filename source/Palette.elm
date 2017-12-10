@@ -1,4 +1,11 @@
-module Palette exposing (Msg, css, update, view)
+module Palette
+    exposing
+        ( Msg
+        , css
+        , paletteView
+        , swatchesView
+        , update
+        )
 
 import Array exposing (Array)
 import Chadtech.Colors
@@ -12,19 +19,15 @@ import Chadtech.Colors
 import Color exposing (Color)
 import ColorPicker
 import Css exposing (..)
-import Css.Elements
 import Css.Namespace exposing (namespace)
+import Data.Color exposing (Model)
 import Data.Palette exposing (Swatches)
-import Data.Tool exposing (Tool(..))
-import Draw
+import Helpers.Color
 import Html exposing (Attribute, Html, a, div, p, span)
 import Html.Attributes exposing (class, classList, style)
 import Html.CssHelpers
 import Html.Custom exposing (cannotSelect, indent, outdent)
 import Html.Events exposing (onClick)
-import Model exposing (Model)
-import Mouse
-import Tuple.Infix exposing ((:=))
 import Util
     exposing
         ( background
@@ -53,20 +56,14 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         PaletteSquareClick color ->
-            let
-                { swatches } =
-                    model
-            in
             { model
                 | swatches =
-                    { swatches
-                        | primary = color
-                    }
+                    Helpers.Color.setPrimary color model.swatches
             }
 
         OpenColorPicker color index ->
             { model
-                | colorPicker =
+                | picker =
                     ColorPicker.init True index color
             }
 
@@ -84,8 +81,7 @@ update msg model =
 
 
 type Class
-    = Palette
-    | SwatchesContainer
+    = SwatchesContainer
     | Swatch
     | Primary
     | First
@@ -95,20 +91,11 @@ type Class
     | Square
     | Selected
     | Plus
-    | Edge
-    | Info
 
 
 css : Stylesheet
 css =
-    [ Css.class Palette
-        [ backgroundColor ignorable2
-        , position fixed
-        , bottom (px 0)
-        , left (px toolbarWidth)
-        , width (calc (pct 100) minus (px 29))
-        ]
-    , Css.class SwatchesContainer
+    [ Css.class SwatchesContainer
         [ marginLeft (px -27)
         , position absolute
         , top (px 4)
@@ -168,27 +155,6 @@ css =
         , backgroundColor ignorable2
         , textAlign center
         ]
-    , (Css.class Info << List.append indent)
-        [ backgroundColor backgroundx2
-        , width (px 290)
-        , position absolute
-        , left (calc (pct 100) minus (px 297))
-        , top (px 4)
-        , overflowY auto
-        , children
-            [ Css.Elements.p
-                [ float left
-                , marginRight (px 8)
-                ]
-            ]
-        ]
-    , Css.class Edge
-        [ height (px 3)
-        , borderTop3 (px 2) solid ignorable1
-        , top (px 0)
-        , left (px 0)
-        , cursor nsResize
-        ]
     ]
         |> namespace paletteNamespace
         |> stylesheet
@@ -207,41 +173,28 @@ paletteNamespace =
     Html.CssHelpers.withNamespace paletteNamespace
 
 
-view : Model -> Html Msg
-view model =
-    div
-        [ class [ Palette ]
-        , style [ Util.height model.horizontalToolbarHeight ]
-        ]
-        [ edge
-        , swatchesView model.swatches
-        , generalPalette model
-        , infoBox model
-        ]
-
-
 
 -- PALETTE --
 
 
-generalPalette : Model -> Html Msg
-generalPalette model =
+paletteView : Model -> Html Msg
+paletteView model =
     let
-        square : Int -> Color.Color -> Html Msg
+        square : ( Int, Color.Color ) -> Html Msg
         square =
             paletteSquare
-                model.colorPicker.window.show
-                model.colorPicker.picker.index
+                model.picker.window.show
+                model.picker.fields.index
 
         paletteSquares =
             model.palette
-                |> Array.indexedMap square
-                |> Array.toList
+                |> Array.toIndexedList
+                |> List.map square
     in
     div
         [ class [ Colors ]
         , style
-            [ Util.height (model.horizontalToolbarHeight - 10) ]
+            [ Util.height (Util.pbh - 10) ]
         ]
         (List.append paletteSquares [ addColor ])
 
@@ -255,8 +208,8 @@ addColor =
         [ Html.text "+" ]
 
 
-paletteSquare : Bool -> Int -> Int -> Color.Color -> Html Msg
-paletteSquare show selectedIndex index color =
+paletteSquare : Bool -> Int -> ( Int, Color.Color ) -> Html Msg
+paletteSquare show selectedIndex ( index, color ) =
     let
         isSelected =
             index == selectedIndex
@@ -286,7 +239,7 @@ highLight show =
 -- SWATCHES --
 
 
-swatchesView : Swatches -> Html Msg
+swatchesView : Swatches -> Html msg
 swatchesView { primary, first, second, third } =
     div
         [ class [ SwatchesContainer ] ]
@@ -297,217 +250,10 @@ swatchesView { primary, first, second, third } =
         ]
 
 
-swatch : Color.Color -> Class -> Html Msg
+swatch : Color.Color -> Class -> Html msg
 swatch color quadrant =
     div
         [ class [ Swatch, quadrant ]
         , background color
         ]
         []
-
-
-
--- EDGE --
-
-
-edge : Html Msg
-edge =
-    div [ class [ Edge ] ] []
-
-
-
--- INFO BOX --
-
-
-infoBox : Model -> Html Msg
-infoBox model =
-    div
-        [ class [ Info ]
-        , style
-            [ Util.height (model.horizontalToolbarHeight - 10) ]
-        ]
-        (infoBoxContent model)
-
-
-infoView : String -> Html Msg
-infoView str =
-    p [] [ Html.text str ]
-
-
-infoBoxContent : Model -> List (Html Msg)
-infoBoxContent model =
-    [ List.map infoView (toolContent model)
-    , List.map infoView (generalContent model)
-    , sampleColor model
-    ]
-        |> List.concat
-
-
-sampleColor : Model -> List (Html Msg)
-sampleColor model =
-    case model.mousePosition of
-        Just position ->
-            let
-                color =
-                    Draw.colorAt
-                        position
-                        model.canvas
-
-                colorStr =
-                    Util.toHexColor color
-
-                backgroundColor =
-                    if (Color.toHsl color).lightness > 0.5 then
-                        ""
-                    else
-                        "#ffffff"
-            in
-            [ p
-                []
-                [ Html.text "color("
-                , span
-                    [ style
-                        [ "color" := colorStr
-                        , "background" := backgroundColor
-                        ]
-                    ]
-                    [ Html.text colorStr ]
-                , Html.text ")"
-                ]
-            ]
-
-        Nothing ->
-            []
-
-
-toolContent : Model -> List String
-toolContent ({ tool } as model) =
-    case tool of
-        Select maybePosition ->
-            case ( maybePosition, model.mousePosition ) of
-                ( Just origin, Just position ) ->
-                    let
-                        size =
-                            [ "rect("
-                            , (origin.x - position.x + 1)
-                                |> abs
-                                |> toString
-                            , ","
-                            , (origin.y - position.y + 1)
-                                |> abs
-                                |> toString
-                            , ")"
-                            ]
-
-                        originStr =
-                            [ "origin("
-                            , toString origin.x
-                            , ","
-                            , toString origin.y
-                            , ")"
-                            ]
-                    in
-                    [ size
-                    , originStr
-                    ]
-                        |> List.map String.concat
-
-                _ ->
-                    []
-
-        Rectangle maybePosition ->
-            case ( maybePosition, model.mousePosition ) of
-                ( Just origin, Just position ) ->
-                    let
-                        size =
-                            [ "rect("
-                            , (origin.x - position.x + 1)
-                                |> abs
-                                |> toString
-                            , ","
-                            , (origin.y - position.y + 1)
-                                |> abs
-                                |> toString
-                            , ")"
-                            ]
-
-                        originStr =
-                            [ "origin("
-                            , toString origin.x
-                            , ","
-                            , toString origin.y
-                            , ")"
-                            ]
-                    in
-                    [ size
-                    , originStr
-                    ]
-                        |> List.map String.concat
-
-                _ ->
-                    []
-
-        RectangleFilled maybePosition ->
-            case ( maybePosition, model.mousePosition ) of
-                ( Just origin, Just position ) ->
-                    let
-                        size =
-                            [ "rect("
-                            , (origin.x - position.x + 1)
-                                |> abs
-                                |> toString
-                            , ","
-                            , (origin.y - position.y + 1)
-                                |> abs
-                                |> toString
-                            , ")"
-                            ]
-
-                        originStr =
-                            [ "origin("
-                            , toString origin.x
-                            , ","
-                            , toString origin.y
-                            , ")"
-                            ]
-                    in
-                    [ size
-                    , originStr
-                    ]
-                        |> List.map String.concat
-
-                _ ->
-                    []
-
-        _ ->
-            []
-
-
-
--- HELPERS --
-
-
-generalContent : Model -> List String
-generalContent model =
-    [ zoom model.zoom ]
-        |> maybeCons (mouse model.mousePosition)
-
-
-mouse : Maybe Mouse.Position -> Maybe String
-mouse maybePosition =
-    case maybePosition of
-        Just { x, y } ->
-            [ "mouse(" ++ toString x
-            , "," ++ toString y
-            , ")"
-            ]
-                |> String.concat
-                |> Just
-
-        Nothing ->
-            Nothing
-
-
-zoom : Int -> String
-zoom z =
-    "zoom(" ++ toString (z * 100) ++ "%)"

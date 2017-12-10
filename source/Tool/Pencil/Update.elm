@@ -15,19 +15,19 @@ update message tool model =
     case ( message, tool ) of
         ( ScreenMouseDown { clientPos }, Nothing ) ->
             let
-                adjustedPosition =
+                position =
                     adjustPosition model clientPos
             in
             { model
-                | tool = Pencil (Just adjustedPosition)
+                | tool = Pencil (Just position)
                 , pendingDraw =
-                    Canvas.batch
-                        [ model.pendingDraw
-                        , Draw.line
-                            model.swatches.primary
-                            adjustedPosition
-                            adjustedPosition
-                        ]
+                    [ model.pendingDraw
+                    , Draw.line
+                        model.color.swatches.primary
+                        position
+                        position
+                    ]
+                        |> Canvas.batch
             }
                 |> History.canvas
 
@@ -42,16 +42,14 @@ update message tool model =
                     Canvas.batch
                         [ model.pendingDraw
                         , Draw.line
-                            model.swatches.primary
+                            model.color.swatches.primary
                             priorPosition
                             adjustedPosition
                         ]
             }
 
         ( SubMouseUp, _ ) ->
-            { model
-                | tool = Pencil Nothing
-            }
+            { model | tool = Pencil Nothing }
 
         _ ->
             model

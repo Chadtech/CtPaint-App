@@ -25,7 +25,7 @@ update message toolModel model =
                         |> RectangleFilled
                 , drawAtRender =
                     Draw.filledRectangle
-                        model.swatches.primary
+                        model.color.swatches.primary
                         (Size 1 1)
                         adjustedPosition
             }
@@ -41,7 +41,7 @@ update message toolModel model =
             { model
                 | drawAtRender =
                     Draw.filledRectangle
-                        model.swatches.primary
+                        model.color.swatches.primary
                         size
                         drawPosition
             }
@@ -60,7 +60,7 @@ update message toolModel model =
                     Canvas.batch
                         [ model.pendingDraw
                         , Draw.filledRectangle
-                            model.swatches.primary
+                            model.color.swatches.primary
                             size
                             drawPosition
                         ]

@@ -1,7 +1,13 @@
 module View exposing (css, view)
 
 import Canvas exposing (Canvas, DrawOp)
-import Chadtech.Colors exposing (ignorable2)
+import Chadtech.Colors
+    exposing
+        ( backgroundx2
+        , ignorable1
+        , ignorable2
+        )
+import Color
 import ColorPicker
 import Css exposing (..)
 import Css.Elements exposing (canvas)
@@ -10,10 +16,10 @@ import Data.Menu
 import Data.Minimap exposing (State(..))
 import Data.Tool
 import Draw
-import Html exposing (Html, div, input)
+import Html exposing (Html, div, input, p, span)
 import Html.Attributes as Attributes exposing (style)
 import Html.CssHelpers
-import Html.Custom
+import Html.Custom exposing (indent)
 import Html.Events exposing (on, onMouseLeave)
 import Menu
 import Minimap
@@ -25,6 +31,7 @@ import Palette
 import Taskbar
 import Tool
 import Toolbar
+import Tuple.Infix exposing ((:=))
 import Util exposing (toolbarWidth)
 
 
@@ -48,6 +55,9 @@ type Class
     | Line
     | Rectangle
     | RectangleFilled
+    | Info
+    | Edge
+    | Palette
 
 
 css : Stylesheet
@@ -95,6 +105,34 @@ css =
             [ property "cursor" "-webkit-zoom-out" ]
         , textAlign center
         ]
+    , Css.class Palette
+        [ backgroundColor ignorable2
+        , position fixed
+        , bottom (px 0)
+        , left (px toolbarWidth)
+        , width (calc (pct 100) minus (px 29))
+        ]
+    , Css.class Edge
+        [ height (px 3)
+        , borderTop3 (px 2) solid ignorable1
+        , top (px 0)
+        , left (px 0)
+        , cursor nsResize
+        ]
+    , (Css.class Info << List.append indent)
+        [ backgroundColor backgroundx2
+        , width (px 290)
+        , position absolute
+        , left (calc (pct 100) minus (px 297))
+        , top (px 4)
+        , overflowY auto
+        , children
+            [ Css.Elements.p
+                [ float left
+                , marginRight (px 8)
+                ]
+            ]
+        ]
     ]
         |> namespace mainViewNamespace
         |> stylesheet
@@ -121,7 +159,7 @@ view model =
         let
             canvasAreaHeight =
                 [ model.windowSize.height
-                , -model.horizontalToolbarHeight
+                , -Util.pbh
                 , -(floor toolbarWidth)
                 ]
                     |> List.sum
@@ -130,7 +168,7 @@ view model =
             [ class [ Main ] ]
             [ Html.map ToolbarMsg (Toolbar.view model.tool)
             , Html.map TaskbarMsg (Taskbar.view model)
-            , Html.map PaletteMsg (Palette.view model)
+            , palette model
             , canvasArea canvasAreaHeight model
             , clickScreen canvasAreaHeight model
             , colorPicker model
@@ -161,6 +199,222 @@ menu maybeMenuModel =
 
 
 
+-- PALLETE --
+
+
+palette : Model -> Html Msg
+palette model =
+    div
+        [ class [ Palette ]
+        , style [ Util.height Util.pbh ]
+        ]
+        [ edge
+        , Palette.swatchesView model.color.swatches
+        , Html.map PaletteMsg (Palette.paletteView model.color)
+        , infoBox model
+        ]
+
+
+edge : Html Msg
+edge =
+    div [ class [ Edge ] ] []
+
+
+
+-- INFO BOX --
+
+
+infoBox : Model -> Html msg
+infoBox model =
+    div
+        [ class [ Info ]
+        , style
+            [ Util.height (Util.pbh - 10) ]
+        ]
+        (infoBoxContent model)
+
+
+infoView : String -> Html msg
+infoView str =
+    p [] [ Html.text str ]
+
+
+infoBoxContent : Model -> List (Html msg)
+infoBoxContent model =
+    [ List.map infoView (toolContent model)
+    , List.map infoView (generalContent model)
+    , sampleColor model
+    ]
+        |> List.concat
+
+
+generalContent : Model -> List String
+generalContent model =
+    [ zoom model.zoom ]
+        |> Util.maybeCons (mouse model.mousePosition)
+
+
+sampleColor : Model -> List (Html msg)
+sampleColor model =
+    case model.mousePosition of
+        Just position ->
+            let
+                color =
+                    Draw.colorAt
+                        position
+                        model.canvas
+
+                colorStr =
+                    Util.toHexColor color
+
+                backgroundColor =
+                    if (Color.toHsl color).lightness > 0.5 then
+                        ""
+                    else
+                        "#ffffff"
+            in
+            [ p
+                []
+                [ Html.text "color("
+                , span
+                    [ style
+                        [ "color" := colorStr
+                        , "background" := backgroundColor
+                        ]
+                    ]
+                    [ Html.text colorStr ]
+                , Html.text ")"
+                ]
+            ]
+
+        Nothing ->
+            []
+
+
+toolContent : Model -> List String
+toolContent ({ tool } as model) =
+    case tool of
+        Data.Tool.Select maybePosition ->
+            case ( maybePosition, model.mousePosition ) of
+                ( Just origin, Just position ) ->
+                    let
+                        size =
+                            [ "rect("
+                            , (origin.x - position.x + 1)
+                                |> abs
+                                |> toString
+                            , ","
+                            , (origin.y - position.y + 1)
+                                |> abs
+                                |> toString
+                            , ")"
+                            ]
+
+                        originStr =
+                            [ "origin("
+                            , toString origin.x
+                            , ","
+                            , toString origin.y
+                            , ")"
+                            ]
+                    in
+                    [ size
+                    , originStr
+                    ]
+                        |> List.map String.concat
+
+                _ ->
+                    []
+
+        Data.Tool.Rectangle maybePosition ->
+            case ( maybePosition, model.mousePosition ) of
+                ( Just origin, Just position ) ->
+                    let
+                        size =
+                            [ "rect("
+                            , (origin.x - position.x + 1)
+                                |> abs
+                                |> toString
+                            , ","
+                            , (origin.y - position.y + 1)
+                                |> abs
+                                |> toString
+                            , ")"
+                            ]
+
+                        originStr =
+                            [ "origin("
+                            , toString origin.x
+                            , ","
+                            , toString origin.y
+                            , ")"
+                            ]
+                    in
+                    [ size
+                    , originStr
+                    ]
+                        |> List.map String.concat
+
+                _ ->
+                    []
+
+        Data.Tool.RectangleFilled maybePosition ->
+            case ( maybePosition, model.mousePosition ) of
+                ( Just origin, Just position ) ->
+                    let
+                        size =
+                            [ "rect("
+                            , (origin.x - position.x + 1)
+                                |> abs
+                                |> toString
+                            , ","
+                            , (origin.y - position.y + 1)
+                                |> abs
+                                |> toString
+                            , ")"
+                            ]
+
+                        originStr =
+                            [ "origin("
+                            , toString origin.x
+                            , ","
+                            , toString origin.y
+                            , ")"
+                            ]
+                    in
+                    [ size
+                    , originStr
+                    ]
+                        |> List.map String.concat
+
+                _ ->
+                    []
+
+        _ ->
+            []
+
+
+mouse : Maybe Mouse.Position -> Maybe String
+mouse maybePosition =
+    case maybePosition of
+        Just { x, y } ->
+            [ "mouse(" ++ toString x
+            , "," ++ toString y
+            , ")"
+            ]
+                |> String.concat
+                |> Just
+
+        Nothing ->
+            Nothing
+
+
+zoom : Int -> String
+zoom z =
+    "zoom(" ++ toString (z * 100) ++ "%)"
+
+
+
 -- MINI MAP --
 
 
@@ -183,9 +437,9 @@ minimap model =
 
 
 colorPicker : Model -> Html Msg
-colorPicker { colorPicker } =
-    if colorPicker.window.show then
-        colorPicker
+colorPicker model =
+    if model.color.picker.window.show then
+        model.color.picker
             |> ColorPicker.view
             |> Html.map ColorPickerMsg
     else
@@ -289,7 +543,7 @@ toolAtRender model position =
         Data.Tool.Pencil _ ->
             position
                 |> Util.toPoint
-                |> Draw.pixel model.swatches.primary
+                |> Draw.pixel model.color.swatches.primary
 
         _ ->
             Canvas.batch []

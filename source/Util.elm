@@ -165,6 +165,15 @@ tbw =
     floor toolbarWidth
 
 
+
+-- palette bar height
+
+
+pbh : Int
+pbh =
+    58
+
+
 toolbarWidth : Float
 toolbarWidth =
     29

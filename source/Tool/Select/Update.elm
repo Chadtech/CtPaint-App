@@ -22,7 +22,7 @@ update message selectModel model =
                     { model
                         | drawAtRender =
                             Draw.rectangle
-                                model.swatches.primary
+                                model.color.swatches.primary
                                 adjustedPosition
                                 adjustedPosition
                     }
@@ -34,7 +34,7 @@ update message selectModel model =
             { model
                 | drawAtRender =
                     Draw.rectangle
-                        model.swatches.second
+                        model.color.swatches.second
                         priorPosition
                         (adjustPosition model position)
             }
@@ -54,21 +54,19 @@ update message selectModel model =
                         Draw.getSelection
                             adjustedPosition
                             priorPosition
-                            model.swatches.second
+                            model.color.swatches.second
                             model.canvas
                 in
                 { model
                     | pendingDraw =
-                        Canvas.batch
-                            [ model.pendingDraw
-                            , drawOp
-                            ]
+                        [ model.pendingDraw
+                        , drawOp
+                        ]
+                            |> Canvas.batch
                     , selection =
-                        ( positionMin
-                            priorPosition
-                            adjustedPosition
-                        , newSelection
-                        )
+                        adjustedPosition
+                            |> positionMin priorPosition
+                            & newSelection
                             |> Just
                 }
                     & Nothing

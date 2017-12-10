@@ -23,7 +23,7 @@ update message toolModel model =
                     Rectangle (Just adjustedPosition)
                 , drawAtRender =
                     Draw.rectangle
-                        model.swatches.primary
+                        model.color.swatches.primary
                         adjustedPosition
                         adjustedPosition
             }
@@ -33,7 +33,7 @@ update message toolModel model =
             { model
                 | drawAtRender =
                     Draw.rectangle
-                        model.swatches.primary
+                        model.color.swatches.primary
                         priorPosition
                         (adjustPosition model position)
             }
@@ -43,13 +43,13 @@ update message toolModel model =
                 | tool = Rectangle Nothing
                 , drawAtRender = Canvas.batch []
                 , pendingDraw =
-                    Canvas.batch
-                        [ model.pendingDraw
-                        , Draw.rectangle
-                            model.swatches.primary
-                            priorPosition
-                            (adjustPosition model position)
-                        ]
+                    [ model.pendingDraw
+                    , Draw.rectangle
+                        model.color.swatches.primary
+                        priorPosition
+                        (adjustPosition model position)
+                    ]
+                        |> Canvas.batch
             }
 
         _ ->

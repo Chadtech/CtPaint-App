@@ -65,7 +65,7 @@ type WindowMsg
     | XButtonMouseUp
 
 
-type PickerMsg
+type FieldsMsg
     = SetFocus Bool
     | StealSubmit
     | UpdateColorHexField String
@@ -76,7 +76,7 @@ type PickerMsg
 
 
 type Msg
-    = HandlePickerMsg PickerMsg
+    = HandleFieldsMsg FieldsMsg
     | HandleWindowMsg WindowMsg
 
 
@@ -91,7 +91,7 @@ type Gradient
 
 type alias Model =
     { window : Window
-    , picker : Picker
+    , fields : Fields
     }
 
 
@@ -109,7 +109,7 @@ type ClickState
     | XButtonIsDown
 
 
-type alias Picker =
+type alias Fields =
     { color : Color.Color
     , index : Int
     , redField : String
@@ -129,13 +129,13 @@ type alias Picker =
 
 init : Bool -> Int -> Color.Color -> Model
 init show index color =
-    { picker = initPicker index color
+    { fields = initFields index color
     , window = initWindow show
     }
 
 
-initPicker : Int -> Color.Color -> Picker
-initPicker index color =
+initFields : Int -> Color.Color -> Fields
+initFields index color =
     let
         { red, green, blue } =
             Color.toRgb color
@@ -215,9 +215,9 @@ doesntHaveHue color =
 -- UPDATE --
 
 
-integratePicker : Model -> Picker -> Model
-integratePicker model picker =
-    { model | picker = picker }
+integrateFields : Model -> Fields -> Model
+integrateFields model fields =
+    { model | fields = fields }
 
 
 integrateWindow : Model -> Window -> Model
@@ -225,14 +225,14 @@ integrateWindow model window =
     { model | window = window }
 
 
-updatePicker : PickerMsg -> Picker -> ( Picker, Reply )
-updatePicker msg picker =
+updateFields : FieldsMsg -> Fields -> ( Fields, Reply )
+updateFields msg fields =
     case msg of
         SetFocus True ->
-            picker & StealFocus
+            fields & StealFocus
 
         SetFocus False ->
-            picker & ReturnFocus
+            fields & ReturnFocus
 
         UpdateColorHexField hex ->
             let
@@ -241,32 +241,32 @@ updatePicker msg picker =
             in
             case toColor newHexField of
                 Just color ->
-                    { picker
+                    { fields
                         | color = color
                         , colorHexField = newHexField
                     }
                         |> cohereAndSet
 
                 Nothing ->
-                    { picker
+                    { fields
                         | colorHexField = newHexField
                     }
                         & NoReply
 
         StealSubmit ->
-            picker & NoReply
+            fields & NoReply
 
         SetNoGradientClickedOn ->
-            { picker
+            { fields
                 | gradientClickedOn = Nothing
             }
                 & NoReply
 
         MouseDownOnPointer gradient ->
-            { picker
+            { fields
                 | gradientClickedOn = Just gradient
             }
-                & UpdateHistory picker.index picker.color
+                & UpdateHistory fields.index fields.color
 
         MouseMoveInGradient gradient { targetPos, clientPos } ->
             let
@@ -275,10 +275,10 @@ updatePicker msg picker =
                         |> min 255
                         |> max 0
             in
-            sliderHandler x gradient picker
+            sliderHandler x gradient fields
 
         FieldUpdate gradient str ->
-            fieldHandler gradient str picker
+            fieldHandler gradient str fields
 
 
 updateWindow : WindowMsg -> Window -> ( Window, Reply )
@@ -335,10 +335,10 @@ updateWindow msg window =
 update : Msg -> Model -> ( Model, Reply )
 update message model =
     case message of
-        HandlePickerMsg pickerMsg ->
-            model.picker
-                |> updatePicker pickerMsg
-                |> Tuple.mapFirst (integratePicker model)
+        HandleFieldsMsg fieldsMsg ->
+            model.fields
+                |> updateFields fieldsMsg
+                |> Tuple.mapFirst (integrateFields model)
 
         HandleWindowMsg windowMsg ->
             model.window
@@ -350,28 +350,28 @@ update message model =
 -- MESSAGE HANDLERS --
 
 
-fieldHandler : Gradient -> String -> Picker -> ( Picker, Reply )
-fieldHandler gradient str picker =
+fieldHandler : Gradient -> String -> Fields -> ( Fields, Reply )
+fieldHandler gradient str fields =
     case String.toInt str of
         Ok int ->
-            fieldHandlerOk gradient str int picker
+            fieldHandlerOk gradient str int fields
 
         Err _ ->
-            fieldHandlerErr gradient str picker
+            fieldHandlerErr gradient str fields
 
 
-fieldHandlerOk : Gradient -> String -> Int -> Picker -> ( Picker, Reply )
-fieldHandlerOk gradient str int picker =
+fieldHandlerOk : Gradient -> String -> Int -> Fields -> ( Fields, Reply )
+fieldHandlerOk gradient str int fields =
     let
         { hue, saturation, lightness } =
-            Color.toHsl picker.color
+            Color.toHsl fields.color
 
         { red, green, blue } =
-            Color.toRgb picker.color
+            Color.toRgb fields.color
     in
     case gradient of
         Lightness ->
-            { picker
+            { fields
                 | lightnessField = str
                 , color =
                     Color.hsl
@@ -382,7 +382,7 @@ fieldHandlerOk gradient str int picker =
                 |> cohereAndSet
 
         Saturation ->
-            { picker
+            { fields
                 | saturationField = str
                 , color =
                     Color.hsl
@@ -393,7 +393,7 @@ fieldHandlerOk gradient str int picker =
                 |> cohereAndSet
 
         Hue ->
-            { picker
+            { fields
                 | hueField = str
                 , color =
                     Color.hsl
@@ -404,33 +404,33 @@ fieldHandlerOk gradient str int picker =
                 |> cohereAndSet
 
         Blue ->
-            { picker
+            { fields
                 | blueField = str
                 , color =
                     validateHue
-                        picker.color
+                        fields.color
                         (Color.rgb red green int)
                         int
             }
                 |> cohereAndSet
 
         Green ->
-            { picker
+            { fields
                 | greenField = str
                 , color =
                     validateHue
-                        picker.color
+                        fields.color
                         (Color.rgb red int blue)
                         int
             }
                 |> cohereAndSet
 
         Red ->
-            { picker
+            { fields
                 | redField = str
                 , color =
                     validateHue
-                        picker.color
+                        fields.color
                         (Color.rgb int green blue)
                         int
             }
@@ -452,37 +452,37 @@ validateHue oldColor newColor int =
         newColor
 
 
-fieldHandlerErr : Gradient -> String -> Picker -> ( Picker, Reply )
-fieldHandlerErr gradient str picker =
+fieldHandlerErr : Gradient -> String -> Fields -> ( Fields, Reply )
+fieldHandlerErr gradient str fields =
     case gradient of
         Lightness ->
-            { picker | lightnessField = str } & NoReply
+            { fields | lightnessField = str } & NoReply
 
         Saturation ->
-            { picker | saturationField = str } & NoReply
+            { fields | saturationField = str } & NoReply
 
         Hue ->
-            { picker | hueField = str } & NoReply
+            { fields | hueField = str } & NoReply
 
         Blue ->
-            { picker | blueField = str } & NoReply
+            { fields | blueField = str } & NoReply
 
         Green ->
-            { picker | greenField = str } & NoReply
+            { fields | greenField = str } & NoReply
 
         Red ->
-            { picker | redField = str } & NoReply
+            { fields | redField = str } & NoReply
 
 
-sliderHandler : Int -> Gradient -> Picker -> ( Picker, Reply )
-sliderHandler x gradient picker =
+sliderHandler : Int -> Gradient -> Fields -> ( Fields, Reply )
+sliderHandler x gradient fields =
     case gradient of
         Lightness ->
             let
                 { hue, saturation } =
-                    Color.toHsl picker.color
+                    Color.toHsl fields.color
             in
-            { picker
+            { fields
                 | color =
                     Color.hsl
                         hue
@@ -494,9 +494,9 @@ sliderHandler x gradient picker =
         Saturation ->
             let
                 { hue, lightness } =
-                    Color.toHsl picker.color
+                    Color.toHsl fields.color
             in
-            { picker
+            { fields
                 | color =
                     Color.hsl
                         hue
@@ -508,9 +508,9 @@ sliderHandler x gradient picker =
         Hue ->
             let
                 { saturation, lightness } =
-                    Color.toHsl picker.color
+                    Color.toHsl fields.color
             in
-            { picker
+            { fields
                 | color =
                     Color.hsl
                         (degrees ((toFloat x / 255) * 360))
@@ -522,9 +522,9 @@ sliderHandler x gradient picker =
         Red ->
             let
                 { green, blue } =
-                    Color.toRgb picker.color
+                    Color.toRgb fields.color
             in
-            { picker
+            { fields
                 | color = Color.rgb x green blue
             }
                 |> cohereAndSet
@@ -532,9 +532,9 @@ sliderHandler x gradient picker =
         Green ->
             let
                 { red, blue } =
-                    Color.toRgb picker.color
+                    Color.toRgb fields.color
             in
-            { picker
+            { fields
                 | color = Color.rgb red x blue
             }
                 |> cohereAndSet
@@ -542,9 +542,9 @@ sliderHandler x gradient picker =
         Blue ->
             let
                 { red, green } =
-                    Color.toRgb picker.color
+                    Color.toRgb fields.color
             in
-            { picker
+            { fields
                 | color = Color.rgb red green x
             }
                 |> cohereAndSet
@@ -554,26 +554,26 @@ sliderHandler x gradient picker =
 -- INTERNAL HELPERS --
 
 
-cohereAndSet : Picker -> ( Picker, Reply )
+cohereAndSet : Fields -> ( Fields, Reply )
 cohereAndSet =
     cohereModel >> setColor
 
 
-setColor : Picker -> ( Picker, Reply )
-setColor ({ index, color } as picker) =
-    picker & SetColor index color
+setColor : Fields -> ( Fields, Reply )
+setColor ({ index, color } as fields) =
+    fields & SetColor index color
 
 
-cohereModel : Picker -> Picker
-cohereModel picker =
+cohereModel : Fields -> Fields
+cohereModel fields =
     let
         { red, green, blue } =
-            Color.toRgb picker.color
+            Color.toRgb fields.color
 
         { hue, saturation, lightness } =
-            Color.toHsl picker.color
+            Color.toHsl fields.color
     in
-    { picker
+    { fields
         | redField = toString red
         , greenField = toString green
         , blueField = toString blue
@@ -590,7 +590,7 @@ cohereModel picker =
                 |> floor
                 |> toString
         , colorHexField =
-            picker.color
+            fields.color
                 |> Util.toHexColor
                 |> String.dropLeft 1
     }
@@ -703,8 +703,8 @@ view model =
             , xButtonMouseDown = XButtonMouseDown
             , xButtonMouseUp = XButtonMouseUp
             }
-        , cardBody [] (body model.picker)
-            |> Html.map HandlePickerMsg
+        , cardBody [] (body model.fields)
+            |> Html.map HandleFieldsMsg
         ]
 
 
@@ -712,7 +712,7 @@ view model =
 -- BODY --
 
 
-body : Picker -> List (Html PickerMsg)
+body : Fields -> List (Html FieldsMsg)
 body ({ colorHexField, color } as model) =
     [ div
         [ class [ Visualization ]
@@ -742,7 +742,7 @@ body ({ colorHexField, color } as model) =
     ]
 
 
-slider : String -> String -> Gradient -> Html PickerMsg -> Html PickerMsg
+slider : String -> String -> Gradient -> Html FieldsMsg -> Html FieldsMsg
 slider label fieldContent gradient sliderGradient =
     div
         [ class [ SliderContainer ] ]
@@ -762,13 +762,13 @@ slider label fieldContent gradient sliderGradient =
 -- SLIDERS --
 
 
-redGradient : Picker -> Html PickerMsg
+redGradient : Fields -> Html FieldsMsg
 redGradient { color, gradientClickedOn } =
     let
         { red, green, blue } =
             Color.toRgb color
 
-        attributes : List (Attribute PickerMsg)
+        attributes : List (Attribute FieldsMsg)
         attributes =
             let
                 gradientField =
@@ -796,13 +796,13 @@ redGradient { color, gradientClickedOn } =
         ]
 
 
-greenGradient : Picker -> Html PickerMsg
+greenGradient : Fields -> Html FieldsMsg
 greenGradient { color, gradientClickedOn } =
     let
         { red, green, blue } =
             Color.toRgb color
 
-        attributes : List (Attribute PickerMsg)
+        attributes : List (Attribute FieldsMsg)
         attributes =
             let
                 gradientField =
@@ -830,13 +830,13 @@ greenGradient { color, gradientClickedOn } =
         ]
 
 
-blueGradient : Picker -> Html PickerMsg
+blueGradient : Fields -> Html FieldsMsg
 blueGradient { color, gradientClickedOn } =
     let
         { red, green, blue } =
             Color.toRgb color
 
-        attributes : List (Attribute PickerMsg)
+        attributes : List (Attribute FieldsMsg)
         attributes =
             let
                 gradientField =
@@ -864,7 +864,7 @@ blueGradient { color, gradientClickedOn } =
         ]
 
 
-hueGradient : Picker -> Html PickerMsg
+hueGradient : Fields -> Html FieldsMsg
 hueGradient { color, gradientClickedOn } =
     let
         { red } =
@@ -892,7 +892,7 @@ hueGradient { color, gradientClickedOn } =
                     |> List.map atDegree
                     |> gradientStyle
 
-        attributes : List (Attribute PickerMsg)
+        attributes : List (Attribute FieldsMsg)
         attributes =
             addMouseMoveHandler
                 (gradientAttributes nanSafeGradient)
@@ -914,7 +914,7 @@ hueGradient { color, gradientClickedOn } =
         ]
 
 
-saturationGradient : Picker -> Html PickerMsg
+saturationGradient : Fields -> Html FieldsMsg
 saturationGradient { color, gradientClickedOn } =
     let
         { hue, saturation, lightness } =
@@ -937,7 +937,7 @@ saturationGradient { color, gradientClickedOn } =
                 ]
                     |> gradientStyle
 
-        attributes : List (Attribute PickerMsg)
+        attributes : List (Attribute FieldsMsg)
         attributes =
             addMouseMoveHandler
                 (gradientAttributes nanSafeGradient)
@@ -959,7 +959,7 @@ saturationGradient { color, gradientClickedOn } =
         ]
 
 
-lightnessGradient : Picker -> Html PickerMsg
+lightnessGradient : Fields -> Html FieldsMsg
 lightnessGradient { color, gradientClickedOn } =
     let
         { hue, saturation, lightness } =
@@ -979,7 +979,7 @@ lightnessGradient { color, gradientClickedOn } =
                     , Color.hsl hue saturation 1
                     ]
 
-        attributes : List (Attribute PickerMsg)
+        attributes : List (Attribute FieldsMsg)
         attributes =
             addMouseMoveHandler
                 (gradientAttributes nanSafeGradient)
@@ -1005,7 +1005,7 @@ lightnessGradient { color, gradientClickedOn } =
 -- INTERNAL HELPERS --
 
 
-gradientAttributes : ( String, String ) -> List (Attribute PickerMsg)
+gradientAttributes : ( String, String ) -> List (Attribute FieldsMsg)
 gradientAttributes gradientStyle_ =
     [ class [ Gradient ]
     , style [ gradientStyle_ ]
@@ -1013,7 +1013,7 @@ gradientAttributes gradientStyle_ =
     ]
 
 
-addMouseMoveHandler : List (Attribute PickerMsg) -> Maybe Gradient -> Gradient -> List (Attribute PickerMsg)
+addMouseMoveHandler : List (Attribute FieldsMsg) -> Maybe Gradient -> Gradient -> List (Attribute FieldsMsg)
 addMouseMoveHandler attributes maybeGradient gradient =
     case maybeGradient of
         Just g ->

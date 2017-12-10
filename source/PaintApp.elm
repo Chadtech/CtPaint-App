@@ -1,15 +1,13 @@
 module PaintApp exposing (..)
 
-import Array exposing (Array)
 import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Color
-import ColorPicker
+import Data.Color
 import Data.Config as Config
 import Data.Flags as Flags exposing (Flags)
 import Data.History
 import Data.Menu as Menu
 import Data.Minimap
-import Data.Palette exposing (initPalette, initSwatches)
 import Data.User as User
 import Data.Window as Window
 import Dict
@@ -74,6 +72,7 @@ fromFlags flags =
     in
     { user = flags.user
     , canvas = canvas
+    , color = Data.Color.init
     , project = Nothing
     , canvasPosition =
         { x =
@@ -83,26 +82,10 @@ fromFlags flags =
         }
     , pendingDraw = Canvas.batch []
     , drawAtRender = Canvas.batch []
-    , swatches = initSwatches
-    , palette = initPalette
-    , horizontalToolbarHeight = 58
     , windowSize = flags.windowSize
     , tool = Tool.init
     , zoom = 1
     , galleryView = False
-    , colorPicker =
-        case Array.get 0 initPalette of
-            Just color ->
-                ColorPicker.init
-                    False
-                    0
-                    color
-
-            Nothing ->
-                ColorPicker.init
-                    False
-                    0
-                    Color.black
     , history = Data.History.init canvas
     , mousePosition = Nothing
     , selection = Nothing
@@ -165,30 +148,15 @@ fromError err =
             { width = 400
             , height = 400
             }
+    , color = Data.Color.init
     , project = Nothing
     , canvasPosition = { x = 0, y = 0 }
     , pendingDraw = Canvas.batch []
     , drawAtRender = Canvas.batch []
-    , swatches = initSwatches
-    , palette = initPalette
-    , horizontalToolbarHeight = 58
     , windowSize = { width = 0, height = 0 }
     , tool = Tool.init
     , zoom = 1
     , galleryView = False
-    , colorPicker =
-        case Array.get 0 initPalette of
-            Just color ->
-                ColorPicker.init
-                    False
-                    0
-                    color
-
-            Nothing ->
-                ColorPicker.init
-                    False
-                    0
-                    Color.black
     , history =
         { past = []
         , future = []

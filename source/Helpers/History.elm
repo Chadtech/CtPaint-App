@@ -3,6 +3,7 @@ module Helpers.History exposing (canvas, color, redo, undo)
 import Array
 import Color exposing (Color)
 import Data.History exposing (Event(..))
+import Helpers.Color
 import History
 import Model exposing (Model)
 
@@ -29,7 +30,7 @@ undoEvent event model =
                 |> passToFuture (CanvasChange model.canvas)
 
         ColorChange index color ->
-            case Array.get index model.palette of
+            case Array.get index model.color.palette of
                 Just existingColor ->
                     model
                         |> handleColor index color
@@ -62,7 +63,7 @@ redoEvent event model =
                 |> passToPast (CanvasChange model.canvas)
 
         ColorChange index color ->
-            case Array.get index model.palette of
+            case Array.get index model.color.palette of
                 Just existingColor ->
                     model
                         |> handleColor index color
@@ -108,22 +109,25 @@ addToHistory event model =
 
 
 handleColor : Int -> Color -> Model -> Model
-handleColor index color ({ colorPicker, palette } as model) =
+handleColor index color model =
     { model
-        | palette =
-            Array.set index color palette
-        , colorPicker =
-            let
-                { picker } =
-                    colorPicker
-            in
-            if picker.index == index then
-                { colorPicker
-                    | picker =
-                        { picker
-                            | color = color
-                        }
-                }
-            else
-                colorPicker
+        | color =
+            Helpers.Color.setPaletteColor index color model.color
+
+        --| palette =
+        --    Array.set index color model.color.palette
+        --, colorPicker =
+        --    let
+        --        { picker } =
+        --            colorPicker
+        --    in
+        --    if picker.index == index then
+        --        { colorPicker
+        --            | picker =
+        --                { picker
+        --                    | color = color
+        --                }
+        --        }
+        --    else
+        --        colorPicker
     }

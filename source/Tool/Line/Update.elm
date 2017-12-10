@@ -19,11 +19,10 @@ update message toolModel model =
                     adjustPosition model clientPos
             in
             { model
-                | tool =
-                    Line (Just adjustedPosition)
+                | tool = Line (Just adjustedPosition)
                 , drawAtRender =
                     Draw.line
-                        model.swatches.primary
+                        model.color.swatches.primary
                         adjustedPosition
                         adjustedPosition
             }
@@ -33,7 +32,7 @@ update message toolModel model =
             { model
                 | drawAtRender =
                     Draw.line
-                        model.swatches.primary
+                        model.color.swatches.primary
                         priorPosition
                         (adjustPosition model position)
             }
@@ -43,13 +42,13 @@ update message toolModel model =
                 | tool = Line Nothing
                 , drawAtRender = Canvas.batch []
                 , pendingDraw =
-                    Canvas.batch
-                        [ model.pendingDraw
-                        , Draw.line
-                            model.swatches.primary
-                            priorPosition
-                            (adjustPosition model position)
-                        ]
+                    [ model.pendingDraw
+                    , Draw.line
+                        model.color.swatches.primary
+                        priorPosition
+                        (adjustPosition model position)
+                    ]
+                        |> Canvas.batch
             }
 
         _ ->

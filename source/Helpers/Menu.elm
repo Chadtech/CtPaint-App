@@ -10,9 +10,9 @@ initReplaceColor model =
     { model
         | menu =
             Menu.initReplaceColor
-                model.swatches.primary
-                model.swatches.second
-                (Array.toList model.palette)
+                model.color.swatches.primary
+                model.color.swatches.second
+                (Array.toList model.color.palette)
                 model.windowSize
                 |> Just
     }

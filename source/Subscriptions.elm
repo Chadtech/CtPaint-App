@@ -22,7 +22,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     [ Window.resizes WindowSizeReceived
     , AnimationFrame.diffs Tick
-    , model.colorPicker
+    , model.color.picker
         |> ColorPicker.subscriptions
         |> Sub.map ColorPickerMsg
     , minimap model.minimap

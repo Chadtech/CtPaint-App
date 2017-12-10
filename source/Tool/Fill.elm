@@ -20,15 +20,15 @@ screenMouseUp { clientPos } model =
                 positionOnCanvas
                 model.canvas
     in
-    if colorAtPosition /= model.swatches.primary then
+    if colorAtPosition /= model.color.swatches.primary then
         { model
             | pendingDraw =
-                Canvas.batch
-                    [ model.pendingDraw
-                    , PixelFill
-                        model.swatches.primary
-                        (toPoint positionOnCanvas)
-                    ]
+                [ model.pendingDraw
+                , PixelFill
+                    model.color.swatches.primary
+                    (toPoint positionOnCanvas)
+                ]
+                    |> Canvas.batch
         }
             |> History.canvas
     else

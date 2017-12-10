@@ -63,7 +63,7 @@ update msg model =
                         | selection =
                             selection
                                 |> Canvas.transparentColor
-                                    model.swatches.second
+                                    model.color.swatches.second
                                 |& pos
                                 |> Just
                     }

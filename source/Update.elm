@@ -1,6 +1,5 @@
 module Update exposing (update)
 
-import Array
 import Canvas exposing (DrawOp(Batch))
 import ColorPicker
 import Data.Menu
@@ -10,6 +9,7 @@ import Draw
 import Helpers.History as History
 import Helpers.Keys
 import Helpers.Zoom as Zoom
+import Incorporate.Color
 import Keys
 import Menu
 import Minimap
@@ -37,7 +37,11 @@ update message model =
             Tool.update subMsg model & Cmd.none
 
         PaletteMsg subMsg ->
-            Palette.update subMsg model & Cmd.none
+            { model
+                | color =
+                    Palette.update subMsg model.color
+            }
+                & Cmd.none
 
         MenuMsg subMsg ->
             case model.menu of
@@ -84,9 +88,20 @@ update message model =
                         & Cmd.none
 
         ColorPickerMsg subMsg ->
-            model.colorPicker
-                |> ColorPicker.update subMsg
-                |> incorporateColorPicker model
+            let
+                ( ( newColorModel, cmd ), reply ) =
+                    model.color.picker
+                        |> ColorPicker.update subMsg
+                        |> Incorporate.Color.picker model.color
+            in
+            case reply of
+                Incorporate.Color.NoReply ->
+                    { model | color = newColorModel } & cmd
+
+                Incorporate.Color.ColorHistory index color ->
+                    { model | color = newColorModel }
+                        |> History.color index color
+                        & cmd
 
         MinimapMsg subMsg ->
             case model.minimap of
@@ -290,7 +305,7 @@ incorporateMenu reply menu model =
                         top
                         width
                         height
-                        model.swatches.second
+                        model.color.swatches.second
                         model.canvas
             }
                 & Ports.send ReturnFocus
@@ -300,7 +315,7 @@ addText : String -> Model -> ( Model, Cmd Msg )
 addText str model =
     let
         selection =
-            Draw.text str model.swatches.primary
+            Draw.text str model.color.swatches.primary
 
         position =
             Zoom.pointInMiddle
@@ -321,37 +336,3 @@ addText str model =
                 |> Just
     }
         & Ports.send ReturnFocus
-
-
-incorporateColorPicker : Model -> ( ColorPicker.Model, ColorPicker.Reply ) -> ( Model, Cmd Msg )
-incorporateColorPicker model ( colorPicker, reply ) =
-    case reply of
-        ColorPicker.NoReply ->
-            { model
-                | colorPicker = colorPicker
-            }
-                & Cmd.none
-
-        ColorPicker.SetColor index color ->
-            { model
-                | colorPicker = colorPicker
-                , palette =
-                    Array.set
-                        index
-                        color
-                        model.palette
-            }
-                & Cmd.none
-
-        ColorPicker.UpdateHistory index color ->
-            { model
-                | colorPicker = colorPicker
-            }
-                |> History.color index color
-                & Cmd.none
-
-        ColorPicker.StealFocus ->
-            model & Ports.send StealFocus
-
-        ColorPicker.ReturnFocus ->
-            model & Ports.send ReturnFocus
