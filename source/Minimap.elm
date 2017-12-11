@@ -23,6 +23,7 @@ import Data.Minimap
         , Model
         , Msg(..)
         , Reply(..)
+        , State(..)
         )
 import Data.Tool exposing (Tool(..))
 import Helpers.Zoom as Zoom
@@ -34,7 +35,6 @@ import Html.Events exposing (onClick)
 import Mouse
 import MouseEvents exposing (MouseEvent)
 import Tool
-import Tuple.Infix exposing ((&))
 import Util exposing (toPoint)
 import Window exposing (Size)
 
@@ -93,23 +93,36 @@ subscriptions model =
 -- UPDATE --
 
 
-update : Msg -> Model -> Canvas -> ( Model, Reply )
-update message model canvas =
-    case message of
+update : Msg -> State -> Canvas -> State
+update msg state canvas =
+    case state of
+        NotInitialized ->
+            NotInitialized
+
+        Closed position ->
+            Closed position
+
+        Opened model ->
+            updateModel msg model canvas
+
+
+updateModel : Msg -> Model -> Canvas -> State
+updateModel msg model canvas =
+    case msg of
         XButtonMouseUp ->
-            model & Close
+            Closed model.externalPosition
 
         XButtonMouseDown ->
             { model
                 | clickState = XButtonIsDown
             }
-                & NoReply
+                |> Opened
 
         ZoomInClicked ->
-            zoomIn canvas model & NoReply
+            zoomIn canvas model |> Opened
 
         ZoomOutClicked ->
-            zoomOut canvas model & NoReply
+            zoomOut canvas model |> Opened
 
         ScreenMouseDown { targetPos, clientPos } ->
             { model
@@ -123,12 +136,12 @@ update message model canvas =
                     }
                         |> ClickedInScreenAt
             }
-                & NoReply
+                |> Opened
 
         HeaderMouseDown { targetPos, clientPos } ->
             case model.clickState of
                 XButtonIsDown ->
-                    model & NoReply
+                    Opened model
 
                 _ ->
                     { model
@@ -138,15 +151,15 @@ update message model canvas =
                             }
                                 |> ClickedInHeaderAt
                     }
-                        & NoReply
+                        |> Opened
 
         MouseMoved position ->
             case model.clickState of
                 NoClicks ->
-                    model & NoReply
+                    Opened model
 
                 XButtonIsDown ->
-                    model & NoReply
+                    Opened model
 
                 ClickedInHeaderAt originalClick ->
                     { model
@@ -155,7 +168,7 @@ update message model canvas =
                             , y = position.y - originalClick.y
                             }
                     }
-                        & NoReply
+                        |> Opened
 
                 ClickedInScreenAt originalClick ->
                     { model
@@ -164,13 +177,13 @@ update message model canvas =
                             , y = position.y - originalClick.y
                             }
                     }
-                        & NoReply
+                        |> Opened
 
         MouseUp ->
             { model
                 | clickState = NoClicks
             }
-                & NoReply
+                |> Opened
 
 
 zoomOut : Canvas -> Model -> Model
