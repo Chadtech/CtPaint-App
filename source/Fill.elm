@@ -1,16 +1,16 @@
-module Tool.Fill exposing (..)
+module Fill exposing (handleScreenMouseUp)
 
-import Canvas exposing (DrawOp(..))
+import Canvas exposing (DrawOp(PixelFill))
 import Draw
 import Helpers.History as History
+import Helpers.Tool exposing (adjustPosition)
 import Model exposing (Model)
-import MouseEvents exposing (MouseEvent)
-import Tool.Util exposing (adjustPosition)
-import Util exposing (tbw, toPoint)
+import Mouse exposing (Position)
+import Util exposing (toPoint)
 
 
-screenMouseUp : MouseEvent -> Model -> Model
-screenMouseUp { clientPos } model =
+handleScreenMouseUp : Position -> Model -> Model
+handleScreenMouseUp clientPos model =
     let
         positionOnCanvas =
             adjustPosition model clientPos

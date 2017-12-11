@@ -25,11 +25,15 @@ import Menu
 import Minimap
 import Model exposing (Model)
 import Mouse
-import MouseEvents exposing (onMouseMove)
+import MouseEvents
+    exposing
+        ( onMouseDown
+        , onMouseMove
+        , onMouseUp
+        )
 import Msg exposing (Msg(..))
 import Palette
 import Taskbar
-import Tool
 import Toolbar
 import Tuple.Infix exposing ((:=))
 import Util exposing (toolbarWidth)
@@ -452,20 +456,15 @@ colorPicker model =
 
 clickScreen : Int -> Model -> Html Msg
 clickScreen canvasAreaHeight model =
-    let
-        attributes =
-            [ class [ Screen, toolClass model.tool ]
-            , style [ Util.height canvasAreaHeight ]
-            , onMouseLeave ScreenMouseExit
-            , onMouseMove ScreenMouseMove
-            ]
-
-        toolAttrs =
-            List.map
-                (Attributes.map ToolMsg)
-                (Tool.attributes model.tool)
-    in
-    div (toolAttrs ++ attributes) []
+    div
+        [ class [ Screen, toolClass model.tool ]
+        , style [ Util.height canvasAreaHeight ]
+        , onMouseLeave ScreenMouseExit
+        , onMouseMove ScreenMouseMove
+        , onMouseDown ScreenMouseDown
+        , onMouseUp ScreenMouseUp
+        ]
+        []
 
 
 toolClass : Data.Tool.Tool -> Class

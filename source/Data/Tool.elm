@@ -1,6 +1,11 @@
-module Data.Tool exposing (Tool(..))
+module Data.Tool exposing (Tool(..), init)
 
 import Mouse exposing (Position)
+
+
+init : Tool
+init =
+    Hand Nothing
 
 
 type Tool

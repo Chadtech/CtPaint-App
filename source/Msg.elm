@@ -6,11 +6,11 @@ import Data.Minimap as Minimap
 import Data.Picker as Picker
 import Data.User as User exposing (User)
 import Json.Decode as Decode exposing (Decoder, Value)
+import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
 import Palette
 import Taskbar
 import Time exposing (Time)
-import Tool
 import Toolbar
 import Window exposing (Size)
 
@@ -20,16 +20,19 @@ type Msg
     | ToolbarMsg Toolbar.Msg
     | TaskbarMsg Taskbar.Msg
     | PaletteMsg Palette.Msg
-    | ToolMsg Tool.Msg
     | MenuMsg Menu.Msg
     | Tick Time
     | ColorPickerMsg Picker.Msg
     | MinimapMsg Minimap.Msg
+    | ScreenMouseDown MouseEvent
+    | ScreenMouseUp MouseEvent
     | ScreenMouseMove MouseEvent
     | ScreenMouseExit
     | KeyboardEvent (Result String Key.Event)
     | LogoutSucceeded
     | LogoutFailed String
+    | ClientMouseMoved Position
+    | ClientMouseUp Position
     | MsgDecodeFailed DecodeProblem
 
 

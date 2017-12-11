@@ -15,8 +15,8 @@ import Minimap
 import Model exposing (Model)
 import Platform.Cmd as Platform
 import Ports exposing (JsMsg(..))
-import Tool.Zoom as Zoom
 import Tuple.Infix exposing ((&), (|&))
+import Zoom
 
 
 exec : Key.Cmd -> Model -> ( Model, Platform.Cmd msg )

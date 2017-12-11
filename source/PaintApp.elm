@@ -8,6 +8,7 @@ import Data.Flags as Flags exposing (Flags)
 import Data.History
 import Data.Menu as Menu
 import Data.Minimap
+import Data.Tool as Tool
 import Data.User as User
 import Data.Window as Window
 import Dict
@@ -19,7 +20,6 @@ import Msg exposing (Msg(..))
 import Ports exposing (JsMsg(RedirectPageTo))
 import Random
 import Subscriptions exposing (subscriptions)
-import Tool
 import Tuple.Infix exposing ((&), (|&))
 import Update exposing (update)
 import Util exposing (tbw)

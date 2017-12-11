@@ -1,7 +1,6 @@
 module ColorPicker
     exposing
         ( css
-        , init
         , subscriptions
         , update
         , view
@@ -53,60 +52,6 @@ import Mouse
 import MouseEvents exposing (MouseEvent)
 import Tuple.Infix exposing ((&), (:=))
 import Util exposing (toColor)
-
-
--- INIT --
-
-
-init : Bool -> Int -> Color.Color -> Model
-init show index color =
-    { fields = initFields index color
-    , window = initWindow show
-    }
-
-
-initFields : Int -> Color.Color -> Fields
-initFields index color =
-    let
-        { red, green, blue } =
-            Color.toRgb color
-
-        { hue, saturation, lightness } =
-            Color.toHsl color
-    in
-    { color = color
-    , index = index
-    , redField = toString red
-    , greenField = toString green
-    , blueField = toString blue
-    , hueField =
-        (radians hue / (2 * pi) * 360)
-            |> floor
-            |> toString
-    , saturationField =
-        (saturation * 255)
-            |> floor
-            |> toString
-    , lightnessField =
-        (lightness * 255)
-            |> floor
-            |> toString
-    , colorHexField =
-        color
-            |> Util.toHexColor
-            |> String.dropLeft 1
-    , gradientClickedOn = Nothing
-    }
-
-
-initWindow : Bool -> Window
-initWindow show =
-    { position = { x = 50, y = 350 }
-    , clickState = NoClicks
-    , focusedOn = False
-    , show = show
-    }
-
 
 
 -- SUBSCRIPTIONS --

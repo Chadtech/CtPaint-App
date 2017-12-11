@@ -1,18 +1,22 @@
-module Tool.Zoom exposing (..)
+module Zoom
+    exposing
+        ( set
+        , zoomInScreenMouseUp
+        , zoomOutScreenMouseUp
+        )
 
 import Canvas exposing (Size)
 import Helpers.Zoom as Zoom
 import Model exposing (Model)
 import Mouse exposing (Position)
-import MouseEvents exposing (MouseEvent)
 import Util exposing (tbw)
 
 
 -- MOUSE EVENTS --
 
 
-zoomInScreenMouseUp : MouseEvent -> Model -> Model
-zoomInScreenMouseUp { clientPos } model =
+zoomInScreenMouseUp : Position -> Model -> Model
+zoomInScreenMouseUp clientPos model =
     let
         newZoom =
             Zoom.next model.zoom
@@ -23,8 +27,8 @@ zoomInScreenMouseUp { clientPos } model =
         adjust clientPos -1 (set newZoom model)
 
 
-zoomOutScreenMouseUp : MouseEvent -> Model -> Model
-zoomOutScreenMouseUp { clientPos } model =
+zoomOutScreenMouseUp : Position -> Model -> Model
+zoomOutScreenMouseUp clientPos model =
     let
         newZoom =
             Zoom.prev model.zoom
@@ -43,9 +47,9 @@ adjust : Position -> Int -> Model -> Model
 adjust { x, y } bias ({ zoom, windowSize, canvasPosition } as model) =
     let
         halfWindowSize =
-            Size
-                ((windowSize.width - tbw) // 2)
-                ((windowSize.height - tbw) // 2)
+            { width = (windowSize.width - tbw) // 2
+            , height = (windowSize.height - tbw) // 2
+            }
 
         x_ =
             (x - halfWindowSize.width) // zoom
@@ -55,9 +59,9 @@ adjust { x, y } bias ({ zoom, windowSize, canvasPosition } as model) =
     in
     { model
         | canvasPosition =
-            Position
-                (canvasPosition.x + (x_ * bias))
-                (canvasPosition.y + (y_ * bias))
+            { x = canvasPosition.x + (x_ * bias)
+            , y = canvasPosition.y + (y_ * bias)
+            }
     }
 
 

@@ -19,7 +19,7 @@ import Palette
 import Ports exposing (JsMsg(..))
 import Reply exposing (Reply(..))
 import Taskbar
-import Tool.Update as Tool
+import Tool
 import Toolbar
 import Tuple.Infix exposing ((&), (|&))
 
@@ -27,14 +27,17 @@ import Tuple.Infix exposing ((&), (|&))
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
+        ClientMouseMoved position ->
+            Tool.handleClientMouseMovement position model & Cmd.none
+
+        ClientMouseUp position ->
+            Tool.handleClientMouseUp position model & Cmd.none
+
         ToolbarMsg subMsg ->
             Toolbar.update subMsg model & Cmd.none
 
         TaskbarMsg subMsg ->
             Taskbar.update subMsg model
-
-        ToolMsg subMsg ->
-            Tool.update subMsg model & Cmd.none
 
         PaletteMsg subMsg ->
             { model
@@ -53,11 +56,11 @@ update message model =
                         ( newModel, modelCmd ) =
                             incorporateMenu reply newMenu model
                     in
-                    newModel
-                        & Cmd.batch
-                            [ modelCmd
-                            , Cmd.map MenuMsg menuCmd
-                            ]
+                    [ modelCmd
+                    , Cmd.map MenuMsg menuCmd
+                    ]
+                        |> Cmd.batch
+                        |& newModel
 
                 Nothing ->
                     model & Cmd.none
@@ -117,6 +120,12 @@ update message model =
 
                 _ ->
                     model & Cmd.none
+
+        ScreenMouseUp mouseEvent ->
+            Tool.handleScreenMouseUp mouseEvent model & Cmd.none
+
+        ScreenMouseDown mouseEvent ->
+            Tool.handleScreenMouseDown mouseEvent model & Cmd.none
 
         ScreenMouseMove { targetPos, clientPos } ->
             let

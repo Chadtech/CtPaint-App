@@ -1,17 +1,16 @@
-module Tool.Sample exposing (..)
+module Sample exposing (handleScreenMouseUp)
 
 import Color exposing (Color)
 import Data.Color exposing (Swatches)
 import Draw
 import Helpers.Color as Color
+import Helpers.Tool exposing (adjustPosition)
 import Model exposing (Model)
 import Mouse exposing (Position)
-import MouseEvents exposing (MouseEvent)
-import Tool.Util exposing (adjustPosition)
 
 
-subMouseUp : MouseEvent -> Model -> Model
-subMouseUp { clientPos } model =
+handleScreenMouseUp : Position -> Model -> Model
+handleScreenMouseUp clientPos model =
     { model
         | color =
             Color.setSwatches

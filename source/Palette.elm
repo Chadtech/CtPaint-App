@@ -17,11 +17,11 @@ import Chadtech.Colors
         , point
         )
 import Color exposing (Color)
-import ColorPicker
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Data.Color exposing (Model)
 import Data.Palette exposing (Swatches)
+import Data.Picker as Picker
 import Helpers.Color
 import Html exposing (Attribute, Html, a, div, p, span)
 import Html.Attributes exposing (class, classList, style)
@@ -64,7 +64,7 @@ update msg model =
         OpenColorPicker color index ->
             { model
                 | picker =
-                    ColorPicker.init True index color
+                    Picker.init True index color
             }
 
         AddPaletteSquare ->

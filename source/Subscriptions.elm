@@ -9,9 +9,9 @@ import Json.Decode as Decode exposing (Value)
 import Menu
 import Minimap
 import Model exposing (Model)
+import Mouse
 import Msg exposing (Msg(..))
 import Ports
-import Tool
 import Window
 
 
@@ -27,9 +27,10 @@ subscriptions model =
         |> Sub.map ColorPickerMsg
     , minimap model.minimap
     , keyEvent (KeyboardEvent << Decode.decodeValue Keys.eventDecoder)
-    , Sub.map ToolMsg (Tool.subscriptions model.tool)
     , menu model.menu
     , Ports.fromJs Msg.decode
+    , Mouse.moves ClientMouseMoved
+    , Mouse.ups ClientMouseUp
     ]
         |> Sub.batch
 

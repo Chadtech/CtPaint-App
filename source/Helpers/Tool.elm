@@ -1,4 +1,4 @@
-module Tool.Util exposing (adjustPosition)
+module Helpers.Tool exposing (adjustPosition)
 
 import Model exposing (Model)
 import Mouse exposing (Position)

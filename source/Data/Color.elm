@@ -9,7 +9,6 @@ module Data.Color
 
 import Array exposing (Array)
 import Color exposing (Color)
-import ColorPicker
 import Data.Picker as Picker
 
 
@@ -40,7 +39,7 @@ init : Model
 init =
     { palette = initPalette
     , swatches = initSwatches
-    , picker = ColorPicker.init False 0 (Color.rgb 176 166 154)
+    , picker = Picker.init False 0 (Color.rgb 176 166 154)
     }
 
 

@@ -1,129 +1,166 @@
 module Tool exposing (..)
 
 import Data.Tool exposing (Tool(..))
-import Html exposing (Attribute)
-import Html.Attributes as Attributes
-import MouseEvents exposing (MouseEvent, onMouseUp)
-import Tool.Hand as Hand
-import Tool.Line as Line
-import Tool.Pencil as Pencil
-import Tool.Rectangle as Rectangle
-import Tool.RectangleFilled as RectangleFilled
-import Tool.Select as Select
-
-
-type Msg
-    = HandMsg Hand.Msg
-    | PencilMsg Pencil.Msg
-    | LineMsg Line.Msg
-    | ZoomInScreenMouseUp MouseEvent
-    | ZoomOutScreenMouseUp MouseEvent
-    | RectangleMsg Rectangle.Msg
-    | RectangleFilledMsg RectangleFilled.Msg
-    | SelectMsg Select.Msg
-    | SampleAt MouseEvent
-    | FillScreenMouseUp MouseEvent
-
-
-
--- INIT --
-
-
-init : Tool
-init =
-    Hand Nothing
-
-
-
--- HTML ATTRIBUTES --
-
-
-attributes : Tool -> List (Attribute Msg)
-attributes tool =
-    case tool of
-        Hand _ ->
-            List.map
-                (Attributes.map HandMsg)
-                Hand.attributes
-
-        Sample ->
-            [ onMouseUp SampleAt ]
-
-        Fill ->
-            [ onMouseUp FillScreenMouseUp ]
-
-        Pencil _ ->
-            List.map
-                (Attributes.map PencilMsg)
-                Pencil.attributes
-
-        Line _ ->
-            List.map
-                (Attributes.map LineMsg)
-                Line.attributes
-
-        Rectangle _ ->
-            List.map
-                (Attributes.map RectangleMsg)
-                Rectangle.attributes
-
-        RectangleFilled _ ->
-            List.map
-                (Attributes.map RectangleFilledMsg)
-                RectangleFilled.attributes
-
-        Select _ ->
-            List.map
-                (Attributes.map SelectMsg)
-                Select.attributes
-
-        ZoomIn ->
-            [ onMouseUp ZoomInScreenMouseUp ]
-
-        ZoomOut ->
-            [ onMouseUp ZoomOutScreenMouseUp ]
-
-
-
--- SUBSCRIPTIONS --
-
-
-subscriptions : Tool -> Sub Msg
-subscriptions tool =
-    case tool of
-        Hand _ ->
-            Sub.map HandMsg Hand.subs
-
-        Pencil _ ->
-            Sub.map PencilMsg Pencil.subs
-
-        Line _ ->
-            Sub.map LineMsg Line.subs
-
-        Rectangle _ ->
-            Sub.map RectangleMsg Rectangle.subs
-
-        RectangleFilled _ ->
-            Sub.map RectangleFilledMsg RectangleFilled.subs
-
-        Select _ ->
-            Sub.map SelectMsg Select.subs
-
-        Sample ->
-            Sub.none
-
-        ZoomIn ->
-            Sub.none
-
-        ZoomOut ->
-            Sub.none
-
-        Fill ->
-            Sub.none
-
+import Fill
+import Hand
+import Line
+import Model exposing (Model)
+import Mouse exposing (Position)
+import MouseEvents exposing (MouseEvent)
+import Pencil
+import Rectangle
+import RectangleFilled
+import Sample
+import Select
+import Zoom exposing (zoomInScreenMouseUp, zoomOutScreenMouseUp)
 
 
 -- PUBLIC HELPERS --
+
+
+handleScreenMouseUp : MouseEvent -> Model -> Model
+handleScreenMouseUp { clientPos } model =
+    case model.tool of
+        Hand _ ->
+            model
+
+        Sample ->
+            Sample.handleScreenMouseUp clientPos model
+
+        Fill ->
+            Fill.handleScreenMouseUp clientPos model
+
+        Pencil _ ->
+            model
+
+        Line _ ->
+            model
+
+        ZoomIn ->
+            zoomInScreenMouseUp clientPos model
+
+        ZoomOut ->
+            zoomOutScreenMouseUp clientPos model
+
+        Rectangle _ ->
+            model
+
+        RectangleFilled _ ->
+            model
+
+        Select _ ->
+            model
+
+
+handleScreenMouseDown : MouseEvent -> Model -> Model
+handleScreenMouseDown { clientPos } model =
+    case model.tool of
+        Hand Nothing ->
+            Hand.handleScreenMouseDown clientPos model
+
+        Sample ->
+            model
+
+        Fill ->
+            model
+
+        Pencil Nothing ->
+            Pencil.handleScreenMouseDown clientPos model
+
+        Line Nothing ->
+            Line.handleScreenMouseDown clientPos model
+
+        ZoomIn ->
+            model
+
+        ZoomOut ->
+            model
+
+        Rectangle Nothing ->
+            Rectangle.handleScreenMouseDown clientPos model
+
+        RectangleFilled Nothing ->
+            RectangleFilled.handleScreenMouseDown clientPos model
+
+        Select Nothing ->
+            Select.handleScreenMouseDown clientPos model
+
+        _ ->
+            model
+
+
+handleClientMouseUp : Position -> Model -> Model
+handleClientMouseUp position model =
+    case model.tool of
+        Hand _ ->
+            { model | tool = Hand Nothing }
+
+        Sample ->
+            model
+
+        Fill ->
+            model
+
+        Pencil _ ->
+            { model | tool = Pencil Nothing }
+
+        Line (Just priorPosition) ->
+            Line.handleClientMouseUp position priorPosition model
+
+        ZoomIn ->
+            model
+
+        ZoomOut ->
+            model
+
+        Rectangle (Just priorPosition) ->
+            Rectangle.handleClientMouseUp position priorPosition model
+
+        RectangleFilled (Just priorPosition) ->
+            RectangleFilled.handleClientMouseUp position priorPosition model
+
+        Select (Just priorPosition) ->
+            Select.handleClientMouseUp position priorPosition model
+
+        _ ->
+            model
+
+
+handleClientMouseMovement : Position -> Model -> Model
+handleClientMouseMovement newPosition model =
+    case model.tool of
+        Hand (Just subModel) ->
+            Hand.handleClientMouseMovement newPosition subModel model
+
+        Sample ->
+            model
+
+        Fill ->
+            model
+
+        Pencil (Just subModel) ->
+            Pencil.handleClientMouseMovement newPosition subModel model
+
+        Line (Just priorPosition) ->
+            Line.handleClientMouseMovement newPosition priorPosition model
+
+        ZoomIn ->
+            model
+
+        ZoomOut ->
+            model
+
+        Rectangle (Just priorPosition) ->
+            Rectangle.handleClientMouseMovement newPosition priorPosition model
+
+        RectangleFilled (Just priorPosition) ->
+            RectangleFilled.handleClientMouseMovement newPosition priorPosition model
+
+        Select (Just priorPosition) ->
+            Select.handleClientMouseMovement newPosition priorPosition model
+
+        _ ->
+            model
 
 
 all : List Tool
