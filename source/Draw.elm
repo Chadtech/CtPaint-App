@@ -296,6 +296,13 @@ rotate180 canvas =
     Canvas.draw drawOp newCanvas
 
 
+ellipse : Color -> Position -> Position -> DrawOp
+ellipse color p0 p1 =
+    Canvas.ellipse (toPoint p0) (toPoint p1)
+        |> List.map (pixel color)
+        |> Canvas.batch
+
+
 
 -- LINE --
 

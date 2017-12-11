@@ -59,6 +59,7 @@ type Class
     | Line
     | Rectangle
     | RectangleFilled
+    | Ellipse
     | Info
     | Edge
     | Palette
@@ -503,6 +504,9 @@ toolClass tool =
 
         Data.Tool.ZoomOut ->
             ZoomOut
+
+        Data.Tool.Ellipse _ ->
+            Ellipse
 
 
 

@@ -8,6 +8,7 @@ module Canvas
         , Size
         , batch
         , draw
+        , ellipse
         , getImageData
         , getSize
         , initialize
@@ -189,6 +190,11 @@ transparentColor =
 replace : Color -> Color -> Canvas -> Canvas
 replace =
     Native.Canvas.replace
+
+
+ellipse : Point -> Point -> List Point
+ellipse =
+    Native.Canvas.ellipse
 
 
 {-| You dont want to apply `DrawOp` one at a time. Bundle many `DrawOp` together in one batch, using `batch`.
