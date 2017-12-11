@@ -104,7 +104,7 @@ update message model =
         MinimapMsg subMsg ->
             { model
                 | minimap =
-                    Minimap.update subMsg model.minimap model.canvas
+                    Minimap.update subMsg model.minimap
             }
                 & Cmd.none
 

@@ -66,7 +66,7 @@ adjust { x, y } bias ({ zoom, windowSize, canvasPosition } as model) =
 
 
 set : Int -> Model -> Model
-set zoom ({ canvas, canvasPosition, windowSize } as model) =
+set zoom ({ canvasPosition, windowSize } as model) =
     let
         halfWindowSize =
             Size

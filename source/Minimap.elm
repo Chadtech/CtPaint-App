@@ -32,7 +32,7 @@ import Html.Attributes exposing (style)
 import Html.CssHelpers
 import Html.Custom exposing (card, cardBody, header, indent)
 import Html.Events exposing (onClick)
-import Mouse
+import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
 import Tool
 import Util exposing (toPoint)
@@ -93,8 +93,8 @@ subscriptions model =
 -- UPDATE --
 
 
-update : Msg -> State -> Canvas -> State
-update msg state canvas =
+update : Msg -> State -> State
+update msg state =
     case state of
         NotInitialized ->
             NotInitialized
@@ -103,11 +103,11 @@ update msg state canvas =
             Closed position
 
         Opened model ->
-            updateModel msg model canvas
+            updateModel msg model
 
 
-updateModel : Msg -> Model -> Canvas -> State
-updateModel msg model canvas =
+updateModel : Msg -> Model -> State
+updateModel msg model =
     case msg of
         XButtonMouseUp ->
             Closed model.externalPosition
@@ -119,10 +119,10 @@ updateModel msg model canvas =
                 |> Opened
 
         ZoomInClicked ->
-            zoomIn canvas model |> Opened
+            zoomIn model |> Opened
 
         ZoomOutClicked ->
-            zoomOut canvas model |> Opened
+            zoomOut model |> Opened
 
         ScreenMouseDown { targetPos, clientPos } ->
             { model
@@ -186,30 +186,89 @@ updateModel msg model canvas =
                 |> Opened
 
 
-zoomOut : Canvas -> Model -> Model
-zoomOut canvas model =
-    { model
-        | zoom = Zoom.prev model.zoom
+zoomOut : Model -> Model
+zoomOut model =
+    let
+        newZoom =
+            Zoom.prev model.zoom
+    in
+    if model.zoom == newZoom then
+        model
+    else
+        adjust center 1 (set newZoom model)
+
+
+zoomIn : Model -> Model
+zoomIn model =
+    let
+        newZoom =
+            Zoom.next model.zoom
+    in
+    if model.zoom == newZoom then
+        model
+    else
+        adjust center -1 (set newZoom model)
+
+
+center : Mouse.Position
+center =
+    { x = floor minimapWidth // 2
+    , y = floor minimapHeight // 2
     }
 
 
-zoomIn : Canvas -> Model -> Model
-zoomIn canvas model =
+
+-- HELPERS --
+
+
+adjust : Mouse.Position -> Int -> Model -> Model
+adjust { x, y } bias ({ zoom, internalPosition } as model) =
     let
-        nextZoom =
-            Zoom.next model.zoom
+        halfWindowSize =
+            { width = floor minimapWidth // 2
+            , height = floor minimapHeight // 2
+            }
 
-        { width, height } =
-            Canvas.getSize canvas
+        x_ =
+            (x - halfWindowSize.width) // zoom
 
-        dw =
-            width * (nextZoom - model.zoom)
-
-        dh =
-            height * (nextZoom - model.zoom)
+        y_ =
+            (y - halfWindowSize.height) // zoom
     in
     { model
-        | zoom = nextZoom
+        | internalPosition =
+            { x = internalPosition.x + (x_ * bias)
+            , y = internalPosition.y + (y_ * bias)
+            }
+    }
+
+
+set : Int -> Model -> Model
+set zoom ({ internalPosition } as model) =
+    let
+        halfWindowSize =
+            { width = floor minimapWidth // 2
+            , height = floor minimapHeight // 2
+            }
+
+        relZoom : Int -> Int
+        relZoom d =
+            d * zoom // model.zoom
+    in
+    { model
+        | zoom = zoom
+        , internalPosition =
+            { x =
+                halfWindowSize.width
+                    |> (-) internalPosition.x
+                    |> relZoom
+                    |> (+) halfWindowSize.width
+            , y =
+                halfWindowSize.height
+                    |> (-) internalPosition.y
+                    |> relZoom
+                    |> (+) halfWindowSize.height
+            }
     }
 
 

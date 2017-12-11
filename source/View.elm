@@ -548,6 +548,31 @@ toolAtRender model position =
                 |> Util.toPoint
                 |> Draw.pixel model.color.swatches.primary
 
+        Data.Tool.Line _ ->
+            position
+                |> Util.toPoint
+                |> Draw.pixel model.color.swatches.primary
+
+        Data.Tool.Rectangle _ ->
+            position
+                |> Util.toPoint
+                |> Draw.pixel model.color.swatches.primary
+
+        Data.Tool.RectangleFilled _ ->
+            position
+                |> Util.toPoint
+                |> Draw.pixel model.color.swatches.primary
+
+        Data.Tool.Sample ->
+            position
+                |> Util.toPoint
+                |> Draw.pixel model.color.swatches.primary
+
+        Data.Tool.Fill ->
+            position
+                |> Util.toPoint
+                |> Draw.pixel model.color.swatches.primary
+
         _ ->
             Canvas.batch []
 

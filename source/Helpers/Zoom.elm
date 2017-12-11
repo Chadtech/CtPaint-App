@@ -3,45 +3,28 @@ module Helpers.Zoom
         ( next
         , pointInMiddle
         , prev
-        , repositionAround
         )
 
 import Mouse exposing (Position)
+import Util
 import Window exposing (Size)
 
 
-repositionAround : Int -> Int -> Position -> Position -> Position
-repositionAround oldZoom newZoom canvasPosition target =
-    let
-        d =
-            newZoom - oldZoom
+{-|
 
-        dx =
-            canvasPosition.x - target.x
+    Given the current window size, zoom level, and canvas position,
+    what is the position on the canvas in that is in the middle of
+    the screen?
 
-        dy =
-            canvasPosition.y - target.y
-    in
-    { x = canvasPosition.x - (dx * d)
-    , y = canvasPosition.y - (dy * d)
-    }
-
-
+-}
 pointInMiddle : Size -> Int -> Position -> Position
 pointInMiddle windowSize zoom position =
     let
         middle =
-            middleOfScreen windowSize
+            Util.middle windowSize
     in
     { x = (middle.x - position.x) // zoom
     , y = (middle.y - position.y) // zoom
-    }
-
-
-middleOfScreen : Size -> Position
-middleOfScreen { width, height } =
-    { x = width // 2
-    , y = height // 2
     }
 
 

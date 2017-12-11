@@ -183,6 +183,13 @@ toolbarWidth =
 -- POSITION AND POINT --
 
 
+middle : Size -> Position
+middle { width, height } =
+    { x = width // 2
+    , y = height // 2
+    }
+
+
 toSize : Position -> Position -> Size
 toSize p q =
     let

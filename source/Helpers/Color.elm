@@ -12,7 +12,6 @@ module Helpers.Color
 
 import Array
 import Color exposing (Color)
-import ColorPicker
 import Data.Color
     exposing
         ( Model
