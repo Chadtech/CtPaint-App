@@ -94,83 +94,148 @@ update msg model =
 
 updateContent : ContentMsg -> Model -> ( ( Model, Cmd Msg ), Reply )
 updateContent msg model =
-    case ( msg, model.content ) of
-        ( DownloadMsg subMsg, Download subModel ) ->
-            let
-                ( ( newSubModel, cmd ), reply ) =
-                    Download.update subMsg subModel
-            in
-            { model
-                | content = Download newSubModel
-            }
-                & Cmd.map (ContentMsg << DownloadMsg) cmd
-                & reply
+    case msg of
+        DownloadMsg subMsg ->
+            case model.content of
+                Download subModel ->
+                    let
+                        ( ( newSubModel, cmd ), reply ) =
+                            Download.update subMsg subModel
+                    in
+                    { model
+                        | content = Download newSubModel
+                    }
+                        & Cmd.map (ContentMsg << DownloadMsg) cmd
+                        & reply
 
-        ( ImportMsg subMsg, Import subModel ) ->
-            let
-                ( ( newSubModel, cmd ), reply ) =
-                    Import.update subMsg subModel
-            in
-            { model | content = Import newSubModel }
-                & Cmd.map (ContentMsg << ImportMsg) cmd
-                & reply
+                _ ->
+                    model & Cmd.none & NoReply
 
-        ( ScaleMsg subMsg, Scale subModel ) ->
-            let
-                ( newSubModel, reply ) =
-                    Scale.update subMsg subModel
-            in
-            { model | content = Scale newSubModel }
-                & Cmd.none
-                & reply
+        ImportMsg subMsg ->
+            case model.content of
+                Import subModel ->
+                    let
+                        ( ( newSubModel, cmd ), reply ) =
+                            Import.update subMsg subModel
+                    in
+                    { model | content = Import newSubModel }
+                        & Cmd.map (ContentMsg << ImportMsg) cmd
+                        & reply
 
-        ( TextMsg subMsg, Text subModel ) ->
-            let
-                ( newSubModel, reply ) =
-                    Text.update subMsg subModel
-            in
-            { model | content = Text newSubModel }
-                & Cmd.none
-                & reply
+                _ ->
+                    model & Cmd.none & NoReply
 
-        ( ReplaceColorMsg subMsg, ReplaceColor subModel ) ->
-            let
-                ( newSubModel, reply ) =
-                    ReplaceColor.update subMsg subModel
-            in
-            { model | content = ReplaceColor newSubModel }
-                & Cmd.none
-                & reply
+        ScaleMsg subMsg ->
+            case model.content of
+                Scale subModel ->
+                    let
+                        ( newSubModel, reply ) =
+                            Scale.update subMsg subModel
+                    in
+                    { model | content = Scale newSubModel }
+                        & Cmd.none
+                        & reply
 
-        ( LoginMsg subMsg, Login subModel ) ->
-            let
-                ( ( newSubModel, cmd ), reply ) =
-                    Login.update subMsg subModel
-            in
-            { model | content = Login newSubModel }
-                & Cmd.map (ContentMsg << LoginMsg) cmd
-                & reply
+                _ ->
+                    model & Cmd.none & NoReply
 
-        ( UploadMsg subMsg, Upload subModel ) ->
-            let
-                ( ( newSubModel, cmd ), reply ) =
-                    Upload.update subMsg subModel
-            in
-            { model | content = Upload newSubModel }
-                & Cmd.map (ContentMsg << UploadMsg) cmd
-                & reply
+        TextMsg subMsg ->
+            case model.content of
+                Text subModel ->
+                    let
+                        ( newSubModel, reply ) =
+                            Text.update subMsg subModel
+                    in
+                    { model | content = Text newSubModel }
+                        & Cmd.none
+                        & reply
 
-        ( ResizeMsg subMsg, Resize subModel ) ->
-            let
-                ( newSubModel, reply ) =
-                    Resize.update subMsg subModel
-            in
-            { model | content = Resize newSubModel }
-                & Cmd.none
-                & reply
+                _ ->
+                    model & Cmd.none & NoReply
 
-        _ ->
-            model & Cmd.none & NoReply
+        ReplaceColorMsg subMsg ->
+            case model.content of
+                ReplaceColor subModel ->
+                    let
+                        ( newSubModel, reply ) =
+                            ReplaceColor.update subMsg subModel
+                    in
+                    { model | content = ReplaceColor newSubModel }
+                        & Cmd.none
+                        & reply
+
+                _ ->
+                    model & Cmd.none & NoReply
+
+        LoginMsg subMsg ->
+            case model.content of
+                Login subModel ->
+                    let
+                        ( ( newSubModel, cmd ), reply ) =
+                            Login.update subMsg subModel
+                    in
+                    { model | content = Login newSubModel }
+                        & Cmd.map (ContentMsg << LoginMsg) cmd
+                        & reply
+
+                _ ->
+                    model & Cmd.none & NoReply
+
+        UploadMsg subMsg ->
+            case model.content of
+                Upload subModel ->
+                    let
+                        ( ( newSubModel, cmd ), reply ) =
+                            Upload.update subMsg subModel
+                    in
+                    { model | content = Upload newSubModel }
+                        & Cmd.map (ContentMsg << UploadMsg) cmd
+                        & reply
+
+                _ ->
+                    model & Cmd.none & NoReply
+
+        ResizeMsg subMsg ->
+            case model.content of
+                Resize subModel ->
+                    let
+                        ( newSubModel, reply ) =
+                            Resize.update subMsg subModel
+                    in
+                    { model | content = Resize newSubModel }
+                        & Cmd.none
+                        & reply
+
+                _ ->
+                    model & Cmd.none & NoReply
+
+        NewMsg subMsg ->
+            case model.content of
+                New subModel ->
+                    let
+                        ( newSubModel, _ ) =
+                            New.update subMsg subModel
+                    in
+                    { model | content = New newSubModel }
+                        & Cmd.none
+                        & NoReply
+
+                _ ->
+                    model & Cmd.none & NoReply
+
+        OpenMsg subMsg ->
+            case model.content of
+                Open subModel ->
+                    let
+                        ( newSubModel, _ ) =
+                            Open.update subMsg subModel
+                    in
+                    { model | content = Open newSubModel }
+                        & Cmd.none
+                        & NoReply
+
+                _ ->
+                    model & Cmd.none & NoReply
 
 
 

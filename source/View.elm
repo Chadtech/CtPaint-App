@@ -181,6 +181,10 @@ view model =
             ]
 
 
+
+-- GALLERY --
+
+
 galleryView : Model -> Html Msg
 galleryView model =
     div
