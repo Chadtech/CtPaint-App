@@ -11,13 +11,14 @@ This repo is organized as..
 ├── Clipboard.elm
 ├── ColorPicker.elm
 ├── Data
+│   ├── Color.elm
 │   ├── Config.elm
 │   ├── Flags.elm
 │   ├── History.elm
-│   ├── Keys.elm
 │   ├── Menu.elm
 │   ├── Minimap.elm
 │   ├── Palette.elm
+│   ├── Picker.elm
 │   ├── Project.elm
 │   ├── Taskbar.elm
 │   ├── Tool.elm
@@ -25,18 +26,30 @@ This repo is organized as..
 │   └── Window.elm
 ├── Download.elm
 ├── Draw.elm
+├── Ellipse.elm
 ├── Error.elm
+├── Fill.elm
+├── Hand.elm
 ├── Helpers
+│   ├── Color.elm
 │   ├── History.elm
 │   ├── Keys.elm
-│   └── Menu.elm
-├── Hfnss.elm
+│   ├── Menu.elm
+│   ├── Tool.elm
+│   └── Zoom.elm
 ├── History.elm
 ├── Html
 │   └── Custom.elm
-├── Imgur.elm
 ├── Import.elm
+├── Incorporate
+│   ├── Color.elm
+│   └── Menu.elm
+├── Js
+│   ├── Allowance.js
+│   ├── Flags.js
+│   └── User.js
 ├── Keys.elm
+├── Line.elm
 ├── Loading.elm
 ├── Login.elm
 ├── Menu.elm
@@ -49,45 +62,27 @@ This repo is organized as..
 ├── Open.elm
 ├── PaintApp.elm
 ├── Palette.elm
+├── Pencil.elm
 ├── Ports.elm
+├── Rectangle.elm
+├── RectangleFilled.elm
 ├── ReplaceColor.elm
 ├── Reply.elm
+├── Resize.elm
+├── Sample.elm
 ├── Scale.elm
+├── Select.elm
 ├── Stylesheets.elm
 ├── Subscriptions.elm
 ├── Taskbar.elm
 ├── Text.elm
-├── Tool
-│   ├── Fill.elm
-│   ├── Hand
-│   │   └── Update.elm
-│   ├── Hand.elm
-│   ├── Line
-│   │   └── Update.elm
-│   ├── Line.elm
-│   ├── Pencil
-│   │   └── Update.elm
-│   ├── Pencil.elm
-│   ├── Rectangle
-│   │   └── Update.elm
-│   ├── Rectangle.elm
-│   ├── RectangleFilled
-│   │   └── Update.elm
-│   ├── RectangleFilled.elm
-│   ├── Sample.elm
-│   ├── Select
-│   │   └── Update.elm
-│   ├── Select.elm
-│   ├── Update.elm
-│   ├── Util.elm
-│   ├── Zoom
-│   │   └── Util.elm
-│   └── Zoom.elm
 ├── Tool.elm
 ├── Toolbar.elm
 ├── Update.elm
+├── Upload.elm
 ├── Util.elm
 ├── View.elm
+├── Zoom.elm
 └── app.js
 ```
 
