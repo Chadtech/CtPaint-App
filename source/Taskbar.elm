@@ -169,6 +169,7 @@ css =
         , padding2 (px 2) (px 4)
         , withClass Dropped [ zIndex (int 3) ]
         , active outdent
+        , marginRight (px 1)
         ]
     , Css.class LoginButton
         [ float right
@@ -422,10 +423,6 @@ view_ model =
                 (minimapLabel model)
                 (keysLabel model ToggleMinimap)
                 (KeyCmdClicked ToggleMinimap)
-            , option
-                "Color Picker"
-                (keysLabel model ToggleColorPicker)
-                (KeyCmdClicked ToggleColorPicker)
             ]
                 |> taskbarButtonOpen "view" View
 
