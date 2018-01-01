@@ -42,6 +42,7 @@ type Msg
     | XButtonMouseUp
     | ZoomInClicked
     | ZoomOutClicked
+    | ZeroClicked
     | HeaderMouseDown MouseEvent
     | ScreenMouseDown MouseEvent
     | MouseMoved Position

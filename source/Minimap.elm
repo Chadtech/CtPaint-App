@@ -103,11 +103,11 @@ update msg state =
             Closed position
 
         Opened model ->
-            updateModel msg model
+            updateOpened msg model
 
 
-updateModel : Msg -> Model -> State
-updateModel msg model =
+updateOpened : Msg -> Model -> State
+updateOpened msg model =
     case msg of
         XButtonMouseUp ->
             Closed model.externalPosition
@@ -123,6 +123,10 @@ updateModel msg model =
 
         ZoomOutClicked ->
             zoomOut model |> Opened
+
+        ZeroClicked ->
+            { model | internalPosition = { x = 0, y = 0 } }
+                |> Opened
 
         ScreenMouseDown { targetPos, clientPos } ->
             { model
@@ -378,6 +382,14 @@ view model canvas maybeSelection =
                 , attrs =
                     [ class [ Button ]
                     , onClick ZoomOutClicked
+                    ]
+                }
+            , Html.Custom.toolButton
+                { icon = Tool.icon (Hand Nothing)
+                , selected = False
+                , attrs =
+                    [ class [ Button ]
+                    , onClick ZeroClicked
                     ]
                 }
             ]
