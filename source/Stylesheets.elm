@@ -5,6 +5,7 @@ import Css.File exposing (CssCompilerProgram, CssFileStructure)
 import Error
 import Html.Custom
 import Import
+import Login
 import Menu
 import Minimap
 import Palette
@@ -37,6 +38,7 @@ main =
     , Text.css
     , Error.css
     , Upload.css
+    , Login.css
     ]
         |> Css.File.compile
         |> (,) "./development/paint-app-styles.css"

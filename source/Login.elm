@@ -1,12 +1,22 @@
 module Login exposing (..)
 
+import Bool.Extra
+import Css exposing (..)
+import Css.Namespace exposing (namespace)
 import Data.User exposing (User)
 import Html exposing (Attribute, Html, div, input, p)
-import Html.Attributes exposing (hidden, placeholder, type_, value)
+import Html.Attributes as Attr
+    exposing
+        ( placeholder
+        , type_
+        , value
+        )
+import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Maybe.Extra
 import Ports exposing (JsMsg(AttemptLogin))
+import Regex
 import Reply exposing (Reply(AttemptingLogin, NoReply, SetToNoSession, SetUser))
 import Tuple.Infix exposing ((&))
 import Util
@@ -39,6 +49,7 @@ type Field
 
 type Problem
     = EmailIsBlank
+    | EmailIsInvalid
     | PasswordIsBlank
     | IncorrectEmailOrPassword
     | Other String
@@ -59,7 +70,33 @@ init =
 
 
 
+-- STYLES --
+
+
+type Class
+    = Error
+
+
+css : Stylesheet
+css =
+    [ Css.class Error
+        [ marginBottom (px 8) ]
+    ]
+        |> namespace loginNamespace
+        |> stylesheet
+
+
+loginNamespace : String
+loginNamespace =
+    Html.Custom.makeNamespace "Login"
+
+
+
 -- VIEW --
+
+
+{ class } =
+    Html.CssHelpers.withNamespace loginNamespace
 
 
 view : Model -> List (Html Msg)
@@ -78,8 +115,9 @@ view model =
             , placeholder "name@email.com"
             ]
             []
-        , input [ type_ "submit", hidden True ] []
+        , input [ type_ "submit", Attr.hidden True ] []
         ]
+    , fieldErrorView model.errors Email
     , Html.Custom.field
         [ onSubmit FormSubmitted ]
         [ p [] [ Html.text "password" ]
@@ -89,12 +127,51 @@ view model =
             , type_ "password"
             ]
             []
-        , input [ type_ "submit", hidden True ] []
+        , input [ type_ "submit", Attr.hidden True ] []
         ]
+    , fieldErrorView model.errors Password
     , Html.Custom.menuButton
         [ onClick LoginButtonPressed ]
         [ Html.text "log in" ]
     ]
+
+
+fieldErrorView : List ( Field, Problem ) -> Field -> Html Msg
+fieldErrorView errors field =
+    let
+        thisFieldsErrors =
+            List.filter
+                (Tuple.first >> (==) field)
+                errors
+    in
+    case thisFieldsErrors of
+        [] ->
+            Html.text ""
+
+        error :: _ ->
+            error
+                |> Tuple.second
+                |> errorStr
+                |> Html.Custom.error [ class [ Error ] ]
+
+
+errorStr : Problem -> String
+errorStr problem =
+    case problem of
+        EmailIsBlank ->
+            "Email cant be blank"
+
+        EmailIsInvalid ->
+            "This email isnt valid"
+
+        PasswordIsBlank ->
+            "Password cant be blank"
+
+        IncorrectEmailOrPassword ->
+            "The email and password dont match"
+
+        Other str ->
+            str
 
 
 
@@ -160,10 +237,23 @@ validate model =
 
 determineErrors : Model -> List ( Field, Problem )
 determineErrors model =
-    [ ( Email, EmailIsBlank ) |> check (String.isEmpty model.email)
-    , ( Password, PasswordIsBlank ) |> check (String.isEmpty model.password)
+    [ ( Email, EmailIsBlank )
+        |> check (String.isEmpty model.email)
+    , ( Email, EmailIsInvalid )
+        |> check (emailIsInvalid model.email)
+    , ( Password, PasswordIsBlank )
+        |> check (String.isEmpty model.password)
     ]
         |> Maybe.Extra.values
+
+
+emailIsInvalid : String -> Bool
+emailIsInvalid email =
+    [ Regex.contains (Regex.regex "[A-Za-z0-9]@[A-Za-z0-9]")
+    , Regex.contains (Regex.regex "[A-Za-z0-9]\\.[A-Za-z]*")
+    ]
+        |> flip Bool.Extra.allPass email
+        |> not
 
 
 check : Bool -> ( Field, Problem ) -> Maybe ( Field, Problem )
