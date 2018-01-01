@@ -1,6 +1,7 @@
 module Data.Picker
     exposing
         ( ClickState(..)
+        , Direction(..)
         , Fields
         , FieldsMsg(..)
         , Gradient(..)
@@ -45,6 +46,12 @@ type FieldsMsg
     | SetNoGradientClickedOn
     | MouseMoveInGradient Gradient MouseEvent
     | FieldUpdate Gradient String
+    | ArrowClicked Gradient Direction
+
+
+type Direction
+    = Left
+    | Right
 
 
 type Msg

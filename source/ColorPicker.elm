@@ -15,6 +15,7 @@ import Css.Namespace exposing (namespace)
 import Data.Picker
     exposing
         ( ClickState(..)
+        , Direction(Left, Right)
         , Fields
         , FieldsMsg(..)
         , Gradient(..)
@@ -44,6 +45,7 @@ import Html.Custom exposing (card, cardBody, header, indent)
 import Html.Events
     exposing
         ( onBlur
+        , onClick
         , onFocus
         , onInput
         , onSubmit
@@ -156,6 +158,9 @@ updateFields msg fields =
         FieldUpdate gradient str ->
             fieldHandler gradient str fields
 
+        ArrowClicked gradient direction ->
+            arrowHandler gradient direction fields
+
 
 updateWindow : WindowMsg -> Window -> ( Window, Reply )
 updateWindow msg window =
@@ -224,6 +229,190 @@ update message model =
 
 
 -- MESSAGE HANDLERS --
+
+
+arrowHandler : Gradient -> Direction -> Fields -> ( Fields, Reply )
+arrowHandler gradient direction fields =
+    let
+        { hue, saturation, lightness } =
+            Color.toHsl fields.color
+
+        { red, green, blue } =
+            Color.toRgb fields.color
+    in
+    case gradient of
+        Lightness ->
+            let
+                lightnessInt =
+                    Basics.round (lightness * 255)
+            in
+            case direction of
+                Left ->
+                    if 0 < lightnessInt then
+                        { fields
+                            | color =
+                                Color.hsl
+                                    hue
+                                    saturation
+                                    (toFloat (lightnessInt - 1) / 255)
+                        }
+                            |> cohereAndSet
+                    else
+                        fields & NoReply
+
+                Right ->
+                    if lightnessInt < 255 then
+                        { fields
+                            | color =
+                                Color.hsl
+                                    hue
+                                    saturation
+                                    (toFloat (lightnessInt + 1) / 255)
+                        }
+                            |> cohereAndSet
+                    else
+                        fields & NoReply
+
+        Saturation ->
+            let
+                saturationInt =
+                    Basics.round (saturation * 255)
+            in
+            case direction of
+                Left ->
+                    if 0 < saturationInt then
+                        { fields
+                            | color =
+                                Color.hsl
+                                    hue
+                                    (toFloat (saturationInt - 1) / 255)
+                                    lightness
+                        }
+                            |> cohereAndSet
+                    else
+                        fields & NoReply
+
+                Right ->
+                    if saturationInt < 255 then
+                        { fields
+                            | color =
+                                Color.hsl
+                                    hue
+                                    (toFloat (saturationInt + 1) / 255)
+                                    lightness
+                        }
+                            |> cohereAndSet
+                    else
+                        fields & NoReply
+
+        Hue ->
+            let
+                newHue =
+                    let
+                        d =
+                            case direction of
+                                Left ->
+                                    -1
+
+                                Right ->
+                                    1
+                    in
+                    (Basics.round ((hue * 180 / pi) + d) % 360)
+                        |> toFloat
+                        |> degrees
+            in
+            { fields
+                | color =
+                    Color.hsl
+                        newHue
+                        saturation
+                        lightness
+            }
+                |> cohereAndSet
+
+        Red ->
+            case direction of
+                Left ->
+                    if 0 < red then
+                        { fields
+                            | color =
+                                Color.rgb
+                                    (red - 1)
+                                    green
+                                    blue
+                        }
+                            |> cohereAndSet
+                    else
+                        fields & NoReply
+
+                Right ->
+                    if red < 255 then
+                        { fields
+                            | color =
+                                Color.rgb
+                                    (red + 1)
+                                    green
+                                    blue
+                        }
+                            |> cohereAndSet
+                    else
+                        fields & NoReply
+
+        Green ->
+            case direction of
+                Left ->
+                    if 0 < green then
+                        { fields
+                            | color =
+                                Color.rgb
+                                    red
+                                    (green - 1)
+                                    blue
+                        }
+                            |> cohereAndSet
+                    else
+                        fields & NoReply
+
+                Right ->
+                    if green < 255 then
+                        { fields
+                            | color =
+                                Color.rgb
+                                    red
+                                    (green + 1)
+                                    blue
+                        }
+                            |> cohereAndSet
+                    else
+                        fields & NoReply
+
+        Blue ->
+            case direction of
+                Left ->
+                    if 0 < blue then
+                        { fields
+                            | color =
+                                Color.rgb
+                                    red
+                                    green
+                                    (blue - 1)
+                        }
+                            |> cohereAndSet
+                    else
+                        fields & NoReply
+
+                Right ->
+                    if blue < 255 then
+                        { fields
+                            | color =
+                                Color.rgb
+                                    red
+                                    green
+                                    (blue + 1)
+                        }
+                            |> cohereAndSet
+                    else
+                        fields & NoReply
 
 
 fieldHandler : Gradient -> String -> Fields -> ( Fields, Reply )
@@ -484,12 +673,15 @@ type Class
     | Pointer
     | Transparent
     | HexField
+    | ArrowButton
+    | TriangleLeft
+    | TriangleRight
 
 
 css : Stylesheet
 css =
     [ Css.class ColorPicker
-        [ width (px 334)
+        [ width (px 390)
         , position absolute
         ]
     , Css.class HexField
@@ -505,9 +697,34 @@ css =
                 ]
             ]
         ]
+    , Css.class ArrowButton
+        [ display inlineBlock
+        , width (px 20)
+        , height (px 20)
+        , padding (px 0)
+        , marginLeft (px 2)
+        ]
+    , Css.class TriangleRight
+        [ width (px 0)
+        , height (px 0)
+        , marginLeft (px 5)
+        , marginTop (px 5)
+        , borderTop3 (px 5) solid transparent
+        , borderBottom3 (px 5) solid transparent
+        , borderLeft3 (px 10) solid point
+        ]
+    , Css.class TriangleLeft
+        [ width (px 0)
+        , height (px 0)
+        , marginLeft (px 5)
+        , marginTop (px 5)
+        , borderTop3 (px 5) solid transparent
+        , borderBottom3 (px 5) solid transparent
+        , borderRight3 (px 10) solid point
+        ]
     , (Css.class Visualization << List.append indent)
         [ height (px 20)
-        , width (px 241)
+        , width (px 293)
         , verticalAlign top
         , display inlineBlock
         , marginTop (px 2)
@@ -624,6 +841,8 @@ slider label fieldContent gradient sliderGradient =
         [ class [ SliderContainer ] ]
         [ p [] [ Html.text label ]
         , sliderGradient
+        , arrow Left gradient TriangleLeft fieldContent
+        , arrow Right gradient TriangleRight fieldContent
         , input
             [ onInput (FieldUpdate gradient)
             , value fieldContent
@@ -632,6 +851,15 @@ slider label fieldContent gradient sliderGradient =
             ]
             []
         ]
+
+
+arrow : Direction -> Gradient -> Class -> String -> Html FieldsMsg
+arrow direction gradient triangleClass fieldContent =
+    Html.Custom.menuButton
+        [ class [ ArrowButton ]
+        , onClick (ArrowClicked gradient direction)
+        ]
+        [ div [ class [ triangleClass ] ] [] ]
 
 
 
