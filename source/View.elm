@@ -21,6 +21,7 @@ import Html.Attributes as Attributes exposing (style)
 import Html.CssHelpers
 import Html.Custom exposing (indent)
 import Html.Events exposing (on, onMouseLeave)
+import Html.Lazy
 import Menu
 import Minimap
 import Model exposing (Model)
@@ -178,7 +179,7 @@ view model =
             , clickScreen canvasAreaHeight model
             , colorPicker model
             , minimap model
-            , menu model.menu
+            , Html.Lazy.lazy menu model.menu
             ]
 
 
@@ -218,8 +219,12 @@ palette model =
         , style [ Util.height Util.pbh ]
         ]
         [ edge
-        , Palette.swatchesView model.color.swatches
-        , Html.map PaletteMsg (Palette.paletteView model.color)
+        , Html.Lazy.lazy
+            Palette.swatchesView
+            model.color.swatches
+        , model.color
+            |> Html.Lazy.lazy Palette.paletteView
+            |> Html.map PaletteMsg
         , infoBox model
         ]
 
@@ -449,7 +454,7 @@ colorPicker : Model -> Html Msg
 colorPicker model =
     if model.color.picker.window.show then
         model.color.picker
-            |> ColorPicker.view
+            |> Html.Lazy.lazy ColorPicker.view
             |> Html.map ColorPickerMsg
     else
         Html.text ""
@@ -504,9 +509,6 @@ toolClass tool =
 
         Data.Tool.ZoomOut ->
             ZoomOut
-
-        Data.Tool.Ellipse _ ->
-            Ellipse
 
 
 

@@ -1,7 +1,6 @@
 module Tool exposing (..)
 
 import Data.Tool exposing (Tool(..))
-import Ellipse
 import Fill
 import Hand
 import Line
@@ -52,9 +51,6 @@ handleScreenMouseUp { clientPos } model =
         Select _ ->
             model
 
-        Ellipse _ ->
-            model
-
 
 handleScreenMouseDown : MouseEvent -> Model -> Model
 handleScreenMouseDown { clientPos } model =
@@ -88,9 +84,6 @@ handleScreenMouseDown { clientPos } model =
 
         Select Nothing ->
             Select.handleScreenMouseDown clientPos model
-
-        Ellipse Nothing ->
-            Ellipse.handleScreenMouseDown clientPos model
 
         _ ->
             model
@@ -129,9 +122,6 @@ handleClientMouseUp position model =
         Select (Just priorPosition) ->
             Select.handleClientMouseUp position priorPosition model
 
-        Ellipse (Just priorPosition) ->
-            Ellipse.handleClientMouseUp position priorPosition model
-
         _ ->
             model
 
@@ -169,9 +159,6 @@ handleClientMouseMovement newPosition model =
         Select (Just priorPosition) ->
             Select.handleClientMouseMovement newPosition priorPosition model
 
-        Ellipse (Just priorPosition) ->
-            Ellipse.handleClientMouseMovement newPosition priorPosition model
-
         _ ->
             model
 
@@ -188,7 +175,6 @@ all =
     , Line Nothing
     , Rectangle Nothing
     , RectangleFilled Nothing
-    , Ellipse Nothing
     ]
 
 
@@ -225,9 +211,6 @@ icon tool =
         ZoomOut ->
             "\xEA18"
 
-        Ellipse _ ->
-            "\xEA06"
-
 
 name : Tool -> String
 name tool =
@@ -261,6 +244,3 @@ name tool =
 
         ZoomOut ->
             "zoom-out"
-
-        Ellipse _ ->
-            "ellipse"

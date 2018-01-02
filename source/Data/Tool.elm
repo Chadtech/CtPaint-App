@@ -19,4 +19,3 @@ type Tool
     | Line (Maybe Position)
     | Rectangle (Maybe Position)
     | RectangleFilled (Maybe Position)
-    | Ellipse (Maybe Position)
