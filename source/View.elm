@@ -550,37 +550,32 @@ toolAtRender : Model -> Mouse.Position -> DrawOp
 toolAtRender model position =
     case model.tool of
         Data.Tool.Pencil _ ->
-            position
-                |> Util.toPoint
-                |> Draw.pixel model.color.swatches.primary
+            drawTargetPixel position model.color.swatches.primary
 
         Data.Tool.Line _ ->
-            position
-                |> Util.toPoint
-                |> Draw.pixel model.color.swatches.primary
+            drawTargetPixel position model.color.swatches.primary
 
         Data.Tool.Rectangle _ ->
-            position
-                |> Util.toPoint
-                |> Draw.pixel model.color.swatches.primary
+            drawTargetPixel position model.color.swatches.primary
 
         Data.Tool.RectangleFilled _ ->
-            position
-                |> Util.toPoint
-                |> Draw.pixel model.color.swatches.primary
+            drawTargetPixel position model.color.swatches.primary
 
         Data.Tool.Sample ->
-            position
-                |> Util.toPoint
-                |> Draw.pixel model.color.swatches.primary
+            drawTargetPixel position model.color.swatches.primary
 
         Data.Tool.Fill ->
-            position
-                |> Util.toPoint
-                |> Draw.pixel model.color.swatches.primary
+            drawTargetPixel position model.color.swatches.primary
 
         _ ->
             Canvas.batch []
+
+
+drawTargetPixel : Mouse.Position -> Color.Color -> DrawOp
+drawTargetPixel position color =
+    position
+        |> Util.toPoint
+        |> Draw.pixel color
 
 
 canvasStyles : Model -> List ( String, String )
