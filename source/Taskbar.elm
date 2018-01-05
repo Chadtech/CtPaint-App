@@ -6,14 +6,12 @@ import Css.Elements
 import Css.Namespace exposing (namespace)
 import Data.Keys as Key exposing (Cmd(..), QuickKey)
 import Data.Minimap exposing (State(..))
-import Data.Project exposing (Project)
 import Data.Taskbar exposing (Dropdown(..))
 import Data.Tool as Tool exposing (Tool)
 import Data.User as User exposing (User)
 import Data.Window exposing (Window(..))
 import Helpers.Keys
 import Html exposing (Attribute, Html, a, div, input, p)
-import Html.Attributes exposing (value)
 import Html.CssHelpers
 import Html.Custom exposing (outdent)
 import Html.Events
@@ -46,7 +44,6 @@ type Msg
     | NewWindowClicked Window
     | UploadClicked
     | ToolClicked Tool
-    | ProjectNameChanged String
 
 
 
@@ -128,21 +125,6 @@ update msg model =
 
         ToolClicked tool ->
             { model | tool = tool } & Cmd.none
-
-        ProjectNameChanged newName ->
-            case model.project of
-                Just project ->
-                    { model
-                        | project =
-                            { project
-                                | name = newName
-                            }
-                                |> Just
-                    }
-                        & Cmd.none
-
-                Nothing ->
-                    model & Cmd.none
 
 
 
@@ -329,28 +311,9 @@ view ({ taskbarDropped, user } as model) =
         , colors model
         , view_ model
         , help taskbarDropped
-        , projectView model.project
         , userButton user
         , invisibleWall taskbarDropped
         ]
-
-
-projectView : Maybe Project -> Html Msg
-projectView maybeProject =
-    case maybeProject of
-        Just project ->
-            input
-                [ class [ NameField ]
-                , value project.name
-                , onInput ProjectNameChanged
-                ]
-                []
-
-        Nothing ->
-            input
-                [ class [ NameField, Disabled ]
-                ]
-                []
 
 
 userButton : User.Model -> Html Msg

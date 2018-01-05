@@ -19,6 +19,7 @@ import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
 import New
 import Open
+import Project
 import ReplaceColor
 import Resize
 import Scale
@@ -40,6 +41,7 @@ type Menu
     | Loading String
     | Upload Upload.Model
     | Resize Resize.Model
+    | Project Project.Model
 
 
 type alias Model =
@@ -76,6 +78,7 @@ type ContentMsg
     | LoginMsg Login.Msg
     | UploadMsg Upload.Msg
     | ResizeMsg Resize.Msg
+    | ProjectMsg Project.Msg
 
 
 fileRead : String -> Msg

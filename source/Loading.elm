@@ -13,7 +13,7 @@ import Reply exposing (Reply(SetProject))
 
 
 type Msg
-    = ProjectLoaded String Project
+    = ProjectLoaded Project
 
 
 
@@ -64,5 +64,5 @@ presentName name =
 update : Msg -> Reply
 update msg =
     case msg of
-        ProjectLoaded id project ->
-            SetProject id project
+        ProjectLoaded project ->
+            SetProject project

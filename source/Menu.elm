@@ -24,6 +24,7 @@ import Login
 import Mouse exposing (Position)
 import New
 import Open
+import Project
 import Random exposing (Seed)
 import ReplaceColor
 import Reply exposing (Reply(CloseMenu, NoReply))
@@ -237,6 +238,20 @@ updateContent msg model =
                 _ ->
                     model & Cmd.none & NoReply
 
+        ProjectMsg subMsg ->
+            case model.content of
+                Project subModel ->
+                    let
+                        ( newSubModel, reply ) =
+                            Project.update subMsg subModel
+                    in
+                    { model | content = Project newSubModel }
+                        & Cmd.none
+                        & reply
+
+                _ ->
+                    model & Cmd.none & NoReply
+
 
 
 -- STYLES --
@@ -367,6 +382,10 @@ contentView menu =
         Resize subModel ->
             List.map (Html.map ResizeMsg) <|
                 Resize.view subModel
+
+        Project subModel ->
+            List.map (Html.map ProjectMsg) <|
+                Project.view subModel
 
 
 

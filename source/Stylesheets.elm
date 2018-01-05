@@ -9,7 +9,9 @@ import Login
 import Menu
 import Minimap
 import Palette
+import Project
 import ReplaceColor
+import Resize
 import Scale
 import Taskbar
 import Text
@@ -39,6 +41,8 @@ main =
     , Error.css
     , Upload.css
     , Login.css
+    , Resize.css
+    , Project.css
     ]
         |> Css.File.compile
         |> (,) "./development/paint-app-styles.css"

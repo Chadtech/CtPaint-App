@@ -131,7 +131,7 @@ incorporate reply menu model =
             }
                 & Cmd.none
 
-        SetProject id project ->
+        SetProject project ->
             { model
                 | project = Just project
                 , menu = Nothing

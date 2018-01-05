@@ -17,5 +17,5 @@ type Reply
     | SetUser User
     | AttemptingLogin
     | SetToNoSession
-    | SetProject String Project
+    | SetProject Project
     | ResizeTo Int Int Int Int
