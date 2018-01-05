@@ -127,9 +127,9 @@ css =
         ]
     , (Css.class Info << List.append indent)
         [ backgroundColor backgroundx2
-        , width (px 290)
+        , width (px 390)
         , position absolute
-        , left (calc (pct 100) minus (px 297))
+        , left (calc (pct 100) minus (px 397))
         , top (px 4)
         , overflowY auto
         , children
@@ -256,8 +256,8 @@ infoView str =
 infoBoxContent : Model -> List (Html msg)
 infoBoxContent model =
     [ List.map infoView (toolContent model)
-    , List.map infoView (generalContent model)
     , sampleColor model
+    , List.map infoView (generalContent model)
     ]
         |> List.concat
 

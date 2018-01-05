@@ -108,7 +108,7 @@ css =
     , Css.class Primary
         [ top (px 0)
         , left (px 0)
-        , width (px 74)
+        , width (px 98)
         ]
     , Css.class First
         [ top (px 28)
@@ -118,18 +118,18 @@ css =
     , Css.class Second
         [ top (px 28)
         , left (px 27)
-        , width (px 20)
+        , width (px 44)
         ]
     , Css.class Third
         [ top (px 28)
-        , left (px 54)
+        , left (px 78)
         , width (px 20)
         ]
     , (Css.class Colors << List.append indent)
         [ backgroundColor backgroundx2
-        , width (calc (pct 100) minus (px 360))
+        , width (calc (pct 100) minus (px 484))
         , position absolute
-        , left (px 55)
+        , left (px 79)
         , top (px 4)
         , overflowY auto
         ]
