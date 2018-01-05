@@ -11,6 +11,7 @@ import Array exposing (Array)
 import Chadtech.Colors
     exposing
         ( backgroundx2
+        , ignorable0
         , ignorable1
         , ignorable2
         , ignorable3
@@ -142,6 +143,11 @@ css =
         , borderBottom3 (px 1) solid ignorable1
         , display inlineBlock
         , float left
+        , withClass Selected
+            [ border3 (px 2) solid ignorable0
+            , height (px 18)
+            , width (px 18)
+            ]
         ]
     , (Css.class Plus << List.append outdent << List.append cannotSelect)
         [ color point
@@ -179,24 +185,19 @@ paletteNamespace =
 
 paletteView : Model -> Html Msg
 paletteView model =
-    let
-        square : ( Int, Color.Color ) -> Html Msg
-        square =
-            paletteSquare
-                model.picker.window.show
-                model.picker.fields.index
-
-        paletteSquares =
-            model.palette
-                |> Array.toIndexedList
-                |> List.map square
-    in
     div
         [ class [ Colors ]
         , style
             [ Util.height (Util.pbh - 10) ]
         ]
-        (List.append paletteSquares [ addColor ])
+        (List.append (squares model) [ addColor ])
+
+
+squares : Model -> List (Html Msg)
+squares { picker, palette } =
+    palette
+        |> Array.toIndexedList
+        |> List.map (square picker)
 
 
 addColor : Html Msg
@@ -208,31 +209,31 @@ addColor =
         [ Html.text "+" ]
 
 
-paletteSquare : Bool -> Int -> ( Int, Color.Color ) -> Html Msg
-paletteSquare show selectedIndex ( index, color ) =
+square : Picker.Model -> ( Int, Color.Color ) -> Html Msg
+square picker ( index, color ) =
     let
         isSelected =
-            index == selectedIndex
+            index == picker.fields.index
+
+        shown =
+            picker.window.show
     in
     div
-        [ class [ Square ]
+        [ class (squareClasses (isSelected && shown))
         , background color
         , OpenColorPicker color index
             |> Util.onContextMenu
         , onClick (PaletteSquareClick color)
         ]
-        (highLight (show && isSelected))
-
-
-highLight : Bool -> List (Html Msg)
-highLight show =
-    if show then
-        [ div
-            [ class [ Selected ] ]
-            []
-        ]
-    else
         []
+
+
+squareClasses : Bool -> List Class
+squareClasses show =
+    if show then
+        [ Square, Selected ]
+    else
+        [ Square ]
 
 
 
