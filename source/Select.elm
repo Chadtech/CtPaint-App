@@ -6,6 +6,7 @@ module Select
         )
 
 import Canvas
+import Color exposing (Color)
 import Data.Tool exposing (Tool(Select))
 import Draw
 import Helpers.History as History
@@ -38,10 +39,22 @@ handleClientMouseMovement newPosition priorPosition model =
     { model
         | drawAtRender =
             Draw.rectangle
-                model.color.swatches.second
+                (displace model.color.swatches.second)
                 priorPosition
                 (adjustPosition model newPosition)
     }
+
+
+displace : Color -> Color
+displace color =
+    let
+        { hue, saturation, lightness } =
+            Color.toHsl color
+    in
+    if isNaN hue then
+        Color.hsl (lightness * 2 * pi) 0.5 0.5
+    else
+        Color.hsl (hue - degrees 120) saturation (1 - lightness)
 
 
 handleClientMouseUp : Position -> Position -> Model -> Model
