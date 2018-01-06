@@ -1,6 +1,7 @@
 module Tool exposing (..)
 
 import Data.Tool exposing (Tool(..))
+import Eraser
 import Fill
 import Hand
 import Line
@@ -51,6 +52,9 @@ handleScreenMouseUp { clientPos } model =
         Select _ ->
             model
 
+        Eraser _ ->
+            model
+
 
 handleScreenMouseDown : MouseEvent -> Model -> Model
 handleScreenMouseDown { clientPos } model =
@@ -84,6 +88,9 @@ handleScreenMouseDown { clientPos } model =
 
         Select Nothing ->
             Select.handleScreenMouseDown clientPos model
+
+        Eraser Nothing ->
+            Eraser.handleScreenMouseDown clientPos model
 
         _ ->
             model
@@ -122,6 +129,9 @@ handleClientMouseUp position model =
         Select (Just priorPosition) ->
             Select.handleClientMouseUp position priorPosition model
 
+        Eraser _ ->
+            { model | tool = Eraser Nothing }
+
         _ ->
             model
 
@@ -159,6 +169,9 @@ handleClientMouseMovement newPosition model =
         Select (Just priorPosition) ->
             Select.handleClientMouseMovement newPosition priorPosition model
 
+        Eraser (Just priorPosition) ->
+            Eraser.handleClientMouseMovement newPosition priorPosition model
+
         _ ->
             model
 
@@ -171,6 +184,7 @@ all =
     , Hand Nothing
     , Sample
     , Fill
+    , Eraser Nothing
     , Pencil Nothing
     , Line Nothing
     , Rectangle Nothing
@@ -211,6 +225,9 @@ icon tool =
         ZoomOut ->
             "\xEA18"
 
+        Eraser _ ->
+            "\xEA1B"
+
 
 name : Tool -> String
 name tool =
@@ -244,3 +261,6 @@ name tool =
 
         ZoomOut ->
             "zoom-out"
+
+        Eraser _ ->
+            "eraser"

@@ -360,6 +360,25 @@ filledRectangle color size position =
         |> Canvas.batch
 
 
+eraser : Color -> Int -> Position -> Position -> DrawOp
+eraser color size p0 p1 =
+    Shapes.line p0 p1
+        |> List.map (eraserPoint color size)
+        |> Canvas.batch
+
+
+eraserPoint : Color -> Int -> Position -> DrawOp
+eraserPoint color size position =
+    filledRectangle
+        color
+        { width = size
+        , height = size
+        }
+        { x = position.x - (size // 2)
+        , y = position.y - (size // 2)
+        }
+
+
 
 -- SELECT --
 

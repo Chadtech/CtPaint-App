@@ -95,6 +95,7 @@ fromFlags flags =
     , minimap = Data.Minimap.NotInitialized
     , menu = menu
     , seed = flags.seed
+    , eraserSize = 9
     , config = Config.init flags
     }
         & cmd
@@ -172,6 +173,7 @@ fromError err =
             |> Menu.initError err
             |> Just
     , seed = Random.initialSeed 0
+    , eraserSize = 1
     , config =
         { keyCmds = Dict.empty
         , quickKeys = Dict.empty

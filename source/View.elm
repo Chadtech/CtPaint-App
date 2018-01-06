@@ -60,7 +60,7 @@ type Class
     | Line
     | Rectangle
     | RectangleFilled
-    | Ellipse
+    | Eraser
     | Info
     | Edge
     | Palette
@@ -510,6 +510,9 @@ toolClass tool =
         Data.Tool.ZoomOut ->
             ZoomOut
 
+        Data.Tool.Eraser _ ->
+            Eraser
+
 
 
 -- CANVAS --
@@ -567,8 +570,16 @@ toolAtRender model position =
         Data.Tool.Fill ->
             drawTargetPixel position model.color.swatches.primary
 
+        Data.Tool.Eraser _ ->
+            drawTargetEraser position model
+
         _ ->
             Canvas.batch []
+
+
+drawTargetEraser : Mouse.Position -> Model -> DrawOp
+drawTargetEraser position { color, eraserSize } =
+    Draw.eraserPoint color.swatches.primary eraserSize position
 
 
 drawTargetPixel : Mouse.Position -> Color.Color -> DrawOp

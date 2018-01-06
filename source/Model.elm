@@ -35,5 +35,6 @@ type alias Model =
     , minimap : Minimap.State
     , menu : Maybe Menu.Model
     , seed : Seed
+    , eraserSize : Int
     , config : Config
     }
