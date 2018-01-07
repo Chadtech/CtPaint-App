@@ -84,6 +84,7 @@ handleClientMouseUp newPosition priorPosition model =
                 , drawOp
                 ]
                     |> Canvas.batch
+            , drawAtRender = Canvas.batch []
             , selection =
                 adjustedPosition
                     |> positionMin priorPosition

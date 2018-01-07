@@ -1,7 +1,7 @@
 module Menu exposing (..)
 
 import About
-import Color exposing (Color)
+import Color
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Data.Menu

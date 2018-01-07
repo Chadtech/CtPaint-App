@@ -7,7 +7,6 @@ import Json.Decode.Pipeline
     exposing
         ( custom
         , decode
-        , hardcoded
         , optional
         , required
         )

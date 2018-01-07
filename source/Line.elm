@@ -5,7 +5,7 @@ module Line
         , handleScreenMouseDown
         )
 
-import Canvas exposing (Size)
+import Canvas
 import Data.Tool exposing (Tool(Line))
 import Draw
 import Helpers.History as History

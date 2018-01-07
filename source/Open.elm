@@ -1,6 +1,18 @@
-module Open exposing (..)
+module Open
+    exposing
+        ( Model
+        , Msg
+        , css
+        , init
+        , update
+        , view
+        )
 
+import Css exposing (..)
+import Css.Namespace exposing (namespace)
 import Html exposing (Html, div)
+import Html.CssHelpers
+import Html.Custom
 import List.Selection exposing (Selection)
 import Tuple.Infix exposing ((&))
 
@@ -53,7 +65,31 @@ init =
 
 
 
+-- STYLES --
+
+
+type Class
+    = Error
+
+
+css : Stylesheet
+css =
+    []
+        |> namespace openNamespace
+        |> stylesheet
+
+
+openNamespace : String
+openNamespace =
+    Html.Custom.makeNamespace "Open"
+
+
+
 -- VIEW --
+
+
+{ class } =
+    Html.CssHelpers.withNamespace openNamespace
 
 
 view : Model -> List (Html Msg)

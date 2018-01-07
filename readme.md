@@ -17,7 +17,6 @@ This repo is organized as..
 │   ├── History.elm
 │   ├── Menu.elm
 │   ├── Minimap.elm
-│   ├── Palette.elm
 │   ├── Picker.elm
 │   ├── Project.elm
 │   ├── Taskbar.elm
@@ -26,7 +25,7 @@ This repo is organized as..
 │   └── Window.elm
 ├── Download.elm
 ├── Draw.elm
-├── Ellipse.elm
+├── Eraser.elm
 ├── Error.elm
 ├── Fill.elm
 ├── Hand.elm
@@ -64,6 +63,7 @@ This repo is organized as..
 ├── Palette.elm
 ├── Pencil.elm
 ├── Ports.elm
+├── Project.elm
 ├── Rectangle.elm
 ├── RectangleFilled.elm
 ├── ReplaceColor.elm

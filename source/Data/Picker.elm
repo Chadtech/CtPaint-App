@@ -24,8 +24,8 @@ import Util
 
 type Reply
     = NoReply
-    | SetColor Int Color.Color
-    | UpdateHistory Int Color.Color
+    | SetColor Int Color
+    | UpdateHistory Int Color
     | StealFocus
     | ReturnFocus
 

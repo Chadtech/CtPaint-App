@@ -5,9 +5,11 @@ import Css.File exposing (CssCompilerProgram, CssFileStructure)
 import Error
 import Html.Custom
 import Import
+import Loading
 import Login
 import Menu
 import Minimap
+import Open
 import Palette
 import Project
 import ReplaceColor
@@ -43,6 +45,8 @@ main =
     , Login.css
     , Resize.css
     , Project.css
+    , Loading.css
+    , Open.css
     ]
         |> Css.File.compile
         |> (,) "./development/paint-app-styles.css"

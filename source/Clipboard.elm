@@ -1,4 +1,4 @@
-module Clipboard exposing (..)
+module Clipboard exposing (copy, cut, paste)
 
 import Model exposing (Model)
 

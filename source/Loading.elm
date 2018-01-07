@@ -1,4 +1,9 @@
-module Loading exposing (update, view)
+module Loading
+    exposing
+        ( css
+        , update
+        , view
+        )
 
 import Css exposing (..)
 import Css.Namespace exposing (namespace)

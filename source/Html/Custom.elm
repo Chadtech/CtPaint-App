@@ -27,7 +27,7 @@ import Html.Events
         ( onMouseDown
         , onMouseUp
         )
-import MouseEvents exposing (MouseEvent, Position)
+import MouseEvents exposing (MouseEvent)
 import Tuple.Infix exposing ((:=))
 
 
@@ -46,7 +46,6 @@ type Class
     | Error
     | SpinnerContainer
     | ToolButton
-    | Button
 
 
 css : Stylesheet
@@ -302,12 +301,11 @@ toolButton : ToolButtonState msg -> Html msg
 toolButton state =
     let
         attrs =
-            [ classList
+            classList
                 [ ToolButton := True
                 , Selected := state.selected
                 ]
-            ]
-                ++ state.attrs
+                :: state.attrs
     in
     Html.a attrs [ Html.text state.icon ]
 

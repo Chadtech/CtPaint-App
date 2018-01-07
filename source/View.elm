@@ -16,8 +16,16 @@ import Data.Menu
 import Data.Minimap exposing (State(..))
 import Data.Tool
 import Draw
-import Html exposing (Html, div, input, p, span)
-import Html.Attributes as Attributes exposing (style)
+import Html
+    exposing
+        ( Attribute
+        , Html
+        , div
+        , input
+        , p
+        , span
+        )
+import Html.Attributes as Attr
 import Html.CssHelpers
 import Html.Custom exposing (indent)
 import Html.Events exposing (on, onMouseLeave)
@@ -49,6 +57,7 @@ type Class
     | CanvasArea
     | MainCanvas
     | SelectionCanvas
+    | SelectionCanvasContainer
     | Screen
     | Hand
     | Sample
@@ -87,8 +96,13 @@ css =
         ]
     , Css.class SelectionCanvas
         [ position absolute
-        , backgroundImage (url "./selection.gif")
-        , padding (px 1)
+        , left (px 0)
+        , top (px 0)
+        ]
+    , Css.class SelectionCanvasContainer
+        [ position absolute
+        , border2 (px 1) solid
+        , property "border-image" "url(\"./selection.gif\") 1 1 repeat"
         ]
     , Css.class CanvasArea
         [ position absolute
@@ -216,7 +230,7 @@ palette : Model -> Html Msg
 palette model =
     div
         [ class [ Palette ]
-        , style [ Util.height Util.pbh ]
+        , Attr.style [ Util.height Util.pbh ]
         ]
         [ edge
         , Html.Lazy.lazy
@@ -242,8 +256,7 @@ infoBox : Model -> Html msg
 infoBox model =
     div
         [ class [ Info ]
-        , style
-            [ Util.height (Util.pbh - 10) ]
+        , Attr.style [ Util.height (Util.pbh - 10) ]
         ]
         (infoBoxContent model)
 
@@ -291,7 +304,7 @@ sampleColor model =
                 []
                 [ Html.text "color("
                 , span
-                    [ style
+                    [ Attr.style
                         [ "color" := colorStr
                         , "background" := backgroundColor
                         ]
@@ -468,7 +481,7 @@ clickScreen : Int -> Model -> Html Msg
 clickScreen canvasAreaHeight model =
     div
         [ class [ Screen, toolClass model.tool ]
-        , style [ Util.height canvasAreaHeight ]
+        , Attr.style [ Util.height canvasAreaHeight ]
         , onMouseLeave ScreenMouseExit
         , onMouseMove ScreenMouseMove
         , onMouseDown ScreenMouseDown
@@ -522,13 +535,12 @@ canvasArea : Int -> Model -> Html Msg
 canvasArea canvasAreaHeight model =
     div
         [ class [ CanvasArea ]
-        , style
-            [ Util.height canvasAreaHeight ]
+        , Attr.style [ Util.height canvasAreaHeight ]
         ]
         [ Canvas.toHtml
             [ class [ MainCanvas ]
-            , Attributes.id "main-canvas"
-            , style (canvasStyles model)
+            , Attr.id "main-canvas"
+            , canvasStyles model
             ]
             (mainCanvas model)
         , selection model
@@ -589,7 +601,7 @@ drawTargetPixel position color =
         |> Draw.pixel color
 
 
-canvasStyles : Model -> List ( String, String )
+canvasStyles : Model -> Attribute Msg
 canvasStyles { zoom, canvasPosition, canvas } =
     let
         canvasSize =
@@ -600,27 +612,42 @@ canvasStyles { zoom, canvasPosition, canvas } =
     , Util.width (canvasSize.width * zoom)
     , Util.height (canvasSize.height * zoom)
     ]
+        |> Attr.style
 
 
 selection : Model -> Html Msg
 selection model =
     case model.selection of
-        Just ( position, canvas ) ->
+        Just ( position, selection ) ->
             div
-                [ style (selectionStyles model position canvas) ]
+                [ class [ SelectionCanvasContainer ]
+                , selectionContainerStyle model position selection
+                ]
                 [ Canvas.toHtml
                     [ class [ SelectionCanvas ]
-                    , style (selectionStyles model position canvas)
+                    , selectionStyle model position selection
                     ]
-                    canvas
+                    selection
                 ]
 
         Nothing ->
             Html.text ""
 
 
-selectionStyles : Model -> Mouse.Position -> Canvas -> List ( String, String )
-selectionStyles { zoom, canvasPosition } position selection =
+selectionStyle : Model -> Mouse.Position -> Canvas -> Attribute Msg
+selectionStyle { zoom } position selection =
+    let
+        selectionSize =
+            Canvas.getSize selection
+    in
+    [ Util.width (selectionSize.width * zoom)
+    , Util.height (selectionSize.height * zoom)
+    ]
+        |> Attr.style
+
+
+selectionContainerStyle : Model -> Mouse.Position -> Canvas -> Attribute Msg
+selectionContainerStyle { zoom, canvasPosition } position selection =
     let
         selectionSize =
             Canvas.getSize selection
@@ -630,3 +657,4 @@ selectionStyles { zoom, canvasPosition } position selection =
     , Util.width (selectionSize.width * zoom)
     , Util.height (selectionSize.height * zoom)
     ]
+        |> Attr.style
