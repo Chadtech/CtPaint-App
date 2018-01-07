@@ -3,6 +3,7 @@ module Data.Project
         ( Project
         , decoder
         , encode
+        , setName
         )
 
 import Json.Decode as Decode exposing (Decoder)
@@ -41,3 +42,8 @@ decoder =
         |> required "name" Decode.string
         |> required "id" Decode.string
         |> required "version" Decode.int
+
+
+setName : String -> Project -> Project
+setName name project =
+    { project | name = name }

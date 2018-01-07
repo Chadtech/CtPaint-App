@@ -107,7 +107,7 @@ type Class
 css : Stylesheet
 css =
     [ Css.class Field
-        [ margin4 (px 4) (px 0) (px 0) (px 0)
+        [ margin4 (px 0) (px 0) (px 4) (px 0)
         , children
             [ Css.Elements.input
                 [ width (px 80) ]
@@ -116,7 +116,7 @@ css =
             ]
         ]
     , Css.class Header
-        [ marginTop (px 4) ]
+        [ marginBottom (px 4) ]
     , Css.class SubmitButton
         [ marginTop (px 8) ]
     ]

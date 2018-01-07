@@ -10,13 +10,17 @@ module Project
 
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
-import Data.Project exposing (Project)
+import Data.Project as Project exposing (Project)
 import Html
     exposing
         ( Html
+        , input
+        , p
         )
+import Html.Attributes exposing (value)
 import Html.CssHelpers
 import Html.Custom
+import Html.Events exposing (onInput, onSubmit)
 import Reply exposing (Reply(NoReply, SetProject))
 import Tuple.Infix exposing ((&), (|&))
 
@@ -25,12 +29,24 @@ import Tuple.Infix exposing ((&), (|&))
 
 
 type alias Model =
-    Project
+    { project : Project
+    , state : State
+    }
+
+
+type State
+    = Ready
+    | Saving
+    | Fail Problem
+
+
+type Problem
+    = Other String
 
 
 toProject : Model -> Project
 toProject model =
-    model
+    model.project
 
 
 type Msg
@@ -44,7 +60,9 @@ type Msg
 
 init : Project -> Model
 init project =
-    project
+    { project = project
+    , state = Ready
+    }
 
 
 
@@ -77,6 +95,40 @@ projectNamespace =
 
 view : Model -> List (Html Msg)
 view model =
+    case model.state of
+        Ready ->
+            readyView model
+
+        Saving ->
+            savingView model
+
+        Fail problem ->
+            failView problem
+
+
+readyView : Model -> List (Html Msg)
+readyView model =
+    [ Html.Custom.field
+        [ class [ Field ]
+        , onSubmit SaveClicked
+        ]
+        [ p [] [ Html.text "name" ]
+        , input
+            [ onInput NameUpdated
+            , value model.project.name
+            ]
+            []
+        ]
+    ]
+
+
+savingView : Model -> List (Html Msg)
+savingView model =
+    []
+
+
+failView : Problem -> List (Html Msg)
+failView problem =
     []
 
 
@@ -88,7 +140,11 @@ update : Msg -> Model -> ( Model, Reply )
 update msg model =
     case msg of
         NameUpdated name ->
-            { model | name = name } & NoReply
+            { model
+                | project =
+                    Project.setName name model.project
+            }
+                & NoReply
 
         SaveClicked ->
             model & SetProject (toProject model)

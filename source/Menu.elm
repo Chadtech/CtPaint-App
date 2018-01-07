@@ -12,6 +12,7 @@ import Data.Menu
         , Model
         , Msg(..)
         )
+import Data.Project as Project
 import Download
 import Error
 import Html exposing (Attribute, Html, a, div, p, text)
@@ -507,6 +508,15 @@ initResize : Size -> Size -> Model
 initResize canvasSize =
     init "resize"
         (Resize (Resize.init canvasSize))
+        { width = 10
+        , height = 10
+        }
+
+
+initProject : Project.Project -> Size -> Model
+initProject project =
+    init "project"
+        (Project (Project.init project))
         { width = 10
         , height = 10
         }

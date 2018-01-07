@@ -6,6 +6,7 @@ import Css.Elements
 import Css.Namespace exposing (namespace)
 import Data.Keys as Key exposing (Cmd(..), QuickKey)
 import Data.Minimap exposing (State(..))
+import Data.Project exposing (Project)
 import Data.Taskbar exposing (Dropdown(..))
 import Data.Tool as Tool exposing (Tool)
 import Data.User as User exposing (User)
@@ -44,6 +45,7 @@ type Msg
     | NewWindowClicked Window
     | UploadClicked
     | ToolClicked Tool
+    | ProjectClicked Project
 
 
 
@@ -125,6 +127,16 @@ update msg model =
 
         ToolClicked tool ->
             { model | tool = tool } & Cmd.none
+
+        ProjectClicked project ->
+            { model
+                | menu =
+                    Menu.initProject
+                        project
+                        model.windowSize
+                        |> Just
+            }
+                & Cmd.none
 
 
 
@@ -703,7 +715,28 @@ fileDropped model =
         (keysLabel model InitImport)
         (KeyCmdClicked InitImport)
     ]
+        |> mixinProjectOption model
         |> taskbarButtonOpen "file" File
+
+
+mixinProjectOption : Model -> List (Html Msg) -> List (Html Msg)
+mixinProjectOption model children =
+    case model.project of
+        Just project ->
+            children ++ projectOption project
+
+        Nothing ->
+            children
+
+
+projectOption : Project -> List (Html Msg)
+projectOption project =
+    [ divider
+    , option
+        "Project"
+        ""
+        (ProjectClicked project)
+    ]
 
 
 
