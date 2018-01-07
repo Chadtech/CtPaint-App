@@ -36,5 +36,6 @@ type alias Model =
     , menu : Maybe Menu.Model
     , seed : Seed
     , eraserSize : Int
+    , shiftIsDown : Bool
     , config : Config
     }

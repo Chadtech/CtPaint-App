@@ -96,6 +96,7 @@ fromFlags flags =
     , menu = menu
     , seed = flags.seed
     , eraserSize = 9
+    , shiftIsDown = False
     , config = Config.init flags
     }
         & cmd
@@ -174,6 +175,7 @@ fromError err =
             |> Just
     , seed = Random.initialSeed 0
     , eraserSize = 1
+    , shiftIsDown = False
     , config =
         { keyCmds = Dict.empty
         , quickKeys = Dict.empty

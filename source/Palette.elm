@@ -20,15 +20,15 @@ import Chadtech.Colors
 import Color exposing (Color)
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
-import Data.Color exposing (Model)
-import Data.Palette exposing (Swatches)
+import Data.Color exposing (Model, Swatches)
 import Data.Picker as Picker
 import Helpers.Color
 import Html exposing (Attribute, Html, a, div, p, span)
 import Html.Attributes exposing (class, classList, style)
 import Html.CssHelpers
 import Html.Custom exposing (cannotSelect, indent, outdent)
-import Html.Events exposing (onClick)
+import Html.Events exposing (on, onClick)
+import Json.Decode as Decode exposing (Decoder)
 import Util
     exposing
         ( background
@@ -44,7 +44,7 @@ import Util
 
 
 type Msg
-    = PaletteSquareClick Color.Color
+    = PaletteSquareClick Int Color.Color Bool
     | OpenColorPicker Color.Color Int
     | AddPaletteSquare
 
@@ -56,11 +56,20 @@ type Msg
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        PaletteSquareClick color ->
-            { model
-                | swatches =
-                    Helpers.Color.setPrimary color model.swatches
-            }
+        PaletteSquareClick index color shift ->
+            if shift then
+                { model
+                    | palette =
+                        Array.set
+                            index
+                            model.swatches.primary
+                            model.palette
+                }
+            else
+                { model
+                    | swatches =
+                        Helpers.Color.setPrimary color model.swatches
+                }
 
         OpenColorPicker color index ->
             { model
@@ -223,9 +232,19 @@ square picker ( index, color ) =
         , background color
         , OpenColorPicker color index
             |> Util.onContextMenu
-        , onClick (PaletteSquareClick color)
+        , onClickWithShift (PaletteSquareClick index color)
         ]
         []
+
+
+onClickWithShift : (Bool -> Msg) -> Attribute Msg
+onClickWithShift toMsg =
+    on "click" (Decode.map toMsg shiftDecoder)
+
+
+shiftDecoder : Decoder Bool
+shiftDecoder =
+    Decode.field "shiftKey" Decode.bool
 
 
 squareClasses : Bool -> List Class

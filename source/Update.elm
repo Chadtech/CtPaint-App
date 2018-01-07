@@ -64,7 +64,9 @@ update message model =
             { model | windowSize = size } & Cmd.none
 
         KeyboardEvent (Ok event) ->
-            Keys.exec (Helpers.Keys.getCmd model.config event) model
+            model
+                |> Helpers.Keys.setShift event
+                |> Keys.exec (Helpers.Keys.getCmd model.config event)
 
         KeyboardEvent (Err err) ->
             model & Cmd.none

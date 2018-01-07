@@ -1,8 +1,20 @@
-module Helpers.Keys exposing (getCmd, getKeysLabel)
+module Helpers.Keys
+    exposing
+        ( getCmd
+        , getKeysLabel
+        , setShift
+        )
 
 import Data.Config exposing (Config)
 import Data.Keys as Key exposing (Cmd(NoCmd))
 import Dict
+import Model exposing (Model)
+
+
+setShift : Key.Event -> Model -> Model
+setShift event model =
+    { model | shiftIsDown = event.shift }
+
 
 
 -- keyCmd from Event --
