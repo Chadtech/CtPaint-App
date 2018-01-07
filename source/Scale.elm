@@ -94,14 +94,16 @@ css =
         [ margin4 (px 4) (px 0) (px 0) (px 0)
         , children
             [ Css.Elements.input
-                [ width (px 80) ]
+                [ width (px 80)
+                , withClass Lock
+                    [ width (px 24) ]
+                ]
             , Css.Elements.p
                 [ width (px 80) ]
             ]
         ]
     , Css.class Lock
-        [ width (px 24)
-        , height (px 24)
+        [ height (px 24)
         , borderRadius (px 0)
         , paddingBottom (px 2)
         , cursor pointer
@@ -295,32 +297,12 @@ updateField : Field -> String -> Model -> Model
 updateField field str model =
     case field of
         FixedWidth ->
-            let
-                newModel =
-                    { model
-                        | fixedWidthField = str
-                    }
-            in
-            case String.toInt str of
-                Ok fixedWidth ->
-                    cohereFixedWidth fixedWidth newModel
-
-                Err err ->
-                    newModel
+            { model | fixedWidthField = str }
+                |> parseFixedWidth
 
         FixedHeight ->
-            let
-                newModel =
-                    { model
-                        | fixedHeightField = str
-                    }
-            in
-            case String.toInt str of
-                Ok fixedHeight ->
-                    cohereFixedHeight fixedHeight newModel
-
-                Err err ->
-                    newModel
+            { model | fixedHeightField = str }
+                |> parseFixedHeight
 
         PercentWidth ->
             let
@@ -351,36 +333,122 @@ updateField field str model =
                     newModel
 
 
-cohereFixedWidth : Int -> Model -> Model
-cohereFixedWidth fixedWidth model =
-    { model
-        | fixedWidth = fixedWidth
-        , percentWidth =
+parseFixedWidth : Model -> Model
+parseFixedWidth model =
+    case String.toInt model.fixedWidthField of
+        Ok fixedWidth ->
+            { model | fixedWidth = fixedWidth }
+                |> percentWidthFromFixedWidth
+                |> heightFromFixedWidth
+                    fixedWidth
+                    model.fixedWidth
+
+        Err err ->
+            model
+
+
+percentWidthFromFixedWidth : Model -> Model
+percentWidthFromFixedWidth model =
+    let
+        percentWidth =
             let
                 fixedWidth_ =
-                    toFloat fixedWidth
+                    toFloat model.fixedWidth
 
                 initialWidth =
                     toFloat model.initialSize.width
             in
             (fixedWidth_ / initialWidth) * 100
+    in
+    { model
+        | percentWidthField = toString percentWidth
+        , percentWidth = percentWidth
     }
 
 
-cohereFixedHeight : Int -> Model -> Model
-cohereFixedHeight fixedHeight model =
-    { model
-        | fixedHeight = fixedHeight
-        , percentHeight =
+heightFromFixedWidth : Int -> Int -> Model -> Model
+heightFromFixedWidth newWidth oldWidth model =
+    if model.lockRatio then
+        let
+            fixedHeight =
+                [ toFloat model.fixedHeight
+                , toFloat newWidth
+                , 1 / toFloat oldWidth
+                ]
+                    |> List.product
+                    |> Basics.round
+        in
+        { model
+            | fixedHeight = fixedHeight
+            , fixedHeightField = toString fixedHeight
+            , percentHeight =
+                let
+                    initialHeight =
+                        toFloat model.initialSize.height
+                in
+                (toFloat fixedHeight / initialHeight) * 100
+        }
+    else
+        model
+
+
+parseFixedHeight : Model -> Model
+parseFixedHeight model =
+    case String.toInt model.fixedHeightField of
+        Ok fixedHeight ->
+            { model | fixedHeight = fixedHeight }
+                |> percentHeightFromFixedHeight
+                |> widthFromFixedHeight
+                    fixedHeight
+                    model.fixedHeight
+
+        Err err ->
+            model
+
+
+percentHeightFromFixedHeight : Model -> Model
+percentHeightFromFixedHeight model =
+    let
+        percentHeight =
             let
                 fixedHeight_ =
-                    toFloat fixedHeight
+                    toFloat model.fixedHeight
 
                 initialHeight =
                     toFloat model.initialSize.height
             in
             (fixedHeight_ / initialHeight) * 100
+    in
+    { model
+        | percentHeightField = toString (Basics.round percentHeight)
+        , percentHeight = percentHeight
     }
+
+
+widthFromFixedHeight : Int -> Int -> Model -> Model
+widthFromFixedHeight newHeight oldHeight model =
+    if model.lockRatio then
+        let
+            fixedWidth =
+                [ toFloat model.fixedWidth
+                , toFloat newHeight
+                , 1 / toFloat oldHeight
+                ]
+                    |> List.product
+                    |> Basics.round
+        in
+        { model
+            | fixedWidth = fixedWidth
+            , fixedWidthField = toString fixedWidth
+            , percentWidth =
+                let
+                    initialWidth =
+                        toFloat model.initialSize.width
+                in
+                (toFloat fixedWidth / initialWidth) * 100
+        }
+    else
+        model
 
 
 coherePercentWidth : Float -> Model -> Model
