@@ -20,7 +20,13 @@ import Html
 import Html.Attributes exposing (placeholder)
 import Html.CssHelpers
 import Html.Custom
-import Html.Events exposing (onFocus, onInput, onSubmit)
+import Html.Events
+    exposing
+        ( onClick
+        , onFocus
+        , onInput
+        , onSubmit
+        )
 import Reply exposing (Reply(NoReply, ResizeTo))
 import Tuple.Infix exposing ((&), (|&))
 import Util exposing (valueIfFocus)
@@ -95,6 +101,7 @@ init size =
 type Class
     = Field
     | Header
+    | SubmitButton
 
 
 css : Stylesheet
@@ -110,6 +117,8 @@ css =
         ]
     , Css.class Header
         [ marginTop (px 4) ]
+    , Css.class SubmitButton
+        [ marginTop (px 8) ]
     ]
         |> namespace resizeNamespace
         |> stylesheet
@@ -138,6 +147,11 @@ view model =
     , bottomField model
     , leftField model
     , rightField model
+    , Html.Custom.menuButton
+        [ class [ SubmitButton ]
+        , onClick ResizeClicked
+        ]
+        [ Html.text "resize" ]
     ]
 
 
