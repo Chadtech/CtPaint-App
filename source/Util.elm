@@ -3,7 +3,7 @@ module Util exposing (..)
 import Canvas exposing (Canvas, Point)
 import Color exposing (Color)
 import Html exposing (Attribute, Html)
-import Html.Attributes exposing (style)
+import Html.Attributes exposing (style, value)
 import Html.Events
 import Json.Decode as Decode exposing (Decoder)
 import Mouse exposing (Position)
@@ -90,6 +90,19 @@ toColor colorMaybe =
 
 
 -- HTML --
+
+
+valueIfFocus : field -> Maybe field -> String -> Attribute msg
+valueIfFocus thisField maybeFocusedField str =
+    case maybeFocusedField of
+        Just focusedField ->
+            if thisField == focusedField then
+                value str
+            else
+                value ""
+
+        Nothing ->
+            value ""
 
 
 onContextMenu : msg -> Attribute msg

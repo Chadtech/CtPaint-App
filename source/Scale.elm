@@ -32,7 +32,7 @@ import Html.Events
         )
 import Reply exposing (Reply(NoReply, ScaleTo))
 import Tuple.Infix exposing ((&))
-import Util
+import Util exposing (valueIfFocus)
 import Window exposing (Size)
 
 
@@ -135,9 +135,7 @@ css =
             ]
         ]
     , Css.class Row
-        [ marginBottom (px 8)
-        , marginRight (px 8)
-        ]
+        [ marginBottom (px 8) ]
     ]
         |> namespace scaleNamespace
         |> stylesheet
@@ -225,19 +223,6 @@ percentScaling model =
                 []
             ]
         ]
-
-
-valueIfFocus : Field -> Maybe Field -> String -> Attribute Msg
-valueIfFocus thisField maybeFocusedField str =
-    case maybeFocusedField of
-        Just focusedField ->
-            if thisField == focusedField then
-                value str
-            else
-                value ""
-
-        Nothing ->
-            value ""
 
 
 absoluteScaling : Model -> Html Msg

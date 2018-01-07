@@ -9,15 +9,21 @@ module Resize
         )
 
 import Css exposing (..)
+import Css.Elements
 import Css.Namespace exposing (namespace)
 import Html
     exposing
         ( Html
+        , input
+        , p
         )
+import Html.Attributes exposing (placeholder)
 import Html.CssHelpers
 import Html.Custom
+import Html.Events exposing (onFocus, onInput, onSubmit)
 import Reply exposing (Reply(NoReply, ResizeTo))
 import Tuple.Infix exposing ((&), (|&))
+import Util exposing (valueIfFocus)
 import Window exposing (Size)
 
 
@@ -39,11 +45,13 @@ type alias Model =
     , height : Int
     , sourceWidth : Int
     , sourceHeight : Int
+    , focus : Maybe Field
     }
 
 
 type Msg
     = FieldUpdated Field String
+    | FieldFocused Field
     | ResizeClicked
 
 
@@ -76,6 +84,7 @@ init size =
     , height = size.height
     , sourceWidth = size.width
     , sourceHeight = size.height
+    , focus = Nothing
     }
 
 
@@ -85,11 +94,23 @@ init size =
 
 type Class
     = Field
+    | Header
 
 
 css : Stylesheet
 css =
-    []
+    [ Css.class Field
+        [ margin4 (px 4) (px 0) (px 0) (px 0)
+        , children
+            [ Css.Elements.input
+                [ width (px 80) ]
+            , Css.Elements.p
+                [ width (px 80) ]
+            ]
+        ]
+    , Css.class Header
+        [ marginTop (px 4) ]
+    ]
         |> namespace resizeNamespace
         |> stylesheet
 
@@ -109,7 +130,130 @@ resizeNamespace =
 
 view : Model -> List (Html Msg)
 view model =
-    []
+    [ header "size"
+    , widthField model
+    , heightField model
+    , header "sides"
+    , topField model
+    , bottomField model
+    , leftField model
+    , rightField model
+    ]
+
+
+header : String -> Html Msg
+header str =
+    p [ class [ Header ] ] [ Html.text str ]
+
+
+widthField : Model -> Html Msg
+widthField model =
+    [ p [] [ Html.text "width" ]
+    , input
+        [ placeholder (Util.px model.width)
+        , onFocus (FieldFocused Width)
+        , valueIfFocus
+            Width
+            model.focus
+            model.widthField
+        , onInput (FieldUpdated Width)
+        ]
+        []
+    ]
+        |> field
+
+
+heightField : Model -> Html Msg
+heightField model =
+    [ p [] [ Html.text "height" ]
+    , input
+        [ placeholder (Util.px model.height)
+        , onFocus (FieldFocused Height)
+        , valueIfFocus
+            Height
+            model.focus
+            model.heightField
+        , onInput (FieldUpdated Height)
+        ]
+        []
+    ]
+        |> field
+
+
+topField : Model -> Html Msg
+topField model =
+    [ p [] [ Html.text "top" ]
+    , input
+        [ placeholder (Util.px model.top)
+        , onFocus (FieldFocused Top)
+        , valueIfFocus
+            Top
+            model.focus
+            model.topField
+        , onInput (FieldUpdated Top)
+        ]
+        []
+    ]
+        |> field
+
+
+bottomField : Model -> Html Msg
+bottomField model =
+    [ p [] [ Html.text "bottom" ]
+    , input
+        [ placeholder (Util.px model.bottom)
+        , onFocus (FieldFocused Bottom)
+        , valueIfFocus
+            Bottom
+            model.focus
+            model.bottomField
+        , onInput (FieldUpdated Bottom)
+        ]
+        []
+    ]
+        |> field
+
+
+leftField : Model -> Html Msg
+leftField model =
+    [ p [] [ Html.text "left" ]
+    , input
+        [ placeholder (Util.px model.left)
+        , onFocus (FieldFocused Left)
+        , valueIfFocus
+            Left
+            model.focus
+            model.leftField
+        , onInput (FieldUpdated Left)
+        ]
+        []
+    ]
+        |> field
+
+
+rightField : Model -> Html Msg
+rightField model =
+    [ p [] [ Html.text "right" ]
+    , input
+        [ placeholder (Util.px model.right)
+        , onFocus (FieldFocused Right)
+        , valueIfFocus
+            Right
+            model.focus
+            model.rightField
+        , onInput (FieldUpdated Right)
+        ]
+        []
+    ]
+        |> field
+
+
+field : List (Html Msg) -> Html Msg
+field =
+    Html.Custom.field
+        [ class [ Field ]
+        , onSubmit ResizeClicked
+        ]
 
 
 
@@ -126,22 +270,31 @@ update msg model =
 
         FieldUpdated Right str ->
             { model | rightField = str }
+                |> cohere Right str
                 & NoReply
 
         FieldUpdated Top str ->
             { model | topField = str }
+                |> cohere Top str
                 & NoReply
 
         FieldUpdated Bottom str ->
             { model | bottomField = str }
+                |> cohere Bottom str
                 & NoReply
 
         FieldUpdated Width str ->
             { model | widthField = str }
+                |> cohere Width str
                 & NoReply
 
         FieldUpdated Height str ->
             { model | heightField = str }
+                |> cohere Height str
+                & NoReply
+
+        FieldFocused field ->
+            { model | focus = Just field }
                 & NoReply
 
         ResizeClicked ->
@@ -184,9 +337,18 @@ cohere field str model =
 
 cohereDimensions : Model -> Model
 cohereDimensions model =
+    let
+        width =
+            model.sourceWidth + model.left + model.right
+
+        height =
+            model.sourceHeight + model.top + model.bottom
+    in
     { model
-        | width = model.sourceWidth + model.left + model.right
-        , height = model.sourceHeight + model.top + model.bottom
+        | width = width
+        , height = height
+        , widthField = toString width
+        , heightField = toString height
     }
 
 
@@ -198,10 +360,26 @@ coherePadding model =
 
         dh =
             model.height - model.sourceHeight
+
+        left =
+            dw // 2
+
+        right =
+            (dw // 2) + (dw % 2)
+
+        top =
+            dh // 2
+
+        bottom =
+            (dh // 2) + (dh % 2)
     in
     { model
-        | left = model.left + (dw // 2)
-        , right = model.right + (dw // 2) + (dw % 2)
-        , top = model.top + (dh // 2)
-        , bottom = model.bottom + (dh // 2) + (dh % 2)
+        | left = left
+        , leftField = toString left
+        , right = right
+        , rightField = toString right
+        , top = top
+        , topField = toString top
+        , bottom = bottom
+        , bottomField = toString bottom
     }
