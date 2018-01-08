@@ -8,6 +8,7 @@ import Data.Flags as Flags exposing (Flags)
 import Data.History
 import Data.Menu as Menu
 import Data.Minimap
+import Data.Project exposing (Project)
 import Data.Tool as Tool
 import Data.User as User
 import Data.Window as Window
@@ -67,13 +68,22 @@ fromFlags flags =
         canvasSize =
             Canvas.getSize canvas
 
-        ( menu, cmd ) =
+        ( menu, menuCmd ) =
             getInitialMenu flags
+
+        cmd : Cmd Msg
+        cmd =
+            [ menuCmd ]
+                |> Cmd.batch
+
+        project : Maybe Project
+        project =
+            Nothing
     in
     { user = flags.user
     , canvas = canvas
     , color = Data.Color.init
-    , project = Nothing
+    , project = project
     , canvasPosition =
         { x =
             ((flags.windowSize.width - tbw) - canvasSize.width) // 2

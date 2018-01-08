@@ -1,9 +1,16 @@
-port module Ports exposing (..)
+port module Ports
+    exposing
+        ( JsMsg(..)
+        , fromJs
+        , send
+        , track
+        )
 
 import Canvas exposing (Canvas, Size)
 import Data.Project as Project exposing (Project)
 import Json.Encode as Encode exposing (Value)
 import Json.Encode.Extra as Encode
+import Tracking
 import Tuple.Infix exposing ((:=))
 
 
@@ -19,6 +26,7 @@ type JsMsg
     | RedirectPageTo String
     | OpenUpFileUpload
     | ReadFile
+    | Track Tracking.Payload
 
 
 type alias LocalSavePayload =
@@ -39,6 +47,11 @@ jsMsg type_ payload =
     ]
         |> Encode.object
         |> toJs
+
+
+track : Tracking.Payload -> Cmd msg
+track =
+    Track >> send
 
 
 send : JsMsg -> Cmd msg
@@ -88,6 +101,9 @@ send msg =
 
         ReadFile ->
             jsMsg "read file" Encode.null
+
+        Track payload ->
+            jsMsg "track" (Tracking.encode payload)
 
 
 port toJs : Value -> Cmd msg
