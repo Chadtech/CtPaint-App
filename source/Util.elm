@@ -1,5 +1,6 @@
 module Util exposing (..)
 
+import Array exposing (Array)
 import Canvas exposing (Canvas, Point)
 import Color exposing (Color)
 import Html exposing (Attribute, Html)
@@ -8,6 +9,7 @@ import Html.Events
 import Json.Decode as Decode exposing (Decoder)
 import Mouse exposing (Position)
 import ParseInt
+import Random exposing (Generator, Seed)
 import Window exposing (Size)
 
 
@@ -235,3 +237,46 @@ toPosition { x, y } =
 toPoint : Position -> Point
 toPoint { x, y } =
     Point (toFloat x) (toFloat y)
+
+
+
+-- RANDOM --
+
+
+alphanumeric : Array Char
+alphanumeric =
+    [ "0123456789"
+    , "abcdefghijklmnopqrstuvwxyz"
+    , "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    ]
+        |> String.concat
+        |> String.toList
+        |> Array.fromList
+
+
+uuid : Seed -> Int -> ( String, Seed )
+uuid seed length_ =
+    Random.step (uuidGenerator length_) seed
+
+
+uuidGenerator : Int -> Generator String
+uuidGenerator length_ =
+    Random.int 0 61
+        |> Random.list length_
+        |> Random.map listIntToString
+
+
+listIntToString : List Int -> String
+listIntToString =
+    List.map (toChar >> String.fromChar)
+        >> String.concat
+
+
+toChar : Int -> Char
+toChar int =
+    case Array.get int alphanumeric of
+        Just char ->
+            char
+
+        Nothing ->
+            'w'

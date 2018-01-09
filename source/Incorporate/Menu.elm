@@ -124,9 +124,9 @@ incorporate reply menu model =
             }
                 & Cmd.none
 
-        SetToNoSession ->
+        SetToLoggedOut ->
             { model
-                | user = User.NoSession
+                | user = User.LoggedOut
                 , menu = Just menu
             }
                 & Cmd.none

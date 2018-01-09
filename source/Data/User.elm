@@ -3,6 +3,7 @@ module Data.User
         ( Model(..)
         , User
         , decoder
+        , getEmail
         , modelDecoder
         , toggleOptionsDropped
         )
@@ -19,9 +20,9 @@ import Json.Decode.Pipeline
 
 
 type Model
-    = NoSession
-    | Offline
+    = Offline
     | AllowanceExceeded
+    | LoggedOut
     | LoggingIn
     | LoggingOut
     | LoggedIn User
@@ -36,9 +37,19 @@ type alias User =
     }
 
 
+getEmail : Model -> Maybe String
+getEmail model =
+    case model of
+        LoggedIn user ->
+            Just user.email
+
+        _ ->
+            Nothing
+
+
 modelDecoder : Decoder Model
 modelDecoder =
-    [ Decode.null NoSession
+    [ Decode.null LoggedOut
     , Decode.string |> Decode.andThen fromString
     , decoder |> Decode.map LoggedIn
     ]

@@ -21,6 +21,7 @@ import Msg exposing (Msg(..))
 import Ports exposing (JsMsg(RedirectPageTo))
 import Random
 import Subscriptions exposing (subscriptions)
+import Tracking exposing (Event(AppLoaded))
 import Tuple.Infix exposing ((&), (|&))
 import Update exposing (update)
 import Util exposing (tbw)
@@ -73,14 +74,25 @@ fromFlags flags =
 
         cmd : Cmd Msg
         cmd =
-            [ menuCmd ]
+            [ menuCmd
+            , Ports.track
+                { event = AppLoaded
+                , sessionId = sessionId
+                , email = User.getEmail flags.user
+                , projectId = Nothing
+                }
+            ]
                 |> Cmd.batch
 
         project : Maybe Project
         project =
             Nothing
+
+        ( sessionId, seed ) =
+            Util.uuid flags.seed 64
     in
     { user = flags.user
+    , sessionId = sessionId
     , canvas = canvas
     , color = Data.Color.init
     , project = project
@@ -154,7 +166,8 @@ checkUser flags =
 
 fromError : String -> ( Model, Cmd Msg )
 fromError err =
-    { user = User.NoSession
+    { user = User.LoggedOut
+    , sessionId = ""
     , canvas =
         Canvas.initialize
             { width = 400

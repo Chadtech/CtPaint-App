@@ -16,6 +16,7 @@ import Random exposing (Seed)
 
 type alias Model =
     { user : Data.User.Model
+    , sessionId : String
     , canvas : Canvas
     , color : Data.Color.Model
     , project : Maybe Project

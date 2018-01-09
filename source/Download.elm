@@ -1,6 +1,5 @@
 module Download exposing (..)
 
-import Array exposing (Array)
 import Html exposing (Html, a, form, input, p, text)
 import Html.Attributes exposing (class, placeholder, value)
 import Html.Custom
@@ -9,6 +8,7 @@ import Ports exposing (JsMsg(Download))
 import Random exposing (Generator, Seed)
 import Reply exposing (Reply(CloseMenu, NoReply))
 import Tuple.Infix exposing ((&), (|&))
+import Util
 
 
 type Msg
@@ -96,13 +96,8 @@ init maybeProjectName seed =
             ( fromString projectName, seed )
 
         Nothing ->
-            fromSeed seed
-
-
-fromSeed : Seed -> ( Model, Seed )
-fromSeed =
-    Random.step projectNameGenerator
-        >> Tuple.mapFirst fromString
+            Util.uuid seed 16
+                |> Tuple.mapFirst fromString
 
 
 fromString : String -> Model
@@ -110,41 +105,3 @@ fromString projectName =
     { field = ""
     , placeholder = projectName
     }
-
-
-
--- RANDOM NAME GENERATION --
-
-
-projectNameGenerator : Generator String
-projectNameGenerator =
-    Random.int 0 61
-        |> Random.list 16
-        |> Random.map listIntToString
-
-
-listIntToString : List Int -> String
-listIntToString =
-    List.map (toChar >> String.fromChar)
-        >> String.concat
-
-
-toChar : Int -> Char
-toChar int =
-    case Array.get int alphanumeric of
-        Just char ->
-            char
-
-        Nothing ->
-            'w'
-
-
-alphanumeric : Array Char
-alphanumeric =
-    [ "0123456789"
-    , "abcdefghijklmnopqrstuvwxyz"
-    , "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    ]
-        |> String.concat
-        |> String.toList
-        |> Array.fromList

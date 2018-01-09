@@ -17,7 +17,15 @@ import Html.Events exposing (onClick, onInput, onSubmit)
 import Maybe.Extra
 import Ports exposing (JsMsg(AttemptLogin))
 import Regex
-import Reply exposing (Reply(AttemptingLogin, NoReply, SetToNoSession, SetUser))
+import Reply
+    exposing
+        ( Reply
+            ( AttemptingLogin
+            , NoReply
+            , SetToLoggedOut
+            , SetUser
+            )
+        )
 import Tuple.Infix exposing ((&))
 import Util
 
@@ -202,7 +210,7 @@ update msg model =
                 | responseError = Just (errorToProblem err)
             }
                 & Cmd.none
-                & SetToNoSession
+                & SetToLoggedOut
 
         LoginSucceeded user ->
             model & Cmd.none & SetUser user

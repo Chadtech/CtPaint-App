@@ -2,22 +2,18 @@ module Tracking
     exposing
         ( Event(..)
         , Payload
-        , Session
         , encode
         )
 
 import Json.Encode as Encode exposing (Value)
+import Json.Encode.Extra as Encode
 import Tuple.Infix exposing ((:=))
 
 
 type alias Payload =
     { event : Event
-    , session : Maybe Session
-    }
-
-
-type alias Session =
-    { email : String
+    , sessionId : String
+    , email : Maybe String
     , projectId : Maybe String
     }
 
@@ -28,34 +24,13 @@ type Event
 
 
 encode : Payload -> Value
-encode { event, session } =
+encode { event, sessionId, email, projectId } =
     [ "event" := encodeEvent event
-    , "session" := encodeSession session
+    , "sessionId" := Encode.string sessionId
+    , "email" := Encode.maybe Encode.string email
+    , "projectId" := Encode.maybe Encode.string projectId
     ]
         |> Encode.object
-
-
-encodeSession : Maybe Session -> Value
-encodeSession maybeSession =
-    case maybeSession of
-        Just session ->
-            [ "email" := Encode.string session.email
-            , "project id" := encodeProjectId session.projectId
-            ]
-                |> Encode.object
-
-        Nothing ->
-            Encode.null
-
-
-encodeProjectId : Maybe String -> Value
-encodeProjectId maybeProjectId =
-    case maybeProjectId of
-        Just projectId ->
-            Encode.string projectId
-
-        Nothing ->
-            Encode.null
 
 
 encodeEvent : Event -> Value

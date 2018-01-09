@@ -16,6 +16,6 @@ type Reply
     | Replace Color Color
     | SetUser User
     | AttemptingLogin
-    | SetToNoSession
+    | SetToLoggedOut
     | SetProject Project
     | ResizeTo Int Int Int Int

@@ -141,7 +141,7 @@ update message model =
                 & Cmd.none
 
         LogoutSucceeded ->
-            { model | user = User.NoSession }
+            { model | user = User.LoggedOut }
                 & Cmd.none
 
         LogoutFailed err ->

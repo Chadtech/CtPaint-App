@@ -331,7 +331,7 @@ view ({ taskbarDropped, user } as model) =
 userButton : User.Model -> Html Msg
 userButton userModel =
     case userModel of
-        User.NoSession ->
+        User.LoggedOut ->
             loginButton
 
         User.Offline ->
