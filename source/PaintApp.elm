@@ -6,6 +6,7 @@ import Data.Color
 import Data.Config as Config
 import Data.Flags as Flags exposing (Flags)
 import Data.History
+import Data.Id as Id exposing (Id)
 import Data.Menu as Menu
 import Data.Minimap
 import Data.Project exposing (Project)
@@ -19,7 +20,7 @@ import Menu
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Ports exposing (JsMsg(RedirectPageTo))
-import Random
+import Random.Pcg as Random
 import Subscriptions exposing (subscriptions)
 import Tracking exposing (Event(AppLoaded))
 import Tuple.Infix exposing ((&), (|&))
@@ -90,6 +91,7 @@ fromFlags flags =
 
         ( sessionId, seed ) =
             Util.uuid flags.seed 64
+                |> Tuple.mapFirst Id.fromString
     in
     { user = flags.user
     , sessionId = sessionId
@@ -167,7 +169,7 @@ checkUser flags =
 fromError : String -> ( Model, Cmd Msg )
 fromError err =
     { user = User.LoggedOut
-    , sessionId = ""
+    , sessionId = Id.fromString ""
     , canvas =
         Canvas.initialize
             { width = 400

@@ -6,6 +6,7 @@ module Data.Project
         , setName
         )
 
+import Data.Id as Id exposing (Id)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (decode, required)
 import Json.Encode as Encode exposing (Value)
@@ -14,7 +15,7 @@ import Tuple.Infix exposing ((:=))
 
 type alias Project =
     { name : String
-    , id : String
+    , id : Id
     , version : Int
     }
 
@@ -26,7 +27,7 @@ type alias Project =
 encode : Project -> Value
 encode { name, id, version } =
     [ "name" := Encode.string name
-    , "id" := Encode.string id
+    , "id" := Id.encode id
     , "version" := Encode.int version
     ]
         |> Encode.object
@@ -40,7 +41,7 @@ decoder : Decoder Project
 decoder =
     decode Project
         |> required "name" Decode.string
-        |> required "id" Decode.string
+        |> required "id" Id.decoder
         |> required "version" Decode.int
 
 

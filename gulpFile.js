@@ -5,6 +5,7 @@ var cp = require("child_process");
 var browserify = require("browserify");
 var util = require("gulp-util");
 
+
 paths = {
   development: "./development",
   distribution: "./distribution",
@@ -76,15 +77,18 @@ gulp.task("elm-css", function() {
   });
 });
 
+
 gulp.task("server", function() {
   return (require("./server"))(2970, util.log);
 });
+
 
 gulp.task("watch", function(){
     gulp.watch(paths.elm, ["elm"]);
     gulp.watch(paths.js, ["js"]);
 
 });
+
 
 gulp.task("build", [ "elm",  "js" ]);
 gulp.task("default", ["watch", "elm", "js", "server"]);

@@ -9,7 +9,11 @@ import Html.Events
 import Json.Decode as Decode exposing (Decoder)
 import Mouse exposing (Position)
 import ParseInt
-import Random exposing (Generator, Seed)
+import Random.Pcg as Random
+    exposing
+        ( Generator
+        , Seed
+        )
 import Window exposing (Size)
 
 

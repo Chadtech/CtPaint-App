@@ -5,6 +5,7 @@ module Tracking
         , encode
         )
 
+import Data.Id as Id exposing (Id)
 import Json.Encode as Encode exposing (Value)
 import Json.Encode.Extra as Encode
 import Tuple.Infix exposing ((:=))
@@ -12,9 +13,9 @@ import Tuple.Infix exposing ((:=))
 
 type alias Payload =
     { event : Event
-    , sessionId : String
+    , sessionId : Id
     , email : Maybe String
-    , projectId : Maybe String
+    , projectId : Maybe Id
     }
 
 
@@ -26,9 +27,9 @@ type Event
 encode : Payload -> Value
 encode { event, sessionId, email, projectId } =
     [ "event" := encodeEvent event
-    , "sessionId" := Encode.string sessionId
+    , "sessionId" := Id.encode sessionId
     , "email" := Encode.maybe Encode.string email
-    , "projectId" := Encode.maybe Encode.string projectId
+    , "projectId" := Encode.maybe Id.encode projectId
     ]
         |> Encode.object
 

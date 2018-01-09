@@ -44,6 +44,7 @@ var Flags = require("./Js/Flags");
 
 PaintApp = function(manifest) {
     var Client = manifest.Client;
+    var track = manifest.track;
 
     var app;
 
@@ -111,7 +112,6 @@ PaintApp = function(manifest) {
             "image/png",
             "image/jpeg"
         ].indexOf(fileUploader.files[0].type);
-        console.log(fileUploader.files);
 
         if (imageIndex !== -1) {
             reader.readAsDataURL(fileUploader.files[0]);
@@ -197,6 +197,10 @@ PaintApp = function(manifest) {
 
             case "open up file upload":
                 fileUploader.click();
+                break;
+
+            case "track": 
+                track(msg.payload);
                 break;
 
             default:

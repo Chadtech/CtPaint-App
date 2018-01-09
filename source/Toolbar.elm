@@ -5,6 +5,7 @@ import Chadtech.Colors exposing (ignorable2, ignorable3)
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Data.Tool exposing (Tool(..))
+import Draw
 import Helpers.Menu
 import Html exposing (Html, a, div)
 import Html.Attributes exposing (attribute, title)
@@ -51,7 +52,21 @@ update msg model =
             }
 
         OtherButtonClicked Invert ->
-            model
+            case model.selection of
+                Just ( position, selection ) ->
+                    { model
+                        | selection =
+                            selection
+                                |> Draw.invert
+                                |& position
+                                |> Just
+                    }
+
+                Nothing ->
+                    { model
+                        | canvas =
+                            Draw.invert model.canvas
+                    }
 
         OtherButtonClicked Replace ->
             Helpers.Menu.initReplaceColor model

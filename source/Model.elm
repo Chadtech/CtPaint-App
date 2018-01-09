@@ -4,6 +4,7 @@ import Canvas exposing (Canvas, DrawOp, Point, Size)
 import Data.Color
 import Data.Config exposing (Config)
 import Data.History
+import Data.Id exposing (Id)
 import Data.Menu as Menu
 import Data.Minimap as Minimap
 import Data.Project exposing (Project)
@@ -11,12 +12,12 @@ import Data.Taskbar exposing (Dropdown)
 import Data.Tool exposing (Tool)
 import Data.User exposing (User)
 import Mouse exposing (Position)
-import Random exposing (Seed)
+import Random.Pcg as Random exposing (Seed)
 
 
 type alias Model =
     { user : Data.User.Model
-    , sessionId : String
+    , sessionId : Id
     , canvas : Canvas
     , color : Data.Color.Model
     , project : Maybe Project

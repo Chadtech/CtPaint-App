@@ -26,7 +26,7 @@ import Mouse exposing (Position)
 import New
 import Open
 import Project
-import Random exposing (Seed)
+import Random.Pcg as Random exposing (Seed)
 import ReplaceColor
 import Reply exposing (Reply(CloseMenu, NoReply))
 import Resize

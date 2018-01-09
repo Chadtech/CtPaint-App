@@ -29,6 +29,7 @@
         "elm-lang/window": "1.0.1 <= v < 2.0.0",
         "fredcy/elm-parseint": "2.0.0 <= v < 3.0.0",
         "mbr/elm-mouse-events": "1.0.4 <= v < 2.0.0",
+        "mgold/elm-random-pcg": "5.0.2 <= v < 6.0.0",
         "ohanhi/keyboard-extra": "3.0.4 <= v < 4.0.0",
         "rtfeldman/elm-css": "11.2.0 <= v < 12.0.0",
         "rtfeldman/elm-css-helpers": "2.1.0 <= v < 3.0.0",

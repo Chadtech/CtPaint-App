@@ -10,7 +10,7 @@ import Json.Decode.Pipeline
         , optional
         , required
         )
-import Random exposing (Seed)
+import Random.Pcg as Random exposing (Seed)
 import Window exposing (Size)
 
 

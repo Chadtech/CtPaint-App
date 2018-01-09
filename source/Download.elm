@@ -5,7 +5,7 @@ import Html.Attributes exposing (class, placeholder, value)
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Ports exposing (JsMsg(Download))
-import Random exposing (Generator, Seed)
+import Random.Pcg as Random exposing (Generator, Seed)
 import Reply exposing (Reply(CloseMenu, NoReply))
 import Tuple.Infix exposing ((&), (|&))
 import Util

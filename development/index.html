@@ -17,7 +17,11 @@
     PaintApp({ 
       initMsg: { type: "init paint app" }, 
       Client: Client,
-      mountPath: "http://localhost:2970"
+      mountPath: "http://localhost:2970",
+      track: function(msg) {
+        console.log("-- TRACKING --");
+        console.log(msg);
+      }
     });
   </script>
 
