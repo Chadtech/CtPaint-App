@@ -2,6 +2,7 @@ module Eraser
     exposing
         ( handleClientMouseMovement
         , handleScreenMouseDown
+        , view
         )
 
 import Canvas exposing (DrawOp(..))
@@ -9,8 +10,21 @@ import Data.Tool exposing (Tool(Eraser))
 import Draw
 import Helpers.History as History
 import Helpers.Tool exposing (adjustPosition)
+import Html exposing (Html)
 import Model exposing (Model)
 import Mouse exposing (Position)
+
+
+type alias State msg =
+    { size : Int
+    , increaseMsg : msg
+    , decreaseMsg : msg
+    }
+
+
+view : State msg -> Html msg
+view state =
+    Html.text "DANK"
 
 
 handleScreenMouseDown : Position -> Model -> Model

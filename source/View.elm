@@ -186,7 +186,7 @@ view model =
         in
         div
             [ class [ Main ] ]
-            [ Html.map ToolbarMsg (Toolbar.view model.tool)
+            [ Html.map ToolbarMsg (Toolbar.view model)
             , Html.map TaskbarMsg (Taskbar.view model)
             , palette model
             , canvasArea canvasAreaHeight model

@@ -6,6 +6,7 @@ import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Data.Tool exposing (Tool(..))
 import Draw
+import Eraser
 import Helpers.Menu
 import Html exposing (Html, a, div)
 import Html.Attributes exposing (attribute, title)
@@ -24,6 +25,8 @@ import Tuple.Infix exposing ((|&))
 type Msg
     = ToolButtonClicked Tool
     | OtherButtonClicked OtherThing
+    | IncreaseEraserClicked
+    | DecreaseEraserClicked
 
 
 type OtherThing
@@ -86,6 +89,18 @@ update msg model =
                 Nothing ->
                     model
 
+        IncreaseEraserClicked ->
+            if model.eraserSize < 10 then
+                { model | eraserSize = model.eraserSize + 1 }
+            else
+                model
+
+        DecreaseEraserClicked ->
+            if model.eraserSize < 2 then
+                model
+            else
+                { model | eraserSize = model.eraserSize - 1 }
+
 
 
 -- STYLES --
@@ -131,23 +146,39 @@ toolbarNamespace =
     Html.CssHelpers.withNamespace toolbarNamespace
 
 
-view : Tool -> Html Msg
-view tool =
+view : Model -> Html Msg
+view model =
     div
         [ class [ Toolbar ] ]
-        (children tool)
+        (children model)
 
 
 
 -- COMPONENTS --
 
 
-children : Tool -> List (Html Msg)
-children currentTool =
-    [ List.map (toolButton currentTool) Tool.all
+children : Model -> List (Html Msg)
+children model =
+    [ List.map (toolButton model.tool) Tool.all
     , List.map otherButton otherThings
+    , toolMenu model
     ]
         |> List.concat
+
+
+toolMenu : Model -> List (Html Msg)
+toolMenu model =
+    case model.tool of
+        Eraser _ ->
+            { size = model.eraserSize
+            , increaseMsg = IncreaseEraserClicked
+            , decreaseMsg = DecreaseEraserClicked
+            }
+                |> Eraser.view
+                |> List.singleton
+
+        _ ->
+            [ Html.text "" ]
 
 
 otherThings : List ( String, String, OtherThing )
