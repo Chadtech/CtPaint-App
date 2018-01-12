@@ -4,13 +4,13 @@ import Canvas exposing (Canvas, DrawOp, Point, Size)
 import Data.Color
 import Data.Config exposing (Config)
 import Data.History
-import Data.Id exposing (Id)
 import Data.Menu as Menu
 import Data.Minimap as Minimap
 import Data.Project exposing (Project)
 import Data.Taskbar exposing (Dropdown)
 import Data.Tool exposing (Tool)
 import Data.User exposing (User)
+import Id exposing (Id)
 import Mouse exposing (Position)
 import Random.Pcg as Random exposing (Seed)
 

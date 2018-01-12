@@ -5,7 +5,7 @@ module Tracking
         , encode
         )
 
-import Data.Id as Id exposing (Id)
+import Id exposing (Id)
 import Json.Encode as Encode exposing (Value)
 import Json.Encode.Extra as Encode
 import Tuple.Infix exposing ((:=))

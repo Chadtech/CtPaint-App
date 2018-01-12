@@ -6,7 +6,6 @@ import Data.Color
 import Data.Config as Config
 import Data.Flags as Flags exposing (Flags)
 import Data.History
-import Data.Id as Id exposing (Id)
 import Data.Menu as Menu
 import Data.Minimap
 import Data.Project exposing (Project)
@@ -15,6 +14,7 @@ import Data.User as User
 import Data.Window as Window
 import Dict
 import Html
+import Id exposing (Id)
 import Json.Decode as Decode exposing (Decoder, Value, value)
 import Menu
 import Model exposing (Model)

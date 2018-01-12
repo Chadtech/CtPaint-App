@@ -3,8 +3,6 @@ module Data.Color
         ( Model
         , Swatches
         , init
-        , initPalette
-        , initSwatches
         )
 
 import Array exposing (Array)

@@ -6,7 +6,7 @@ module Data.Project
         , setName
         )
 
-import Data.Id as Id exposing (Id)
+import Id as Id exposing (Id)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (decode, required)
 import Json.Encode as Encode exposing (Value)
