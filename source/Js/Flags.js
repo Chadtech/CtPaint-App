@@ -17,6 +17,7 @@ module.exports = {
             init: mixins.manifest.initMsg,
             localWork: JSON.parse(localWork),
             mountPath: mixins.manifest.mountPath,
+            buildNumber: mixins.manifest.buildNumber
         }; 
     }
 }

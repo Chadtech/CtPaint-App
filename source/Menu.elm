@@ -351,8 +351,8 @@ contentView menu =
             List.map (Html.map TextMsg) <|
                 Text.view subModel
 
-        About ->
-            About.view
+        About state ->
+            About.view state
 
         ReplaceColor subModel ->
             List.map (Html.map ReplaceColorMsg) <|
@@ -474,12 +474,13 @@ initDownload maybeProjectName seed windowSize =
         & seed
 
 
-initAbout : Size -> Model
-initAbout =
+initAbout : String -> Size -> Model
+initAbout buildNumber =
     { width = 10
     , height = 10
     }
-        |> init "about" About
+        |> init "about"
+            (About { buildNumber = buildNumber })
 
 
 initReplaceColor : Color.Color -> Color.Color -> List Color.Color -> Size -> Model

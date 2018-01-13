@@ -11,6 +11,7 @@ module Data.Menu
         , loginSucceeded
         )
 
+import About
 import Data.User exposing (User)
 import Download
 import Import
@@ -32,7 +33,7 @@ type Menu
     | Import Import.Model
     | Scale Scale.Model
     | Text String
-    | About
+    | About About.State
     | ReplaceColor ReplaceColor.Model
     | New New.Model
     | Open Open.Model

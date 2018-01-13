@@ -206,6 +206,7 @@ fromError err =
         , quickKeys = Dict.empty
         , cmdKey = always False
         , mountPath = ""
+        , buildNumber = ""
         }
     }
         & Cmd.none

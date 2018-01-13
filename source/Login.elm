@@ -114,7 +114,8 @@ view model =
         value_ =
             Util.showField model.showFields >> value
     in
-    [ Html.Custom.field
+    [ responseErrorView model.responseError
+    , Html.Custom.field
         [ onSubmit FormSubmitted ]
         [ p [] [ Html.text "email" ]
         , input
@@ -142,6 +143,18 @@ view model =
         [ onClick LoginButtonPressed ]
         [ Html.text "log in" ]
     ]
+
+
+responseErrorView : Maybe Problem -> Html Msg
+responseErrorView maybeProblem =
+    case maybeProblem of
+        Just problem ->
+            Html.Custom.error
+                [ class [ Error ] ]
+                (errorStr problem)
+
+        Nothing ->
+            Html.text ""
 
 
 fieldErrorView : List ( Field, Problem ) -> Field -> Html Msg
@@ -208,12 +221,19 @@ update msg model =
         LoginFailed err ->
             { model
                 | responseError = Just (errorToProblem err)
+                , showFields = True
+                , password = ""
             }
                 & Cmd.none
                 & SetToLoggedOut
 
         LoginSucceeded user ->
-            model & Cmd.none & SetUser user
+            { model
+                | email = ""
+                , password = ""
+            }
+                & Cmd.none
+                & SetUser user
 
 
 errorToProblem : String -> Problem
@@ -231,7 +251,11 @@ errorToProblem err =
 
 attemptLogin : Model -> ( ( Model, Cmd Msg ), Reply )
 attemptLogin model =
-    validate model
+    { model
+        | responseError = Nothing
+        , password = ""
+    }
+        |> validate
         |> submitIfNoErrors
         & AttemptingLogin
 

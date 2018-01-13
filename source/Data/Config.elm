@@ -11,6 +11,7 @@ type alias Config =
     , keyCmds : Dict String Key.Cmd
     , cmdKey : Key.Event -> Bool
     , mountPath : String
+    , buildNumber : String
     }
 
 
@@ -28,6 +29,7 @@ init flags =
         else
             .ctrl
     , mountPath = flags.mountPath
+    , buildNumber = toString flags.buildNumber
     }
 
 

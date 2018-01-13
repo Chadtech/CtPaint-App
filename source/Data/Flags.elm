@@ -23,6 +23,7 @@ type alias Flags =
     , init : Init
     , localWork : LocalWork
     , mountPath : String
+    , buildNumber : Int
     }
 
 
@@ -53,6 +54,7 @@ decoder =
         |> required "init" initDecoder
         |> required "localWork" localWorkDecoder
         |> required "mountPath" Decode.string
+        |> required "buildNumber" Decode.int
 
 
 localWorkDecoder : Decoder LocalWork

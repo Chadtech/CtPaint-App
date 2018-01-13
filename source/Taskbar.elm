@@ -112,6 +112,7 @@ update msg model =
                 | menu =
                     model.windowSize
                         |> Menu.initAbout
+                            model.config.buildNumber
                         |> Just
             }
                 & Cmd.none
