@@ -2,6 +2,7 @@ port module Stylesheets exposing (..)
 
 import ColorPicker
 import Css.File exposing (CssCompilerProgram, CssFileStructure)
+import Eraser
 import Error
 import Html.Custom
 import Import
@@ -47,6 +48,7 @@ main =
     , Project.css
     , Loading.css
     , Open.css
+    , Eraser.css
     ]
         |> Css.File.compile
         |> (,) "./development/paint-app-styles.css"

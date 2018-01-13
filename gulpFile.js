@@ -14,6 +14,24 @@ paths = {
   js: "./source/**/*.js"
 };
 
+var waitApp = false;
+var waitStylesheet = false;
+
+function startWaiting(what) {
+  switch (what) {
+    case "app": 
+      waitApp = true;
+      break;
+
+    case "stylesheet":
+      waitStylesheet = true;
+      break;
+  }
+  setTimeout(function() {
+    waitApp = false;
+    waitStylesheet = false;
+  }, 3000);
+}
 
 gulp.task("js", function() {
   return browserify("./source/app.js")
@@ -26,55 +44,61 @@ gulp.task("js", function() {
 gulp.task("elm", [ "elm-make", "elm-css" ]);
 
 gulp.task("elm-make", function() {
-  var cmd = [
-    "elm-make",
-    paths.mainElm,
-    "--warn",
-    "--output",
-    paths.development + "/paint-app-elm.js"
-  ].join(" ");
-  return cp.exec(cmd, function(error, stdout, stderr) {
-    if (error) {
-      error = (String(error)).slice(0, (String(error)).length - 1);
-      (error.split("\n")).forEach(function(line) {
-        return util.log(util.colors.red(String(line)));
+  if (!waitApp) {
+    startWaiting("app");
+    var cmd = [
+      "elm-make",
+      paths.mainElm,
+      "--warn",
+      "--output",
+      paths.development + "/paint-app-elm.js"
+    ].join(" ");
+    return cp.exec(cmd, function(error, stdout, stderr) {
+      if (error) {
+        error = (String(error)).slice(0, (String(error)).length - 1);
+        (error.split("\n")).forEach(function(line) {
+          return util.log(util.colors.red(String(line)));
+        });
+      } else {
+        stderr = stderr.slice(0, stderr.length - 1);
+        (stderr.split("\n")).forEach(function(line) {
+          return util.log(util.colors.yellow(String(line)));
+        });
+      }
+      stdout = stdout.slice(0, stdout.length - 1);
+      return (stdout.split("\n")).forEach(function(line) {
+        return util.log(util.colors.cyan("Elm"), line);
       });
-    } else {
-      stderr = stderr.slice(0, stderr.length - 1);
-      (stderr.split("\n")).forEach(function(line) {
-        return util.log(util.colors.yellow(String(line)));
-      });
-    }
-    stdout = stdout.slice(0, stdout.length - 1);
-    return (stdout.split("\n")).forEach(function(line) {
-      return util.log(util.colors.cyan("Elm"), line);
     });
-  });
+  }
 });
 
 
 gulp.task("elm-css", function() {
-  var cmd = [
-    "elm-css",
-    "./source/Stylesheets.elm",
-  ].join(" ");
-  return cp.exec(cmd, function(error, stdout, stderr) {
-    if (error) {
-      error = (String(error)).slice(0, (String(error)).length - 1);
-      (error.split("\n")).forEach(function(line) {
-        util.log(util.colors.red(String(line)));
+  if (!waitStylesheet) {
+    startWaiting("stylesheet");
+    var cmd = [
+      "elm-css",
+      "./source/Stylesheets.elm",
+    ].join(" ");
+    return cp.exec(cmd, function(error, stdout, stderr) {
+      if (error) {
+        error = (String(error)).slice(0, (String(error)).length - 1);
+        (error.split("\n")).forEach(function(line) {
+          util.log(util.colors.red(String(line)));
+        });
+      } else {
+        stderr = stderr.slice(0, stderr.length);
+        (stderr.split("\n")).forEach(function(line) {
+          util.log(util.colors.yellow(String(line)));
+        });
+      }
+      stdout = stdout.slice(0, stdout.length - 1);
+      (stdout.split("\n")).forEach(function(line) {
+        util.log(util.colors.cyan("Elm Css"), line);
       });
-    } else {
-      stderr = stderr.slice(0, stderr.length);
-      (stderr.split("\n")).forEach(function(line) {
-        util.log(util.colors.yellow(String(line)));
-      });
-    }
-    stdout = stdout.slice(0, stdout.length - 1);
-    (stdout.split("\n")).forEach(function(line) {
-      util.log(util.colors.cyan("Elm Css"), line);
     });
-  });
+  }
 });
 
 
@@ -84,9 +108,8 @@ gulp.task("server", function() {
 
 
 gulp.task("watch", function(){
-    gulp.watch(paths.elm, ["elm"]);
-    gulp.watch(paths.js, ["js"]);
-
+  gulp.watch(paths.elm, ["elm"]);
+  gulp.watch(paths.js, ["js"]);
 });
 
 

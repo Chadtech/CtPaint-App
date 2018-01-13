@@ -16,7 +16,6 @@ import Tuple.Infix exposing ((:=))
 type alias Project =
     { name : String
     , id : Id
-    , version : Int
     }
 
 
@@ -25,10 +24,9 @@ type alias Project =
 
 
 encode : Project -> Value
-encode { name, id, version } =
+encode { name, id } =
     [ "name" := Encode.string name
     , "id" := Id.encode id
-    , "version" := Encode.int version
     ]
         |> Encode.object
 
@@ -42,7 +40,6 @@ decoder =
     decode Project
         |> required "name" Decode.string
         |> required "id" Id.decoder
-        |> required "version" Decode.int
 
 
 setName : String -> Project -> Project

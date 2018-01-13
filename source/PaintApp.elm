@@ -119,7 +119,7 @@ fromFlags flags =
     , minimap = Data.Minimap.NotInitialized
     , menu = menu
     , seed = flags.seed
-    , eraserSize = 9
+    , eraserSize = 5
     , shiftIsDown = False
     , config = Config.init flags
     }

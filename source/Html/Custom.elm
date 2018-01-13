@@ -13,6 +13,7 @@ module Html.Custom
         , outdent
         , spinner
         , toolButton
+        , toolbarButton
         )
 
 import Chadtech.Colors exposing (..)
@@ -46,6 +47,7 @@ type Class
     | Error
     | SpinnerContainer
     | ToolButton
+    | ToolButtonBase
 
 
 css : Stylesheet
@@ -76,6 +78,15 @@ css =
         , height (px 20)
         , fontFamilies [ "icons" ]
         , fontSize (em 1)
+        , textAlign center
+        , padding (px 0)
+        , lineHeight (px 20)
+        , active indent
+        , withClass Selected indent
+        ]
+    , (Css.class ToolButtonBase << List.append outdent)
+        [ width (px 20)
+        , height (px 20)
         , textAlign center
         , padding (px 0)
         , lineHeight (px 20)
@@ -308,6 +319,26 @@ toolButton state =
                 :: state.attrs
     in
     Html.a attrs [ Html.text state.icon ]
+
+
+type alias ToolbarButtonState msg =
+    { text : String
+    , selected : Bool
+    , attrs : List (Html.Attribute msg)
+    }
+
+
+toolbarButton : ToolbarButtonState msg -> Html msg
+toolbarButton state =
+    let
+        attrs =
+            classList
+                [ ToolButtonBase := True
+                , Selected := state.selected
+                ]
+                :: state.attrs
+    in
+    Html.a attrs [ Html.text state.text ]
 
 
 card : List (Attribute msg) -> List (Html msg) -> Html msg

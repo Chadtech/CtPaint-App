@@ -90,7 +90,7 @@ update msg model =
                     model
 
         IncreaseEraserClicked ->
-            if model.eraserSize < 10 then
+            if model.eraserSize < 9 then
                 { model | eraserSize = model.eraserSize + 1 }
             else
                 model
@@ -175,10 +175,9 @@ toolMenu model =
             , decreaseMsg = DecreaseEraserClicked
             }
                 |> Eraser.view
-                |> List.singleton
 
         _ ->
-            [ Html.text "" ]
+            []
 
 
 otherThings : List ( String, String, OtherThing )
