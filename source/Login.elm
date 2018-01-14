@@ -253,11 +253,9 @@ attemptLogin : Model -> ( ( Model, Cmd Msg ), Reply )
 attemptLogin model =
     { model
         | responseError = Nothing
-        , password = ""
     }
         |> validate
         |> submitIfNoErrors
-        & AttemptingLogin
 
 
 validate : Model -> Model
@@ -296,7 +294,7 @@ check condition error =
         Nothing
 
 
-submitIfNoErrors : Model -> ( Model, Cmd Msg )
+submitIfNoErrors : Model -> ( ( Model, Cmd Msg ), Reply )
 submitIfNoErrors model =
     if List.isEmpty model.errors then
         let
@@ -309,5 +307,6 @@ submitIfNoErrors model =
             , password = ""
         }
             & cmd
+            & AttemptingLogin
     else
-        model & Cmd.none
+        model & Cmd.none & NoReply
