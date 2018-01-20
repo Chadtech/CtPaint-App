@@ -22,10 +22,7 @@ incorporate reply menu model =
                 & Cmd.none
 
         CloseMenu ->
-            { model
-                | menu = Nothing
-            }
-                & Ports.send ReturnFocus
+            closeMenu model
 
         IncorporateImageAsSelection image ->
             let
@@ -34,13 +31,6 @@ incorporate reply menu model =
 
                 canvas =
                     Canvas.getSize model.canvas
-
-                imagePosition =
-                    { x =
-                        (canvas.width - size.width) // 2
-                    , y =
-                        (canvas.height - size.height) // 2
-                    }
             in
             { model
                 | selection =
@@ -49,38 +39,32 @@ incorporate reply menu model =
                     }
                         & image
                         |> Just
-                , menu = Nothing
             }
-                & Ports.send ReturnFocus
+                |> closeMenu
 
         IncorporateImageAsCanvas image ->
-            { model
-                | canvas = image
-                , menu = Nothing
-            }
-                & Ports.send ReturnFocus
+            { model | canvas = image }
+                |> closeMenu
 
         ScaleTo w h ->
             case model.selection of
                 Nothing ->
                     { model
-                        | menu = Nothing
-                        , canvas =
+                        | canvas =
                             Canvas.scale w h model.canvas
                     }
                         |> History.canvas
-                        & Ports.send ReturnFocus
+                        |> closeMenu
 
                 Just ( pos, selection ) ->
                     { model
-                        | menu = Nothing
-                        , selection =
+                        | selection =
                             selection
                                 |> Canvas.scale w h
                                 |& pos
                                 |> Just
                     }
-                        & Ports.send ReturnFocus
+                        |> closeMenu
 
         AddText str ->
             addText str model
@@ -89,26 +73,24 @@ incorporate reply menu model =
             case model.selection of
                 Just ( position, selection ) ->
                     { model
-                        | menu = Nothing
-                        , selection =
+                        | selection =
                             selection
                                 |> Draw.replace target replacement
                                 |& position
                                 |> Just
                     }
-                        & Cmd.none
+                        |> closeMenu
 
                 Nothing ->
                     { model
-                        | menu = Nothing
-                        , canvas =
+                        | canvas =
                             Draw.replace
                                 target
                                 replacement
                                 model.canvas
                     }
                         |> History.canvas
-                        & Cmd.none
+                        |> closeMenu
 
         SetUser user ->
             { model
@@ -132,16 +114,12 @@ incorporate reply menu model =
                 & Cmd.none
 
         SetProject project ->
-            { model
-                | project = Just project
-                , menu = Nothing
-            }
-                & Cmd.none
+            { model | project = Just project }
+                |> closeMenu
 
         ResizeTo left top width height ->
             { model
-                | menu = Nothing
-                , canvas =
+                | canvas =
                     Draw.resize
                         left
                         top
@@ -150,7 +128,12 @@ incorporate reply menu model =
                         model.color.swatches.second
                         model.canvas
             }
-                & Ports.send ReturnFocus
+                |> closeMenu
+
+
+closeMenu : Model -> ( Model, Cmd msg )
+closeMenu model =
+    { model | menu = Nothing } & Ports.send ReturnFocus
 
 
 addText : String -> Model -> ( Model, Cmd msg )
