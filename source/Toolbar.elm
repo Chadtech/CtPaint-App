@@ -16,7 +16,7 @@ import Html.Events exposing (onClick)
 import Menu
 import Model exposing (Model)
 import Tool
-import Tuple.Infix exposing ((|&))
+import Tuple.Infix exposing ((&), (|&))
 
 
 -- TYPES --
@@ -40,11 +40,11 @@ type OtherThing
 -- UPDATE --
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
     case msg of
         ToolButtonClicked tool ->
-            { model | tool = tool }
+            { model | tool = tool } & Cmd.none
 
         OtherButtonClicked Text ->
             { model
@@ -53,6 +53,7 @@ update msg model =
                         |> Menu.initText
                         |> Just
             }
+                & Cmd.none
 
         OtherButtonClicked Invert ->
             case model.selection of
@@ -64,12 +65,14 @@ update msg model =
                                 |& position
                                 |> Just
                     }
+                        & Cmd.none
 
                 Nothing ->
                     { model
                         | canvas =
                             Draw.invert model.canvas
                     }
+                        & Cmd.none
 
         OtherButtonClicked Replace ->
             Helpers.Menu.initReplaceColor model
@@ -85,21 +88,24 @@ update msg model =
                                 |& pos
                                 |> Just
                     }
+                        & Cmd.none
 
                 Nothing ->
-                    model
+                    model & Cmd.none
 
         IncreaseEraserClicked ->
             if model.eraserSize < 9 then
                 { model | eraserSize = model.eraserSize + 1 }
+                    & Cmd.none
             else
-                model
+                model & Cmd.none
 
         DecreaseEraserClicked ->
             if model.eraserSize < 2 then
-                model
+                model & Cmd.none
             else
                 { model | eraserSize = model.eraserSize - 1 }
+                    & Cmd.none
 
 
 

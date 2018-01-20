@@ -29,7 +29,7 @@ update message model =
             Tool.handleClientMouseUp position model & Cmd.none
 
         ToolbarMsg subMsg ->
-            Toolbar.update subMsg model & Cmd.none
+            Toolbar.update subMsg model
 
         TaskbarMsg subMsg ->
             Taskbar.update subMsg model

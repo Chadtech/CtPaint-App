@@ -3,9 +3,11 @@ module Helpers.Menu exposing (..)
 import Array
 import Menu
 import Model exposing (Model)
+import Ports exposing (JsMsg(StealFocus))
+import Tuple.Infix exposing ((&))
 
 
-initReplaceColor : Model -> Model
+initReplaceColor : Model -> ( Model, Cmd msg )
 initReplaceColor model =
     { model
         | menu =
@@ -16,3 +18,4 @@ initReplaceColor model =
                 model.windowSize
                 |> Just
     }
+        & Ports.send StealFocus

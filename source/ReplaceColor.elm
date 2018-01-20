@@ -23,9 +23,13 @@ import Util
 
 type Msg
     = ReplaceButtonClicked
-    | SquareClicked Color.Color
-    | UpdateReplacementHexField String
-    | UpdateTargetHexField String
+    | SquareClicked Side Int Color.Color
+    | UpdateHexField Side String
+
+
+type Side
+    = Target
+    | Replacement
 
 
 type alias Model =
@@ -49,15 +53,63 @@ update msg model =
         ReplaceButtonClicked ->
             model & Replace model.target model.replacement
 
-        SquareClicked color ->
-            { model | replacement = color }
+        SquareClicked Replacement index color ->
+            { model
+                | replacement = color
+                , replacementPaletteIndex = Just index
+                , replacementHexField =
+                    color
+                        |> Util.toHexColor
+                        |> String.dropLeft 1
+            }
                 & NoReply
 
-        UpdateReplacementHexField str ->
-            model & NoReply
+        SquareClicked Target index color ->
+            { model
+                | target = color
+                , targetPaletteIndex = Just index
+                , targetHexField =
+                    color
+                        |> Util.toHexColor
+                        |> String.dropLeft 1
+            }
+                & NoReply
 
-        UpdateTargetHexField str ->
-            model & NoReply
+        UpdateHexField Replacement str ->
+            { model
+                | replacementHexField = String.toUpper str
+                , replacementPaletteIndex = Nothing
+            }
+                |> cohereReplacementColor
+                & NoReply
+
+        UpdateHexField Target str ->
+            { model
+                | targetHexField = String.toUpper str
+                , targetPaletteIndex = Nothing
+            }
+                |> cohereTargetColor
+                & NoReply
+
+
+cohereReplacementColor : Model -> Model
+cohereReplacementColor model =
+    case Util.toColor model.replacementHexField of
+        Just color ->
+            { model | replacement = color }
+
+        Nothing ->
+            model
+
+
+cohereTargetColor : Model -> Model
+cohereTargetColor model =
+    case Util.toColor model.targetHexField of
+        Just color ->
+            { model | target = color }
+
+        Nothing ->
+            model
 
 
 
@@ -149,8 +201,8 @@ replaceNamespace =
 
 view : Model -> List (Html Msg)
 view model =
-    [ replaceSide model
-    , withSide model
+    [ targetSide model
+    , replacementSide model
     , Html.Custom.menuButton
         [ class [ ReplaceButton ]
         , onClick ReplaceButtonClicked
@@ -159,8 +211,8 @@ view model =
     ]
 
 
-replaceSide : Model -> Html Msg
-replaceSide { targetHexField, target, palette, targetPaletteIndex } =
+targetSide : Model -> Html Msg
+targetSide { targetHexField, target, palette, targetPaletteIndex } =
     div
         [ class [ Section ] ]
         [ div
@@ -171,7 +223,7 @@ replaceSide { targetHexField, target, palette, targetPaletteIndex } =
             [ colorView target
             , input
                 [ spellcheck False
-                , onInput UpdateTargetHexField
+                , onInput (UpdateHexField Target)
                 , value targetHexField
                 , class [ HexField ]
                 ]
@@ -179,12 +231,12 @@ replaceSide { targetHexField, target, palette, targetPaletteIndex } =
             ]
         , div
             [ class [ Palette ] ]
-            (squares targetPaletteIndex palette)
+            (squares Target targetPaletteIndex palette)
         ]
 
 
-withSide : Model -> Html Msg
-withSide model =
+replacementSide : Model -> Html Msg
+replacementSide model =
     div
         [ class [ Section, With ] ]
         [ div
@@ -195,28 +247,30 @@ withSide model =
             [ colorView model.replacement
             , input
                 [ spellcheck False
-                , onInput UpdateReplacementHexField
+                , onInput (UpdateHexField Replacement)
                 , value model.replacementHexField
                 , class [ HexField ]
                 ]
                 []
             ]
-        , div
-            [ class [ Palette ] ]
-            (squares model.replacementPaletteIndex model.palette)
+        , model.palette
+            |> squares
+                Replacement
+                model.replacementPaletteIndex
+            |> div [ class [ Palette ] ]
         ]
 
 
-squares : Maybe Int -> List Color.Color -> List (Html Msg)
-squares maybeIndex =
-    List.indexedMap (square maybeIndex)
+squares : Side -> Maybe Int -> List Color.Color -> List (Html Msg)
+squares side maybeIndex =
+    List.indexedMap (square side maybeIndex)
 
 
-square : Maybe Int -> Int -> Color.Color -> Html Msg
-square maybeSelected index color =
+square : Side -> Maybe Int -> Int -> Color.Color -> Html Msg
+square side maybeSelected index color =
     div
         [ class (squareClass maybeSelected index)
-        , onClick (SquareClicked color)
+        , onClick (SquareClicked side index color)
         , Util.background color
         ]
         []

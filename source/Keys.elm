@@ -236,7 +236,7 @@ exec keyCmd model =
                 & Ports.send StealFocus
 
         InitReplaceColor ->
-            Helpers.Menu.initReplaceColor model & Cmd.none
+            Helpers.Menu.initReplaceColor model
 
         ToggleColorPicker ->
             { model
