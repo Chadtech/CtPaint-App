@@ -2,12 +2,17 @@ module Data.Color
     exposing
         ( Model
         , Swatches
+        , encodePalette
+        , encodeSwatches
         , init
         )
 
 import Array exposing (Array)
 import Color exposing (Color)
 import Data.Picker as Picker
+import Json.Encode as Encode exposing (Value)
+import Tuple.Infix exposing ((:=))
+import Util
 
 
 -- TYPES --
@@ -86,3 +91,27 @@ initSwatches =
     , third = Color.rgb 241 29 35
     , keyIsDown = False
     }
+
+
+
+-- encoder --
+
+
+encodeColor : Color -> Value
+encodeColor =
+    Util.toHexColor >> Encode.string
+
+
+encodeSwatches : Swatches -> Value
+encodeSwatches { primary, first, second, third } =
+    [ "primary" := encodeColor primary
+    , "first" := encodeColor first
+    , "second" := encodeColor second
+    , "third" := encodeColor third
+    ]
+        |> Encode.object
+
+
+encodePalette : Array Color -> Value
+encodePalette =
+    Array.map encodeColor >> Encode.array

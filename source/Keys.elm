@@ -194,16 +194,12 @@ exec keyCmd model =
                 & Ports.send StealFocus
 
         InitDownload ->
-            let
-                ( menuModel, seed ) =
-                    Menu.initDownload
-                        (Maybe.map .name model.project)
-                        model.seed
-                        model.windowSize
-            in
             { model
-                | menu = Just menuModel
-                , seed = seed
+                | menu =
+                    Menu.initDownload
+                        model.project
+                        model.windowSize
+                        |> Just
             }
                 & Ports.send StealFocus
 
@@ -274,11 +270,13 @@ exec keyCmd model =
         InvertColors ->
             transform Draw.invert model
 
-        Save ->
+        Key.Save ->
             { canvas = model.canvas
             , project = model.project
+            , swatches = model.color.swatches
+            , palette = model.color.palette
             }
-                |> SaveLocally
+                |> Ports.Save
                 |> Ports.send
                 |& model
 

@@ -8,13 +8,12 @@ import Data.Flags as Flags exposing (Flags)
 import Data.History
 import Data.Menu as Menu
 import Data.Minimap
-import Data.Project exposing (Project)
 import Data.Tool as Tool
 import Data.User as User
 import Data.Window as Window
 import Dict
 import Html
-import Id exposing (Id)
+import Id exposing (Id, Origin(Local))
 import Json.Decode as Decode exposing (Decoder, Value, value)
 import Menu
 import Model exposing (Model)
@@ -85,9 +84,8 @@ fromFlags flags =
             ]
                 |> Cmd.batch
 
-        project : Maybe Project
-        project =
-            Nothing
+        ( projectName, newSeed ) =
+            Util.uuid seed 16
 
         ( sessionId, seed ) =
             Util.uuid flags.seed 64
@@ -97,7 +95,11 @@ fromFlags flags =
     , sessionId = sessionId
     , canvas = canvas
     , color = Data.Color.init
-    , project = project
+    , project =
+        { name = projectName
+        , nameIsGenerated = True
+        , origin = Local
+        }
     , canvasPosition =
         { x =
             ((flags.windowSize.width - tbw) - canvasSize.width) // 2
@@ -118,7 +120,7 @@ fromFlags flags =
     , taskbarDropped = Nothing
     , minimap = Data.Minimap.NotInitialized
     , menu = menu
-    , seed = flags.seed
+    , seed = newSeed
     , eraserSize = 5
     , shiftIsDown = False
     , config = Config.init flags
@@ -176,7 +178,11 @@ fromError err =
             , height = 400
             }
     , color = Data.Color.init
-    , project = Nothing
+    , project =
+        { name = ""
+        , nameIsGenerated = False
+        , origin = Local
+        }
     , canvasPosition = { x = 0, y = 0 }
     , pendingDraw = Canvas.batch []
     , drawAtRender = Canvas.batch []

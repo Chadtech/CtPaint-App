@@ -4,7 +4,7 @@ import About
 import Color
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
-import Data.Menu
+import Data.Menu as Menu
     exposing
         ( ClickState(..)
         , ContentMsg(..)
@@ -12,7 +12,7 @@ import Data.Menu
         , Model
         , Msg(..)
         )
-import Data.Project as Project
+import Data.Project as Project exposing (Project)
 import Download
 import Error
 import Html exposing (Attribute, Html, a, div, p, text)
@@ -26,7 +26,6 @@ import Mouse exposing (Position)
 import New
 import Open
 import Project
-import Random.Pcg as Random exposing (Seed)
 import ReplaceColor
 import Reply exposing (Reply(CloseMenu, NoReply))
 import Resize
@@ -246,7 +245,7 @@ updateContent msg model =
                         ( newSubModel, reply ) =
                             Project.update subMsg subModel
                     in
-                    { model | content = Project newSubModel }
+                    { model | content = Menu.Project newSubModel }
                         & Cmd.none
                         & reply
 
@@ -459,19 +458,13 @@ initImport =
         |> init "import" (Import Import.init)
 
 
-initDownload : Maybe String -> Seed -> Size -> ( Model, Seed )
-initDownload maybeProjectName seed windowSize =
-    let
-        ( downloadModel, newSeed ) =
-            Download.init maybeProjectName seed
-
-        cardSize =
-            { width = 365
-            , height = 115
-            }
-    in
-    init "download" (Download downloadModel) cardSize windowSize
-        & seed
+initDownload : Project -> Size -> Model
+initDownload project =
+    { width = 365
+    , height = 155
+    }
+        |> init "download"
+            (Download (Download.init project))
 
 
 initAbout : String -> Size -> Model
@@ -517,7 +510,7 @@ initResize canvasSize =
 initProject : Project.Project -> Size -> Model
 initProject project =
     init "project"
-        (Project (Project.init project))
+        (Menu.Project (Project.init project))
         { width = 10
         , height = 10
         }

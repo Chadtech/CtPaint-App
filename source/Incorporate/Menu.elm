@@ -114,7 +114,7 @@ incorporate reply menu model =
                 & Cmd.none
 
         SetProject project ->
-            { model | project = Just project }
+            { model | project = project }
                 |> closeMenu
 
         ResizeTo left top width height ->

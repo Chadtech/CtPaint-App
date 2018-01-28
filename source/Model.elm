@@ -20,7 +20,7 @@ type alias Model =
     , sessionId : Id
     , canvas : Canvas
     , color : Data.Color.Model
-    , project : Maybe Project
+    , project : Project
     , canvasPosition : Position
     , pendingDraw : DrawOp
     , drawAtRender : DrawOp

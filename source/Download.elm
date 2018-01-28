@@ -1,14 +1,13 @@
 module Download exposing (..)
 
+import Data.Project exposing (Project)
 import Html exposing (Html, a, form, input, p, text)
 import Html.Attributes exposing (class, placeholder, value)
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Ports exposing (JsMsg(Download))
-import Random.Pcg as Random exposing (Generator, Seed)
 import Reply exposing (Reply(CloseMenu, NoReply))
 import Tuple.Infix exposing ((&), (|&))
-import Util
 
 
 type Msg
@@ -89,19 +88,12 @@ view model =
 -- INIT --
 
 
-init : Maybe String -> Seed -> ( Model, Seed )
-init maybeProjectName seed =
-    case maybeProjectName of
-        Just projectName ->
-            ( fromString projectName, seed )
-
-        Nothing ->
-            Util.uuid seed 16
-                |> Tuple.mapFirst fromString
-
-
-fromString : String -> Model
-fromString projectName =
-    { field = ""
-    , placeholder = projectName
+init : Project -> Model
+init { name, nameIsGenerated } =
+    { field =
+        if nameIsGenerated then
+            ""
+        else
+            name
+    , placeholder = name
     }

@@ -1,41 +1,31 @@
 /*
     initMsgs 
-    { type : "init paint app" }
-    OR
-    { type : "init new drawing" }
-    OR
-    { type : "init drawing", payload: "id" }
-    OR
-    { type : "init image", payload: "url" }
-*/
-/*
+        { type : "init paint app" }
+        { type : "init new drawing" }
+        { type : "init drawing", payload: "id" }
+        { type : "init image", payload: "url" }
+
     existing state
-    null
-    OR
-    { data: String
-    , width: Int
-    , height: Int
-    , project: 
         null
-        OR
-        { payload: Project }
-    }
-*/
-/*
+        { data: String
+        , width: Int
+        , height: Int
+        , project: 
+            null
+            { payload: Project }
+        }
+
     user
-    null
-    OR
-    "offline"
-    OR
-    User
-    OR
-    "allowance exceeded"
-*/
-/*
+        null
+        "offline"
+        User
+        "allowance exceeded"
+
     manifest
-    initMsg: initMsg
-    Client: Client
-    mountPath: String
+        { initMsg: initMsg
+        , Client: Client
+        , mountPath: String
+        }
 */
 
 var Allowance = require("./Js/Allowance");
@@ -45,6 +35,7 @@ var Flags = require("./Js/Flags");
 PaintApp = function(manifest) {
     var Client = manifest.Client;
     var track = manifest.track;
+
 
     var app;
 
@@ -125,8 +116,22 @@ PaintApp = function(manifest) {
 
     function jsMsgHandler(msg) {
         switch (msg.type) {
-            case "save locally":
+            case "save":
                 localStorage.setItem("local state", JSON.stringify(msg.payload));
+
+                var data = {
+                    content: msg.payload.data,
+                    attachments: "Yoink"
+                };
+
+                Client.createDrawing(data, {
+                    onSuccess: function(result) {
+                        console.log("Result!", result);
+                    },
+                    onFailure: function(err) {
+                        console.log("Error!", err);
+                    }
+                });
                 break;
 
             case "steal focus":
@@ -216,6 +221,11 @@ PaintApp = function(manifest) {
 
     Client.getSession({
         onSuccess: function(attributes) {
+            // Client.getDrawing(User.fromAttributes(attributes).sub, {
+            //     onFailure: function(){},
+            //     onSuccess: function(){}
+            // });
+
             init({ 
                 user: User.fromAttributes(attributes),
                 manifest: manifest
@@ -225,7 +235,7 @@ PaintApp = function(manifest) {
             if (Allowance.exceeded()) {
                 err = "allowance exceeded";
             }
-            switch (err) {
+            switch (String(err)) {
                 case "no session" :
                     init({ 
                         user: null,

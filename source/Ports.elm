@@ -6,10 +6,12 @@ port module Ports
         , track
         )
 
+import Array exposing (Array)
 import Canvas exposing (Canvas, Size)
+import Color exposing (Color)
+import Data.Color as Color exposing (Swatches)
 import Data.Project as Project exposing (Project)
 import Json.Encode as Encode exposing (Value)
-import Json.Encode.Extra as Encode
 import Tracking
 import Tuple.Infix exposing ((:=))
 
@@ -17,8 +19,7 @@ import Tuple.Infix exposing ((:=))
 type JsMsg
     = StealFocus
     | ReturnFocus
-    | SaveLocally LocalSavePayload
-    | SaveToAws
+    | Save SavePayload
     | Download String
     | AttemptLogin String String
     | Logout
@@ -29,9 +30,11 @@ type JsMsg
     | Track Tracking.Payload
 
 
-type alias LocalSavePayload =
+type alias SavePayload =
     { canvas : Canvas
-    , project : Maybe Project
+    , swatches : Swatches
+    , palette : Array Color
+    , project : Project
     }
 
 
@@ -63,15 +66,14 @@ send msg =
         ReturnFocus ->
             jsMsg "return focus" Encode.null
 
-        SaveLocally { canvas, project } ->
+        Save { swatches, palette, canvas, project } ->
             [ "data" := encodeCanvas canvas
-            , "project" := Encode.maybe Project.encode project
+            , "project" := Project.encode project
+            , "swatches" := Color.encodeSwatches swatches
+            , "palette" := Color.encodePalette palette
             ]
                 |> Encode.object
-                |> jsMsg "save locally"
-
-        SaveToAws ->
-            jsMsg "save to aws" Encode.null
+                |> jsMsg "save"
 
         Download fn ->
             jsMsg "download" (Encode.string fn)

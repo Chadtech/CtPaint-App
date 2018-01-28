@@ -1,6 +1,12 @@
 module Taskbar exposing (Msg(..), css, update, view)
 
-import Chadtech.Colors exposing (ignorable1, ignorable2, ignorable3, point)
+import Chadtech.Colors
+    exposing
+        ( ignorable1
+        , ignorable2
+        , ignorable3
+        , point
+        )
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
@@ -169,7 +175,7 @@ css =
         [ backgroundColor ignorable2
         , height (px toolbarWidth)
         , width (calc (pct 100) minus (px toolbarWidth))
-        , left (px toolbarWidth)
+        , left (px (toolbarWidth - 1))
         , top (px 0)
         , position absolute
         , borderBottom3 (px 1) solid ignorable3
@@ -186,9 +192,11 @@ css =
         [ zIndex (int 2)
         , position relative
         , padding2 (px 2) (px 4)
-        , withClass Dropped [ zIndex (int 3) ]
+        , withClass Dropped
+            (outdent ++ [ zIndex (int 3) ])
         , active outdent
         , marginRight (px 1)
+        , border3 (px 2) solid ignorable2
         ]
     , Css.class LoginButton
         [ float right
@@ -228,6 +236,7 @@ css =
         , giveDropdownWidth (Dropdown Edit) 220
         , giveDropdownWidth (Dropdown File) 220
         , giveDropdownWidth (Dropdown Tools) 300
+        , giveDropdownWidth (Dropdown Data.Taskbar.User) 150
         , hover [ color point ]
         , padding (px 4)
         ]
@@ -367,7 +376,7 @@ userOptions : User -> Html Msg
 userOptions user =
     if user.optionsDropped then
         a
-            [ class [ Button, UserButton ]
+            [ class [ Button, UserButton, Dropped ]
             , onClick UserClicked
             ]
             [ Html.text user.name
@@ -715,29 +724,13 @@ fileDropped model =
         "Import"
         (keysLabel model InitImport)
         (KeyCmdClicked InitImport)
-    ]
-        |> mixinProjectOption model
-        |> taskbarButtonOpen "file" File
-
-
-mixinProjectOption : Model -> List (Html Msg) -> List (Html Msg)
-mixinProjectOption model children =
-    case model.project of
-        Just project ->
-            children ++ projectOption project
-
-        Nothing ->
-            children
-
-
-projectOption : Project -> List (Html Msg)
-projectOption project =
-    [ divider
+    , divider
     , option
         "Project"
         ""
-        (ProjectClicked project)
+        (ProjectClicked model.project)
     ]
+        |> taskbarButtonOpen "file" File
 
 
 
