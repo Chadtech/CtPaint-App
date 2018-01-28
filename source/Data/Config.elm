@@ -4,6 +4,7 @@ import Data.Flags exposing (Flags)
 import Data.Keys as Key
 import Data.User exposing (Model(..))
 import Dict exposing (Dict)
+import Keyboard.Extra.Browser exposing (Browser)
 
 
 type alias Config =
@@ -12,6 +13,7 @@ type alias Config =
     , cmdKey : Key.Event -> Bool
     , mountPath : String
     , buildNumber : String
+    , browser : Browser
     }
 
 
@@ -21,8 +23,13 @@ init flags =
         keyConfig =
             getKeyConfig flags
     in
-    { quickKeys = Key.initQuickKeysLookUp keyConfig flags.isMac
-    , keyCmds = Key.initCmdLookUp keyConfig
+    { quickKeys =
+        Key.initQuickKeysLookUp
+            flags.browser
+            keyConfig
+            flags.isMac
+    , keyCmds =
+        Key.initCmdLookUp flags.browser keyConfig
     , cmdKey =
         if flags.isMac then
             .meta
@@ -30,6 +37,7 @@ init flags =
             .ctrl
     , mountPath = flags.mountPath
     , buildNumber = toString flags.buildNumber
+    , browser = flags.browser
     }
 
 

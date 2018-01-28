@@ -15,6 +15,7 @@ import Dict
 import Html
 import Id exposing (Id, Origin(Local))
 import Json.Decode as Decode exposing (Decoder, Value, value)
+import Keyboard.Extra.Browser exposing (Browser(FireFox))
 import Menu
 import Model exposing (Model)
 import Msg exposing (Msg(..))
@@ -213,6 +214,7 @@ fromError err =
         , cmdKey = always False
         , mountPath = ""
         , buildNumber = ""
+        , browser = FireFox
         }
     }
         & Cmd.none

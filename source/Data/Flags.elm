@@ -10,6 +10,7 @@ import Json.Decode.Pipeline
         , optional
         , required
         )
+import Keyboard.Extra.Browser exposing (Browser(Chrome, FireFox))
 import Random.Pcg as Random exposing (Seed)
 import Window exposing (Size)
 
@@ -18,7 +19,7 @@ type alias Flags =
     { windowSize : Size
     , seed : Seed
     , isMac : Bool
-    , isChrome : Bool
+    , browser : Browser
     , user : User.Model
     , init : Init
     , localWork : LocalWork
@@ -49,12 +50,42 @@ decoder =
         |> custom windowDecoder
         |> optional "seed" seedDecoder (Random.initialSeed 1776)
         |> optional "isMac" Decode.bool True
-        |> optional "isChrome" Decode.bool True
-        |> required "user" User.modelDecoder
+        |> required "browser" browserDecoder
+        |> custom userDecoder
         |> required "init" initDecoder
         |> required "localWork" localWorkDecoder
         |> required "mountPath" Decode.string
         |> required "buildNumber" Decode.int
+
+
+userDecoder : Decoder User.Model
+userDecoder =
+    browserDecoder
+        |> Decode.field "browser"
+        |> Decode.andThen
+            (User.modelDecoder >> Decode.field "user")
+
+
+browserDecoder : Decoder Browser
+browserDecoder =
+    Decode.string
+        |> Decode.andThen toBrowser
+
+
+toBrowser : String -> Decoder Browser
+toBrowser browser =
+    case browser of
+        "Firefox" ->
+            Decode.succeed FireFox
+
+        "Chrome" ->
+            Decode.succeed Chrome
+
+        "Unknown" ->
+            Decode.succeed Chrome
+
+        other ->
+            Decode.fail ("Unknown browser type " ++ other)
 
 
 localWorkDecoder : Decoder LocalWork

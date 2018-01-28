@@ -17,6 +17,7 @@ import Json.Decode.Pipeline
         , hardcoded
         , required
         )
+import Keyboard.Extra.Browser exposing (Browser)
 
 
 type Model
@@ -47,11 +48,12 @@ getEmail model =
             Nothing
 
 
-modelDecoder : Decoder Model
-modelDecoder =
+modelDecoder : Browser -> Decoder Model
+modelDecoder browser =
     [ Decode.null LoggedOut
-    , Decode.string |> Decode.andThen fromString
-    , decoder |> Decode.map LoggedIn
+
+    --    , Decode.string |> Decode.andThen fromString
+    , decoder browser |> Decode.map LoggedIn
     ]
         |> Decode.oneOf
 
@@ -69,35 +71,35 @@ fromString str =
             Decode.fail "not offline or allowance exceeded"
 
 
-decoder : Decoder User
-decoder =
+decoder : Browser -> Decoder User
+decoder browser =
     decode User
         |> required "email" Decode.string
         |> required "name" Decode.string
         |> required "picture" Decode.string
         |> hardcoded False
-        |> custom configDecoder
+        |> custom (configDecoder browser)
 
 
 
 -- CONFIG DECODING --
 
 
-configDecoder : Decoder Keys.Config
-configDecoder =
+configDecoder : Browser -> Decoder Keys.Config
+configDecoder browser =
     decode (,,,)
         |> required "custom:keyconfig0" keyConfigPartDecoder
         |> required "custom:keyconfig1" keyConfigPartDecoder
         |> required "custom:keyconfig2" keyConfigPartDecoder
         |> required "custom:keyconfig3" keyConfigPartDecoder
-        |> Decode.andThen fromPartsToKeyConfig
+        |> Decode.andThen (fromPartsToKeyConfig browser)
 
 
-fromPartsToKeyConfig : ( String, String, String, String ) -> Decoder Keys.Config
-fromPartsToKeyConfig ( p0, p1, p2, p3 ) =
+fromPartsToKeyConfig : Browser -> ( String, String, String, String ) -> Decoder Keys.Config
+fromPartsToKeyConfig browser ( p0, p1, p2, p3 ) =
     [ p0, p1, p2, p3 ]
         |> String.concat
-        |> Decode.decodeString Keys.configDecoder
+        |> Decode.decodeString (Keys.configDecoder browser)
         |> resultToDecoder
 
 

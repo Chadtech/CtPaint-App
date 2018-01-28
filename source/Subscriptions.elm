@@ -28,7 +28,7 @@ subscriptions model =
     , minimap model.minimap
     , keyEvent (KeyboardEvent << Decode.decodeValue Keys.eventDecoder)
     , menu model.menu
-    , Ports.fromJs Msg.decode
+    , Ports.fromJs (Msg.decode model.config.browser)
     , Mouse.moves ClientMouseMoved
     , Mouse.ups ClientMouseUp
     ]

@@ -7,12 +7,14 @@ module.exports = {
         var milliseconds = new Date().getMilliseconds()
         var seed = (buf[0] * 1000) + milliseconds;
 
+        console.log("USER", mixins.user);
+
         return {
             windowHeight: window.innerHeight,
             windowWidth: window.innerWidth,
             seed: seed,
             isMac: window.navigator.userAgent.indexOf("Mac") !== -1,
-            isChrome: window.navigator.userAgent.indexOf("Chrome") !== -1,
+            browser: getBrowser(),
             user: mixins.user,
             init: mixins.manifest.initMsg,
             localWork: JSON.parse(localWork),
@@ -20,4 +22,15 @@ module.exports = {
             buildNumber: mixins.manifest.buildNumber
         }; 
     }
+}
+
+
+function getBrowser() {
+    if (window.navigator.userAgent.indexOf("Firefox") !== -1) {
+        return "Firefox";
+    } 
+    if (window.navigator.userAgent.indexOf("Chrome") !== -1) {
+        return "Chrome";
+    }
+    return "Unknown";
 }

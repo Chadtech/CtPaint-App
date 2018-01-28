@@ -6,6 +6,7 @@ import Data.Minimap as Minimap
 import Data.Picker as Picker
 import Data.User as User exposing (User)
 import Json.Decode as Decode exposing (Decoder, Value)
+import Keyboard.Extra.Browser exposing (Browser)
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
 import Palette
@@ -45,9 +46,9 @@ type DecodeProblem
 -- DECODER --
 
 
-decode : Value -> Msg
-decode json =
-    case Decode.decodeValue (decoder json) json of
+decode : Browser -> Value -> Msg
+decode browser json =
+    case Decode.decodeValue (decoder browser json) json of
         Ok msg ->
             msg
 
@@ -55,17 +56,19 @@ decode json =
             MsgDecodeFailed (Other err)
 
 
-decoder : Value -> Decoder Msg
-decoder json =
+decoder : Browser -> Value -> Decoder Msg
+decoder browser json =
     Decode.field "type" Decode.string
-        |> Decode.andThen toMsg
+        |> Decode.andThen (toMsg browser)
 
 
-toMsg : String -> Decoder Msg
-toMsg type_ =
+toMsg : Browser -> String -> Decoder Msg
+toMsg browser type_ =
     case type_ of
         "login succeeded" ->
-            payload User.decoder
+            browser
+                |> User.decoder
+                |> payload
                 |> Decode.map (Menu.loginSucceeded >> MenuMsg)
 
         "login failed" ->
