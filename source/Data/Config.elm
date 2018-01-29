@@ -4,7 +4,11 @@ import Data.Flags exposing (Flags)
 import Data.Keys as Key
 import Data.User exposing (Model(..))
 import Dict exposing (Dict)
+import Id exposing (Id)
 import Keyboard.Extra.Browser exposing (Browser)
+import Random.Pcg as Random exposing (Seed)
+import Tuple.Infix exposing ((&))
+import Util
 
 
 type alias Config =
@@ -14,6 +18,7 @@ type alias Config =
     , mountPath : String
     , buildNumber : String
     , browser : Browser
+    , sessionId : Id
     }
 
 
@@ -38,6 +43,7 @@ init flags =
     , mountPath = flags.mountPath
     , buildNumber = toString flags.buildNumber
     , browser = flags.browser
+    , sessionId = flags.randomValues.sessionId
     }
 
 

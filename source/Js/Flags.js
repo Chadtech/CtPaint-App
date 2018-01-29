@@ -7,8 +7,6 @@ module.exports = {
         var milliseconds = new Date().getMilliseconds()
         var seed = (buf[0] * 1000) + milliseconds;
 
-        console.log("USER", mixins.user);
-
         return {
             windowHeight: window.innerHeight,
             windowWidth: window.innerWidth,

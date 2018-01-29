@@ -3,6 +3,7 @@ module Data.Project
         ( Project
         , decoder
         , encode
+        , init
         , setName
         )
 
@@ -17,6 +18,14 @@ type alias Project =
     { name : String
     , nameIsGenerated : Bool
     , origin : Origin
+    }
+
+
+init : String -> Project
+init name =
+    { name = name
+    , nameIsGenerated = True
+    , origin = Local
     }
 
 

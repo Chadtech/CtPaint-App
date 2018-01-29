@@ -17,7 +17,6 @@ import Random.Pcg as Random exposing (Seed)
 
 type alias Model =
     { user : Data.User.Model
-    , sessionId : Id
     , canvas : Canvas
     , color : Data.Color.Model
     , project : Project
@@ -33,7 +32,6 @@ type alias Model =
     , selection : Maybe ( Position, Canvas )
     , clipboard : Maybe ( Position, Canvas )
     , taskbarDropped : Maybe Dropdown
-    , taskbarTitle : Maybe String
     , minimap : Minimap.State
     , menu : Maybe Menu.Model
     , seed : Seed

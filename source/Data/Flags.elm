@@ -1,7 +1,9 @@
-module Data.Flags exposing (Flags, decoder)
+module Data.Flags exposing (Flags, Init, decoder)
 
 import Data.Project as Project exposing (Project)
 import Data.User as User
+import Helpers.Random as Random
+import Id exposing (Id)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline
     exposing
@@ -12,12 +14,12 @@ import Json.Decode.Pipeline
         )
 import Keyboard.Extra.Browser exposing (Browser(Chrome, FireFox))
 import Random.Pcg as Random exposing (Seed)
+import Util
 import Window exposing (Size)
 
 
 type alias Flags =
     { windowSize : Size
-    , seed : Seed
     , isMac : Bool
     , browser : Browser
     , user : User.Model
@@ -25,6 +27,14 @@ type alias Flags =
     , localWork : LocalWork
     , mountPath : String
     , buildNumber : Int
+    , randomValues : RandomValues
+    }
+
+
+type alias RandomValues =
+    { sessionId : Id
+    , projectName : String
+    , seed : Seed
     }
 
 
@@ -48,7 +58,6 @@ decoder : Decoder Flags
 decoder =
     decode Flags
         |> custom windowDecoder
-        |> optional "seed" seedDecoder (Random.initialSeed 1776)
         |> optional "isMac" Decode.bool True
         |> required "browser" browserDecoder
         |> custom userDecoder
@@ -56,6 +65,22 @@ decoder =
         |> required "localWork" localWorkDecoder
         |> required "mountPath" Decode.string
         |> required "buildNumber" Decode.int
+        |> required "seed" randomValuesDecoder
+
+
+randomValuesDecoder : Decoder RandomValues
+randomValuesDecoder =
+    seedDecoder
+        |> Decode.map toRandomValues
+
+
+toRandomValues : Seed -> RandomValues
+toRandomValues seed =
+    RandomValues
+        |> Random.from seed
+        |> Random.value Id.generator
+        |> Random.value (Util.uuidGenerator 16)
+        |> Random.finish
 
 
 userDecoder : Decoder User.Model

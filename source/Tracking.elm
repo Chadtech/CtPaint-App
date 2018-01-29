@@ -21,7 +21,7 @@ type alias Payload =
 
 type Event
     = AppLoaded
-    | AppFailedToLoad String
+    | AppFailedToInitialize String
 
 
 encode : Payload -> Value
@@ -41,7 +41,7 @@ encodeEvent event =
             [ "name" := Encode.string "app loaded" ]
                 |> Encode.object
 
-        AppFailedToLoad problem ->
+        AppFailedToInitialize problem ->
             [ "name" := Encode.string "app failed to load"
             , "problem" := Encode.string problem
             ]

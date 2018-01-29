@@ -1,17 +1,18 @@
 module PaintApp exposing (..)
 
 import Canvas exposing (Canvas, DrawOp(..), Point, Size)
-import Color
 import Data.Color
 import Data.Config as Config
 import Data.Flags as Flags exposing (Flags)
 import Data.History
 import Data.Menu as Menu
 import Data.Minimap
+import Data.Project as Project
 import Data.Tool as Tool
 import Data.User as User
 import Data.Window as Window
 import Dict
+import Helpers.Canvas as Canvas
 import Html
 import Id exposing (Id, Origin(Local))
 import Json.Decode as Decode exposing (Decoder, Value, value)
@@ -22,7 +23,7 @@ import Msg exposing (Msg(..))
 import Ports exposing (JsMsg(RedirectPageTo))
 import Random.Pcg as Random
 import Subscriptions exposing (subscriptions)
-import Tracking exposing (Event(AppLoaded))
+import Tracking exposing (Event(AppFailedToInitialize, AppLoaded))
 import Tuple.Infix exposing ((&), (|&))
 import Update exposing (update)
 import Util exposing (tbw)
@@ -59,74 +60,54 @@ init json =
 fromFlags : Flags -> ( Model, Cmd Msg )
 fromFlags flags =
     let
-        canvas =
-            { width = 400
-            , height = 400
-            }
-                |> Canvas.initialize
-                |> fillBlack
-
-        canvasSize : Size
-        canvasSize =
-            Canvas.getSize canvas
-
         ( menu, menuCmd ) =
             getInitialMenu flags
 
-        cmd : Cmd Msg
-        cmd =
-            [ menuCmd
-            , Ports.track
-                { event = AppLoaded
-                , sessionId = sessionId
-                , email = User.getEmail flags.user
-                , projectId = Nothing
-                }
-            ]
-                |> Cmd.batch
-
-        ( projectName, newSeed ) =
-            Util.uuid seed 16
-
-        ( sessionId, seed ) =
-            Util.uuid flags.seed 64
-                |> Tuple.mapFirst Id.fromString
+        canvasSize =
+            Canvas.getSize Canvas.blank
     in
     { user = flags.user
-    , sessionId = sessionId
-    , canvas = canvas
+    , canvas = Canvas.blank
     , color = Data.Color.init
-    , project =
-        { name = projectName
-        , nameIsGenerated = True
-        , origin = Local
-        }
+    , project = Project.init flags.randomValues.projectName
     , canvasPosition =
         { x =
             ((flags.windowSize.width - tbw) - canvasSize.width) // 2
         , y =
             (flags.windowSize.height - canvasSize.height) // 2
         }
-    , pendingDraw = Canvas.batch []
-    , drawAtRender = Canvas.batch []
+    , pendingDraw = Canvas.noop
+    , drawAtRender = Canvas.noop
     , windowSize = flags.windowSize
     , tool = Tool.init
     , zoom = 1
     , galleryView = False
-    , history = Data.History.init canvas
+    , history = Data.History.init Canvas.blank
     , mousePosition = Nothing
     , selection = Nothing
     , clipboard = Nothing
-    , taskbarTitle = Nothing
     , taskbarDropped = Nothing
     , minimap = Data.Minimap.NotInitialized
     , menu = menu
-    , seed = newSeed
+    , seed = flags.randomValues.seed
     , eraserSize = 5
     , shiftIsDown = False
     , config = Config.init flags
     }
-        & cmd
+        |> withCmd
+
+
+withCmd : Model -> ( Model, Cmd Msg )
+withCmd model =
+    [ Ports.track
+        { event = AppLoaded
+        , sessionId = model.config.sessionId
+        , email = User.getEmail model.user
+        , projectId = Nothing
+        }
+    ]
+        |> Cmd.batch
+        |& model
 
 
 type alias InitBehavior =
@@ -171,8 +152,17 @@ checkUser flags =
 
 fromError : String -> ( Model, Cmd Msg )
 fromError err =
+    let
+        cmd =
+            { event = AppFailedToInitialize err
+            , sessionId = Id.fromString ""
+            , email = Nothing
+            , projectId = Nothing
+            }
+                |> Ports.Track
+                |> Ports.send
+    in
     { user = User.LoggedOut
-    , sessionId = Id.fromString ""
     , canvas =
         Canvas.initialize
             { width = 400
@@ -198,7 +188,6 @@ fromError err =
     , mousePosition = Nothing
     , selection = Nothing
     , clipboard = Nothing
-    , taskbarTitle = Nothing
     , taskbarDropped = Nothing
     , minimap = Data.Minimap.NotInitialized
     , menu =
@@ -215,25 +204,7 @@ fromError err =
         , mountPath = ""
         , buildNumber = ""
         , browser = FireFox
+        , sessionId = Id.fromString ""
         }
     }
-        & Cmd.none
-
-
-
--- FILL BLACK --
-
-
-fillBlack : Canvas -> Canvas
-fillBlack canvas =
-    Canvas.draw (fillBlackOp canvas) canvas
-
-
-fillBlackOp : Canvas -> DrawOp
-fillBlackOp canvas =
-    [ BeginPath
-    , Rect (Point 0 0) (Canvas.getSize canvas)
-    , FillStyle Color.black
-    , Canvas.Fill
-    ]
-        |> Canvas.batch
+        & cmd
