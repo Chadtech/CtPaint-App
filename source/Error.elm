@@ -35,6 +35,8 @@ css =
         ]
     , Css.class TextContainer
         [ width (px 800)
+        , height (vh 60)
+        , overflow scroll
         , transform (translate2 (pct -50) (pct -50))
         , position absolute
         , left (pct 50)
@@ -62,9 +64,9 @@ errorNamespace =
     Html.CssHelpers.withNamespace errorNamespace
 
 
-view : String -> List (Html msg)
+view : String -> Html msg
 view err =
-    [ div
+    div
         [ class [ ScreenFiller ] ]
         [ div
             [ class [ TextContainer ] ]
@@ -74,4 +76,3 @@ view err =
             , p [] [ Html.text err ]
             ]
         ]
-    ]

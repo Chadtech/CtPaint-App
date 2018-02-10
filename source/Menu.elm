@@ -14,7 +14,6 @@ import Data.Menu as Menu
         )
 import Data.Project exposing (Project)
 import Download
-import Error
 import Html exposing (Attribute, Html, a, div, p, text)
 import Html.Attributes exposing (class, style)
 import Html.CssHelpers
@@ -369,9 +368,6 @@ contentView menu =
             List.map (Html.map LoginMsg) <|
                 Login.view subModel
 
-        Error subModel ->
-            Error.view subModel
-
         Loading subModel ->
             Loading.view subModel
 
@@ -402,14 +398,6 @@ init title content cardSize windowSize =
     , title = title
     , content = content
     }
-
-
-initError : String -> Size -> Model
-initError err =
-    { width = 40
-    , height = 40
-    }
-        |> init "error" (Error err)
 
 
 initLogin : Size -> Model

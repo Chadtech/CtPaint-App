@@ -38,7 +38,6 @@ type Menu
     | New New.Model
     | Open Open.Model
     | Login Login.Model
-    | Error String
     | Loading String
     | Upload Upload.Model
     | Resize Resize.Model

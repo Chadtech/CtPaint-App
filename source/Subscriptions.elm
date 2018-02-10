@@ -18,21 +18,36 @@ import Window
 port keyEvent : (Value -> msg) -> Sub msg
 
 
-subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions : Result String Model -> Sub Msg
+subscriptions result =
+    case result of
+        Ok model ->
+            fromModel model
+
+        Err _ ->
+            Sub.none
+
+
+fromModel : Model -> Sub Msg
+fromModel model =
     [ Window.resizes WindowSizeReceived
     , AnimationFrame.diffs Tick
     , model.color.picker
         |> ColorPicker.subscriptions
         |> Sub.map ColorPickerMsg
     , minimap model.minimap
-    , keyEvent (KeyboardEvent << Decode.decodeValue Keys.eventDecoder)
+    , keyEvent keyboardMsg
     , menu model.menu
     , Ports.fromJs (Msg.decode model.config.browser)
     , Mouse.moves ClientMouseMoved
     , Mouse.ups ClientMouseUp
     ]
         |> Sub.batch
+
+
+keyboardMsg : Value -> Msg
+keyboardMsg =
+    KeyboardEvent << Decode.decodeValue Keys.eventDecoder
 
 
 

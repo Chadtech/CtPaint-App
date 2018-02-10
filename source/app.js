@@ -25,6 +25,7 @@
         { initMsg: initMsg
         , Client: Client
         , mountPath: String
+        , buildNumber: Int
         }
 */
 
@@ -35,9 +36,14 @@ var Flags = require("./Js/Flags");
 PaintApp = function(manifest) {
     var Client = manifest.Client;
     var track = manifest.track;
-
-
     var app;
+
+    function toElm(type, payload) {
+        app.ports.fromJs.send({
+            type: type,
+            payload: payload
+        });
+    };
 
     function listenToKeyEvents (keydown, keyup) {
         window.addEventListener("keydown", keydown);
@@ -73,15 +79,9 @@ PaintApp = function(manifest) {
     function handleLogin(user) {
         user.getUserAttributes(function(err, attributes) {
             if (err) {
-                app.ports.fromJs.send({
-                    type: "login failed",
-                    payload: String(err)
-                });
+                toElm("login failed", String(err));
             } else {
-                app.ports.fromJs.send({
-                    type: "login succeeded",
-                    payload: User.fromAttributes(attributes)
-                });
+                toElm("login succeeded", User.fromAttributes(attributes));
             }
         });
     }
@@ -93,10 +93,7 @@ PaintApp = function(manifest) {
         
         reader.onload = function(){
             var dataURL = reader.result;
-            app.ports.fromJs.send({
-                type: "file read",
-                payload: reader.result
-            });
+            toElm("file read", reader.result);
         };
         
         var imageIndex = [
@@ -107,10 +104,7 @@ PaintApp = function(manifest) {
         if (imageIndex !== -1) {
             reader.readAsDataURL(fileUploader.files[0]);
         } else {
-            app.ports.fromJs.send({
-                type: "file not image",
-                payload: null
-            });
+            toElm("file not image", null)
         }
     })
 
@@ -156,20 +150,14 @@ PaintApp = function(manifest) {
                 Client.login(msg.payload, {
                     onSuccess: handleLogin,
                     onFailure: function(err) {
-                        app.ports.fromJs.send({
-                            type: "login failed",
-                            payload: String(err)
-                        })
+                        toElm("login failed", String(err));
                     }
                 });
                 break;
 
             case "logout":
                 function succeed(){
-                    app.ports.fromJs.send({
-                        type: "logout succeeded",
-                        payload: null
-                    });
+                    toElm("logout succeeded", null);
                 }
 
                 Client.logout({

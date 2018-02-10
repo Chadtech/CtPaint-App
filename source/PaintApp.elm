@@ -11,29 +11,25 @@ import Data.Project as Project
 import Data.Tool as Tool
 import Data.User as User
 import Data.Window as Window
-import Dict
+import Error
 import Helpers.Canvas as Canvas
-import Html
-import Id exposing (Id, Origin(Local))
+import Html exposing (Html)
 import Json.Decode as Decode exposing (Decoder, Value, value)
-import Keyboard.Extra.Browser exposing (Browser(FireFox))
-import Menu
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Ports exposing (JsMsg(RedirectPageTo))
-import Random.Pcg as Random
 import Subscriptions exposing (subscriptions)
 import Tracking exposing (Event(AppFailedToInitialize, AppLoaded))
 import Tuple.Infix exposing ((&), (|&))
-import Update exposing (update)
+import Update
 import Util exposing (tbw)
-import View exposing (view)
+import View
 
 
 -- MAIN --
 
 
-main : Program Value Model Msg
+main : Program Value (Result String Model) Msg
 main =
     { init = init
     , view = view
@@ -44,17 +40,47 @@ main =
 
 
 
+-- VIEW --
+
+
+view : Result String Model -> Html Msg
+view result =
+    case result of
+        Ok model ->
+            View.view model
+
+        Err err ->
+            Error.view err
+
+
+
+-- UPDATE --
+
+
+update : Msg -> Result String Model -> ( Result String Model, Cmd Msg )
+update msg result =
+    case result of
+        Ok model ->
+            Update.update msg model
+                |> Tuple.mapFirst Ok
+
+        Err err ->
+            Err err & Cmd.none
+
+
+
 -- INIT --
 
 
-init : Value -> ( Model, Cmd Msg )
+init : Value -> ( Result String Model, Cmd Msg )
 init json =
     case Decode.decodeValue Flags.decoder json of
         Ok flags ->
             fromFlags flags
+                |> Tuple.mapFirst Ok
 
         Err err ->
-            fromError err
+            Err err & Cmd.none
 
 
 fromFlags : Flags -> ( Model, Cmd Msg )
@@ -148,63 +174,3 @@ checkUser flags =
 
         _ ->
             Nothing
-
-
-fromError : String -> ( Model, Cmd Msg )
-fromError err =
-    let
-        cmd =
-            { event = AppFailedToInitialize err
-            , sessionId = Id.fromString ""
-            , email = Nothing
-            , projectId = Nothing
-            }
-                |> Ports.Track
-                |> Ports.send
-    in
-    { user = User.LoggedOut
-    , canvas =
-        Canvas.initialize
-            { width = 400
-            , height = 400
-            }
-    , color = Data.Color.init
-    , project =
-        { name = ""
-        , nameIsGenerated = False
-        , origin = Local
-        }
-    , canvasPosition = { x = 0, y = 0 }
-    , pendingDraw = Canvas.batch []
-    , drawAtRender = Canvas.batch []
-    , windowSize = { width = 0, height = 0 }
-    , tool = Tool.init
-    , zoom = 1
-    , galleryView = False
-    , history =
-        { past = []
-        , future = []
-        }
-    , mousePosition = Nothing
-    , selection = Nothing
-    , clipboard = Nothing
-    , taskbarDropped = Nothing
-    , minimap = Data.Minimap.NotInitialized
-    , menu =
-        { width = 800, height = 800 }
-            |> Menu.initError err
-            |> Just
-    , seed = Random.initialSeed 0
-    , eraserSize = 1
-    , shiftIsDown = False
-    , config =
-        { keyCmds = Dict.empty
-        , quickKeys = Dict.empty
-        , cmdKey = always False
-        , mountPath = ""
-        , buildNumber = ""
-        , browser = FireFox
-        , sessionId = Id.fromString ""
-        }
-    }
-        & cmd

@@ -6,7 +6,6 @@ module About
         )
 
 import Css exposing (..)
-import Css.Elements
 import Css.Namespace exposing (namespace)
 import Html exposing (Html, br, p)
 import Html.CssHelpers
@@ -22,12 +21,12 @@ type alias State =
 
 
 type Class
-    = Noop
+    = Text
 
 
 css : Stylesheet
 css =
-    [ Css.Elements.p
+    [ Css.class Text
         [ maxWidth (px 400) ]
     ]
         |> namespace aboutNamespace
@@ -60,4 +59,4 @@ view { buildNumber } =
 
 p_ : String -> Html msg
 p_ str =
-    p [] [ Html.text str ]
+    p [ class [ Text ] ] [ Html.text str ]

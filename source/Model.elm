@@ -10,7 +10,6 @@ import Data.Project exposing (Project)
 import Data.Taskbar exposing (Dropdown)
 import Data.Tool exposing (Tool)
 import Data.User exposing (User)
-import Id exposing (Id)
 import Mouse exposing (Position)
 import Random.Pcg as Random exposing (Seed)
 

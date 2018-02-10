@@ -51,8 +51,7 @@ getEmail model =
 modelDecoder : Browser -> Decoder Model
 modelDecoder browser =
     [ Decode.null LoggedOut
-
-    --    , Decode.string |> Decode.andThen fromString
+    , Decode.string |> Decode.andThen fromString
     , decoder browser |> Decode.map LoggedIn
     ]
         |> Decode.oneOf
@@ -95,11 +94,15 @@ configDecoder browser =
         |> Decode.andThen (fromPartsToKeyConfig browser)
 
 
-fromPartsToKeyConfig : Browser -> ( String, String, String, String ) -> Decoder Keys.Config
+fromPartsToKeyConfig :
+    Browser
+    -> ( String, String, String, String )
+    -> Decoder Keys.Config
 fromPartsToKeyConfig browser ( p0, p1, p2, p3 ) =
     [ p0, p1, p2, p3 ]
         |> String.concat
-        |> Decode.decodeString (Keys.configDecoder browser)
+        |> Decode.decodeString
+            (Keys.configDecoder browser)
         |> resultToDecoder
 
 

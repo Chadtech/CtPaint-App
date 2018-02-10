@@ -6,9 +6,6 @@ import Data.User exposing (Model(..))
 import Dict exposing (Dict)
 import Id exposing (Id)
 import Keyboard.Extra.Browser exposing (Browser)
-import Random.Pcg as Random exposing (Seed)
-import Tuple.Infix exposing ((&))
-import Util
 
 
 type alias Config =
