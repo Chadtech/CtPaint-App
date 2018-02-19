@@ -26,10 +26,10 @@ type alias Model =
 
 
 type alias Swatches =
-    { primary : Color
-    , first : Color
-    , second : Color
-    , third : Color
+    { top : Color
+    , left : Color
+    , bottom : Color
+    , right : Color
     , keyIsDown : Bool
     }
 
@@ -85,10 +85,10 @@ initPalette =
 
 initSwatches : Swatches
 initSwatches =
-    { primary = Color.rgb 176 166 154
-    , first = Color.black
-    , second = Color.white
-    , third = Color.rgb 241 29 35
+    { top = Color.rgb 176 166 154
+    , left = Color.black
+    , bottom = Color.white
+    , right = Color.rgb 241 29 35
     , keyIsDown = False
     }
 
@@ -103,11 +103,11 @@ encodeColor =
 
 
 encodeSwatches : Swatches -> Value
-encodeSwatches { primary, first, second, third } =
-    [ "primary" := encodeColor primary
-    , "first" := encodeColor first
-    , "second" := encodeColor second
-    , "third" := encodeColor third
+encodeSwatches { top, left, bottom, right } =
+    [ "top" := encodeColor top
+    , "left" := encodeColor left
+    , "bottom" := encodeColor bottom
+    , "right" := encodeColor right
     ]
         |> Encode.object
 

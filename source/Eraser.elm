@@ -107,7 +107,7 @@ handleScreenMouseDown clientPos model =
         , pendingDraw =
             [ model.pendingDraw
             , Draw.eraserPoint
-                model.color.swatches.primary
+                model.color.swatches.top
                 model.eraserSize
                 position
             ]
@@ -127,7 +127,7 @@ handleClientMouseMovement newPosition priorPosition model =
         , pendingDraw =
             [ model.pendingDraw
             , Draw.eraser
-                model.color.swatches.primary
+                model.color.swatches.top
                 model.eraserSize
                 priorPosition
                 adjustedPosition

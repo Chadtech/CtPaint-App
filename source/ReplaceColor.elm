@@ -1,12 +1,6 @@
 module ReplaceColor exposing (..)
 
-import Chadtech.Colors
-    exposing
-        ( backgroundx2
-        , ignorable0
-        , ignorable1
-        , ignorable3
-        )
+import Chadtech.Colors as Ct
 import Color exposing (Color)
 import Css exposing (..)
 import Css.Elements
@@ -155,21 +149,21 @@ css =
         [ width (px 176)
         , height (px 200)
         , overflowY auto
-        , backgroundColor backgroundx2
+        , backgroundColor Ct.background2
         ]
     , Css.class Square
-        [ borderLeft3 (px 1) solid ignorable3
-        , borderTop3 (px 1) solid ignorable3
-        , borderRight3 (px 1) solid ignorable1
-        , borderBottom3 (px 1) solid ignorable1
+        [ borderLeft3 (px 1) solid Ct.ignorable3
+        , borderTop3 (px 1) solid Ct.ignorable3
+        , borderRight3 (px 1) solid Ct.ignorable1
+        , borderBottom3 (px 1) solid Ct.ignorable1
         , height (px 20)
         , width (px 20)
         , float left
         , withClass Selected
-            [ borderLeft3 (px 2) solid ignorable0
-            , borderTop3 (px 2) solid ignorable0
-            , borderRight3 (px 2) solid ignorable0
-            , borderBottom3 (px 2) solid ignorable0
+            [ borderLeft3 (px 2) solid Ct.ignorable0
+            , borderTop3 (px 2) solid Ct.ignorable0
+            , borderRight3 (px 2) solid Ct.ignorable0
+            , borderBottom3 (px 2) solid Ct.ignorable0
             , height (px 18)
             , width (px 18)
             ]

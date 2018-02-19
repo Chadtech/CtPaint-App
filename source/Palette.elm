@@ -8,15 +8,7 @@ module Palette
         )
 
 import Array exposing (Array)
-import Chadtech.Colors
-    exposing
-        ( backgroundx2
-        , ignorable0
-        , ignorable1
-        , ignorable2
-        , ignorable3
-        , point
-        )
+import Chadtech.Colors as Ct
 import Color exposing (Color)
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
@@ -62,13 +54,15 @@ update msg model =
                     | palette =
                         Array.set
                             index
-                            model.swatches.primary
+                            model.swatches.top
                             model.palette
                 }
             else
                 { model
                     | swatches =
-                        Helpers.Color.setPrimary color model.swatches
+                        Helpers.Color.setTop
+                            color
+                            model.swatches
                 }
 
         OpenColorPicker color index ->
@@ -81,7 +75,7 @@ update msg model =
             { model
                 | palette =
                     Array.push
-                        model.swatches.second
+                        model.swatches.bottom
                         model.palette
             }
 
@@ -136,30 +130,26 @@ css =
         , width (px 20)
         ]
     , (Css.class Colors << List.append indent)
-        [ backgroundColor backgroundx2
+        [ backgroundColor Ct.background2
         , width (calc (pct 100) minus (px 484))
         , position absolute
         , left (px 79)
         , top (px 4)
         , overflowY auto
         ]
-    , Css.class Square
+    , (Css.class Square << List.append outdent)
         [ height (px 20)
         , width (px 20)
-        , borderTop3 (px 1) solid ignorable3
-        , borderLeft3 (px 1) solid ignorable3
-        , borderRight3 (px 1) solid ignorable1
-        , borderBottom3 (px 1) solid ignorable1
         , display inlineBlock
         , float left
         , withClass Selected
-            [ border3 (px 2) solid ignorable0
+            [ border3 (px 2) solid Ct.ignorable0
             , height (px 18)
             , width (px 18)
             ]
         ]
     , (Css.class Plus << List.append outdent << List.append cannotSelect)
-        [ color point
+        [ color Ct.point0
         , cursor pointer
         , active indent
         , fontFamilies [ "hfnss" ]
@@ -167,7 +157,7 @@ css =
         , fontSize (em 2)
         , height (px 18)
         , width (px 18)
-        , backgroundColor ignorable2
+        , backgroundColor Ct.ignorable2
         , textAlign center
         ]
     ]
@@ -260,13 +250,13 @@ squareClasses show =
 
 
 swatchesView : Swatches -> Html msg
-swatchesView { primary, first, second, third } =
+swatchesView { top, left, bottom, right } =
     div
         [ class [ SwatchesContainer ] ]
-        [ swatch primary Primary
-        , swatch first First
-        , swatch second Second
-        , swatch third Third
+        [ swatch top Primary
+        , swatch left First
+        , swatch bottom Second
+        , swatch right Third
         ]
 
 

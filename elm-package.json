@@ -9,7 +9,7 @@
     "exposed-modules": [],
     "native-modules": true,
     "dependencies": {
-        "Chadtech/ct-colors": "1.0.1 <= v < 2.0.0",
+        "Chadtech/ct-colors": "2.0.0 <= v < 3.0.0",
         "Chadtech/ctpaint-keys": "5.0.0 <= v < 6.0.0",
         "Chadtech/elm-bool-extra": "1.2.1 <= v < 2.0.0",
         "Chadtech/hfnss": "1.0.1 <= v < 2.0.0",

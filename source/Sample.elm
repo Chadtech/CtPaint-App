@@ -14,14 +14,16 @@ handleScreenMouseUp clientPos model =
     { model
         | color =
             Color.setSwatches
-                (setPrimary clientPos model)
+                (setTop clientPos model)
                 model.color
     }
 
 
-setPrimary : Position -> Model -> Swatches
-setPrimary clientPos model =
-    Color.setPrimary (getColorAt clientPos model) model.color.swatches
+setTop : Position -> Model -> Swatches
+setTop clientPos model =
+    Color.setTop
+        (getColorAt clientPos model)
+        model.color.swatches
 
 
 getColorAt : Position -> Model -> Color

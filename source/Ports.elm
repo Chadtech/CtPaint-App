@@ -2,7 +2,9 @@ port module Ports
     exposing
         ( JsMsg(..)
         , fromJs
+        , returnFocus
         , send
+        , stealFocus
         , track
         )
 
@@ -38,6 +40,16 @@ type alias SavePayload =
     }
 
 
+returnFocus : Cmd msg
+returnFocus =
+    send ReturnFocus
+
+
+stealFocus : Cmd msg
+stealFocus =
+    send StealFocus
+
+
 encodeCanvas : Canvas -> Value
 encodeCanvas =
     Canvas.toDataUrl "image/png" 1 >> Encode.string
@@ -68,9 +80,10 @@ send msg =
 
         Save { swatches, palette, canvas, project } ->
             [ "data" := encodeCanvas canvas
-            , "project" := Project.encode project
-            , "swatches" := Color.encodeSwatches swatches
             , "palette" := Color.encodePalette palette
+            , "swatches" := Color.encodeSwatches swatches
+            , "name" := Encode.string project.name
+            , "nameIsGenerated" := Encode.bool project.nameIsGenerated
             ]
                 |> Encode.object
                 |> jsMsg "save"

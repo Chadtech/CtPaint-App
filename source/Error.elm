@@ -1,11 +1,6 @@
 module Error exposing (css, view)
 
-import Chadtech.Colors
-    exposing
-        ( critical
-        , ignorable2
-        , pointier
-        )
+import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
@@ -27,7 +22,7 @@ css =
     [ Css.class ScreenFiller
         [ width (pct 100)
         , height (pct 100)
-        , backgroundColor critical
+        , backgroundColor Ct.critical
         , zIndex (int 5)
         , position fixed
         , top (px 0)
@@ -43,7 +38,7 @@ css =
         , top (pct 50)
         , children
             [ Css.Elements.p
-                [ color pointier ]
+                [ color Ct.point1 ]
             ]
         ]
     ]

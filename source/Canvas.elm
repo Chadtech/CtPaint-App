@@ -56,7 +56,7 @@ import Native.Canvas
 import Task exposing (Task)
 
 
-{-| A `Canvas` contains image data, and can be rendered as html with `toHtml`. It is the primary type of this package.
+{-| A `Canvas` contains image data, and can be rendered as html with `toHtml`. It is the top type of this package.
 -}
 type Canvas
     = Canvas
@@ -159,7 +159,7 @@ toHtml =
     Native.Canvas.toHtml
 
 
-{-| This is our primary way of drawing onto canvases. Give `draw` a `drawOp` and apply it to a canvas.
+{-| This is our top way of drawing onto canvases. Give `draw` a `drawOp` and apply it to a canvas.
 
     drawLine : Point -> Point -> Canvas -> Canvas
     drawLine p0 p1 =

@@ -1,12 +1,7 @@
 module View exposing (css, view)
 
 import Canvas exposing (Canvas, DrawOp)
-import Chadtech.Colors
-    exposing
-        ( backgroundx2
-        , ignorable1
-        , ignorable2
-        )
+import Chadtech.Colors as Ct
 import Color
 import ColorPicker
 import Css exposing (..)
@@ -92,7 +87,7 @@ css =
         ]
     , Css.class MainCanvas
         [ position absolute
-        , border3 (px 2) solid ignorable2
+        , border3 (px 2) solid Ct.ignorable2
         ]
     , Css.class SelectionCanvas
         [ position absolute
@@ -126,7 +121,7 @@ css =
         , textAlign center
         ]
     , Css.class Palette
-        [ backgroundColor ignorable2
+        [ backgroundColor Ct.ignorable2
         , position fixed
         , bottom (px 0)
         , left (px toolbarWidth)
@@ -134,13 +129,13 @@ css =
         ]
     , Css.class Edge
         [ height (px 3)
-        , borderTop3 (px 2) solid ignorable1
+        , borderTop3 (px 2) solid Ct.ignorable1
         , top (px 0)
         , left (px 0)
         , cursor nsResize
         ]
     , (Css.class Info << List.append indent)
-        [ backgroundColor backgroundx2
+        [ backgroundColor Ct.background2
         , width (px 390)
         , position absolute
         , left (calc (pct 100) minus (px 397))
@@ -565,22 +560,22 @@ toolAtRender : Model -> Mouse.Position -> DrawOp
 toolAtRender model position =
     case model.tool of
         Data.Tool.Pencil _ ->
-            drawTargetPixel position model.color.swatches.primary
+            drawTargetPixel position model.color.swatches.top
 
         Data.Tool.Line _ ->
-            drawTargetPixel position model.color.swatches.primary
+            drawTargetPixel position model.color.swatches.top
 
         Data.Tool.Rectangle _ ->
-            drawTargetPixel position model.color.swatches.primary
+            drawTargetPixel position model.color.swatches.top
 
         Data.Tool.RectangleFilled _ ->
-            drawTargetPixel position model.color.swatches.primary
+            drawTargetPixel position model.color.swatches.top
 
         Data.Tool.Sample ->
-            drawTargetPixel position model.color.swatches.primary
+            drawTargetPixel position model.color.swatches.top
 
         Data.Tool.Fill ->
-            drawTargetPixel position model.color.swatches.primary
+            drawTargetPixel position model.color.swatches.top
 
         Data.Tool.Eraser _ ->
             drawTargetEraser position model
@@ -591,7 +586,7 @@ toolAtRender model position =
 
 drawTargetEraser : Mouse.Position -> Model -> DrawOp
 drawTargetEraser position { color, eraserSize } =
-    Draw.eraserPoint color.swatches.primary eraserSize position
+    Draw.eraserPoint color.swatches.top eraserSize position
 
 
 drawTargetPixel : Mouse.Position -> Color.Color -> DrawOp

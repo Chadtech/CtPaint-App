@@ -14,18 +14,13 @@ handleScreenMouseUp clientPos model =
     let
         positionOnCanvas =
             adjustPosition model clientPos
-
-        colorAtPosition =
-            Draw.colorAt
-                positionOnCanvas
-                model.canvas
     in
-    if colorAtPosition /= model.color.swatches.primary then
+    if isntTheSameColor model positionOnCanvas then
         { model
             | pendingDraw =
                 [ model.pendingDraw
                 , PixelFill
-                    model.color.swatches.primary
+                    model.color.swatches.top
                     (toPoint positionOnCanvas)
                 ]
                     |> Canvas.batch
@@ -33,3 +28,8 @@ handleScreenMouseUp clientPos model =
             |> History.canvas
     else
         model
+
+
+isntTheSameColor : Model -> Position -> Bool
+isntTheSameColor { canvas, color } position =
+    Draw.colorAt position canvas /= color.swatches.top

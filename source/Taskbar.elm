@@ -1,12 +1,6 @@
 module Taskbar exposing (Msg(..), css, update, view)
 
-import Chadtech.Colors
-    exposing
-        ( ignorable1
-        , ignorable2
-        , ignorable3
-        , point
-        )
+import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
@@ -94,7 +88,7 @@ update msg model =
                         |> Menu.initLogin
                         |> Just
             }
-                & Ports.send StealFocus
+                & Ports.stealFocus
 
         UserClicked ->
             case model.user of
@@ -172,13 +166,13 @@ type Class
 css : Stylesheet
 css =
     [ Css.class Taskbar
-        [ backgroundColor ignorable2
+        [ backgroundColor Ct.ignorable2
         , height (px toolbarWidth)
         , width (calc (pct 100) minus (px toolbarWidth))
         , left (px (toolbarWidth - 1))
         , top (px 0)
         , position absolute
-        , borderBottom3 (px 1) solid ignorable3
+        , borderBottom3 (px 1) solid Ct.ignorable3
         ]
     , Css.class InvisibleWall
         [ width (calc (pct 100) plus (px toolbarWidth))
@@ -196,7 +190,7 @@ css =
             (outdent ++ [ zIndex (int 3) ])
         , active outdent
         , marginRight (px 1)
-        , border3 (px 2) solid ignorable2
+        , border3 (px 2) solid Ct.ignorable2
         ]
     , Css.class LoginButton
         [ float right
@@ -217,9 +211,9 @@ css =
             ]
         ]
     , Css.class Null
-        [ backgroundColor ignorable3 ]
+        [ backgroundColor Ct.ignorable3 ]
     , Css.class Seam
-        [ backgroundColor ignorable2
+        [ backgroundColor Ct.ignorable2
         , height (px 2)
         , left (px 0)
         , zIndex (int 4)
@@ -229,7 +223,7 @@ css =
     , (Css.class Options << List.append outdent)
         [ position absolute
         , left (px -2)
-        , backgroundColor ignorable2
+        , backgroundColor Ct.ignorable2
         , width (px 340)
         , giveDropdownWidth (Dropdown Help) 110
         , giveDropdownWidth (Dropdown View) 200
@@ -237,7 +231,7 @@ css =
         , giveDropdownWidth (Dropdown File) 220
         , giveDropdownWidth (Dropdown Tools) 300
         , giveDropdownWidth (Dropdown Data.Taskbar.User) 150
-        , hover [ color point ]
+        , hover [ color Ct.point0 ]
         , padding (px 4)
         ]
     , Css.class Divider
@@ -250,8 +244,8 @@ css =
         , left (px 4)
         , height (px 0)
         , width (px 332)
-        , borderTop3 (px 2) solid ignorable3
-        , borderBottom3 (px 2) solid ignorable1
+        , borderTop3 (px 2) solid Ct.ignorable3
+        , borderBottom3 (px 2) solid Ct.ignorable1
         ]
     , Css.class Option
         [ height (px 32)
@@ -270,10 +264,10 @@ css =
                 ]
             ]
         , hover
-            [ backgroundColor point
+            [ backgroundColor Ct.point0
             , children
                 [ Css.Elements.p
-                    [ color ignorable3 ]
+                    [ color Ct.ignorable3 ]
                 ]
             ]
         , Css.withClass Disabled

@@ -120,7 +120,7 @@ exec keyCmd model =
                     let
                         drawOp =
                             Draw.filledRectangle
-                                model.color.swatches.second
+                                model.color.swatches.bottom
                                 (Canvas.getSize model.canvas)
                                 { x = 0, y = 0 }
                     in
@@ -191,7 +191,7 @@ exec keyCmd model =
                         |> Menu.initImport
                         |> Just
             }
-                & Ports.send StealFocus
+                & Ports.stealFocus
 
         InitDownload ->
             { model
@@ -201,7 +201,7 @@ exec keyCmd model =
                         model.windowSize
                         |> Just
             }
-                & Ports.send StealFocus
+                & Ports.stealFocus
 
         InitText ->
             { model
@@ -210,7 +210,7 @@ exec keyCmd model =
                         |> Menu.initText
                         |> Just
             }
-                & Ports.send StealFocus
+                & Ports.stealFocus
 
         InitScale ->
             let
@@ -229,7 +229,7 @@ exec keyCmd model =
                                 |> Just
             in
             { model | menu = menu }
-                & Ports.send StealFocus
+                & Ports.stealFocus
 
         InitReplaceColor ->
             Helpers.Menu.initReplaceColor model
@@ -290,7 +290,7 @@ exec keyCmd model =
                         | selection =
                             selection
                                 |> Canvas.transparentColor
-                                    model.color.swatches.second
+                                    model.color.swatches.bottom
                                 |& pos
                                 |> Just
                     }
@@ -313,7 +313,7 @@ exec keyCmd model =
                             (Canvas.getSize model.canvas)
                         |> Just
             }
-                & Ports.send StealFocus
+                & Ports.stealFocus
 
 
 transform : (Canvas -> Canvas) -> Model -> ( Model, Platform.Cmd msg )

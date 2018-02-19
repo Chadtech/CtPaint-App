@@ -8,7 +8,7 @@ import Array
 import Color exposing (Color)
 import Data.Color exposing (Model)
 import Data.Picker as Picker
-import Ports exposing (JsMsg(ReturnFocus, StealFocus))
+import Ports
 import Tuple.Infix exposing ((&))
 
 
@@ -40,7 +40,7 @@ picker model ( picker, reply ) =
                 & ColorHistory index color
 
         Picker.StealFocus ->
-            model & Ports.send StealFocus & NoReply
+            model & Ports.stealFocus & NoReply
 
         Picker.ReturnFocus ->
-            model & Ports.send ReturnFocus & NoReply
+            model & Ports.returnFocus & NoReply

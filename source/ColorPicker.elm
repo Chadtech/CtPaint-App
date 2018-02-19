@@ -7,7 +7,7 @@ module ColorPicker
         )
 
 import Bool.Extra
-import Chadtech.Colors exposing (ignorable1, point)
+import Chadtech.Colors as Ct
 import Color
 import Css exposing (..)
 import Css.Elements
@@ -711,7 +711,7 @@ css =
         , marginTop (px 5)
         , borderTop3 (px 5) solid transparent
         , borderBottom3 (px 5) solid transparent
-        , borderLeft3 (px 10) solid point
+        , borderLeft3 (px 10) solid Ct.point0
         ]
     , Css.class TriangleLeft
         [ width (px 0)
@@ -720,7 +720,7 @@ css =
         , marginTop (px 5)
         , borderTop3 (px 5) solid transparent
         , borderBottom3 (px 5) solid transparent
-        , borderRight3 (px 10) solid point
+        , borderRight3 (px 10) solid Ct.point0
         ]
     , (Css.class Visualization << List.append indent)
         [ height (px 20)
@@ -757,8 +757,8 @@ css =
     , Css.class Pointer
         [ position absolute
         , height (px 20)
-        , borderLeft3 (px 2) solid point
-        , borderRight3 (px 2) solid ignorable1
+        , borderLeft3 (px 2) solid Ct.point0
+        , borderRight3 (px 2) solid Ct.ignorable1
         , cursor pointer
         ]
     , Css.class Transparent

@@ -13,7 +13,7 @@ import Canvas
         , DrawImageParams(..)
         , DrawOp(..)
         )
-import Chadtech.Colors exposing (backgroundx2)
+import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
@@ -312,7 +312,7 @@ css =
         ]
     , (Css.class CanvasContainer << List.append indent)
         [ position relative
-        , backgroundColor backgroundx2
+        , backgroundColor Ct.background2
         , overflow hidden
         , cursor move
         , width (px minimapWidth)

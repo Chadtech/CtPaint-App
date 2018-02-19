@@ -15,7 +15,7 @@ import Html.Custom
 import Html.Events exposing (onClick)
 import Menu
 import Model exposing (Model)
-import Ports exposing (JsMsg(StealFocus))
+import Ports
 import Tool
 import Tuple.Infix exposing ((&), (|&))
 
@@ -54,7 +54,7 @@ update msg model =
                         |> Menu.initText
                         |> Just
             }
-                & Ports.send StealFocus
+                & Ports.stealFocus
 
         OtherButtonClicked Invert ->
             case model.selection of
@@ -85,7 +85,7 @@ update msg model =
                         | selection =
                             selection
                                 |> Canvas.transparentColor
-                                    model.color.swatches.second
+                                    model.color.swatches.bottom
                                 |& pos
                                 |> Just
                     }

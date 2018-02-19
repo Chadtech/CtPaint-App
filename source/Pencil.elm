@@ -24,7 +24,7 @@ handleScreenMouseDown clientPos model =
         , pendingDraw =
             [ model.pendingDraw
             , Draw.line
-                model.color.swatches.primary
+                model.color.swatches.top
                 position
                 position
             ]
@@ -44,7 +44,7 @@ handleClientMouseMovement newPosition priorPosition model =
         , pendingDraw =
             [ model.pendingDraw
             , Draw.line
-                model.color.swatches.primary
+                model.color.swatches.top
                 priorPosition
                 adjustedPosition
             ]

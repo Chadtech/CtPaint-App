@@ -16,7 +16,7 @@ module Html.Custom
         , toolbarButton
         )
 
-import Chadtech.Colors exposing (..)
+import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Elements exposing (a, body, canvas, form, p)
 import Css.Namespace exposing (namespace)
@@ -53,7 +53,7 @@ type Class
 css : Stylesheet
 css =
     [ body
-        [ backgroundColor backgroundx2
+        [ backgroundColor Ct.background2
         , margin zero
         , padding zero
         ]
@@ -95,7 +95,7 @@ css =
         ]
     , spinnerContainer
     , Css.class Error
-        [ backgroundColor lowWarning
+        [ backgroundColor Ct.lowWarning
         , padding (px 8)
         ]
     ]
@@ -111,7 +111,7 @@ appNamespace =
 spinnerContainer : Snippet
 spinnerContainer =
     [ position relative
-    , backgroundColor backgroundx2
+    , backgroundColor Ct.background2
     , height (px 16)
     , overflow hidden
     , width (px 200)
@@ -147,11 +147,11 @@ submit =
 
 input : Snippet
 input =
-    [ backgroundColor backgroundx2
+    [ backgroundColor Ct.background2
     , outline none
     , fontSize (em 2)
     , fontFamilies [ "hfnss" ]
-    , color point
+    , color Ct.point0
     , property "-webkit-font-smoothing" "none"
     , margin (px 0)
     , padding (px 0)
@@ -164,7 +164,7 @@ input =
 
 headerStyle : Snippet
 headerStyle =
-    [ backgroundColor point
+    [ backgroundColor Ct.point0
     , height (px 25)
     , width (calc (pct 100) minus (px 8))
     , position absolute
@@ -174,7 +174,7 @@ headerStyle =
     , paddingLeft (px 2)
     , children
         [ p
-            [ color ignorable3
+            [ color Ct.ignorable3
             , cursor default
             , margin (px 0)
             , display inlineBlock
@@ -194,11 +194,11 @@ headerStyle =
 
 cardStyle : Snippet
 cardStyle =
-    [ backgroundColor ignorable2
-    , borderTop3 (px 2) solid ignorable1
-    , borderLeft3 (px 2) solid ignorable1
-    , borderRight3 (px 2) solid ignorable3
-    , borderBottom3 (px 2) solid ignorable3
+    [ backgroundColor Ct.ignorable2
+    , borderTop3 (px 2) solid Ct.ignorable1
+    , borderLeft3 (px 2) solid Ct.ignorable1
+    , borderRight3 (px 2) solid Ct.ignorable3
+    , borderBottom3 (px 2) solid Ct.ignorable3
     , children
         [ Css.class Body
             [ marginTop (px 31)
@@ -225,15 +225,15 @@ aStyle =
     in
     [ padding zero
     , textDecoration none
-    , backgroundColor ignorable2
+    , backgroundColor Ct.ignorable2
     , display inlineBlock
     , padding4 (px 4) (px 8) (px 4) (px 8)
     , cursor pointer
-    , hover [ color pointier ]
+    , hover [ color Ct.point1 ]
     , withClass Selected indent
     , withClass Null
-        [ backgroundColor ignorable1
-        , hover [ color point ]
+        [ backgroundColor Ct.ignorable1
+        , hover [ color Ct.point0 ]
         , active outdent
         ]
     ]
@@ -253,26 +253,26 @@ cannotSelect =
 
 indent : List Style
 indent =
-    [ borderTop3 (px 2) solid ignorable3
-    , borderLeft3 (px 2) solid ignorable3
-    , borderRight3 (px 2) solid ignorable1
-    , borderBottom3 (px 2) solid ignorable1
+    [ borderTop3 (px 2) solid Ct.ignorable3
+    , borderLeft3 (px 2) solid Ct.ignorable3
+    , borderRight3 (px 2) solid Ct.ignorable1
+    , borderBottom3 (px 2) solid Ct.ignorable1
     ]
 
 
 outdent : List Style
 outdent =
-    [ borderTop3 (px 2) solid ignorable1
-    , borderLeft3 (px 2) solid ignorable1
-    , borderRight3 (px 2) solid ignorable3
-    , borderBottom3 (px 2) solid ignorable3
+    [ borderTop3 (px 2) solid Ct.ignorable1
+    , borderLeft3 (px 2) solid Ct.ignorable1
+    , borderRight3 (px 2) solid Ct.ignorable3
+    , borderBottom3 (px 2) solid Ct.ignorable3
     ]
 
 
 basicFont : List Style
 basicFont =
     [ fontFamilies [ "hfnss" ]
-    , color point
+    , color Ct.point0
     , property "-webkit-font-smoothing" "none"
     , fontSize (px 32)
     ]

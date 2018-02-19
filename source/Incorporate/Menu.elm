@@ -7,7 +7,7 @@ import Draw
 import Helpers.History as History
 import Helpers.Zoom as Zoom
 import Model exposing (Model)
-import Ports exposing (JsMsg(ReturnFocus, StealFocus))
+import Ports
 import Reply exposing (Reply(..))
 import Tuple.Infix exposing ((&), (|&))
 
@@ -125,7 +125,7 @@ incorporate reply menu model =
                         top
                         width
                         height
-                        model.color.swatches.second
+                        model.color.swatches.bottom
                         model.canvas
             }
                 |> closeMenu
@@ -133,14 +133,14 @@ incorporate reply menu model =
 
 closeMenu : Model -> ( Model, Cmd msg )
 closeMenu model =
-    { model | menu = Nothing } & Ports.send ReturnFocus
+    { model | menu = Nothing } & Ports.returnFocus
 
 
 addText : String -> Model -> ( Model, Cmd msg )
-addText str model =
+addText str ({ color } as model) =
     let
         selection =
-            Draw.text str model.color.swatches.primary
+            Draw.text str color.swatches.top
 
         position =
             Zoom.pointInMiddle
@@ -160,4 +160,4 @@ addText str model =
                 & selection
                 |> Just
     }
-        & Ports.send ReturnFocus
+        & Ports.returnFocus

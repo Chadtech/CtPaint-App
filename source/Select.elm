@@ -27,7 +27,7 @@ handleScreenMouseDown clientPos model =
         | tool = Select (Just adjustedPosition)
         , drawAtRender =
             Draw.rectangle
-                model.color.swatches.primary
+                model.color.swatches.top
                 adjustedPosition
                 adjustedPosition
     }
@@ -39,7 +39,7 @@ handleClientMouseMovement newPosition priorPosition model =
     { model
         | drawAtRender =
             Draw.rectangle
-                (displace model.color.swatches.second)
+                (displace model.color.swatches.bottom)
                 priorPosition
                 (adjustPosition model newPosition)
     }
@@ -74,7 +74,7 @@ handleClientMouseUp newPosition priorPosition model =
                 Draw.getSelection
                     adjustedPosition
                     priorPosition
-                    model.color.swatches.second
+                    model.color.swatches.bottom
                     model.canvas
         in
         { model

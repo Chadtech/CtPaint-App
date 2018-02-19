@@ -111,14 +111,27 @@ PaintApp = function(manifest) {
     function jsMsgHandler(msg) {
         switch (msg.type) {
             case "save":
-                localStorage.setItem("local state", JSON.stringify(msg.payload));
+                localStorage.setItem(
+                    "local state", 
+                    JSON.stringify(msg.payload)
+                );
 
-                var data = {
-                    content: msg.payload.data,
-                    attachments: "Yoink"
-                };
+                /*
+                msg.payload == Data
+                    { data : String 
+                    , palette : List String
+                    , swatches :
+                        { top : String
+                        , left : String
+                        , right : String
+                        , bottom : String
+                        }
+                    , name : String
+                    , nameIsGenerated : Bool
+                    }
+                */
 
-                Client.createDrawing(data, {
+                Client.createDrawing(msg.payload, {
                     onSuccess: function(result) {
                         console.log("Result!", result);
                     },

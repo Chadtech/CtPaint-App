@@ -3,8 +3,8 @@ module Helpers.Color
         ( setKeyAsDown
         , setKeyAsUp
         , setPaletteColor
-        , setPrimary
         , setSwatches
+        , setTop
         , swatchesTurnLeft
         , swatchesTurnRight
         , toggleColorPicker
@@ -17,11 +17,12 @@ import Data.Color
         ( Model
         , Swatches
         )
+import Data.Picker as Picker
 
 
-setPrimary : Color -> Swatches -> Swatches
-setPrimary color swatches =
-    { swatches | primary = color }
+setTop : Color -> Swatches -> Swatches
+setTop color swatches =
+    { swatches | top = color }
 
 
 setSwatches : Swatches -> Model -> Model
@@ -35,16 +36,15 @@ setPaletteColor index color ({ palette, picker } as model) =
         | palette = Array.set index color palette
         , picker =
             if picker.fields.index == index then
-                let
-                    { fields } =
-                        picker
-                in
-                { picker
-                    | fields = { fields | color = color }
-                }
+                setPickerColor color picker
             else
                 picker
     }
+
+
+setPickerColor : Color -> Picker.Model -> Picker.Model
+setPickerColor color ({ fields } as picker) =
+    { picker | fields = { fields | color = color } }
 
 
 swatchesTurnLeft : Model -> Model
@@ -52,10 +52,10 @@ swatchesTurnLeft ({ swatches } as model) =
     { model
         | swatches =
             { swatches
-                | primary = model.swatches.first
-                , first = model.swatches.second
-                , second = model.swatches.third
-                , third = model.swatches.primary
+                | top = model.swatches.left
+                , left = model.swatches.bottom
+                , bottom = model.swatches.right
+                , right = model.swatches.top
             }
     }
 
@@ -65,10 +65,10 @@ swatchesTurnRight ({ swatches } as model) =
     { model
         | swatches =
             { swatches
-                | primary = model.swatches.third
-                , first = model.swatches.primary
-                , second = model.swatches.first
-                , third = model.swatches.second
+                | top = model.swatches.right
+                , left = model.swatches.top
+                , bottom = model.swatches.left
+                , right = model.swatches.bottom
             }
     }
 

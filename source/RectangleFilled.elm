@@ -27,7 +27,7 @@ handleScreenMouseDown clientPos model =
                 |> RectangleFilled
         , drawAtRender =
             Draw.filledRectangle
-                model.color.swatches.primary
+                model.color.swatches.top
                 (Size 1 1)
                 adjustedPosition
     }
@@ -45,7 +45,7 @@ handleClientMouseMovement newPosition priorPosition model =
     { model
         | drawAtRender =
             Draw.filledRectangle
-                model.color.swatches.primary
+                model.color.swatches.top
                 size
                 drawPosition
     }
@@ -65,7 +65,7 @@ handleClientMouseUp newPosition priorPosition model =
         , pendingDraw =
             [ model.pendingDraw
             , Draw.filledRectangle
-                model.color.swatches.primary
+                model.color.swatches.top
                 size
                 drawPosition
             ]
