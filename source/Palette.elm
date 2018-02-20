@@ -87,10 +87,10 @@ update msg model =
 type Class
     = SwatchesContainer
     | Swatch
-    | Primary
-    | First
-    | Second
-    | Third
+    | Top
+    | Left
+    | Bottom
+    | Right
     | Colors
     | Square
     | Selected
@@ -109,22 +109,22 @@ css =
         [ position absolute
         , height (px 20)
         ]
-    , Css.class Primary
+    , Css.class Top
         [ top (px 0)
         , left (px 0)
         , width (px 98)
         ]
-    , Css.class First
+    , Css.class Left
         [ top (px 28)
         , left (px 0)
         , width (px 20)
         ]
-    , Css.class Second
+    , Css.class Bottom
         [ top (px 28)
         , left (px 27)
         , width (px 44)
         ]
-    , Css.class Third
+    , Css.class Right
         [ top (px 28)
         , left (px 78)
         , width (px 20)
@@ -137,7 +137,7 @@ css =
         , top (px 4)
         , overflowY auto
         ]
-    , (Css.class Square << List.append outdent)
+    , (Css.class Square << List.append indent)
         [ height (px 20)
         , width (px 20)
         , display inlineBlock
@@ -155,8 +155,9 @@ css =
         , fontFamilies [ "hfnss" ]
         , property "-webkit-font-smoothing" "none"
         , fontSize (em 2)
-        , height (px 18)
-        , width (px 18)
+        , paddingTop (px 1)
+        , height (px 19)
+        , width (px 20)
         , backgroundColor Ct.ignorable2
         , textAlign center
         ]
@@ -253,10 +254,10 @@ swatchesView : Swatches -> Html msg
 swatchesView { top, left, bottom, right } =
     div
         [ class [ SwatchesContainer ] ]
-        [ swatch top Primary
-        , swatch left First
-        , swatch bottom Second
-        , swatch right Third
+        [ swatch top Top
+        , swatch left Left
+        , swatch bottom Bottom
+        , swatch right Right
         ]
 
 

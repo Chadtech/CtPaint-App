@@ -1,6 +1,7 @@
 port module Stylesheets exposing (..)
 
 import About
+import BugReport
 import ColorPicker
 import Css.File exposing (CssCompilerProgram, CssFileStructure)
 import Eraser
@@ -51,6 +52,7 @@ main =
     , Open.css
     , Eraser.css
     , About.css
+    , BugReport.css
     ]
         |> Css.File.compile
         |> (,) "./development/paint-app-styles.css"

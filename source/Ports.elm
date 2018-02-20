@@ -29,6 +29,7 @@ type JsMsg
     | RedirectPageTo String
     | OpenUpFileUpload
     | ReadFile
+    | ReportBug String
     | Track Tracking.Payload
 
 
@@ -50,13 +51,8 @@ stealFocus =
     send StealFocus
 
 
-encodeCanvas : Canvas -> Value
-encodeCanvas =
-    Canvas.toDataUrl "image/png" 1 >> Encode.string
-
-
-jsMsg : String -> Value -> Cmd msg
-jsMsg type_ payload =
+toCmd : String -> Value -> Cmd msg
+toCmd type_ payload =
     [ "type" := Encode.string type_
     , "payload" := payload
     ]
@@ -73,52 +69,55 @@ send : JsMsg -> Cmd msg
 send msg =
     case msg of
         StealFocus ->
-            jsMsg "steal focus" Encode.null
+            toCmd "steal focus" Encode.null
 
         ReturnFocus ->
-            jsMsg "return focus" Encode.null
+            toCmd "return focus" Encode.null
 
         Save { swatches, palette, canvas, project } ->
-            [ "data" := encodeCanvas canvas
+            [ "data" := Color.encodeCanvas canvas
             , "palette" := Color.encodePalette palette
             , "swatches" := Color.encodeSwatches swatches
             , "name" := Encode.string project.name
             , "nameIsGenerated" := Encode.bool project.nameIsGenerated
             ]
                 |> Encode.object
-                |> jsMsg "save"
+                |> toCmd "save"
 
         Download fn ->
-            jsMsg "download" (Encode.string fn)
+            toCmd "download" (Encode.string fn)
 
         AttemptLogin email password ->
             [ "email" := Encode.string email
             , "password" := Encode.string password
             ]
                 |> Encode.object
-                |> jsMsg "attempt login"
+                |> toCmd "attempt login"
 
         Logout ->
-            jsMsg "logout" Encode.null
+            toCmd "logout" Encode.null
 
         OpenNewWindow url ->
             url
                 |> Encode.string
-                |> jsMsg "open new window"
+                |> toCmd "open new window"
 
         RedirectPageTo url ->
             url
                 |> Encode.string
-                |> jsMsg "redirect page to"
+                |> toCmd "redirect page to"
 
         OpenUpFileUpload ->
-            jsMsg "open up file upload" Encode.null
+            toCmd "open up file upload" Encode.null
 
         ReadFile ->
-            jsMsg "read file" Encode.null
+            toCmd "read file" Encode.null
+
+        ReportBug bug ->
+            toCmd "bug report" (Encode.string bug)
 
         Track payload ->
-            jsMsg "track" (Tracking.encode payload)
+            toCmd "track" (Tracking.encode payload)
 
 
 port toJs : Value -> Cmd msg

@@ -2,12 +2,14 @@ module Data.Color
     exposing
         ( Model
         , Swatches
+        , encodeCanvas
         , encodePalette
         , encodeSwatches
         , init
         )
 
 import Array exposing (Array)
+import Canvas exposing (Canvas)
 import Color exposing (Color)
 import Data.Picker as Picker
 import Json.Encode as Encode exposing (Value)
@@ -95,6 +97,11 @@ initSwatches =
 
 
 -- encoder --
+
+
+encodeCanvas : Canvas -> Value
+encodeCanvas =
+    Canvas.toDataUrl "image/png" 1 >> Encode.string
 
 
 encodeColor : Color -> Value

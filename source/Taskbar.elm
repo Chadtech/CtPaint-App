@@ -424,8 +424,6 @@ help maybeHelp =
     case maybeHelp of
         Just Help ->
             [ option "About" "" AboutClicked
-            , option "Tutorial" "" (NewWindowClicked Tutorial)
-            , option "Donate" "" (NewWindowClicked Donate)
             ]
                 |> taskbarButtonOpen "help" Help
 

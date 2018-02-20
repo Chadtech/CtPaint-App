@@ -1,4 +1,8 @@
-module Reply exposing (Reply(..))
+module Reply
+    exposing
+        ( Reply(..)
+        , nothing
+        )
 
 import Canvas exposing (Canvas)
 import Color exposing (Color)
@@ -19,3 +23,8 @@ type Reply
     | SetToLoggedOut
     | SetProject Project
     | ResizeTo Int Int Int Int
+
+
+nothing : model -> ( model, Cmd msg, Reply )
+nothing model =
+    ( model, Cmd.none, NoReply )

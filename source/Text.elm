@@ -1,10 +1,17 @@
-module Text exposing (..)
+module Text
+    exposing
+        ( Msg
+        , css
+        , init
+        , update
+        , view
+        )
 
 import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Html exposing (Html, a, p, textarea)
-import Html.Attributes exposing (class, spellcheck)
+import Html.Attributes exposing (spellcheck, value)
 import Html.CssHelpers
 import Html.Custom exposing (indent)
 import Html.Events exposing (onClick, onInput)
@@ -12,9 +19,21 @@ import Reply exposing (Reply(AddText, NoReply))
 import Tuple.Infix exposing ((&))
 
 
+-- TYPES --
+
+
 type Msg
     = FieldUpdated String
     | AddTextClicked
+
+
+
+-- INIT --
+
+
+init : String
+init =
+    ""
 
 
 
@@ -41,17 +60,8 @@ type Class
 
 css : Stylesheet
 css =
-    [ (Css.class Text << List.append indent)
-        [ outline none
-        , fontFamilies [ "hfnss" ]
-        , fontSize (em 2)
-        , backgroundColor Ct.background2
-        , color Ct.point0
-        , width (px 486)
-        , height (px 222)
-        , marginBottom (px 8)
-        , property "-webkit-font-smoothing" "none"
-        ]
+    [ Css.class Text
+        Html.Custom.textAreaStyle
     ]
         |> namespace textNamespace
         |> stylesheet
@@ -76,18 +86,10 @@ view str =
         [ onInput FieldUpdated
         , class [ Text ]
         , spellcheck False
+        , value str
         ]
-        [ Html.text str ]
+        []
     , Html.Custom.menuButton
         [ onClick AddTextClicked ]
-        [ Html.text "Add Text" ]
+        [ Html.text "add text" ]
     ]
-
-
-
--- INIT --
-
-
-init : String
-init =
-    ""

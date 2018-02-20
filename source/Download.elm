@@ -26,13 +26,11 @@ type alias Model =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( ( Model, Cmd Msg ), Reply )
+update : Msg -> Model -> ( Model, Cmd Msg, Reply )
 update msg model =
     case msg of
         FieldUpdated str ->
-            { model | field = str }
-                & Cmd.none
-                & NoReply
+            Reply.nothing { model | field = str }
 
         Submitted ->
             download model
@@ -41,14 +39,17 @@ update msg model =
             download model
 
 
-download : Model -> ( ( Model, Cmd Msg ), Reply )
+download : Model -> ( Model, Cmd Msg, Reply )
 download model =
-    model
-        |> fileName
-        |> Download
-        |> Ports.send
-        |& model
-        & CloseMenu
+    ( model
+    , downloadCmd model
+    , CloseMenu
+    )
+
+
+downloadCmd : Model -> Cmd Msg
+downloadCmd =
+    fileName >> Download >> Ports.send
 
 
 fileName : Model -> String

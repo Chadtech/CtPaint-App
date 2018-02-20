@@ -12,6 +12,7 @@ module Html.Custom
         , menuButton
         , outdent
         , spinner
+        , textAreaStyle
         , toolButton
         , toolbarButton
         )
@@ -101,6 +102,23 @@ css =
     ]
         |> namespace appNamespace
         |> stylesheet
+
+
+textAreaStyle : List Style
+textAreaStyle =
+    [ outline none
+    , fontFamilies [ "hfnss" ]
+    , fontSize (em 2)
+    , backgroundColor Ct.background2
+    , color Ct.point0
+    , width (px 486)
+    , height (px 222)
+    , marginBottom (px 8)
+    , property "-webkit-font-smoothing" "none"
+    , padding (px 8)
+    , resize none
+    ]
+        ++ indent
 
 
 appNamespace : String

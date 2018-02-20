@@ -12,6 +12,7 @@ module Data.Menu
         )
 
 import About
+import BugReport
 import Data.User exposing (User)
 import Download
 import Import
@@ -33,6 +34,7 @@ type Menu
     | Import Import.Model
     | Scale Scale.Model
     | Text String
+    | BugReport BugReport.Model
     | About About.State
     | ReplaceColor ReplaceColor.Model
     | New New.Model
@@ -72,6 +74,7 @@ type ContentMsg
     | ImportMsg Import.Msg
     | ScaleMsg Scale.Msg
     | TextMsg Text.Msg
+    | BugReportMsg BugReport.Msg
     | ReplaceColorMsg ReplaceColor.Msg
     | NewMsg New.Msg
     | OpenMsg Open.Msg

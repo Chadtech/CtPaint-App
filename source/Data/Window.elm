@@ -4,8 +4,6 @@ module Data.Window exposing (Window(..), toUrl)
 type Window
     = Settings
     | Home
-    | Donate
-    | Tutorial
     | Register
     | AllowanceExceeded
 
@@ -24,6 +22,3 @@ toUrl mountPath window =
 
         AllowanceExceeded ->
             mountPath ++ "/allowance-exceeded"
-
-        _ ->
-            "asd"

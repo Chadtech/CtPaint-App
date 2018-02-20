@@ -1,6 +1,7 @@
 module Menu exposing (..)
 
 import About
+import BugReport
 import Color
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
@@ -99,7 +100,7 @@ updateContent msg model =
             case model.content of
                 Download subModel ->
                     let
-                        ( ( newSubModel, cmd ), reply ) =
+                        ( newSubModel, cmd, reply ) =
                             Download.update subMsg subModel
                     in
                     { model
@@ -149,6 +150,20 @@ updateContent msg model =
                     { model | content = Text newSubModel }
                         & Cmd.none
                         & reply
+
+                _ ->
+                    model & Cmd.none & NoReply
+
+        BugReportMsg subMsg ->
+            case model.content of
+                BugReport subModel ->
+                    let
+                        ( newSubModel, cmd ) =
+                            BugReport.update subMsg subModel
+                    in
+                    { model | content = BugReport newSubModel }
+                        & Cmd.map (ContentMsg << BugReportMsg) cmd
+                        & NoReply
 
                 _ ->
                     model & Cmd.none & NoReply
@@ -348,6 +363,10 @@ contentView menu =
         Text subModel ->
             List.map (Html.map TextMsg) <|
                 Text.view subModel
+
+        BugReport subModel ->
+            List.map (Html.map BugReportMsg) <|
+                BugReport.view subModel
 
         About state ->
             About.view state
