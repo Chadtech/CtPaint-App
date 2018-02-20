@@ -13,6 +13,7 @@ import Canvas exposing (Canvas, Size)
 import Color exposing (Color)
 import Data.Color as Color exposing (Swatches)
 import Data.Project as Project exposing (Project)
+import Data.Window as Window exposing (Window)
 import Json.Encode as Encode exposing (Value)
 import Tracking
 import Tuple.Infix exposing ((:=))

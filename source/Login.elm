@@ -1,10 +1,13 @@
 module Login exposing (..)
 
 import Bool.Extra
+import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
+import Data.Config exposing (Config)
 import Data.User exposing (User)
-import Html exposing (Attribute, Html, div, input, p)
+import Data.Window as Window exposing (Window(ForgotPassword))
+import Html exposing (Attribute, Html, div, input, p, span)
 import Html.Attributes as Attr
     exposing
         ( placeholder
@@ -15,7 +18,7 @@ import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Maybe.Extra
-import Ports exposing (JsMsg(AttemptLogin))
+import Ports exposing (JsMsg(AttemptLogin, OpenNewWindow))
 import Regex
 import Reply
     exposing
@@ -44,6 +47,7 @@ type alias Model =
 
 type Msg
     = FieldUpdated Field String
+    | ForgotPasswordClicked
     | LoginButtonPressed
     | FormSubmitted
     | LoginFailed String
@@ -83,12 +87,23 @@ init =
 
 type Class
     = Error
+    | ForgotLink
+    | SubmitButton
 
 
 css : Stylesheet
 css =
     [ Css.class Error
         [ marginBottom (px 8) ]
+    , Css.class ForgotLink
+        [ color Ct.important0
+        , hover
+            [ cursor pointer
+            , color Ct.important1
+            ]
+        ]
+    , Css.class SubmitButton
+        [ marginTop (px 8) ]
     ]
         |> namespace loginNamespace
         |> stylesheet
@@ -139,8 +154,18 @@ view model =
         , input [ type_ "submit", Attr.hidden True ] []
         ]
     , fieldErrorView model.errors Password
+    , p
+        []
+        [ span
+            [ class [ ForgotLink ]
+            , onClick ForgotPasswordClicked
+            ]
+            [ Html.text "I forgot my password" ]
+        ]
     , Html.Custom.menuButton
-        [ onClick LoginButtonPressed ]
+        [ class [ SubmitButton ]
+        , onClick LoginButtonPressed
+        ]
         [ Html.text "log in" ]
     ]
 
@@ -199,12 +224,17 @@ errorStr problem =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( ( Model, Cmd Msg ), Reply )
-update msg model =
+update : Config -> Msg -> Model -> ( ( Model, Cmd Msg ), Reply )
+update config msg model =
     case msg of
         FieldUpdated Email email ->
             { model | email = email }
                 & Cmd.none
+                & NoReply
+
+        ForgotPasswordClicked ->
+            model
+                & openForgotPassword config
                 & NoReply
 
         FieldUpdated Password password ->
@@ -234,6 +264,14 @@ update msg model =
             }
                 & Cmd.none
                 & SetUser user
+
+
+openForgotPassword : Config -> Cmd Msg
+openForgotPassword { mountPath } =
+    ForgotPassword
+        |> Window.toUrl mountPath
+        |> OpenNewWindow
+        |> Ports.send
 
 
 errorToProblem : String -> Problem

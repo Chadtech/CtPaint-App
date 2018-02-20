@@ -5,6 +5,7 @@ type Window
     = Settings
     | Home
     | Register
+    | ForgotPassword
     | AllowanceExceeded
 
 
@@ -19,6 +20,9 @@ toUrl mountPath window =
 
         Register ->
             mountPath ++ "/register"
+
+        ForgotPassword ->
+            mountPath ++ "/forgotpassword"
 
         AllowanceExceeded ->
             mountPath ++ "/allowance-exceeded"

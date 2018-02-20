@@ -46,7 +46,7 @@ update message model =
                 Just menu ->
                     let
                         ( ( newMenu, menuCmd ), reply ) =
-                            Menu.update subMsg menu
+                            Menu.update model.config subMsg menu
 
                         ( newModel, modelCmd ) =
                             Menu.incorporate reply newMenu model

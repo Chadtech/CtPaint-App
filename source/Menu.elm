@@ -5,6 +5,7 @@ import BugReport
 import Color
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
+import Data.Config exposing (Config)
 import Data.Menu as Menu
     exposing
         ( ClickState(..)
@@ -40,8 +41,8 @@ import Window exposing (Size)
 -- UPDATE --
 
 
-update : Msg -> Model -> ( ( Model, Cmd Msg ), Reply )
-update msg model =
+update : Config -> Msg -> Model -> ( ( Model, Cmd Msg ), Reply )
+update config msg model =
     case msg of
         XButtonMouseDown ->
             { model
@@ -90,11 +91,11 @@ update msg model =
                 & NoReply
 
         ContentMsg subMsg ->
-            updateContent subMsg model
+            updateContent config subMsg model
 
 
-updateContent : ContentMsg -> Model -> ( ( Model, Cmd Msg ), Reply )
-updateContent msg model =
+updateContent : Config -> ContentMsg -> Model -> ( ( Model, Cmd Msg ), Reply )
+updateContent config msg model =
     case msg of
         DownloadMsg subMsg ->
             case model.content of
@@ -187,7 +188,7 @@ updateContent msg model =
                 Login subModel ->
                     let
                         ( ( newSubModel, cmd ), reply ) =
-                            Login.update subMsg subModel
+                            Login.update config subMsg subModel
                     in
                     { model | content = Login newSubModel }
                         & Cmd.map (ContentMsg << LoginMsg) cmd
@@ -441,6 +442,14 @@ initText =
     , height = 313
     }
         |> init "text" (Text Text.init)
+
+
+initBugReport : Size -> Model
+initBugReport =
+    { width = 506
+    , height = 313
+    }
+        |> init "report bug" (BugReport BugReport.init)
 
 
 initScale : Size -> Size -> Model

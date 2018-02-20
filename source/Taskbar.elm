@@ -41,6 +41,7 @@ type Msg
     | UserClicked
     | LogoutClicked
     | AboutClicked
+    | ReportBugClicked
     | KeyCmdClicked Key.Cmd
     | NewWindowClicked Window
     | UploadClicked
@@ -116,6 +117,15 @@ update msg model =
                         |> Just
             }
                 & Cmd.none
+
+        ReportBugClicked ->
+            { model
+                | menu =
+                    model.windowSize
+                        |> Menu.initBugReport
+                        |> Just
+            }
+                & Ports.stealFocus
 
         KeyCmdClicked keyCmd ->
             Keys.exec keyCmd model
@@ -424,6 +434,7 @@ help maybeHelp =
     case maybeHelp of
         Just Help ->
             [ option "About" "" AboutClicked
+            , option "Report Bug" "" ReportBugClicked
             ]
                 |> taskbarButtonOpen "help" Help
 
