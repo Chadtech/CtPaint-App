@@ -7,7 +7,6 @@ import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Ports exposing (JsMsg(Download))
 import Reply exposing (Reply(CloseMenu, NoReply))
-import Tuple.Infix exposing ((&), (|&))
 
 
 type Msg

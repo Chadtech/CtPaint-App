@@ -235,7 +235,7 @@ css =
         , left (px -2)
         , backgroundColor Ct.ignorable2
         , width (px 340)
-        , giveDropdownWidth (Dropdown Help) 110
+        , giveDropdownWidth (Dropdown Help) 180
         , giveDropdownWidth (Dropdown View) 200
         , giveDropdownWidth (Dropdown Edit) 220
         , giveDropdownWidth (Dropdown File) 220
@@ -281,7 +281,13 @@ css =
                 ]
             ]
         , Css.withClass Disabled
-            []
+            [ children
+                [ Css.Elements.p
+                    [ color Ct.ignorable1 ]
+                ]
+            , hover
+                [ backgroundColor Ct.ignorable2 ]
+            ]
         ]
     , Css.class Spinner
         [ height (px 24)
@@ -805,7 +811,7 @@ fileDropped model =
         { label = "save"
         , cmdKeys = keysLabel model Save
         , clickMsg = KeyCmdClicked Save
-        , disabled = False
+        , disabled = not <| User.isLoggedIn model.user
         }
     , option
         { label = "download"

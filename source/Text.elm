@@ -7,7 +7,6 @@ module Text
         , view
         )
 
-import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Html exposing (Html, a, p, textarea)

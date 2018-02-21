@@ -4,6 +4,7 @@ module Data.User
         , User
         , decoder
         , getEmail
+        , isLoggedIn
         , modelDecoder
         , toggleOptionsDropped
         )
@@ -133,6 +134,16 @@ ifNotEnded str =
 
 
 -- HELPERS --
+
+
+isLoggedIn : Model -> Bool
+isLoggedIn model =
+    case model of
+        LoggedIn _ ->
+            True
+
+        _ ->
+            False
 
 
 toggleOptionsDropped : User -> User
