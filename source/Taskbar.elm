@@ -398,10 +398,25 @@ userOptions user =
 
 userDropdown : User -> Html Msg
 userDropdown user =
-    [ option "preferences" "" (NewWindowClicked Settings)
-    , option "home" "" (NewWindowClicked Home)
+    [ option
+        { label = "settings"
+        , cmdKeys = ""
+        , clickMsg = NewWindowClicked Settings
+        , disabled = False
+        }
+    , option
+        { label = "home"
+        , cmdKeys = ""
+        , clickMsg = NewWindowClicked Home
+        , disabled = False
+        }
     , divider
-    , option "log out" "" LogoutClicked
+    , option
+        { label = "log out"
+        , cmdKeys = ""
+        , clickMsg = LogoutClicked
+        , disabled = False
+        }
     ]
         |> dropdownView Data.Taskbar.User
 
@@ -433,8 +448,18 @@ help : Maybe Dropdown -> Html Msg
 help maybeHelp =
     case maybeHelp of
         Just Help ->
-            [ option "About" "" AboutClicked
-            , option "Report Bug" "" ReportBugClicked
+            [ option
+                { label = "about"
+                , cmdKeys = ""
+                , clickMsg = AboutClicked
+                , disabled = False
+                }
+            , option
+                { label = "report bug"
+                , cmdKeys = ""
+                , clickMsg = ReportBugClicked
+                , disabled = False
+                }
             ]
                 |> taskbarButtonOpen "help" Help
 
@@ -451,13 +476,17 @@ view_ model =
     case model.taskbarDropped of
         Just View ->
             [ option
-                "Gallery view"
-                "tab"
-                (KeyCmdClicked SwitchGalleryView)
+                { label = "gallery view"
+                , cmdKeys = "tab"
+                , clickMsg = KeyCmdClicked SwitchGalleryView
+                , disabled = False
+                }
             , option
-                (minimapLabel model)
-                (keysLabel model ToggleMinimap)
-                (KeyCmdClicked ToggleMinimap)
+                { label = minimapLabel model
+                , cmdKeys = keysLabel model ToggleMinimap
+                , clickMsg = KeyCmdClicked ToggleMinimap
+                , disabled = False
+                }
             ]
                 |> taskbarButtonOpen "view" View
 
@@ -492,53 +521,74 @@ transform model =
 transformOpen : Model -> Html Msg
 transformOpen model =
     [ option
-        "Flip Horiztonal"
-        (keysLabel model FlipHorizontal)
-        (KeyCmdClicked FlipHorizontal)
+        { label = "flip horizontal"
+        , cmdKeys = keysLabel model FlipHorizontal
+        , clickMsg = KeyCmdClicked FlipHorizontal
+        , disabled = False
+        }
     , option
-        "Flip Vertical"
-        (keysLabel model FlipVertical)
-        (KeyCmdClicked FlipVertical)
+        { label = "flip vertical"
+        , cmdKeys = keysLabel model FlipVertical
+        , clickMsg = KeyCmdClicked FlipVertical
+        , disabled = False
+        }
     , divider
     , option
-        "Rotate 90"
-        (keysLabel model Rotate90)
-        (KeyCmdClicked Rotate90)
+        { label = "rotate 90"
+        , cmdKeys = keysLabel model Rotate90
+        , clickMsg = KeyCmdClicked Rotate90
+        , disabled = False
+        }
     , option
-        "Rotate 180"
-        (keysLabel model Rotate180)
-        (KeyCmdClicked Rotate180)
+        { label = "rotate 180"
+        , cmdKeys = keysLabel model Rotate180
+        , clickMsg = KeyCmdClicked Rotate180
+        , disabled = False
+        }
     , option
-        "Rotate 270"
-        (keysLabel model Rotate270)
-        (KeyCmdClicked Rotate270)
+        { label = "rotate 270"
+        , cmdKeys = keysLabel model Rotate270
+        , clickMsg = KeyCmdClicked Rotate270
+        , disabled = False
+        }
     , divider
     , option
-        "Scale"
-        (keysLabel model InitScale)
-        (KeyCmdClicked InitScale)
+        { label = "scale"
+        , cmdKeys = keysLabel model InitScale
+        , clickMsg = KeyCmdClicked InitScale
+        , disabled = False
+        }
     , option
-        "Resize Canvas"
-        (keysLabel model InitResize)
-        (KeyCmdClicked InitResize)
+        { label = "resize canvas"
+        , cmdKeys = keysLabel model InitResize
+        , clickMsg = KeyCmdClicked InitResize
+        , disabled = False
+        }
     , option
-        "Replace Color"
-        (keysLabel model InitReplaceColor)
-        (KeyCmdClicked InitReplaceColor)
+        { label = "replace color"
+        , cmdKeys = keysLabel model InitReplaceColor
+        , clickMsg = KeyCmdClicked InitReplaceColor
+        , disabled = False
+        }
     , option
-        "Invert"
-        (keysLabel model InvertColors)
-        (KeyCmdClicked InvertColors)
+        { label = "invert"
+        , cmdKeys = keysLabel model InvertColors
+        , clickMsg = KeyCmdClicked InvertColors
+        , disabled = False
+        }
     , divider
     , option
-        "Text"
-        (keysLabel model InitText)
-        (KeyCmdClicked InitText)
-    , optionIf
-        (model.selection /= Nothing)
-        "Transparency"
-        (keysLabel model SetTransparency)
-        (KeyCmdClicked SetTransparency)
+        { label = "text"
+        , cmdKeys = keysLabel model InitText
+        , clickMsg = KeyCmdClicked InitText
+        , disabled = False
+        }
+    , option
+        { label = "transparency"
+        , cmdKeys = keysLabel model SetTransparency
+        , clickMsg = KeyCmdClicked SetTransparency
+        , disabled = model.selection == Nothing
+        }
     ]
         |> taskbarButtonOpen "transform" Transform
 
@@ -560,18 +610,24 @@ colors model =
 colorsDropped : Model -> Html Msg
 colorsDropped model =
     [ option
-        "Turn Swatches Left"
-        (keysLabel model SwatchesTurnLeft)
-        (KeyCmdClicked SwatchesTurnLeft)
+        { label = "turn swatches left"
+        , cmdKeys = keysLabel model SwatchesTurnLeft
+        , clickMsg = KeyCmdClicked SwatchesTurnLeft
+        , disabled = False
+        }
     , option
-        "Turn Swatches Right"
-        (keysLabel model SwatchesTurnRight)
-        (KeyCmdClicked SwatchesTurnRight)
+        { label = "turn swatches right"
+        , cmdKeys = keysLabel model SwatchesTurnRight
+        , clickMsg = KeyCmdClicked SwatchesTurnRight
+        , disabled = False
+        }
     , divider
     , option
-        (colorPickerLabel model)
-        (keysLabel model ToggleColorPicker)
-        (KeyCmdClicked ToggleColorPicker)
+        { label = colorPickerLabel model
+        , cmdKeys = keysLabel model ToggleColorPicker
+        , clickMsg = KeyCmdClicked ToggleColorPicker
+        , disabled = False
+        }
     ]
         |> taskbarButtonOpen "colors" Colors
 
@@ -601,45 +657,65 @@ tools model =
 toolsDropped : Model -> Html Msg
 toolsDropped model =
     [ option
-        "Select"
-        (keysLabel model SetToolToSelect)
-        (KeyCmdClicked SetToolToSelect)
+        { label = "select"
+        , cmdKeys = keysLabel model SetToolToSelect
+        , clickMsg = KeyCmdClicked SetToolToSelect
+        , disabled = False
+        }
     , option
-        "Zoom In"
-        (keysLabel model ZoomIn)
-        (ToolClicked Tool.ZoomIn)
+        { label = "zoom in"
+        , cmdKeys = keysLabel model ZoomIn
+        , clickMsg = ToolClicked Tool.ZoomIn
+        , disabled = False
+        }
     , option
-        "Zoom Out"
-        (keysLabel model ZoomOut)
-        (ToolClicked Tool.ZoomOut)
+        { label = "zoom out"
+        , cmdKeys = keysLabel model ZoomOut
+        , clickMsg = ToolClicked Tool.ZoomOut
+        , disabled = False
+        }
     , option
-        "Hand"
-        (keysLabel model SetToolToHand)
-        (KeyCmdClicked SetToolToHand)
+        { label = "hand"
+        , cmdKeys = keysLabel model SetToolToHand
+        , clickMsg = KeyCmdClicked SetToolToHand
+        , disabled = False
+        }
     , option
-        "Sample"
-        (keysLabel model SetToolToSample)
-        (KeyCmdClicked SetToolToSample)
+        { label = "sample"
+        , cmdKeys = keysLabel model SetToolToSample
+        , clickMsg = KeyCmdClicked SetToolToSample
+        , disabled = False
+        }
     , option
-        "Fill"
-        (keysLabel model SetToolToFill)
-        (KeyCmdClicked SetToolToFill)
+        { label = "fill"
+        , cmdKeys = keysLabel model SetToolToFill
+        , clickMsg = KeyCmdClicked SetToolToFill
+        , disabled = False
+        }
     , option
-        "Pencil"
-        (keysLabel model SetToolToPencil)
-        (KeyCmdClicked SetToolToPencil)
+        { label = "pencil"
+        , cmdKeys = keysLabel model SetToolToPencil
+        , clickMsg = KeyCmdClicked SetToolToPencil
+        , disabled = False
+        }
     , option
-        "Line"
-        (keysLabel model SetToolToLine)
-        (KeyCmdClicked SetToolToLine)
+        { label = "line"
+        , cmdKeys = keysLabel model SetToolToLine
+        , clickMsg = KeyCmdClicked SetToolToLine
+        , disabled = False
+        }
     , option
-        "Rectangle"
-        (keysLabel model SetToolToRectangle)
-        (KeyCmdClicked SetToolToRectangle)
+        { label = "rectangle"
+        , cmdKeys = keysLabel model SetToolToRectangle
+        , clickMsg = KeyCmdClicked SetToolToRectangle
+        , disabled = False
+        }
     , option
-        "Rectangle Filled"
-        (keysLabel model SetToolToRectangleFilled)
-        (KeyCmdClicked SetToolToRectangleFilled)
+        { label = "rectangle filled"
+        , cmdKeys = keysLabel model SetToolToRectangleFilled
+        , clickMsg = KeyCmdClicked SetToolToRectangleFilled
+        , disabled = False
+        }
     ]
         |> taskbarButtonOpen "tools" Tools
 
@@ -661,36 +737,50 @@ edit model =
 editDropped : Model -> Html Msg
 editDropped model =
     [ option
-        "Undo"
-        (keysLabel model Undo)
-        (KeyCmdClicked Undo)
+        { label = "undo"
+        , cmdKeys = keysLabel model Undo
+        , clickMsg = KeyCmdClicked Undo
+        , disabled = False
+        }
     , option
-        "Redo"
-        (keysLabel model Redo)
-        (KeyCmdClicked Redo)
+        { label = "redo"
+        , cmdKeys = keysLabel model Redo
+        , clickMsg = KeyCmdClicked Redo
+        , disabled = False
+        }
     , divider
     , option
-        "Cut"
-        (keysLabel model Cut)
-        (KeyCmdClicked Cut)
+        { label = "cut"
+        , cmdKeys = keysLabel model Cut
+        , clickMsg = KeyCmdClicked Cut
+        , disabled = False
+        }
     , option
-        "Copy"
-        (keysLabel model Copy)
-        (KeyCmdClicked Copy)
+        { label = "copy"
+        , cmdKeys = keysLabel model Copy
+        , clickMsg = KeyCmdClicked Copy
+        , disabled = False
+        }
     , option
-        "Paste"
-        (keysLabel model Paste)
-        (KeyCmdClicked Paste)
+        { label = "paste"
+        , cmdKeys = keysLabel model Paste
+        , clickMsg = KeyCmdClicked Paste
+        , disabled = False
+        }
     , divider
     , option
-        "Select all"
-        (keysLabel model SelectAll)
-        (KeyCmdClicked SelectAll)
+        { label = "select all"
+        , cmdKeys = keysLabel model SelectAll
+        , clickMsg = KeyCmdClicked SelectAll
+        , disabled = False
+        }
     , divider
     , option
-        "Settings"
-        ""
-        (NewWindowClicked Settings)
+        { label = "settings"
+        , cmdKeys = ""
+        , clickMsg = NewWindowClicked Settings
+        , disabled = False
+        }
     ]
         |> taskbarButtonOpen "edit" Edit
 
@@ -712,26 +802,36 @@ file model =
 fileDropped : Model -> Html Msg
 fileDropped model =
     [ option
-        "Save"
-        (keysLabel model Save)
-        (KeyCmdClicked Save)
+        { label = "save"
+        , cmdKeys = keysLabel model Save
+        , clickMsg = KeyCmdClicked Save
+        , disabled = False
+        }
     , option
-        "Download"
-        (keysLabel model InitDownload)
-        (KeyCmdClicked InitDownload)
+        { label = "download"
+        , cmdKeys = keysLabel model InitDownload
+        , clickMsg = KeyCmdClicked InitDownload
+        , disabled = False
+        }
     , option
-        "Upload"
-        (keysLabel model InitUpload)
-        (KeyCmdClicked InitUpload)
+        { label = "upload"
+        , cmdKeys = keysLabel model InitUpload
+        , clickMsg = KeyCmdClicked InitUpload
+        , disabled = False
+        }
     , option
-        "Import"
-        (keysLabel model InitImport)
-        (KeyCmdClicked InitImport)
+        { label = "import"
+        , cmdKeys = keysLabel model InitImport
+        , clickMsg = KeyCmdClicked InitImport
+        , disabled = False
+        }
     , divider
     , option
-        "Project"
-        ""
-        (ProjectClicked model.project)
+        { label = "project"
+        , cmdKeys = ""
+        , clickMsg = ProjectClicked model.project
+        , disabled = False
+        }
     ]
         |> taskbarButtonOpen "file" File
 
@@ -779,31 +879,30 @@ divider =
         [ div [ class [ Strike ] ] [] ]
 
 
-optionIf : Bool -> String -> String -> Msg -> Html Msg
-optionIf condition label cmdKeys clickListener =
-    if condition then
-        option label cmdKeys clickListener
-    else
-        disabledOption label cmdKeys
+type alias OptionModel =
+    { label : String
+    , cmdKeys : String
+    , clickMsg : Msg
+    , disabled : Bool
+    }
 
 
-disabledOption : String -> String -> Html Msg
-disabledOption label cmdKeys =
+option : OptionModel -> Html Msg
+option { label, cmdKeys, clickMsg, disabled } =
     div
+        (optionAttrs disabled clickMsg)
+        [ p_ label
+        , p_ cmdKeys
+        ]
+
+
+optionAttrs : Bool -> Msg -> List (Attribute Msg)
+optionAttrs disabled clickMsg =
+    if disabled then
         [ class [ Option, Disabled ] ]
-        [ p_ label
-        , p_ cmdKeys
-        ]
-
-
-option : String -> String -> Msg -> Html Msg
-option label cmdKeys clickListener =
-    div
-        [ onClick clickListener
-        , class [ Option ]
-        ]
-        [ p_ label
-        , p_ cmdKeys
+    else
+        [ class [ Option ]
+        , onClick clickMsg
         ]
 
 
