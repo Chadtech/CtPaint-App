@@ -48,7 +48,7 @@ type DecodeProblem
 
 decode : Browser -> Value -> Msg
 decode browser json =
-    case Decode.decodeValue (decoder browser json) json of
+    case Decode.decodeValue (decoder browser) json of
         Ok msg ->
             msg
 
@@ -56,8 +56,8 @@ decode browser json =
             MsgDecodeFailed (Other err)
 
 
-decoder : Browser -> Value -> Decoder Msg
-decoder browser json =
+decoder : Browser -> Decoder Msg
+decoder browser =
     Decode.field "type" Decode.string
         |> Decode.andThen (toMsg browser)
 

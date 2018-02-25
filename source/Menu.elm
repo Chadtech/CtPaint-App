@@ -30,6 +30,7 @@ import Project
 import ReplaceColor
 import Reply exposing (Reply(CloseMenu, NoReply))
 import Resize
+import Save
 import Scale
 import Text
 import Tuple.Infix exposing ((&))
@@ -267,6 +268,28 @@ updateContent config msg model =
                 _ ->
                     model & Cmd.none & NoReply
 
+        SaveMsg subMsg ->
+            case model.content of
+                Save subModel ->
+                    subModel
+                        |> Save.update subMsg
+                        |> mapContent Menu.Save model
+                        |> mapCmd SaveMsg
+                        & NoReply
+
+                _ ->
+                    model & Cmd.none & NoReply
+
+
+mapContent : (a -> Menu) -> Model -> ( a, Cmd msg ) -> ( Model, Cmd msg )
+mapContent toMenu model ( subModel, cmd ) =
+    { model | content = toMenu subModel } & cmd
+
+
+mapCmd : (msg -> ContentMsg) -> ( Model, Cmd msg ) -> ( Model, Cmd Msg )
+mapCmd toMsg ( model, cmd ) =
+    model & Cmd.map (ContentMsg << toMsg) cmd
+
 
 
 -- STYLES --
@@ -402,6 +425,10 @@ contentView menu =
         Project subModel ->
             List.map (Html.map ProjectMsg) <|
                 Project.view subModel
+
+        Save subModel ->
+            List.map (Html.map SaveMsg) <|
+                Save.view subModel
 
 
 

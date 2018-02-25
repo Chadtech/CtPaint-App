@@ -17,6 +17,7 @@ import Palette
 import Project
 import ReplaceColor
 import Resize
+import Save
 import Scale
 import Taskbar
 import Text
@@ -53,6 +54,7 @@ main =
     , Eraser.css
     , About.css
     , BugReport.css
+    , Save.css
     ]
         |> Css.File.compile
         |> (,) "./development/paint-app-styles.css"

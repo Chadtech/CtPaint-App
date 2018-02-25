@@ -20,7 +20,7 @@ import Html
 import Html.Attributes exposing (value)
 import Html.CssHelpers
 import Html.Custom
-import Html.Events exposing (onInput, onSubmit)
+import Html.Events exposing (onClick, onInput, onSubmit)
 import Reply exposing (Reply(NoReply, SetProject))
 import Tuple.Infix exposing ((&), (|&))
 
@@ -75,7 +75,9 @@ type Class
 
 css : Stylesheet
 css =
-    []
+    [ Css.class Field
+        [ marginBottom (px 0) ]
+    ]
         |> namespace projectNamespace
         |> stylesheet
 
@@ -118,6 +120,9 @@ readyView model =
             , value model.project.name
             ]
             []
+        , Html.Custom.menuButton
+            [ onClick SaveClicked ]
+            [ Html.text "save" ]
         ]
     ]
 

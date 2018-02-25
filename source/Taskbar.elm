@@ -147,7 +147,7 @@ update msg model =
                         model.windowSize
                         |> Just
             }
-                & Cmd.none
+                & Ports.stealFocus
 
 
 

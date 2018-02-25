@@ -13,7 +13,6 @@ import Canvas exposing (Canvas, Size)
 import Color exposing (Color)
 import Data.Color as Color exposing (Swatches)
 import Data.Project as Project exposing (Project)
-import Data.Window as Window exposing (Window)
 import Json.Encode as Encode exposing (Value)
 import Tracking
 import Tuple.Infix exposing ((:=))
@@ -39,6 +38,7 @@ type alias SavePayload =
     , swatches : Swatches
     , palette : Array Color
     , project : Project
+    , email : String
     }
 
 
@@ -75,12 +75,13 @@ send msg =
         ReturnFocus ->
             toCmd "return focus" Encode.null
 
-        Save { swatches, palette, canvas, project } ->
-            [ "data" := Color.encodeCanvas canvas
+        Save { swatches, palette, canvas, project, email } ->
+            [ "canvas" := Color.encodeCanvas canvas
             , "palette" := Color.encodePalette palette
             , "swatches" := Color.encodeSwatches swatches
             , "name" := Encode.string project.name
             , "nameIsGenerated" := Encode.bool project.nameIsGenerated
+            , "email" := Encode.string email
             ]
                 |> Encode.object
                 |> toCmd "save"

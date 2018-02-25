@@ -1,4 +1,12 @@
-module Login exposing (..)
+module Login
+    exposing
+        ( Model
+        , Msg(..)
+        , css
+        , init
+        , update
+        , view
+        )
 
 import Bool.Extra
 import Chadtech.Colors as Ct
@@ -262,7 +270,7 @@ update config msg model =
                 | email = ""
                 , password = ""
             }
-                & Cmd.none
+                & Ports.returnFocus
                 & SetUser user
 
 

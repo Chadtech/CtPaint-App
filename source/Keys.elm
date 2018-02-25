@@ -5,6 +5,7 @@ import Clipboard
 import Data.Keys as Key exposing (Cmd(..))
 import Data.Minimap exposing (State(..))
 import Data.Tool as Tool exposing (Tool(..))
+import Data.User as User
 import Draw
 import Helpers.Color
 import Helpers.History as History
@@ -271,14 +272,20 @@ exec keyCmd model =
             transform Draw.invert model
 
         Key.Save ->
-            { canvas = model.canvas
-            , project = model.project
-            , swatches = model.color.swatches
-            , palette = model.color.palette
-            }
-                |> Ports.Save
-                |> Ports.send
-                |& model
+            case model.user of
+                User.LoggedIn user ->
+                    { canvas = model.canvas
+                    , project = model.project
+                    , swatches = model.color.swatches
+                    , palette = model.color.palette
+                    , email = user.email
+                    }
+                        |> Ports.Save
+                        |> Ports.send
+                        |& model
+
+                _ ->
+                    model & Cmd.none
 
         SetTransparency ->
             case model.selection of

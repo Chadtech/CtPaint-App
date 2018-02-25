@@ -24,6 +24,7 @@ import Open
 import Project
 import ReplaceColor
 import Resize
+import Save
 import Scale
 import Text
 import Upload
@@ -44,6 +45,7 @@ type Menu
     | Upload Upload.Model
     | Resize Resize.Model
     | Project Project.Model
+    | Save Save.Model
 
 
 type alias Model =
@@ -82,6 +84,7 @@ type ContentMsg
     | UploadMsg Upload.Msg
     | ResizeMsg Resize.Msg
     | ProjectMsg Project.Msg
+    | SaveMsg Save.Msg
 
 
 fileRead : String -> Msg
