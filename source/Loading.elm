@@ -1,7 +1,8 @@
 module Loading
     exposing
-        ( css
-        , update
+        ( Model
+        , css
+        , init
         , view
         )
 
@@ -17,8 +18,13 @@ import Reply exposing (Reply(SetProject))
 -- TYPES --
 
 
-type Msg
-    = ProjectLoaded Project
+type alias Model =
+    Maybe String
+
+
+init : Maybe String -> Model
+init =
+    identity
 
 
 
@@ -31,7 +37,9 @@ type Class
 
 css : Stylesheet
 css =
-    []
+    [ Css.class Text
+        [ marginBottom (px 8) ]
+    ]
         |> namespace loadingNamespace
         |> stylesheet
 
@@ -49,25 +57,29 @@ loadingNamespace =
     Html.CssHelpers.withNamespace loadingNamespace
 
 
-view : String -> List (Html msg)
-view name =
-    [ p [ class [ Text ] ] [ presentName name ] ]
+view : Model -> List (Html msg)
+view model =
+    case model of
+        Just name ->
+            [ p
+                [ class [ Text ] ]
+                [ presentName name ]
+            , Html.Custom.spinner []
+            ]
+
+        Nothing ->
+            [ p
+                [ class [ Text ] ]
+                [ Html.text "loading" ]
+            , Html.Custom.spinner []
+            ]
 
 
 presentName : String -> Html msg
 presentName name =
-    "loading \""
-        ++ name
-        ++ "\""
+    [ "loading \""
+    , name
+    , "\""
+    ]
+        |> String.concat
         |> Html.text
-
-
-
--- UPDATE --
-
-
-update : Msg -> Reply
-update msg =
-    case msg of
-        ProjectLoaded project ->
-            SetProject project

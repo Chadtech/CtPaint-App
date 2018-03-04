@@ -14,7 +14,7 @@ module.exports = {
             isMac: window.navigator.userAgent.indexOf("Mac") !== -1,
             browser: getBrowser(),
             user: mixins.user,
-            init: mixins.manifest.initMsg,
+            init: mixins.manifest.init,
             localWork: JSON.parse(localWork),
             mountPath: mixins.manifest.mountPath,
             buildNumber: mixins.manifest.buildNumber

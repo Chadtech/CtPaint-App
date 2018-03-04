@@ -17,6 +17,7 @@ import Taskbar
 import Tool
 import Toolbar
 import Tuple.Infix exposing ((&), (|&))
+import Util
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -148,4 +149,18 @@ update message model =
             model & Cmd.none
 
         MsgDecodeFailed _ ->
+            model & Cmd.none
+
+        InitFromUrl (Ok canvas) ->
+            { model
+                | canvas = canvas
+                , canvasPosition =
+                    Util.center
+                        model.windowSize
+                        (Canvas.getSize canvas)
+                , menu = Nothing
+            }
+                & Cmd.none
+
+        InitFromUrl (Err err) ->
             model & Cmd.none

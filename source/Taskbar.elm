@@ -10,7 +10,7 @@ import Data.Project exposing (Project)
 import Data.Taskbar exposing (Dropdown(..))
 import Data.Tool as Tool exposing (Tool)
 import Data.User as User exposing (User)
-import Data.Window exposing (Window(..))
+import Data.Window as Window exposing (Window(..))
 import Helpers.Keys
 import Html exposing (Attribute, Html, a, div, input, p)
 import Html.CssHelpers
@@ -26,7 +26,7 @@ import Menu
 import Model exposing (Model)
 import Platform.Cmd as Platform
 import Ports exposing (JsMsg(Logout, OpenUpFileUpload, StealFocus))
-import Tuple.Infix exposing ((&))
+import Tuple.Infix exposing ((&), (|&))
 import Util exposing (toolbarWidth)
 
 
@@ -131,7 +131,11 @@ update msg model =
             Keys.exec keyCmd model
 
         NewWindowClicked window ->
-            model & Cmd.none
+            window
+                |> Window.toUrl model.config.mountPath
+                |> Ports.OpenNewWindow
+                |> Ports.send
+                |& model
 
         UploadClicked ->
             model & Ports.send OpenUpFileUpload

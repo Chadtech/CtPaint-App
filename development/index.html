@@ -15,9 +15,9 @@
   <script type="text/javascript" src="./paint-app.js"></script>
   <script type="text/javascript">
     PaintApp({ 
-      initMsg: { type: "init paint app" }, 
+      init: { id : "1234" }, 
       Client: Client,
-      mountPath: "http://localhost:2970",
+      mountPath: "http://localhost:2963",
       track: function(msg) {
         console.log("-- TRACKING --", msg);
       },

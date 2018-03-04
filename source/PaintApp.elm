@@ -3,21 +3,25 @@ module PaintApp exposing (..)
 import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Data.Color
 import Data.Config as Config
-import Data.Flags as Flags exposing (Flags)
+import Data.Flags as Flags exposing (Flags, Init(..))
 import Data.History
 import Data.Menu as Menu
 import Data.Minimap
-import Data.Project as Project
+import Data.Project as Project exposing (Project)
 import Data.Tool as Tool
 import Data.User as User
 import Data.Window as Window
 import Error
 import Helpers.Canvas as Canvas
+import Helpers.Import
 import Html exposing (Html)
+import Id exposing (Origin(Local, Remote))
 import Json.Decode as Decode exposing (Decoder, Value, value)
+import Menu
 import Model exposing (Model)
+import Mouse exposing (Position)
 import Msg exposing (Msg(..))
-import Ports exposing (JsMsg(RedirectPageTo))
+import Ports exposing (JsMsg(LoadDrawing, RedirectPageTo))
 import Subscriptions exposing (subscriptions)
 import Tracking exposing (Event(AppFailedToInitialize, AppLoaded))
 import Tuple.Infix exposing ((&), (|&))
@@ -76,8 +80,17 @@ init : Value -> ( Result String Model, Cmd Msg )
 init json =
     case Decode.decodeValue Flags.decoder json of
         Ok flags ->
-            fromFlags flags
-                |> Tuple.mapFirst Ok
+            case flags.user of
+                User.AllowanceExceeded ->
+                    Window.AllowanceExceeded
+                        |> Window.toUrl flags.mountPath
+                        |> RedirectPageTo
+                        |> Ports.send
+                        |& Err "allowance exceeded"
+
+                _ ->
+                    fromFlags flags
+                        |> Tuple.mapFirst Ok
 
         Err err ->
             Err err & Cmd.none
@@ -86,91 +99,141 @@ init json =
 fromFlags : Flags -> ( Model, Cmd Msg )
 fromFlags flags =
     let
-        ( menu, menuCmd ) =
-            getInitialMenu flags
+        fields =
+            getFields flags
 
         canvasSize =
-            Canvas.getSize Canvas.blank
+            Canvas.getSize fields.canvas
     in
     { user = flags.user
-    , canvas = Canvas.blank
-    , color = Data.Color.init
-    , project = Project.init flags.randomValues.projectName
-    , canvasPosition =
-        { x =
-            ((flags.windowSize.width - tbw) - canvasSize.width) // 2
-        , y =
-            (flags.windowSize.height - canvasSize.height) // 2
-        }
+    , canvas = fields.canvas
+    , color = fields.color
+    , project = fields.project
+    , canvasPosition = fields.canvasPosition
     , pendingDraw = Canvas.noop
     , drawAtRender = Canvas.noop
     , windowSize = flags.windowSize
     , tool = Tool.init
     , zoom = 1
     , galleryView = False
-    , history = Data.History.init Canvas.blank
+    , history = Data.History.init fields.canvas
     , mousePosition = Nothing
     , selection = Nothing
     , clipboard = Nothing
     , taskbarDropped = Nothing
     , minimap = Data.Minimap.NotInitialized
-    , menu = menu
+    , menu = fields.menu
     , seed = flags.randomValues.seed
     , eraserSize = 5
     , shiftIsDown = False
     , config = Config.init flags
     }
-        |> withCmd
+        & fields.cmd
+        |> withTracking
 
 
-withCmd : Model -> ( Model, Cmd Msg )
-withCmd model =
+withTracking : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+withTracking ( model, cmd ) =
     [ Ports.track
         { event = AppLoaded
         , sessionId = model.config.sessionId
         , email = User.getEmail model.user
-        , projectId = Nothing
+        , projectId =
+            case model.project.origin of
+                Remote id ->
+                    Just id
+
+                Local ->
+                    Nothing
         }
+    , cmd
     ]
         |> Cmd.batch
         |& model
 
 
-type alias InitBehavior =
-    ( Maybe Menu.Model, Cmd Msg )
+type alias InitFields =
+    { canvas : Canvas
+    , canvasPosition : Position
+    , project : Project
+    , menu : Maybe Menu.Model
+    , cmd : Cmd Msg
+    , color : Data.Color.Model
+    }
 
 
-getInitialMenu : Flags -> InitBehavior
-getInitialMenu flags =
-    [ checkUser ]
-        |> checkConditions flags
+getFields : Flags -> InitFields
+getFields ({ windowSize } as flags) =
+    case flags.init of
+        NormalInit ->
+            let
+                size =
+                    Canvas.getSize Canvas.blank
+            in
+            { canvas = Canvas.blank
+            , canvasPosition =
+                Util.center flags.windowSize size
+            , project =
+                flags.randomValues.projectName
+                    |> Project.init
+            , menu = Nothing
+            , cmd = Cmd.none
+            , color = Data.Color.init
+            }
+
+        FromId id ->
+            { canvas = Canvas.tiny
+            , canvasPosition = offScreen
+            , project = Project.loading id
+            , menu =
+                Menu.initLoading
+                    Nothing
+                    flags.windowSize
+                    |> Just
+            , cmd = Ports.send (LoadDrawing id)
+            , color = Data.Color.init
+            }
+
+        FromUrl url ->
+            { canvas = Canvas.tiny
+            , canvasPosition = offScreen
+            , project =
+                flags.randomValues.projectName
+                    |> Project.init
+            , menu =
+                Menu.initLoading
+                    (Just url)
+                    flags.windowSize
+                    |> Just
+            , cmd = Helpers.Import.loadCmd url InitFromUrl
+            , color = Data.Color.init
+            }
+
+        FromParams params ->
+            let
+                canvas =
+                    Canvas.fromParams params
+
+                size =
+                    Canvas.getSize canvas
+            in
+            { canvas = canvas
+            , canvasPosition =
+                Util.center flags.windowSize size
+            , project =
+                case params.name of
+                    Just name ->
+                        Project.init name
+
+                    Nothing ->
+                        flags.randomValues.projectName
+                            |> Project.init
+            , menu = Nothing
+            , cmd = Cmd.none
+            , color = Data.Color.init
+            }
 
 
-checkConditions : Flags -> List (Flags -> Maybe InitBehavior) -> InitBehavior
-checkConditions flags conditions =
-    case conditions of
-        [] ->
-            ( Nothing, Cmd.none )
-
-        first :: rest ->
-            case first flags of
-                Just behavior ->
-                    behavior
-
-                Nothing ->
-                    checkConditions flags rest
-
-
-checkUser : Flags -> Maybe InitBehavior
-checkUser flags =
-    case flags.user of
-        User.AllowanceExceeded ->
-            Window.AllowanceExceeded
-                |> Window.toUrl flags.mountPath
-                |> RedirectPageTo
-                |> Ports.send
-                |& Nothing
-                |> Just
-
-        _ ->
-            Nothing
+offScreen : Position
+offScreen =
+    { x = -100, y = -100 }

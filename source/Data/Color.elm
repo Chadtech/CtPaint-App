@@ -1,7 +1,9 @@
 module Data.Color
     exposing
-        ( Model
+        ( BackgroundColor(..)
+        , Model
         , Swatches
+        , backgroundColorDecoder
         , encodeCanvas
         , encodePalette
         , encodeSwatches
@@ -12,6 +14,7 @@ import Array exposing (Array)
 import Canvas exposing (Canvas)
 import Color exposing (Color)
 import Data.Picker as Picker
+import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode exposing (Value)
 import Tuple.Infix exposing ((:=))
 import Util
@@ -34,6 +37,11 @@ type alias Swatches =
     , right : Color
     , keyIsDown : Bool
     }
+
+
+type BackgroundColor
+    = Black
+    | White
 
 
 
@@ -96,7 +104,7 @@ initSwatches =
 
 
 
--- encoder --
+-- ENCODER --
 
 
 encodeCanvas : Canvas -> Value
@@ -122,3 +130,26 @@ encodeSwatches { top, left, bottom, right } =
 encodePalette : Array Color -> Value
 encodePalette =
     Array.map encodeColor >> Encode.array
+
+
+
+-- DECODER --
+
+
+backgroundColorDecoder : Decoder BackgroundColor
+backgroundColorDecoder =
+    Decode.string
+        |> Decode.andThen toBackgroundColor
+
+
+toBackgroundColor : String -> Decoder BackgroundColor
+toBackgroundColor str =
+    case str of
+        "black" ->
+            Decode.succeed Black
+
+        "white" ->
+            Decode.succeed White
+
+        _ ->
+            Decode.fail ("Background color isnt black or white, its " ++ str)

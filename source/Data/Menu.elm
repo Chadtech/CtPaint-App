@@ -16,6 +16,7 @@ import BugReport
 import Data.User exposing (User)
 import Download
 import Import
+import Loading
 import Login
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
@@ -41,7 +42,7 @@ type Menu
     | New New.Model
     | Open Open.Model
     | Login Login.Model
-    | Loading String
+    | Loading Loading.Model
     | Upload Upload.Model
     | Resize Resize.Model
     | Project Project.Model

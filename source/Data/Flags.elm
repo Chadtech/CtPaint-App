@@ -1,7 +1,18 @@
-module Data.Flags exposing (Flags, Init, decoder)
+module Data.Flags
+    exposing
+        ( Flags
+        , Init(..)
+        , decoder
+        )
 
+import Data.Color
+    exposing
+        ( BackgroundColor(Black, White)
+        , backgroundColorDecoder
+        )
 import Data.Project as Project exposing (Project)
 import Data.User as User
+import Helpers.Canvas exposing (Params)
 import Helpers.Random as Random
 import Id exposing (Id)
 import Json.Decode as Decode exposing (Decoder)
@@ -44,10 +55,10 @@ type LocalWork
 
 
 type Init
-    = NoInit
-    | New
-    | Drawing String
-    | Image String
+    = NormalInit
+    | FromId Id
+    | FromUrl String
+    | FromParams Params
 
 
 
@@ -130,31 +141,31 @@ existingLocalWorkDecoder =
 
 initDecoder : Decoder Init
 initDecoder =
-    Decode.field "type" Decode.string
-        |> Decode.andThen toInit
+    [ Decode.null NormalInit
+    , Id.decoder
+        |> Decode.field "id"
+        |> Decode.map FromId
+    , Decode.string
+        |> Decode.field "url"
+        |> Decode.map FromUrl
+    , paramsDecoder
+        |> Decode.map FromParams
+    ]
+        |> Decode.oneOf
 
 
-toInit : String -> Decoder Init
-toInit type_ =
-    case type_ of
-        "init new drawing" ->
-            Decode.succeed New
+paramsDecoder : Decoder Params
+paramsDecoder =
+    decode Params
+        |> optional_ "name" Decode.string
+        |> optional_ "width" Decode.int
+        |> optional_ "height" Decode.int
+        |> optional_ "background" backgroundColorDecoder
 
-        "init image" ->
-            Decode.string
-                |> Decode.field "payload"
-                |> Decode.map Image
 
-        "init drawing" ->
-            Decode.string
-                |> Decode.field "payload"
-                |> Decode.map Drawing
-
-        "init paint app" ->
-            Decode.succeed NoInit
-
-        _ ->
-            Decode.fail ("Unknown init type : " ++ type_)
+optional_ : String -> Decoder a -> Decoder (Maybe a -> b) -> Decoder b
+optional_ field decoder =
+    optional field (Decode.map Just decoder) Nothing
 
 
 seedDecoder : Decoder Seed

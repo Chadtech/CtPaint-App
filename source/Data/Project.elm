@@ -4,10 +4,11 @@ module Data.Project
         , decoder
         , encode
         , init
+        , loading
         , setName
         )
 
-import Id as Id exposing (Origin(..))
+import Id as Id exposing (Id, Origin(..))
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (decode, required)
 import Json.Encode as Encode exposing (Value)
@@ -26,6 +27,14 @@ init name =
     { name = name
     , nameIsGenerated = True
     , origin = Local
+    }
+
+
+loading : Id -> Project
+loading id =
+    { name = ""
+    , nameIsGenerated = False
+    , origin = Remote id
     }
 
 

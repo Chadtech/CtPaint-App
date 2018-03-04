@@ -1,5 +1,6 @@
 module Msg exposing (Msg(..), decode)
 
+import Canvas exposing (Canvas, Error)
 import Data.Keys as Key
 import Data.Menu as Menu
 import Data.Minimap as Minimap
@@ -34,6 +35,7 @@ type Msg
     | LogoutFailed String
     | ClientMouseMoved Position
     | ClientMouseUp Position
+    | InitFromUrl (Result Error Canvas)
     | MsgDecodeFailed DecodeProblem
 
 

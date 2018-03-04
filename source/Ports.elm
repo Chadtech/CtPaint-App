@@ -13,6 +13,7 @@ import Canvas exposing (Canvas, Size)
 import Color exposing (Color)
 import Data.Color as Color exposing (Swatches)
 import Data.Project as Project exposing (Project)
+import Id exposing (Id)
 import Json.Encode as Encode exposing (Value)
 import Tracking
 import Tuple.Infix exposing ((:=))
@@ -30,6 +31,7 @@ type JsMsg
     | OpenUpFileUpload
     | ReadFile
     | ReportBug String
+    | LoadDrawing Id
     | Track Tracking.Payload
 
 
@@ -117,6 +119,9 @@ send msg =
 
         ReportBug bug ->
             toCmd "bug report" (Encode.string bug)
+
+        LoadDrawing id ->
+            toCmd "load drawing" (Id.encode id)
 
         Track payload ->
             toCmd "track" (Tracking.encode payload)

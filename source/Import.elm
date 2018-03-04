@@ -4,6 +4,7 @@ import Canvas exposing (Canvas, Error)
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
+import Helpers.Import
 import Html exposing (Html, a, div, form, input, p, text)
 import Html.Attributes exposing (class, placeholder, value)
 import Html.CssHelpers
@@ -149,16 +150,16 @@ init =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( ( Model, Cmd Msg ), Reply )
+update : Msg -> Model -> ( Model, Cmd Msg, Reply )
 update msg model =
     case msg of
         FieldUpdated str ->
             case model of
                 Url _ ->
-                    Url str & Cmd.none & NoReply
+                    Reply.nothing (Url str)
 
                 _ ->
-                    model & Cmd.none & NoReply
+                    Reply.nothing model
 
         ImportPressed ->
             attemptLoad model
@@ -167,36 +168,31 @@ update msg model =
             attemptLoad model
 
         ImageLoaded (Ok canvas) ->
-            model
-                & Cmd.none
-                & IncorporateImageAsSelection canvas
+            ( model
+            , Cmd.none
+            , IncorporateImageAsSelection canvas
+            )
 
         ImageLoaded (Err err) ->
-            Fail & Cmd.none & NoReply
+            Reply.nothing Fail
 
         TryAgainPressed ->
-            init & Cmd.none & NoReply
+            Reply.nothing init
 
 
-attemptLoad : Model -> ( ( Model, Cmd Msg ), Reply )
+attemptLoad : Model -> ( Model, Cmd Msg, Reply )
 attemptLoad model =
     case model of
         Url url ->
             sendLoadCmd url
 
         _ ->
-            model & Cmd.none & NoReply
+            Reply.nothing model
 
 
-sendLoadCmd : String -> ( ( Model, Cmd Msg ), Reply )
+sendLoadCmd : String -> ( Model, Cmd Msg, Reply )
 sendLoadCmd url =
-    let
-        cmd =
-            [ "https://cors-anywhere.herokuapp.com/"
-            , url
-            ]
-                |> String.concat
-                |> Canvas.loadImage
-                |> Task.attempt ImageLoaded
-    in
-    Loading & cmd & NoReply
+    ( Loading
+    , Helpers.Import.loadCmd url ImageLoaded
+    , NoReply
+    )

@@ -118,7 +118,7 @@ updateContent config msg model =
             case model.content of
                 Import subModel ->
                     let
-                        ( ( newSubModel, cmd ), reply ) =
+                        ( newSubModel, cmd, reply ) =
                             Import.update subMsg subModel
                     in
                     { model | content = Import newSubModel }
@@ -554,6 +554,15 @@ initProject : Project -> Size -> Model
 initProject project =
     init "project"
         (Menu.Project (Project.init project))
+        { width = 10
+        , height = 10
+        }
+
+
+initLoading : Maybe String -> Size -> Model
+initLoading maybeName =
+    init "loading"
+        (Loading (Loading.init maybeName))
         { width = 10
         , height = 10
         }

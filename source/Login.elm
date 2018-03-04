@@ -145,6 +145,7 @@ view model =
             [ onInput (FieldUpdated Email)
             , value_ model.email
             , placeholder "name@email.com"
+            , Attr.spellcheck False
             ]
             []
         , input [ type_ "submit", Attr.hidden True ] []
@@ -157,6 +158,7 @@ view model =
             [ onInput (FieldUpdated Password)
             , value_ model.password
             , type_ "password"
+            , Attr.spellcheck False
             ]
             []
         , input [ type_ "submit", Attr.hidden True ] []

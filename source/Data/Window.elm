@@ -11,18 +11,23 @@ type Window
 
 toUrl : String -> Window -> String
 toUrl mountPath window =
+    mountPath ++ toUrlHelper window
+
+
+toUrlHelper : Window -> String
+toUrlHelper window =
     case window of
         Settings ->
-            mountPath ++ "/settings"
+            "/settings"
 
         Home ->
-            mountPath ++ "/"
+            "/"
 
         Register ->
-            mountPath ++ "/register"
+            "/register"
 
         ForgotPassword ->
-            mountPath ++ "/forgotpassword"
+            "/forgotpassword"
 
         AllowanceExceeded ->
-            mountPath ++ "/allowance-exceeded"
+            "/allowance-exceeded"

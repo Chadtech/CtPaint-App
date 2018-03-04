@@ -2,6 +2,7 @@ module New exposing (..)
 
 import Canvas exposing (Canvas, Size)
 import Color
+import Data.Color exposing (BackgroundColor(Black, White))
 import Draw
 import Html exposing (Html, div)
 import Tuple.Infix exposing ((&))
@@ -11,11 +12,6 @@ type Msg
     = ColorSelect BackgroundColor
     | UpdateField Field String
     | AttemptInit
-
-
-type BackgroundColor
-    = Black
-    | White
 
 
 type Field

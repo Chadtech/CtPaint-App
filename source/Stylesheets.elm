@@ -45,6 +45,7 @@ main =
     , Scale.css
     , Text.css
     , Error.css
+    , Loading.css
     , Upload.css
     , Login.css
     , Resize.css

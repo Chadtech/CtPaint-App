@@ -202,6 +202,15 @@ toolbarWidth =
 -- POSITION AND POINT --
 
 
+center : Size -> Size -> Position
+center windowSize size =
+    { x =
+        ((windowSize.width - tbw) - size.width) // 2
+    , y =
+        (windowSize.height - size.height) // 2
+    }
+
+
 middle : Size -> Position
 middle { width, height } =
     { x = width // 2
