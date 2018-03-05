@@ -204,6 +204,7 @@ PaintApp = function(manifest) {
                 break;
 
             case "load drawing":
+                console.log("Load drawing?");
                 Client.getDrawing(msg.payload, {
                     onSuccess: function(result) {
                         console.log("yay result", result);
