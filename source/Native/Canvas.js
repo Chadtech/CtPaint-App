@@ -4,6 +4,21 @@
 /*global _elm_lang$virtual_dom$Native_VirtualDom */
 
 
+var document = document || { 
+  createElement: function(){ 
+    return { 
+      getContext: function() {
+        return {
+          drawImage: function(){},
+          beginPath: function(){},
+          rect: function(){},
+          fill: function(){},
+        }
+      } 
+    }; 
+}};
+
+
 var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-line no-unused-vars
 
 

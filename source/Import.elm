@@ -17,8 +17,6 @@ import Reply
             , NoReply
             )
         )
-import Task
-import Tuple.Infix exposing ((&))
 
 
 -- TYPES --

@@ -38,12 +38,6 @@ main =
     , Taskbar.css
     , Palette.css
     , ColorPicker.css
-    , Minimap.css
-    , Menu.css
-    , ReplaceColor.css
-    , Import.css
-    , Scale.css
-    , Text.css
     , Error.css
     , Loading.css
     , Upload.css
@@ -51,6 +45,12 @@ main =
     , Resize.css
     , Project.css
     , Loading.css
+    , Minimap.css
+    , Menu.css
+    , ReplaceColor.css
+    , Import.css
+    , Scale.css
+    , Text.css
     , Open.css
     , Eraser.css
     , About.css
