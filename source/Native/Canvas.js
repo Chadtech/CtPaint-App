@@ -3,8 +3,7 @@
 /*global _elm_lang$core$Native_Scheduler */
 /*global _elm_lang$virtual_dom$Native_VirtualDom */
 
-
-var document = document || { 
+var fakeDoc = { 
   createElement: function(){ 
     return { 
       getContext: function() {
@@ -16,8 +15,10 @@ var document = document || {
         }
       } 
     }; 
-}};
+  }
+};
 
+var document = typeof document === "undefined" ? fakeDoc : document; 
 
 var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-line no-unused-vars
 
