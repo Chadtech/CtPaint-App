@@ -18,7 +18,7 @@ var fakeDoc = {
   }
 };
 
-var document = typeof document === "undefined" ? fakeDoc : document; 
+var D = typeof document === "undefined" ? fakeDoc : document; 
 
 var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-line no-unused-vars
 
@@ -52,7 +52,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
   // and the clone is passed along.
   function cloneModel(model) {
 
-    var canvas = document.createElement("canvas");
+    var canvas = D.createElement("canvas");
     canvas.width = model.width;
     canvas.height = model.height;
 
@@ -66,7 +66,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
 
   function initialize(size) {
 
-    var canvas = document.createElement("canvas");
+    var canvas = D.createElement("canvas");
     canvas.width = size.width;
     canvas.height = size.height;
 
@@ -685,7 +685,7 @@ var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-
       var img = new Image();
 
       img.onload = function () {
-        var canvas = document.createElement("canvas");
+        var canvas = D.createElement("canvas");
 
         canvas.width = img.width;
         canvas.height = img.height;
