@@ -7,6 +7,8 @@ module.exports = {
         var milliseconds = new Date().getMilliseconds()
         var seed = (buf[0] * 1000) + milliseconds;
 
+        console.log("manifest init", mixins.manifest.init);
+
         return {
             windowHeight: window.innerHeight,
             windowWidth: window.innerWidth,
