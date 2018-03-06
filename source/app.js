@@ -204,7 +204,7 @@ PaintApp = function(manifest) {
                 break;
 
             case "load drawing":
-                console.log("Load drawing?");
+                console.log("Load drawing?", Client);
                 Client.getDrawing(msg.payload, {
                     onSuccess: function(result) {
                         console.log("yay result", result);
@@ -212,7 +212,8 @@ PaintApp = function(manifest) {
                     onFailure: function(error) {
                         console.log("oh no error", error);
                     }
-                })
+                });
+                break;
 
             case "track": 
                 track(msg.payload);

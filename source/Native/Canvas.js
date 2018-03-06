@@ -18,7 +18,7 @@ var fakeDoc = {
   }
 };
 
-var D = typeof document === "undefined" ? fakeDoc : document; 
+var D = typeof document === "undefined" ? fakeDoc : document;
 
 var _program_house$ctpaint_app$Native_Canvas = function () {  // eslint-disable-line no-unused-vars
 
