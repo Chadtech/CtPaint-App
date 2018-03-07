@@ -204,13 +204,13 @@ PaintApp = function(manifest) {
                 break;
 
             case "load drawing":
-                console.log("Load drawing?", Client);
                 Client.getDrawing(msg.payload, {
                     onSuccess: function(result) {
-                        console.log("yay result", result);
+                        console.log(result);
+                        toElm("drawing loaded", result.data);
                     }, 
                     onFailure: function(error) {
-                        console.log("oh no error", error);
+                        toElm("drawing failed to load", String(error));
                     }
                 });
                 break;
@@ -226,6 +226,10 @@ PaintApp = function(manifest) {
     }
 
     function init(mixins) {
+        var inithtml = document.getElementById("inithtml");
+        if (inithtml !== null) {
+            document.body.removeChild(inithtml)
+        }
         app = Elm.PaintApp.fullscreen(Flags.make(mixins));
         app.ports.toJs.subscribe(jsMsgHandler);
     };

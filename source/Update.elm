@@ -5,6 +5,7 @@ import ColorPicker
 import Data.User as User
 import Helpers.History as History
 import Helpers.Keys
+import Id exposing (Origin(Remote))
 import Incorporate.Color
 import Incorporate.Menu as Menu
 import Keys
@@ -13,6 +14,7 @@ import Minimap
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Palette
+import Task
 import Taskbar
 import Tool
 import Toolbar
@@ -163,4 +165,29 @@ update message model =
                 & Cmd.none
 
         InitFromUrl (Err err) ->
+            model & Cmd.none
+
+        DrawingLoaded drawing ->
+            drawing.data
+                |> Canvas.loadImage
+                |> Task.attempt (DeblobDrawing drawing)
+                |& model
+
+        DeblobDrawing drawing (Ok canvas) ->
+            { model
+                | menu = Nothing
+                , project =
+                    { name = drawing.name
+                    , nameIsGenerated = drawing.nameIsGenerated
+                    , origin = Remote drawing.id
+                    }
+                , canvas = canvas
+                , canvasPosition =
+                    Util.center
+                        model.windowSize
+                        (Canvas.getSize canvas)
+            }
+                & Cmd.none
+
+        DeblobDrawing drawing (Err _) ->
             model & Cmd.none

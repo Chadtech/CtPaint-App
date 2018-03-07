@@ -1,6 +1,7 @@
 module Msg exposing (Msg(..), decode)
 
 import Canvas exposing (Canvas, Error)
+import Data.Drawing as Drawing exposing (Drawing)
 import Data.Keys as Key
 import Data.Menu as Menu
 import Data.Minimap as Minimap
@@ -36,6 +37,8 @@ type Msg
     | ClientMouseMoved Position
     | ClientMouseUp Position
     | InitFromUrl (Result Error Canvas)
+    | DrawingLoaded Drawing
+    | DeblobDrawing Drawing (Result Error Canvas)
     | MsgDecodeFailed DecodeProblem
 
 
@@ -61,7 +64,7 @@ decode browser json =
 decoder : Browser -> Decoder Msg
 decoder browser =
     Decode.field "type" Decode.string
-        |> Decode.andThen (toMsg browser)
+        |> Decode.andThen (payload << toMsg browser)
 
 
 toMsg : Browser -> String -> Decoder Msg
@@ -70,27 +73,30 @@ toMsg browser type_ =
         "login succeeded" ->
             browser
                 |> User.decoder
-                |> payload
                 |> Decode.map (Menu.loginSucceeded >> MenuMsg)
 
         "login failed" ->
-            payload Decode.string
+            Decode.string
                 |> Decode.map (Menu.loginFailed >> MenuMsg)
 
         "logout succeeded" ->
             Decode.succeed LogoutSucceeded
 
         "logout failed" ->
-            payload Decode.string
+            Decode.string
                 |> Decode.map LogoutFailed
 
         "file read" ->
-            payload Decode.string
+            Decode.string
                 |> Decode.map (Menu.fileRead >> MenuMsg)
 
         "file not image" ->
             MenuMsg Menu.fileNotImage
                 |> Decode.succeed
+
+        "drawing loaded" ->
+            Drawing.decoder
+                |> Decode.map DrawingLoaded
 
         _ ->
             MsgDecodeFailed UnrecognizedMsgType
