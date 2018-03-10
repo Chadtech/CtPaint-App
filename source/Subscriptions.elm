@@ -6,6 +6,7 @@ import ColorPicker
 import Data.Keys as Keys
 import Data.Menu
 import Data.Minimap exposing (State(..))
+import Init
 import Json.Decode as Decode exposing (Value)
 import Menu
 import Minimap
@@ -19,7 +20,7 @@ import Window
 port keyEvent : (Value -> msg) -> Sub msg
 
 
-subscriptions : Result String Model -> Sub Msg
+subscriptions : Result Init.Error Model -> Sub Msg
 subscriptions result =
     case result of
         Ok model ->

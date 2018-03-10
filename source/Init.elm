@@ -1,4 +1,4 @@
-module Init exposing (fromFlags, init)
+module Init exposing (Error(..), fromFlags, init)
 
 import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Data.Color
@@ -24,7 +24,15 @@ import Tuple.Infix exposing ((&), (|&))
 import Util exposing (tbw)
 
 
-init : Value -> ( Result String Model, Cmd Msg )
+-- TYPES --
+
+
+type Error
+    = AllowanceExceeded
+    | Other String
+
+
+init : Value -> ( Result Error Model, Cmd Msg )
 init json =
     case Decode.decodeValue Flags.decoder json of
         Ok flags ->
@@ -34,14 +42,14 @@ init json =
                         |> Window.toUrl flags.mountPath
                         |> RedirectPageTo
                         |> Ports.send
-                        |& Err "allowance exceeded"
+                        |& Err AllowanceExceeded
 
                 _ ->
                     fromFlags flags
                         |> Tuple.mapFirst Ok
 
         Err err ->
-            Err err & Cmd.none
+            Err (Other err) & Cmd.none
 
 
 fromFlags : Flags -> ( Model, Cmd Msg )

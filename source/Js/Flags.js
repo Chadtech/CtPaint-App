@@ -4,8 +4,8 @@ module.exports = {
 
         var buf = new Uint32Array(1);
         window.crypto.getRandomValues(buf);
-        var milliseconds = new Date().getMilliseconds()
-        var seed = (buf[0] * 1000) + milliseconds;
+        var milliseconds = new Date().getMilliseconds();
+        var seed = buf[0] * 1000 + milliseconds;
 
         console.log("manifest init", mixins.manifest.init);
 
@@ -20,15 +20,14 @@ module.exports = {
             localWork: JSON.parse(localWork),
             mountPath: mixins.manifest.mountPath,
             buildNumber: mixins.manifest.buildNumber
-        }; 
+        };
     }
-}
-
+};
 
 function getBrowser() {
     if (window.navigator.userAgent.indexOf("Firefox") !== -1) {
         return "Firefox";
-    } 
+    }
     if (window.navigator.userAgent.indexOf("Chrome") !== -1) {
         return "Chrome";
     }

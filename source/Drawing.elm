@@ -143,4 +143,5 @@ update msg model =
                 & NoReply
 
         SaveClicked ->
-            model & SaveDrawingAttrs model.name
+            { model | state = Saving }
+                & SaveDrawingAttrs model.name

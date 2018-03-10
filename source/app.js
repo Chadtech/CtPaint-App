@@ -1,281 +1,179 @@
 /*
-    initMsgs 
-        { type : "init paint app" }
-        { type : "init new drawing" }
-        { type : "init drawing", payload: "id" }
-        { type : "init image", payload: "url" }
+	init
+		null
+		{ id : String }
+		{ url : String }
+		{ params : 
+			{ width : Int optional
+			, height : Int optional
+			, name : String optional
+			, backgroundcolor : "Black" | "White" optional
+			}
+		}
 
-    existing state
-        null
-        { data: String
-        , width: Int
-        , height: Int
-        , project: 
-            null
-            { payload: Project }
-        }
-
-    user
-        null
-        "offline"
-        User
-        "allowance exceeded"
-
-    manifest
-        { initMsg: initMsg
-        , Client: Client
-        , mountPath: String
-        , buildNumber: Int
-        }
+	manifest
+		{ init : init
+		, Client : Client
+		, track : Tracking Function
+		, mountPath : String
+		, buildNumber : Int
+		}
 */
 
 var Allowance = require("./Js/Allowance");
-var User = require("./Js/User");
 var Flags = require("./Js/Flags");
 
 PaintApp = function(manifest) {
-    var Client = manifest.Client;
-    var track = manifest.track;
-    var app;
+	var Client = manifest.Client;
+	var track = manifest.track;
+	var app;
 
-    function toElm(type, payload) {
-        app.ports.fromJs.send({
-            type: type,
-            payload: payload
-        });
-    };
+	function toElm(type, payload) {
+		app.ports.fromJs.send({
+			type: type,
+			payload: payload
+		});
+	}
 
-    function listenToKeyEvents (keydown, keyup) {
-        window.addEventListener("keydown", keydown);
-        window.addEventListener("keyup", keyup);
-    }
+	var Drawing = require("./Js/Drawing")(Client, toElm);
+	var User = require("./Js/User")(Client, toElm);
 
-    function ignoreKeyEvents (keydown, keyup) {
-        window.removeEventListener("keydown", keydown);
-        window.removeEventListener("keyup", keyup);
-    }
+	function listenToKeyEvents(keydown, keyup) {
+		window.addEventListener("keydown", keydown);
+		window.addEventListener("keyup", keyup);
+	}
 
-    window.onbeforeunload = function(event) { return ""; };
+	function ignoreKeyEvents(keydown, keyup) {
+		window.removeEventListener("keydown", keydown);
+		window.removeEventListener("keyup", keyup);
+	}
 
-    function makeKeyHandler (direction) {
-        return function(event) {
-            app.ports.keyEvent.send({
-                keyCode: event.keyCode,
-                shift: event.shiftKey,
-                meta: event.metaKey,
-                ctrl: event.ctrlKey,
-                direction: direction
-            });
+	window.onbeforeunload = function(event) {
+		return "";
+	};
 
-            event.preventDefault();
-        };
-    }
+	function makeKeyHandler(direction) {
+		return function(event) {
+			app.ports.keyEvent.send({
+				keyCode: event.keyCode,
+				shift: event.shiftKey,
+				meta: event.metaKey,
+				ctrl: event.ctrlKey,
+				direction: direction
+			});
 
-    var handleKeyDown = makeKeyHandler("down");
-    var handleKeyUp = makeKeyHandler("up");
+			event.preventDefault();
+		};
+	}
 
-    listenToKeyEvents(handleKeyDown, handleKeyUp);
+	var handleKeyDown = makeKeyHandler("down");
+	var handleKeyUp = makeKeyHandler("up");
 
-    function handleLogin(user) {
-        user.getUserAttributes(function(err, attributes) {
-            if (err) {
-                toElm("login failed", String(err));
-            } else {
-                toElm("login succeeded", User.fromAttributes(attributes));
-            }
-        });
-    }
+	listenToKeyEvents(handleKeyDown, handleKeyUp);
 
-    var fileUploader = document.createElement("input");
-    fileUploader.type = "file";
-    fileUploader.addEventListener("change", function(event) {
-        var reader = new FileReader();
-        
-        reader.onload = function(){
-            var dataURL = reader.result;
-            toElm("file read", reader.result);
-        };
-        
-        var imageIndex = [
-            "image/png",
-            "image/jpeg"
-        ].indexOf(fileUploader.files[0].type);
+	var fileUploader = document.createElement("input");
+	fileUploader.type = "file";
+	fileUploader.addEventListener("change", function(event) {
+		var reader = new FileReader();
 
-        if (imageIndex !== -1) {
-            reader.readAsDataURL(fileUploader.files[0]);
-        } else {
-            toElm("file not image", null)
-        }
-    })
+		reader.onload = function() {
+			toElm("file read", reader.result);
+		};
 
-    function jsMsgHandler(msg) {
-        switch (msg.type) {
-            case "save":
+		var imageIndex = ["image/png", "image/jpeg"].indexOf(
+			fileUploader.files[0].type
+		);
 
-                /*
-                msg.payload == Data
-                    { canvas : String 
-                    , palette : List String
-                    , swatches :
-                        { top : String
-                        , left : String
-                        , right : String
-                        , bottom : String
-                        }
-                    , name : String
-                    , nameIsGenerated : Bool
-                    , email : String
-                    , id : Maybe String
-                    }
-                */
+		if (imageIndex !== -1) {
+			reader.readAsDataURL(fileUploader.files[0]);
+		} else {
+			toElm("file not image", null);
+		}
+	});
 
-                if (msg.payload.id === null) {
-                    Client.createDrawing(msg.payload, {
-                        onSuccess: function(result) {
-                            console.log("Result!", result);
-                        },
-                        onFailure: function(err) {
-                            console.log("Error!", err);
-                        }
-                    });
-                } else {
-                    console.log("????");
-                }
-                break;
+	function action(type, f) {
+		return {
+			type: type,
+			f: f
+		};
+	}
 
-            case "steal focus":
-                ignoreKeyEvents(handleKeyDown, handleKeyUp);
-                break;
+	var actions = [
+		action("save", Drawing.save),
+		action("steal focus", function() {
+			ignoreKeyEvents(handleKeyDown, handleKeyUp);
+		}),
+		action("return focus", function() {
+			listenToKeyEvents(handleKeyDown, handleKeyUp);
+		}),
+		action("download", Drawing.download),
+		action("attempt login", User.login),
+		action("logout", User.logout),
+		action("open new window", window.open),
+		action("redirect page to", function(payload) {
+			window.onbeforeunload = null;
+			window.location = payload;
+		}),
+		action("open up file upload", fileUploader.click),
+		action("load drawing", Drawing.get),
+		action("track", track)
+	];
 
-            case "return focus":
-                listenToKeyEvents(handleKeyDown, handleKeyUp);
-                break;
+	function jsMsgHandler(msg) {
+		for (var i = 0; i < actions.length; i++) {
+			if (msg.type === actions[i].type) {
+				actions[i].f(msg.payload);
+				return;
+			}
+		}
+		console.log("Unrecognized JsMsg type ->", msg.type);
+	}
 
-            case "download":
-                var canvas = document.getElementById("main-canvas");
-                var png = canvas.toDataURL();
+	function init(mixins) {
+		var inithtml = document.getElementById("inithtml");
+		if (inithtml !== null) {
+			document.body.removeChild(inithtml);
+		}
+		app = Elm.PaintApp.fullscreen(Flags.make(mixins));
+		app.ports.toJs.subscribe(jsMsgHandler);
+	}
 
-                var a = document.createElement("a");
-                a.href = png;
-                a.download = msg.payload;
-                a.click();
-                break;
+	Client.getSession({
+		onSuccess: function(attrs) {
+			init({
+				user: User.fromAttributes(attrs),
+				manifest: manifest
+			});
+		},
+		onFailure: function(err) {
+			if (Allowance.exceeded()) {
+				err = "allowance exceeded";
+			}
+			switch (String(err)) {
+				case "no session":
+					init({
+						user: null,
+						manifest: manifest
+					});
+					break;
 
-            case "attempt login":
-                Client.login(msg.payload, {
-                    onSuccess: handleLogin,
-                    onFailure: function(err) {
-                        toElm("login failed", String(err));
-                    }
-                });
-                break;
+				case "NetworkingError: Network Failure":
+					init({
+						user: "offline",
+						manifest: manifest
+					});
+					break;
 
-            case "logout":
-                function succeed(){
-                    toElm("logout succeeded", null);
-                }
+				case "allowance exceeded":
+					init({
+						user: "allowance exceeded",
+						manifest: manifest
+					});
+					break;
 
-                Client.logout({
-                    onSuccess: succeed,
-                    onFailure: function(err) {
-                        switch (err) {
-                            case "user was not signed in":
-                                succeed();
-                                break;
-
-                            default:
-                                app.ports.fromJs.send({
-                                    type: "logout failed",
-                                    payload: err
-                                });
-                                break;
-                        }
-                    }
-                });
-                break;
-
-            case "open new window":
-                console.log(msg);
-                window.open(msg.payload);
-                break;
-
-            case "redirect page to":
-                window.onbeforeunload = null;
-                window.location = msg.payload;
-                break;
-
-            case "open up file upload":
-                fileUploader.click();
-                break;
-
-            case "load drawing":
-                Client.getDrawing(msg.payload, {
-                    onSuccess: function(result) {
-                        console.log(result);
-                        toElm("drawing loaded", result.data);
-                    }, 
-                    onFailure: function(error) {
-                        toElm("drawing failed to load", String(error));
-                    }
-                });
-                break;
-
-            case "track": 
-                track(msg.payload);
-                break;
-
-            default:
-                console.log("Unrecognized JsMsg type ->", msg.type);
-                break;
-        }
-    }
-
-    function init(mixins) {
-        var inithtml = document.getElementById("inithtml");
-        if (inithtml !== null) {
-            document.body.removeChild(inithtml)
-        }
-        app = Elm.PaintApp.fullscreen(Flags.make(mixins));
-        app.ports.toJs.subscribe(jsMsgHandler);
-    };
-
-    Client.getSession({
-        onSuccess: function(attributes) {
-            var user = User.fromAttributes(attributes);
-            init({ 
-                user: user,
-                manifest: manifest
-            });
-        },
-        onFailure: function(err) {
-            if (Allowance.exceeded()) {
-                err = "allowance exceeded";
-            }
-            switch (String(err)) {
-                case "no session" :
-                    init({ 
-                        user: null,
-                        manifest: manifest
-                    });
-                    break;
-
-                case "NetworkingError: Network Failure":
-                    init({ 
-                        user: "offline",
-                        manifest: manifest
-                    });
-                    break;
-
-                case "allowance exceeded":
-                    init({ 
-                        user: "allowance exceeded",
-                        manifest: manifest
-                    });
-                    break;
-
-                default : 
-                    console.log("Unknown get session error", err);
-            }
-        }
-    });
+				default:
+					console.log("Unknown get session error", err);
+			}
+		}
+	});
 };

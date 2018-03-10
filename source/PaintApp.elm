@@ -15,7 +15,7 @@ import View
 -- MAIN --
 
 
-main : Program Value (Result String Model) Msg
+main : Program Value (Result Init.Error Model) Msg
 main =
     { init = init
     , view = view
@@ -29,13 +29,16 @@ main =
 -- VIEW --
 
 
-view : Result String Model -> Html Msg
+view : Result Init.Error Model -> Html Msg
 view result =
     case result of
         Ok model ->
             View.view model
 
-        Err err ->
+        Err Init.AllowanceExceeded ->
+            Html.text ""
+
+        Err (Init.Other err) ->
             Error.view err
 
 
@@ -43,7 +46,7 @@ view result =
 -- UPDATE --
 
 
-update : Msg -> Result String Model -> ( Result String Model, Cmd Msg )
+update : Msg -> Result Init.Error Model -> ( Result Init.Error Model, Cmd Msg )
 update msg result =
     case result of
         Ok model ->

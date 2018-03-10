@@ -30,4 +30,4 @@ toUrlHelper window =
             "/forgotpassword"
 
         AllowanceExceeded ->
-            "/allowance-exceeded"
+            "/allowanceexceeded"
