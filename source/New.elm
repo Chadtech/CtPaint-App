@@ -20,8 +20,8 @@ import Tuple.Infix exposing ((&), (:=))
 type Msg
     = ColorClicked BackgroundColor
     | FieldUpdated Field String
-    | NewClicked
-    | NewSubmitted
+    | StartClicked
+    | StartSubmitted
 
 
 type Field
@@ -84,26 +84,28 @@ update msg model =
             { model | backgroundColor = color }
                 & NoReply
 
-        NewClicked ->
-            model & newReply model
+        StartClicked ->
+            model & startReply model
 
-        NewSubmitted ->
-            model & newReply model
+        StartSubmitted ->
+            model & startReply model
 
 
-newReply : Model -> Reply
-newReply model =
-    let
-        name =
-            determineName model
-    in
-    { name = Just name
+startReply : Model -> Reply
+startReply model =
+    model
+        |> toParams
+        |> Canvas.fromParams
+        |> StartNewDrawing (determineName model) (model.nameField /= "")
+
+
+toParams : Model -> Canvas.Params
+toParams model =
+    { name = Just (determineName model)
     , width = Just model.width
     , height = Just model.height
     , backgroundColor = Just model.backgroundColor
     }
-        |> Canvas.fromParams
-        |> StartNewDrawing name (model.nameField /= "")
 
 
 determineName : Model -> String
@@ -270,16 +272,16 @@ view model =
         ]
     , a
         (startNewButtonAttrs model)
-        [ Html.text "new drawing" ]
+        [ Html.text "start" ]
     ]
-        |> form [ onSubmit NewSubmitted ]
+        |> form [ onSubmit StartSubmitted ]
         |> List.singleton
 
 
 startNewButtonAttrs : Model -> List (Attribute Msg)
 startNewButtonAttrs model =
     [ class [ Button ]
-    , onClick NewClicked
+    , onClick StartClicked
     ]
 
 

@@ -130,6 +130,7 @@ update msg model =
                 | menu =
                     model.windowSize
                         |> Menu.initBugReport
+                            (User.isLoggedIn model.user)
                         |> Just
             }
                 & Ports.stealFocus

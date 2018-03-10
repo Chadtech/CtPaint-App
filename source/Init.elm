@@ -132,7 +132,7 @@ getFields ({ windowSize } as flags) =
                     flags.randomValues.projectName
                     flags.windowSize
                     |> Just
-            , cmd = Cmd.none
+            , cmd = Ports.stealFocus
             , color = Data.Color.init
             }
 

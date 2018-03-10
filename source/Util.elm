@@ -11,11 +11,14 @@ import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode exposing (Value)
 import Mouse exposing (Position)
 import ParseInt
+import Process
 import Random.Pcg as Random
     exposing
         ( Generator
         , Seed
         )
+import Task
+import Time exposing (Time)
 import Window exposing (Size)
 
 
@@ -316,3 +319,10 @@ mixinCmd newCmd ( model, cmd ) =
     ( model
     , Cmd.batch [ newCmd, cmd ]
     )
+
+
+delay : Time -> msg -> Cmd msg
+delay time msg =
+    Process.sleep time
+        |> Task.andThen (always <| Task.succeed msg)
+        |> Task.perform identity

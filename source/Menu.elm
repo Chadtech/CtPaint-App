@@ -160,12 +160,12 @@ updateContent config msg model =
             case model.content of
                 BugReport subModel ->
                     let
-                        ( newSubModel, cmd ) =
+                        ( newSubModel, cmd, reply ) =
                             BugReport.update subMsg subModel
                     in
                     { model | content = BugReport newSubModel }
                         & Cmd.map (ContentMsg << BugReportMsg) cmd
-                        & NoReply
+                        & reply
 
                 _ ->
                     model & Cmd.none & NoReply
@@ -230,12 +230,12 @@ updateContent config msg model =
             case model.content of
                 New subModel ->
                     let
-                        ( newSubModel, _ ) =
+                        ( newSubModel, reply ) =
                             New.update subMsg subModel
                     in
                     { model | content = New newSubModel }
                         & Cmd.none
-                        & NoReply
+                        & reply
 
                 _ ->
                     model & Cmd.none & NoReply
@@ -469,8 +469,8 @@ initLogin =
 
 initNew : String -> Size -> Model
 initNew name =
-    { width = 10
-    , height = 10
+    { width = 466
+    , height = 211
     }
         |> init "new" (New (New.init name))
 
@@ -483,12 +483,14 @@ initText =
         |> init "text" (Text Text.init)
 
 
-initBugReport : Size -> Model
-initBugReport =
+initBugReport : Bool -> Size -> Model
+initBugReport loggedIn =
     { width = 506
     , height = 313
     }
-        |> init "report bug" (BugReport BugReport.init)
+        |> init
+            "report bug"
+            (BugReport (BugReport.init loggedIn))
 
 
 initScale : Size -> Size -> Model
@@ -524,8 +526,8 @@ initDownload flags =
 
 initAbout : Int -> Size -> Model
 initAbout buildNumber =
-    { width = 10
-    , height = 10
+    { width = 416
+    , height = 292
     }
         |> init "about"
             (About { buildNumber = buildNumber })
@@ -547,8 +549,8 @@ initReplaceColor target replacement palette =
 
 initUpload : Size -> Model
 initUpload =
-    { width = 10
-    , height = 10
+    { width = 524
+    , height = 558
     }
         |> init "upload" (Upload Upload.init)
 
@@ -557,8 +559,8 @@ initResize : Size -> Size -> Model
 initResize canvasSize =
     init "resize"
         (Resize (Resize.init canvasSize))
-        { width = 10
-        , height = 10
+        { width = 180
+        , height = 303
         }
 
 
@@ -566,8 +568,8 @@ initDrawing : String -> Size -> Model
 initDrawing name =
     init "drawing"
         (Menu.Drawing (Drawing.init name))
-        { width = 10
-        , height = 10
+        { width = 369
+        , height = 115
         }
 
 
@@ -575,15 +577,15 @@ initLoading : Maybe String -> Size -> Model
 initLoading maybeName =
     init "loading"
         (Loading (Loading.init maybeName))
-        { width = 10
-        , height = 10
+        { width = 224
+        , height = 99
         }
 
 
 initLogout : Size -> Model
 initLogout =
-    { width = 10
-    , height = 10
+    { width = 420
+    , height = 191
     }
         |> init "logout" Logout
 
