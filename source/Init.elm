@@ -127,7 +127,11 @@ getFields ({ windowSize } as flags) =
             , drawingName = flags.randomValues.projectName
             , drawingNameIsGenerated = True
             , id = Local
-            , menu = Nothing
+            , menu =
+                Menu.initNew
+                    flags.randomValues.projectName
+                    flags.windowSize
+                    |> Just
             , cmd = Cmd.none
             , color = Data.Color.init
             }

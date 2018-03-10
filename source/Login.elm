@@ -32,6 +32,7 @@ import Reply
     exposing
         ( Reply
             ( AttemptingLogin
+            , NoLongerLoggingIn
             , NoReply
             , SetUser
             )
@@ -261,7 +262,9 @@ update config msg model =
                 , showFields = True
                 , password = ""
             }
-                |> Reply.nothing
+                |> Reply.fromModel
+                    Cmd.none
+                    NoLongerLoggingIn
 
         LoginSucceeded user ->
             ( { model | email = "", password = "" }

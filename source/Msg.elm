@@ -38,7 +38,7 @@ type Msg
     | ClientMouseUp Position
     | InitFromUrl (Result Error Canvas)
     | DrawingLoaded Drawing
-    | DeblobDrawing Drawing (Result Error Canvas)
+    | DrawingDeblobed Drawing (Result Error Canvas)
     | MsgDecodeFailed DecodeProblem
 
 

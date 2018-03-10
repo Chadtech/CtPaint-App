@@ -115,6 +115,13 @@ incorporate reply menu model =
             }
                 & Cmd.none
 
+        NoLongerLoggingIn ->
+            { model
+                | user = User.LoggedOut
+                , menu = Just menu
+            }
+                & Cmd.none
+
         ResizeTo left top width height ->
             { model
                 | canvas =
@@ -166,6 +173,18 @@ incorporate reply menu model =
                 Nothing ->
                     newModel
                         |> closeMenu
+
+        StartNewDrawing name nameIsGenerated canvas ->
+            { model
+                | canvas = canvas
+                , canvasPosition =
+                    Util.center
+                        model.windowSize
+                        (Canvas.getSize canvas)
+                , drawingName = name
+                , drawingNameIsGenerated = nameIsGenerated
+            }
+                |> closeMenu
 
 
 closeMenu : Model -> ( Model, Cmd msg )

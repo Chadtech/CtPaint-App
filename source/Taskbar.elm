@@ -88,7 +88,10 @@ update msg model =
                         |> Menu.initLogin
                         |> Just
             }
-                & Ports.stealFocus
+                & Cmd.batch
+                    [ Ports.stealFocus
+                    , Ports.send Ports.Logout
+                    ]
 
         UserClicked ->
             case model.user of

@@ -14,6 +14,7 @@ import Login
 import Logout
 import Menu
 import Minimap
+import New
 import Open
 import Palette
 import ReplaceColor
@@ -57,6 +58,7 @@ main =
     , About.css
     , BugReport.css
     , Save.css
+    , New.css
     ]
         |> Css.File.compile
         |> (,) "./development/paint-app-styles.css"

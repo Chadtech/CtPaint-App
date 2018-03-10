@@ -467,12 +467,12 @@ initLogin =
         |> init "login" (Login Login.init)
 
 
-initNew : Size -> Model
-initNew =
+initNew : String -> Size -> Model
+initNew name =
     { width = 10
     , height = 10
     }
-        |> init "new" (New New.init)
+        |> init "new" (New (New.init name))
 
 
 initText : Size -> Model

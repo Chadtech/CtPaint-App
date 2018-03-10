@@ -169,10 +169,10 @@ update message model =
         DrawingLoaded drawing ->
             drawing.data
                 |> Canvas.loadImage
-                |> Task.attempt (DeblobDrawing drawing)
+                |> Task.attempt (DrawingDeblobed drawing)
                 |& model
 
-        DeblobDrawing drawing (Ok canvas) ->
+        DrawingDeblobed drawing (Ok canvas) ->
             { model
                 | menu = Nothing
                 , drawingName = drawing.name
@@ -185,5 +185,5 @@ update message model =
             }
                 & Cmd.none
 
-        DeblobDrawing drawing (Err _) ->
+        DrawingDeblobed drawing (Err _) ->
             model & Cmd.none

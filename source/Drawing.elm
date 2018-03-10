@@ -60,12 +60,15 @@ init name =
 
 type Class
     = Field
+    | Button
 
 
 css : Stylesheet
 css =
     [ Css.class Field
         [ marginBottom (px 0) ]
+    , Css.class Button
+        [ marginTop (px 8) ]
     ]
         |> namespace projectNamespace
         |> stylesheet
@@ -110,7 +113,9 @@ readyView model =
             ]
             []
         , Html.Custom.menuButton
-            [ onClick SaveClicked ]
+            [ class [ Button ]
+            , onClick SaveClicked
+            ]
             [ Html.text "save" ]
         ]
     ]
