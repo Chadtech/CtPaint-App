@@ -1,4 +1,4 @@
-module Project
+module Drawing
     exposing
         ( Model
         , Msg(..)
@@ -10,18 +10,12 @@ module Project
 
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
-import Data.Project as Project exposing (Project)
-import Html
-    exposing
-        ( Html
-        , input
-        , p
-        )
+import Html exposing (Html, input, p)
 import Html.Attributes exposing (value)
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Reply exposing (Reply(NoReply, SetProject))
+import Reply exposing (Reply(NoReply, SaveDrawingAttrs))
 import Tuple.Infix exposing ((&), (|&))
 
 
@@ -29,7 +23,7 @@ import Tuple.Infix exposing ((&), (|&))
 
 
 type alias Model =
-    { project : Project
+    { name : String
     , state : State
     }
 
@@ -44,11 +38,6 @@ type Problem
     = Other String
 
 
-toProject : Model -> Project
-toProject model =
-    model.project
-
-
 type Msg
     = NameUpdated String
     | SaveClicked
@@ -58,9 +47,9 @@ type Msg
 -- INIT --
 
 
-init : Project -> Model
-init project =
-    { project = project
+init : String -> Model
+init name =
+    { name = name
     , state = Ready
     }
 
@@ -84,7 +73,7 @@ css =
 
 projectNamespace : String
 projectNamespace =
-    Html.Custom.makeNamespace "Project"
+    Html.Custom.makeNamespace "DrawingMenu"
 
 
 
@@ -117,7 +106,7 @@ readyView model =
         [ p [] [ Html.text "name" ]
         , input
             [ onInput NameUpdated
-            , value model.project.name
+            , value model.name
             ]
             []
         , Html.Custom.menuButton
@@ -145,11 +134,8 @@ update : Msg -> Model -> ( Model, Reply )
 update msg model =
     case msg of
         NameUpdated name ->
-            { model
-                | project =
-                    Project.setName name model.project
-            }
+            { model | name = name }
                 & NoReply
 
         SaveClicked ->
-            model & SetProject (toProject model)
+            model & SaveDrawingAttrs model.name

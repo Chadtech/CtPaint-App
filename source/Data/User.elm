@@ -1,15 +1,18 @@
 module Data.User
     exposing
-        ( Model(..)
+        ( Model
+        , State(..)
         , User
         , decoder
         , getEmail
+        , initModel
         , isLoggedIn
-        , modelDecoder
+        , stateDecoder
         , toggleOptionsDropped
         )
 
 import Data.Keys as Keys
+import Id exposing (Origin(Local, Remote))
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline
     exposing
@@ -21,44 +24,60 @@ import Json.Decode.Pipeline
 import Keyboard.Extra.Browser exposing (Browser)
 
 
-type Model
+type State
     = Offline
     | AllowanceExceeded
     | LoggedOut
     | LoggingIn
     | LoggingOut
-    | LoggedIn User
+    | LoggedIn Model
+
+
+type alias Model =
+    { user : User
+    , optionsDropped : Bool
+    , drawingId : Origin
+    }
 
 
 type alias User =
     { email : String
     , name : String
     , profilePic : String
-    , optionsDropped : Bool
     , keyConfig : Keys.Config
     }
 
 
-getEmail : Model -> Maybe String
+initModel : Origin -> User -> Model
+initModel origin user =
+    { user = user
+    , optionsDropped = False
+    , drawingId = origin
+    }
+
+
+getEmail : State -> Maybe String
 getEmail model =
     case model of
-        LoggedIn user ->
+        LoggedIn { user } ->
             Just user.email
 
         _ ->
             Nothing
 
 
-modelDecoder : Browser -> Decoder Model
-modelDecoder browser =
+stateDecoder : Origin -> Browser -> Decoder State
+stateDecoder drawingId browser =
     [ Decode.null LoggedOut
     , Decode.string |> Decode.andThen fromString
-    , decoder browser |> Decode.map LoggedIn
+    , decoder browser
+        |> Decode.map (initModel drawingId)
+        |> Decode.map LoggedIn
     ]
         |> Decode.oneOf
 
 
-fromString : String -> Decoder Model
+fromString : String -> Decoder State
 fromString str =
     case str of
         "offline" ->
@@ -77,7 +96,6 @@ decoder browser =
         |> required "email" Decode.string
         |> required "name" Decode.string
         |> required "picture" Decode.string
-        |> hardcoded False
         |> custom (configDecoder browser)
 
 
@@ -136,9 +154,9 @@ ifNotEnded str =
 -- HELPERS --
 
 
-isLoggedIn : Model -> Bool
-isLoggedIn model =
-    case model of
+isLoggedIn : State -> Bool
+isLoggedIn state =
+    case state of
         LoggedIn _ ->
             True
 
@@ -146,6 +164,6 @@ isLoggedIn model =
             False
 
 
-toggleOptionsDropped : User -> User
-toggleOptionsDropped user =
-    { user | optionsDropped = not user.optionsDropped }
+toggleOptionsDropped : Model -> Model
+toggleOptionsDropped model =
+    { model | optionsDropped = not model.optionsDropped }

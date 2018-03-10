@@ -6,7 +6,6 @@ module Reply
 
 import Canvas exposing (Canvas)
 import Color exposing (Color)
-import Data.Project exposing (Project)
 import Data.User exposing (User)
 
 
@@ -20,9 +19,9 @@ type Reply
     | Replace Color Color
     | SetUser User
     | AttemptingLogin
-    | SetToLoggedOut
-    | SetProject Project
+    | SaveDrawingAttrs String
     | ResizeTo Int Int Int Int
+    | Logout
 
 
 nothing : model -> ( model, Cmd msg, Reply )

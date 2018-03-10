@@ -33,11 +33,9 @@ import Reply
         ( Reply
             ( AttemptingLogin
             , NoReply
-            , SetToLoggedOut
             , SetUser
             )
         )
-import Tuple.Infix exposing ((&))
 import Util
 
 
@@ -234,23 +232,22 @@ errorStr problem =
 -- UPDATE --
 
 
-update : Config -> Msg -> Model -> ( ( Model, Cmd Msg ), Reply )
+update : Config -> Msg -> Model -> ( Model, Cmd Msg, Reply )
 update config msg model =
     case msg of
         FieldUpdated Email email ->
             { model | email = email }
-                & Cmd.none
-                & NoReply
+                |> Reply.nothing
 
         ForgotPasswordClicked ->
-            model
-                & openForgotPassword config
-                & NoReply
+            ( model
+            , openForgotPassword config
+            , NoReply
+            )
 
         FieldUpdated Password password ->
             { model | password = password }
-                & Cmd.none
-                & NoReply
+                |> Reply.nothing
 
         LoginButtonPressed ->
             attemptLogin model
@@ -264,16 +261,13 @@ update config msg model =
                 , showFields = True
                 , password = ""
             }
-                & Cmd.none
-                & SetToLoggedOut
+                |> Reply.nothing
 
         LoginSucceeded user ->
-            { model
-                | email = ""
-                , password = ""
-            }
-                & Ports.returnFocus
-                & SetUser user
+            ( { model | email = "", password = "" }
+            , Ports.returnFocus
+            , SetUser user
+            )
 
 
 openForgotPassword : Config -> Cmd Msg
@@ -297,7 +291,7 @@ errorToProblem err =
             Other other
 
 
-attemptLogin : Model -> ( ( Model, Cmd Msg ), Reply )
+attemptLogin : Model -> ( Model, Cmd Msg, Reply )
 attemptLogin model =
     { model
         | responseError = Nothing
@@ -342,19 +336,13 @@ check condition error =
         Nothing
 
 
-submitIfNoErrors : Model -> ( ( Model, Cmd Msg ), Reply )
+submitIfNoErrors : Model -> ( Model, Cmd Msg, Reply )
 submitIfNoErrors model =
     if List.isEmpty model.errors then
-        let
-            cmd =
-                AttemptLogin model.email model.password
-                    |> Ports.send
-        in
-        { model
-            | showFields = False
-            , password = ""
-        }
-            & cmd
-            & AttemptingLogin
+        ( { model | showFields = False, password = "" }
+        , AttemptLogin model.email model.password
+            |> Ports.send
+        , AttemptingLogin
+        )
     else
-        model & Cmd.none & NoReply
+        model |> Reply.nothing

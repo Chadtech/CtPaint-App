@@ -1,6 +1,13 @@
-module Download exposing (..)
+module Download
+    exposing
+        ( Flags
+        , Model
+        , Msg
+        , init
+        , update
+        , view
+        )
 
-import Data.Project exposing (Project)
 import Html exposing (Html, a, form, input, p, text)
 import Html.Attributes exposing (class, placeholder, value)
 import Html.Custom
@@ -88,7 +95,13 @@ view model =
 -- INIT --
 
 
-init : Project -> Model
+type alias Flags =
+    { name : String
+    , nameIsGenerated : Bool
+    }
+
+
+init : Flags -> Model
 init { name, nameIsGenerated } =
     { field =
         if nameIsGenerated then

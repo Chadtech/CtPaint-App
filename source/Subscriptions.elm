@@ -1,6 +1,7 @@
 port module Subscriptions exposing (subscriptions)
 
 import AnimationFrame
+import Canvas exposing (DrawOp(Batch))
 import ColorPicker
 import Data.Keys as Keys
 import Data.Menu
@@ -31,7 +32,7 @@ subscriptions result =
 fromModel : Model -> Sub Msg
 fromModel model =
     [ Window.resizes WindowSizeReceived
-    , AnimationFrame.diffs Tick
+    , animationFrame model
     , model.color.picker
         |> ColorPicker.subscriptions
         |> Sub.map ColorPickerMsg
@@ -43,6 +44,14 @@ fromModel model =
     , Mouse.ups ClientMouseUp
     ]
         |> Sub.batch
+
+
+animationFrame : Model -> Sub Msg
+animationFrame model =
+    if model.pendingDraw == Canvas.Batch [] then
+        Sub.none
+    else
+        AnimationFrame.diffs Tick
 
 
 keyboardMsg : Value -> Msg

@@ -2,7 +2,7 @@ module Data.Config exposing (Config, init)
 
 import Data.Flags exposing (Flags)
 import Data.Keys as Key
-import Data.User exposing (Model(..))
+import Data.User exposing (State(LoggedIn))
 import Dict exposing (Dict)
 import Id exposing (Id)
 import Keyboard.Extra.Browser exposing (Browser)
@@ -12,8 +12,9 @@ type alias Config =
     { quickKeys : Dict String String
     , keyCmds : Dict String Key.Cmd
     , cmdKey : Key.Event -> Bool
+    , isMac : Bool
     , mountPath : String
-    , buildNumber : String
+    , buildNumber : Int
     , browser : Browser
     , sessionId : Id
     }
@@ -37,8 +38,9 @@ init flags =
             .meta
         else
             .ctrl
+    , isMac = flags.isMac
     , mountPath = flags.mountPath
-    , buildNumber = toString flags.buildNumber
+    , buildNumber = flags.buildNumber
     , browser = flags.browser
     , sessionId = flags.randomValues.sessionId
     }
@@ -47,7 +49,7 @@ init flags =
 getKeyConfig : Flags -> Key.Config
 getKeyConfig flags =
     case flags.user of
-        LoggedIn user ->
+        LoggedIn { user } ->
             user.keyConfig
 
         _ ->

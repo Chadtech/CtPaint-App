@@ -12,8 +12,11 @@ import Html.CssHelpers
 import Html.Custom
 
 
+-- TYPES --
+
+
 type alias State =
-    { buildNumber : String }
+    { buildNumber : Int }
 
 
 
@@ -49,7 +52,7 @@ aboutNamespace =
 view : State -> List (Html msg)
 view { buildNumber } =
     [ p_ "CtPaint 2017 Basic "
-    , p_ ("build number " ++ buildNumber)
+    , p_ ("build number " ++ toString buildNumber)
     , br [] []
     , p_ "CtPaint is a cloud based image editor. It provides good image editing and pixel art functionality, seamlessly integreated into the internet."
     , br [] []

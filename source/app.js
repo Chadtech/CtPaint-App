@@ -125,17 +125,22 @@ PaintApp = function(manifest) {
                     , name : String
                     , nameIsGenerated : Bool
                     , email : String
+                    , id : Maybe String
                     }
                 */
 
-                Client.createDrawing(msg.payload, {
-                    onSuccess: function(result) {
-                        console.log("Result!", result);
-                    },
-                    onFailure: function(err) {
-                        console.log("Error!", err);
-                    }
-                });
+                if (msg.payload.id === null) {
+                    Client.createDrawing(msg.payload, {
+                        onSuccess: function(result) {
+                            console.log("Result!", result);
+                        },
+                        onFailure: function(err) {
+                            console.log("Error!", err);
+                        }
+                    });
+                } else {
+                    console.log("????");
+                }
                 break;
 
             case "steal focus":

@@ -1,6 +1,7 @@
 port module Ports
     exposing
         ( JsMsg(..)
+        , SavePayload
         , fromJs
         , returnFocus
         , send
@@ -12,11 +13,11 @@ import Array exposing (Array)
 import Canvas exposing (Canvas, Size)
 import Color exposing (Color)
 import Data.Color as Color exposing (Swatches)
-import Data.Project as Project exposing (Project)
-import Id exposing (Id)
+import Id exposing (Id, Origin(Local, Remote))
 import Json.Encode as Encode exposing (Value)
 import Tracking
 import Tuple.Infix exposing ((:=))
+import Util
 
 
 type JsMsg
@@ -39,8 +40,10 @@ type alias SavePayload =
     { canvas : Canvas
     , swatches : Swatches
     , palette : Array Color
-    , project : Project
+    , name : String
+    , nameIsGenerated : Bool
     , email : String
+    , id : Origin
     }
 
 
@@ -77,13 +80,14 @@ send msg =
         ReturnFocus ->
             toCmd "return focus" Encode.null
 
-        Save { swatches, palette, canvas, project, email } ->
+        Save { swatches, palette, canvas, name, nameIsGenerated, id, email } ->
             [ "canvas" := Color.encodeCanvas canvas
             , "palette" := Color.encodePalette palette
             , "swatches" := Color.encodeSwatches swatches
-            , "name" := Encode.string project.name
-            , "nameIsGenerated" := Encode.bool project.nameIsGenerated
+            , "name" := Encode.string name
+            , "nameIsGenerated" := Encode.bool nameIsGenerated
             , "email" := Encode.string email
+            , "id" := Util.encodeOrigin id
             ]
                 |> Encode.object
                 |> toCmd "save"

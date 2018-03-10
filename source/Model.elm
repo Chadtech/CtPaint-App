@@ -1,4 +1,4 @@
-module Model exposing (Model)
+module Model exposing (Model, toSavePayload)
 
 import Canvas exposing (Canvas, DrawOp, Point, Size)
 import Data.Color
@@ -6,19 +6,20 @@ import Data.Config exposing (Config)
 import Data.History
 import Data.Menu as Menu
 import Data.Minimap as Minimap
-import Data.Project exposing (Project)
 import Data.Taskbar exposing (Dropdown)
 import Data.Tool exposing (Tool)
-import Data.User exposing (User)
+import Data.User as User
 import Mouse exposing (Position)
+import Ports exposing (SavePayload)
 import Random.Pcg as Random exposing (Seed)
 
 
 type alias Model =
-    { user : Data.User.Model
+    { user : User.State
     , canvas : Canvas
     , color : Data.Color.Model
-    , project : Project
+    , drawingName : String
+    , drawingNameIsGenerated : Bool
     , canvasPosition : Position
     , pendingDraw : DrawOp
     , drawAtRender : DrawOp
@@ -38,3 +39,21 @@ type alias Model =
     , shiftIsDown : Bool
     , config : Config
     }
+
+
+toSavePayload : Model -> Maybe SavePayload
+toSavePayload model =
+    case model.user of
+        User.LoggedIn { user, drawingId } ->
+            { canvas = model.canvas
+            , name = model.drawingName
+            , nameIsGenerated = model.drawingNameIsGenerated
+            , palette = model.color.palette
+            , swatches = model.color.swatches
+            , email = user.email
+            , id = drawingId
+            }
+                |> Just
+
+        _ ->
+            Nothing

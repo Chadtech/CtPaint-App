@@ -3,6 +3,7 @@ module Data.Flags
         ( Flags
         , Init(..)
         , decoder
+        , projectNameGenerator
         )
 
 import Data.Color
@@ -10,11 +11,10 @@ import Data.Color
         ( BackgroundColor(Black, White)
         , backgroundColorDecoder
         )
-import Data.Project as Project exposing (Project)
 import Data.User as User
 import Helpers.Canvas exposing (Params)
 import Helpers.Random as Random
-import Id exposing (Id)
+import Id exposing (Id, Origin(Local, Remote))
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline
     exposing
@@ -24,7 +24,7 @@ import Json.Decode.Pipeline
         , required
         )
 import Keyboard.Extra.Browser exposing (Browser(Chrome, FireFox))
-import Random.Pcg as Random exposing (Seed)
+import Random.Pcg as Random exposing (Generator, Seed)
 import Util
 import Window exposing (Size)
 
@@ -33,9 +33,8 @@ type alias Flags =
     { windowSize : Size
     , isMac : Bool
     , browser : Browser
-    , user : User.Model
+    , user : User.State
     , init : Init
-    , localWork : LocalWork
     , mountPath : String
     , buildNumber : Int
     , randomValues : RandomValues
@@ -47,11 +46,6 @@ type alias RandomValues =
     , projectName : String
     , seed : Seed
     }
-
-
-type LocalWork
-    = NoLocalWork
-    | ExistingWork (Maybe Project) String
 
 
 type Init
@@ -73,7 +67,6 @@ decoder =
         |> required "browser" browserDecoder
         |> custom userDecoder
         |> required "init" initDecoder
-        |> required "localWork" localWorkDecoder
         |> required "mountPath" Decode.string
         |> required "buildNumber" Decode.int
         |> required "seed" randomValuesDecoder
@@ -90,16 +83,37 @@ toRandomValues seed =
     RandomValues
         |> Random.from seed
         |> Random.value Id.generator
-        |> Random.value (Util.uuidGenerator 16)
+        |> Random.value projectNameGenerator
         |> Random.finish
 
 
-userDecoder : Decoder User.Model
+projectNameGenerator : Generator String
+projectNameGenerator =
+    Util.uuidGenerator 16
+
+
+userDecoder : Decoder User.State
 userDecoder =
-    browserDecoder
-        |> Decode.field "browser"
-        |> Decode.andThen
-            (User.modelDecoder >> Decode.field "user")
+    decode (,)
+        |> required "browser" browserDecoder
+        |> optional "id" (Decode.map Just Id.decoder) Nothing
+        |> Decode.andThen toUserState
+
+
+toUserState : ( Browser, Maybe Id ) -> Decoder User.State
+toUserState ( browser, maybeId ) =
+    User.stateDecoder (originFromMaybe maybeId) browser
+        |> Decode.field "user"
+
+
+originFromMaybe : Maybe Id -> Origin
+originFromMaybe maybeId =
+    case maybeId of
+        Just id ->
+            Remote id
+
+        Nothing ->
+            Local
 
 
 browserDecoder : Decoder Browser
@@ -122,21 +136,6 @@ toBrowser browser =
 
         other ->
             Decode.fail ("Unknown browser type " ++ other)
-
-
-localWorkDecoder : Decoder LocalWork
-localWorkDecoder =
-    [ Decode.null NoLocalWork
-    , existingLocalWorkDecoder
-    ]
-        |> Decode.oneOf
-
-
-existingLocalWorkDecoder : Decoder LocalWork
-existingLocalWorkDecoder =
-    decode ExistingWork
-        |> optional "project" (Decode.map Just Project.decoder) Nothing
-        |> required "data" Decode.string
 
 
 initDecoder : Decoder Init

@@ -15,14 +15,15 @@ import About
 import BugReport
 import Data.User exposing (User)
 import Download
+import Drawing
 import Import
 import Loading
 import Login
+import Logout
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
 import New
 import Open
-import Project
 import ReplaceColor
 import Resize
 import Save
@@ -45,8 +46,9 @@ type Menu
     | Loading Loading.Model
     | Upload Upload.Model
     | Resize Resize.Model
-    | Project Project.Model
+    | Drawing Drawing.Model
     | Save Save.Model
+    | Logout
 
 
 type alias Model =
@@ -84,8 +86,9 @@ type ContentMsg
     | LoginMsg Login.Msg
     | UploadMsg Upload.Msg
     | ResizeMsg Resize.Msg
-    | ProjectMsg Project.Msg
+    | DrawingMsg Drawing.Msg
     | SaveMsg Save.Msg
+    | LogoutMsg Logout.Msg
 
 
 fileRead : String -> Msg

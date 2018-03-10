@@ -1,18 +1,24 @@
 module Incorporate.Menu exposing (incorporate)
 
 import Canvas
+import Data.Flags exposing (Init(NormalInit), projectNameGenerator)
 import Data.Menu as Menu
 import Data.User as User
 import Draw
 import Helpers.History as History
+import Helpers.Random as Random
 import Helpers.Zoom as Zoom
+import Id exposing (Origin(Local))
+import Init
 import Model exposing (Model)
+import Msg exposing (Msg)
 import Ports
 import Reply exposing (Reply(..))
 import Tuple.Infix exposing ((&), (|&))
+import Util
 
 
-incorporate : Reply -> Menu.Model -> Model -> ( Model, Cmd msg )
+incorporate : Reply -> Menu.Model -> Model -> ( Model, Cmd Msg )
 incorporate reply menu model =
     case reply of
         NoReply ->
@@ -94,7 +100,10 @@ incorporate reply menu model =
 
         SetUser user ->
             { model
-                | user = User.LoggedIn user
+                | user =
+                    user
+                        |> User.initModel Local
+                        |> User.LoggedIn
                 , menu = Nothing
             }
                 & Cmd.none
@@ -105,17 +114,6 @@ incorporate reply menu model =
                 , menu = Just menu
             }
                 & Cmd.none
-
-        SetToLoggedOut ->
-            { model
-                | user = User.LoggedOut
-                , menu = Just menu
-            }
-                & Cmd.none
-
-        SetProject project ->
-            { model | project = project }
-                |> closeMenu
 
         ResizeTo left top width height ->
             { model
@@ -129,6 +127,45 @@ incorporate reply menu model =
                         model.canvas
             }
                 |> closeMenu
+
+        Logout ->
+            { windowSize = model.windowSize
+            , isMac = model.config.isMac
+            , browser = model.config.browser
+            , user = User.LoggedOut
+            , init = NormalInit
+            , mountPath = model.config.mountPath
+            , buildNumber = model.config.buildNumber
+            , randomValues =
+                let
+                    ( newProjectName, newSeed ) =
+                        identity
+                            |> Random.from model.seed
+                            |> Random.value projectNameGenerator
+                in
+                { sessionId = model.config.sessionId
+                , projectName = newProjectName
+                , seed = newSeed
+                }
+            }
+                |> Init.fromFlags
+                |> Util.mixinCmd (Ports.send Ports.Logout)
+
+        SaveDrawingAttrs name ->
+            let
+                newModel =
+                    { model | drawingName = name }
+            in
+            case Model.toSavePayload newModel of
+                Just savePayload ->
+                    newModel
+                        |> closeMenu
+                        |> Util.mixinCmd
+                            (Ports.send (Ports.Save savePayload))
+
+                Nothing ->
+                    newModel
+                        |> closeMenu
 
 
 closeMenu : Model -> ( Model, Cmd msg )

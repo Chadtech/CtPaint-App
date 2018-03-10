@@ -5,7 +5,6 @@ import ColorPicker
 import Data.User as User
 import Helpers.History as History
 import Helpers.Keys
-import Id exposing (Origin(Remote))
 import Incorporate.Color
 import Incorporate.Menu as Menu
 import Keys
@@ -176,11 +175,8 @@ update message model =
         DeblobDrawing drawing (Ok canvas) ->
             { model
                 | menu = Nothing
-                , project =
-                    { name = drawing.name
-                    , nameIsGenerated = drawing.nameIsGenerated
-                    , origin = Remote drawing.id
-                    }
+                , drawingName = drawing.name
+                , drawingNameIsGenerated = drawing.nameIsGenerated
                 , canvas = canvas
                 , canvasPosition =
                     Util.center

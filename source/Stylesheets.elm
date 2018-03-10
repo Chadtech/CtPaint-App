@@ -4,17 +4,18 @@ import About
 import BugReport
 import ColorPicker
 import Css.File exposing (CssCompilerProgram, CssFileStructure)
+import Drawing
 import Eraser
 import Error
 import Html.Custom
 import Import
 import Loading
 import Login
+import Logout
 import Menu
 import Minimap
 import Open
 import Palette
-import Project
 import ReplaceColor
 import Resize
 import Save
@@ -22,7 +23,6 @@ import Scale
 import Taskbar
 import Text
 import Toolbar
-import Tuple.Infix exposing ((:=))
 import Upload
 import View
 
@@ -40,10 +40,11 @@ main =
     , ColorPicker.css
     , Error.css
     , Loading.css
+    , Logout.css
     , Upload.css
     , Login.css
     , Resize.css
-    , Project.css
+    , Drawing.css
     , Loading.css
     , Minimap.css
     , Menu.css

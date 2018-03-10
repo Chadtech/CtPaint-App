@@ -14,8 +14,8 @@ import Data.Menu as Menu
         , Model
         , Msg(..)
         )
-import Data.Project exposing (Project)
 import Download
+import Drawing
 import Html exposing (Attribute, Html, a, div, p, text)
 import Html.Attributes exposing (class, style)
 import Html.CssHelpers
@@ -23,10 +23,10 @@ import Html.Custom
 import Import
 import Loading
 import Login
+import Logout
 import Mouse exposing (Position)
 import New
 import Open
-import Project
 import ReplaceColor
 import Reply exposing (Reply(CloseMenu, NoReply))
 import Resize
@@ -188,7 +188,7 @@ updateContent config msg model =
             case model.content of
                 Login subModel ->
                     let
-                        ( ( newSubModel, cmd ), reply ) =
+                        ( newSubModel, cmd, reply ) =
                             Login.update config subMsg subModel
                     in
                     { model | content = Login newSubModel }
@@ -254,14 +254,14 @@ updateContent config msg model =
                 _ ->
                     model & Cmd.none & NoReply
 
-        ProjectMsg subMsg ->
+        DrawingMsg subMsg ->
             case model.content of
-                Project subModel ->
+                Drawing subModel ->
                     let
                         ( newSubModel, reply ) =
-                            Project.update subMsg subModel
+                            Drawing.update subMsg subModel
                     in
-                    { model | content = Menu.Project newSubModel }
+                    { model | content = Menu.Drawing newSubModel }
                         & Cmd.none
                         & reply
 
@@ -276,6 +276,14 @@ updateContent config msg model =
                         |> mapContent Menu.Save model
                         |> mapCmd SaveMsg
                         & NoReply
+
+                _ ->
+                    model & Cmd.none & NoReply
+
+        LogoutMsg subMsg ->
+            case model.content of
+                Logout ->
+                    model & Cmd.none & Logout.update subMsg
 
                 _ ->
                     model & Cmd.none & NoReply
@@ -422,13 +430,17 @@ contentView menu =
             List.map (Html.map ResizeMsg) <|
                 Resize.view subModel
 
-        Project subModel ->
-            List.map (Html.map ProjectMsg) <|
-                Project.view subModel
+        Drawing subModel ->
+            List.map (Html.map DrawingMsg) <|
+                Drawing.view subModel
 
         Save subModel ->
             List.map (Html.map SaveMsg) <|
                 Save.view subModel
+
+        Logout ->
+            List.map (Html.map LogoutMsg) <|
+                Logout.view
 
 
 
@@ -501,16 +513,16 @@ initImport =
         |> init "import" (Import Import.init)
 
 
-initDownload : Project -> Size -> Model
-initDownload project =
+initDownload : Download.Flags -> Size -> Model
+initDownload flags =
     { width = 365
     , height = 155
     }
         |> init "download"
-            (Download (Download.init project))
+            (Download (Download.init flags))
 
 
-initAbout : String -> Size -> Model
+initAbout : Int -> Size -> Model
 initAbout buildNumber =
     { width = 10
     , height = 10
@@ -550,10 +562,10 @@ initResize canvasSize =
         }
 
 
-initProject : Project -> Size -> Model
-initProject project =
-    init "project"
-        (Menu.Project (Project.init project))
+initDrawing : String -> Size -> Model
+initDrawing name =
+    init "drawing"
+        (Menu.Drawing (Drawing.init name))
         { width = 10
         , height = 10
         }
@@ -566,6 +578,14 @@ initLoading maybeName =
         { width = 10
         , height = 10
         }
+
+
+initLogout : Size -> Model
+initLogout =
+    { width = 10
+    , height = 10
+    }
+        |> init "logout" Logout
 
 
 

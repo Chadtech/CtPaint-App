@@ -6,7 +6,6 @@ import Css.Elements
 import Css.Namespace exposing (namespace)
 import Data.Keys as Key exposing (Cmd(..), QuickKey)
 import Data.Minimap exposing (State(..))
-import Data.Project exposing (Project)
 import Data.Taskbar exposing (Dropdown(..))
 import Data.Tool as Tool exposing (Tool)
 import Data.User as User exposing (User)
@@ -46,7 +45,7 @@ type Msg
     | NewWindowClicked Window
     | UploadClicked
     | ToolClicked Tool
-    | ProjectClicked Project
+    | DrawingClicked
 
 
 
@@ -105,8 +104,13 @@ update msg model =
                     model & Cmd.none
 
         LogoutClicked ->
-            { model | user = User.LoggingOut }
-                & Ports.send Logout
+            { model
+                | menu =
+                    model.windowSize
+                        |> Menu.initLogout
+                        |> Just
+            }
+                & Cmd.none
 
         AboutClicked ->
             { model
@@ -143,11 +147,11 @@ update msg model =
         ToolClicked tool ->
             { model | tool = tool } & Cmd.none
 
-        ProjectClicked project ->
+        DrawingClicked ->
             { model
                 | menu =
-                    Menu.initProject
-                        project
+                    Menu.initDrawing
+                        model.drawingName
                         model.windowSize
                         |> Just
             }
@@ -352,7 +356,7 @@ view ({ taskbarDropped, user } as model) =
         ]
 
 
-userButton : User.Model -> Html Msg
+userButton : User.State -> Html Msg
 userButton userModel =
     case userModel of
         User.LoggedOut ->
@@ -386,9 +390,9 @@ offlineButton =
         [ Html.text "offline" ]
 
 
-userOptions : User -> Html Msg
-userOptions user =
-    if user.optionsDropped then
+userOptions : User.Model -> Html Msg
+userOptions { user, optionsDropped } =
+    if optionsDropped then
         a
             [ class [ Button, UserButton, Dropped ]
             , onClick UserClicked
@@ -837,9 +841,9 @@ fileDropped model =
         }
     , divider
     , option
-        { label = "project"
+        { label = "drawing"
         , cmdKeys = ""
-        , clickMsg = ProjectClicked model.project
+        , clickMsg = DrawingClicked
         , disabled = False
         }
     ]

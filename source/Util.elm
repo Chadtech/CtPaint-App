@@ -6,7 +6,9 @@ import Color exposing (Color)
 import Html exposing (Attribute, Html)
 import Html.Attributes exposing (style, value)
 import Html.Events
+import Id exposing (Origin(Local, Remote))
 import Json.Decode as Decode exposing (Decoder)
+import Json.Encode as Encode exposing (Value)
 import Mouse exposing (Position)
 import ParseInt
 import Random.Pcg as Random
@@ -35,6 +37,16 @@ maybeCons maybe list =
 
         Nothing ->
             list
+
+
+encodeOrigin : Origin -> Value
+encodeOrigin origin =
+    case origin of
+        Remote id ->
+            Id.encode id
+
+        Local ->
+            Encode.null
 
 
 
@@ -293,3 +305,14 @@ toChar int =
 
         Nothing ->
             'w'
+
+
+
+-- CMD --
+
+
+mixinCmd : Cmd msg -> ( model, Cmd msg ) -> ( model, Cmd msg )
+mixinCmd newCmd ( model, cmd ) =
+    ( model
+    , Cmd.batch [ newCmd, cmd ]
+    )
