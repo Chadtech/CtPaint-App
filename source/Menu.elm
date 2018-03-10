@@ -485,8 +485,8 @@ initText =
 
 initBugReport : Bool -> Size -> Model
 initBugReport loggedIn =
-    { width = 506
-    , height = 313
+    { width = 420
+    , height = 209
     }
         |> init
             "report bug"
