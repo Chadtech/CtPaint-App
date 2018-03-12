@@ -1,3 +1,5 @@
+var Allowance = require("./Allowance");
+
 function fromAttributes(attributes) {
     var payload = {};
 
@@ -45,6 +47,35 @@ function login(Client, toElm, payload) {
     });
 }
 
+function get(Client, init) {
+    Client.getSession({
+        onSuccess: function(attrs) {
+            init(fromAttributes(attrs));
+        },
+        onFailure: function(err) {
+            if (Allowance.exceeded()) {
+                err = "allowance exceeded";
+            }
+            switch (String(err)) {
+                case "no session":
+                    init(null);
+                    break;
+
+                case "NetworkingError: Network Failure":
+                    init("offline");
+                    break;
+
+                case "allowance exceeded":
+                    init("allowance exceeded");
+                    break;
+
+                default:
+                    init("Unknown get session error");
+            }
+        }
+    });
+}
+
 module.exports = function(Client, toElm) {
     return {
         fromAttributes: fromAttributes,
@@ -53,6 +84,9 @@ module.exports = function(Client, toElm) {
         },
         login: function(payload) {
             login(Client, toElm, payload);
+        },
+        get: function(init) {
+            get(Client, init);
         }
     };
 };

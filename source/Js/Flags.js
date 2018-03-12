@@ -1,5 +1,5 @@
 module.exports = {
-    make: function(mixins) {
+    make: function(user, manifest) {
         var localWork = localStorage.getItem("local work");
 
         var buf = new Uint32Array(1);
@@ -7,19 +7,17 @@ module.exports = {
         var milliseconds = new Date().getMilliseconds();
         var seed = buf[0] * 1000 + milliseconds;
 
-        console.log("manifest init", mixins.manifest.init);
-
         return {
             windowHeight: window.innerHeight,
             windowWidth: window.innerWidth,
             seed: seed,
             isMac: window.navigator.userAgent.indexOf("Mac") !== -1,
             browser: getBrowser(),
-            user: mixins.user,
-            init: mixins.manifest.init,
+            user: user,
+            init: manifest.init,
             localWork: JSON.parse(localWork),
-            mountPath: mixins.manifest.mountPath,
-            buildNumber: mixins.manifest.buildNumber
+            mountPath: manifest.mountPath,
+            buildNumber: manifest.buildNumber
         };
     }
 };

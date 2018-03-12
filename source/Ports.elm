@@ -75,10 +75,10 @@ send : JsMsg -> Cmd msg
 send msg =
     case msg of
         StealFocus ->
-            toCmd "steal focus" Encode.null
+            toCmd "stealFocus" Encode.null
 
         ReturnFocus ->
-            toCmd "return focus" Encode.null
+            toCmd "returnFocus" Encode.null
 
         Save { swatches, palette, canvas, name, nameIsGenerated, id, email } ->
             [ "canvas" := Color.encodeCanvas canvas
@@ -100,7 +100,7 @@ send msg =
             , "password" := Encode.string password
             ]
                 |> Encode.object
-                |> toCmd "attempt login"
+                |> toCmd "attemptLogin"
 
         Logout ->
             toCmd "logout" Encode.null
@@ -108,24 +108,24 @@ send msg =
         OpenNewWindow url ->
             url
                 |> Encode.string
-                |> toCmd "open new window"
+                |> toCmd "openNewWindow"
 
         RedirectPageTo url ->
             url
                 |> Encode.string
-                |> toCmd "redirect page to"
+                |> toCmd "redirectPageTo"
 
         OpenUpFileUpload ->
-            toCmd "open up file upload" Encode.null
+            toCmd "openUpFileUpload" Encode.null
 
         ReadFile ->
-            toCmd "read file" Encode.null
+            toCmd "readFile" Encode.null
 
         ReportBug bug ->
-            toCmd "bug report" (Encode.string bug)
+            toCmd "bugReport" (Encode.string bug)
 
         LoadDrawing id ->
-            toCmd "load drawing" (Id.encode id)
+            toCmd "loadDrawing" (Id.encode id)
 
         Track payload ->
             toCmd "track" (Tracking.encode payload)

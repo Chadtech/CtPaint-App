@@ -17,7 +17,7 @@ import Tuple.Infix exposing ((&))
 
 
 type Model
-    = Loading
+    = Saving String
 
 
 type Msg
@@ -28,9 +28,20 @@ type Msg
 -- INIT --
 
 
-init : Model
+init : String -> Model
 init =
-    Loading
+    Saving
+
+
+
+-- UPDATE --
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        Noop ->
+            model & Cmd.none
 
 
 
@@ -38,12 +49,14 @@ init =
 
 
 type Class
-    = None
+    = Text
 
 
 css : Stylesheet
 css =
-    []
+    [ Css.class Text
+        [ marginBottom (px 8) ]
+    ]
         |> namespace saveNamespace
         |> stylesheet
 
@@ -61,15 +74,17 @@ saveNamespace =
     Html.CssHelpers.withNamespace saveNamespace
 
 
-view : Model -> List (Html Msg)
+view : Model -> List (Html msg)
 view model =
-    []
+    case model of
+        Saving str ->
+            [ p
+                [ class [ Text ] ]
+                [ Html.text (savingText str) ]
+            , Html.Custom.spinner []
+            ]
 
 
-
--- UPDATE --
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update Noop model =
-    model & Cmd.none
+savingText : String -> String
+savingText str =
+    "saving \"" ++ str ++ "\""

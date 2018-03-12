@@ -590,6 +590,16 @@ initLogout =
         |> init "logout" Logout
 
 
+initSave : String -> Size -> Model
+initSave name =
+    { width = 295
+    , height = 99
+    }
+        |> init
+            "saving"
+            (Save (Save.init name))
+
+
 
 -- SUBSCRIPTIONS --
 

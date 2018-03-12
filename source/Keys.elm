@@ -276,7 +276,14 @@ exec keyCmd model =
         Key.Save ->
             case Model.toSavePayload model of
                 Just savePayload ->
-                    model & Ports.send (Ports.Save savePayload)
+                    { model
+                        | menu =
+                            Menu.initSave
+                                savePayload.name
+                                model.windowSize
+                                |> Just
+                    }
+                        & Ports.send (Ports.Save savePayload)
 
                 Nothing ->
                     model & Cmd.none

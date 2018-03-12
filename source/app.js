@@ -3,7 +3,7 @@
 		null
 		{ id : String }
 		{ url : String }
-		{ params : 
+		{ params :
 			{ width : Int optional
 			, height : Int optional
 			, name : String optional
@@ -20,16 +20,15 @@
 		}
 */
 
-var Allowance = require("./Js/Allowance");
 var Flags = require("./Js/Flags");
 
 PaintApp = function(manifest) {
 	var Client = manifest.Client;
 	var track = manifest.track;
-	var app;
+	var app = { elm: null };
 
 	function toElm(type, payload) {
-		app.ports.fromJs.send({
+		app.elm.ports.fromJs.send({
 			type: type,
 			payload: payload
 		});
@@ -37,39 +36,7 @@ PaintApp = function(manifest) {
 
 	var Drawing = require("./Js/Drawing")(Client, toElm);
 	var User = require("./Js/User")(Client, toElm);
-
-	function listenToKeyEvents(keydown, keyup) {
-		window.addEventListener("keydown", keydown);
-		window.addEventListener("keyup", keyup);
-	}
-
-	function ignoreKeyEvents(keydown, keyup) {
-		window.removeEventListener("keydown", keydown);
-		window.removeEventListener("keyup", keyup);
-	}
-
-	window.onbeforeunload = function(event) {
-		return "";
-	};
-
-	function makeKeyHandler(direction) {
-		return function(event) {
-			app.ports.keyEvent.send({
-				keyCode: event.keyCode,
-				shift: event.shiftKey,
-				meta: event.metaKey,
-				ctrl: event.ctrlKey,
-				direction: direction
-			});
-
-			event.preventDefault();
-		};
-	}
-
-	var handleKeyDown = makeKeyHandler("down");
-	var handleKeyUp = makeKeyHandler("up");
-
-	listenToKeyEvents(handleKeyDown, handleKeyUp);
+	var Keys = require("./Js/Keys")(app);
 
 	var fileUploader = document.createElement("input");
 	fileUploader.type = "file";
@@ -91,89 +58,41 @@ PaintApp = function(manifest) {
 		}
 	});
 
-	function action(type, f) {
-		return {
-			type: type,
-			f: f
-		};
+	function redirectPageTo(payload) {
+		window.onbeforeunload = null;
+		window.location = payload;
 	}
 
-	var actions = [
-		action("save", Drawing.save),
-		action("steal focus", function() {
-			ignoreKeyEvents(handleKeyDown, handleKeyUp);
-		}),
-		action("return focus", function() {
-			listenToKeyEvents(handleKeyDown, handleKeyUp);
-		}),
-		action("download", Drawing.download),
-		action("attempt login", User.login),
-		action("logout", User.logout),
-		action("open new window", window.open),
-		action("redirect page to", function(payload) {
-			window.onbeforeunload = null;
-			window.location = payload;
-		}),
-		action("open up file upload", fileUploader.click),
-		action("load drawing", Drawing.get),
-		action("track", track)
-	];
+	var actions = {
+		save: Drawing.save,
+		stealFocus: Keys.ignoreEvents,
+		returnFocus: Keys.listenToEvents,
+		download: Drawing.download,
+		attemptLogin: User.login,
+		logout: User.logout,
+		openNewWindow: window.open,
+		redirectPageTo: redirectPageTo,
+		openUpFileUpload: fileUploader.click,
+		loadDrawing: Drawing.get,
+		track: track
+	};
 
 	function jsMsgHandler(msg) {
-		for (var i = 0; i < actions.length; i++) {
-			if (msg.type === actions[i].type) {
-				actions[i].f(msg.payload);
-				return;
-			}
+		var action = actions[msg.type];
+		if (typeof action === "undefined") {
+			console.log("Unrecognized JsMsg type ->", msg.type);
+			return;
 		}
-		console.log("Unrecognized JsMsg type ->", msg.type);
+		action(msg.payload);
 	}
 
-	function init(mixins) {
+	User.get(function(user) {
 		var inithtml = document.getElementById("inithtml");
 		if (inithtml !== null) {
 			document.body.removeChild(inithtml);
 		}
-		app = Elm.PaintApp.fullscreen(Flags.make(mixins));
-		app.ports.toJs.subscribe(jsMsgHandler);
-	}
-
-	Client.getSession({
-		onSuccess: function(attrs) {
-			init({
-				user: User.fromAttributes(attrs),
-				manifest: manifest
-			});
-		},
-		onFailure: function(err) {
-			if (Allowance.exceeded()) {
-				err = "allowance exceeded";
-			}
-			switch (String(err)) {
-				case "no session":
-					init({
-						user: null,
-						manifest: manifest
-					});
-					break;
-
-				case "NetworkingError: Network Failure":
-					init({
-						user: "offline",
-						manifest: manifest
-					});
-					break;
-
-				case "allowance exceeded":
-					init({
-						user: "allowance exceeded",
-						manifest: manifest
-					});
-					break;
-
-				default:
-					console.log("Unknown get session error", err);
-			}
-		}
+		Keys.listenToEvents();
+		app.elm = Elm.PaintApp.fullscreen(Flags.make(user, manifest));
+		app.elm.ports.toJs.subscribe(jsMsgHandler);
 	});
 };

@@ -51,7 +51,7 @@ toSavePayload model =
             , palette = model.color.palette
             , swatches = model.color.swatches
             , email = user.email
-            , id = drawingId
+            , id = Debug.log "Drawing id?" drawingId
             }
                 |> Just
 

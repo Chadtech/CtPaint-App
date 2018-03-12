@@ -21,6 +21,7 @@ import Json.Decode.Pipeline
         ( custom
         , decode
         , optional
+        , optionalAt
         , required
         )
 import Keyboard.Extra.Browser exposing (Browser(Chrome, FireFox))
@@ -96,7 +97,7 @@ userDecoder : Decoder User.State
 userDecoder =
     decode (,)
         |> required "browser" browserDecoder
-        |> optional "id" (Decode.map Just Id.decoder) Nothing
+        |> optionalAt [ "init", "id" ] (Decode.map Just Id.decoder) Nothing
         |> Decode.andThen toUserState
 
 
