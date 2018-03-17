@@ -5,6 +5,7 @@ import Data.Flags exposing (Init(NormalInit), projectNameGenerator)
 import Data.Menu as Menu
 import Data.User as User
 import Draw
+import Helpers.Drawing
 import Helpers.History as History
 import Helpers.Random as Random
 import Helpers.Zoom as Zoom
@@ -134,6 +135,15 @@ incorporate reply menu model =
                         model.canvas
             }
                 |> closeMenu
+
+        IncorporateDrawing { id } ->
+            { model
+                | user = User.setDrawingId id model.user
+            }
+                |> closeMenu
+
+        TrySaving ->
+            Helpers.Drawing.save model
 
         Logout ->
             { windowSize = model.windowSize

@@ -5,7 +5,8 @@ module Data.Menu
         , Menu(..)
         , Model
         , Msg(..)
-        , drawingSaveCompleted
+        , drawingCreateCompleted
+        , drawingUpdateCompleted
         , fileNotImage
         , fileRead
         , loginFailed
@@ -14,6 +15,7 @@ module Data.Menu
 
 import About
 import BugReport
+import Data.Drawing exposing (Drawing)
 import Data.User exposing (User)
 import Download
 import Drawing
@@ -105,9 +107,14 @@ fileNotImage =
         |> ContentMsg
 
 
-drawingSaveCompleted : Result String String -> Msg
-drawingSaveCompleted =
-    Save.DrawingSaveCompleted >> SaveMsg >> ContentMsg
+drawingUpdateCompleted : Result String String -> Msg
+drawingUpdateCompleted =
+    Save.DrawingUpdateCompleted >> SaveMsg >> ContentMsg
+
+
+drawingCreateCompleted : Result String Drawing -> Msg
+drawingCreateCompleted =
+    Save.DrawingCreateCompleted >> SaveMsg >> ContentMsg
 
 
 loginFailed : String -> Msg

@@ -12,6 +12,7 @@ import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Reply exposing (Reply(NoReply, StartNewDrawing))
 import Tuple.Infix exposing ((&), (:=))
+import Util
 
 
 -- TYPES --
@@ -22,6 +23,7 @@ type Msg
     | FieldUpdated Field String
     | StartClicked
     | StartSubmitted
+    | EnterPressed
 
 
 type Field
@@ -88,6 +90,9 @@ update msg model =
             model & startReply model
 
         StartSubmitted ->
+            model & startReply model
+
+        EnterPressed ->
             model & startReply model
 
 
@@ -227,13 +232,16 @@ newNamespace =
 view : Model -> List (Html Msg)
 view model =
     [ Html.Custom.field
-        [ class [ Field ] ]
+        [ class [ Field ]
+        , onSubmit StartSubmitted
+        ]
         [ label "name"
         , input
             [ Attrs.value model.nameField
             , Attrs.placeholder model.initName
             , Attrs.spellcheck False
             , onInput (FieldUpdated Name)
+            , Util.onEnter EnterPressed
             ]
             []
         ]
@@ -270,11 +278,16 @@ view model =
             , colorBox White model.backgroundColor
             ]
         ]
+    , input
+        [ Attrs.type_ "submit"
+        , Attrs.hidden True
+        ]
+        []
     , a
         (startNewButtonAttrs model)
         [ Html.text "start" ]
     ]
-        |> form [ onSubmit StartSubmitted ]
+        |> div [ onSubmit StartSubmitted ]
         |> List.singleton
 
 

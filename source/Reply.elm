@@ -7,6 +7,7 @@ module Reply
 
 import Canvas exposing (Canvas)
 import Color exposing (Color)
+import Data.Drawing exposing (Drawing)
 import Data.User exposing (User)
 
 
@@ -24,6 +25,8 @@ type Reply
     | SaveDrawingAttrs String
     | ResizeTo Int Int Int Int
     | StartNewDrawing String Bool Canvas
+    | IncorporateDrawing Drawing
+    | TrySaving
     | Logout
 
 

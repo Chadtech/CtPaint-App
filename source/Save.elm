@@ -10,23 +10,43 @@ module Save
 
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
-import Html exposing (Html, div, p)
+import Data.Config exposing (Config)
+import Data.Drawing exposing (Drawing)
+import Data.Window exposing (Window(Home))
+import Helpers.Window
+import Html exposing (Html, a, div, p)
 import Html.CssHelpers
 import Html.Custom
-import Reply exposing (Reply(CloseMenu, NoReply))
-import Tuple.Infix exposing ((&))
+import Html.Events exposing (onClick)
+import Reply
+    exposing
+        ( Reply
+            ( CloseMenu
+            , IncorporateDrawing
+            , NoReply
+            , TrySaving
+            )
+        )
 import Util
 
 
 type Model
     = Saving String
-    | Failed String
+    | Failed Error
     | Success
 
 
+type Error
+    = ExceededMemoryLimit
+    | Other String
+
+
 type Msg
-    = DrawingSaveCompleted (Result String String)
-    | OneSecondExpired
+    = DrawingUpdateCompleted (Result String String)
+    | DrawingCreateCompleted (Result String Drawing)
+    | OneSecondExpired (Maybe Drawing)
+    | OpenHomeClicked
+    | TryAgainClicked
 
 
 
@@ -42,27 +62,71 @@ init =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Cmd Msg, Reply )
-update msg model =
+update : Config -> Msg -> Model -> ( Model, Cmd Msg, Reply )
+update config msg model =
     case msg of
-        DrawingSaveCompleted (Ok "200") ->
+        DrawingUpdateCompleted (Ok "200") ->
             ( Success
-            , Util.delay 1000 OneSecondExpired
+            , Util.delay 1000 (OneSecondExpired Nothing)
             , NoReply
             )
 
-        DrawingSaveCompleted (Ok code) ->
-            Failed code
+        DrawingUpdateCompleted (Ok code) ->
+            code
+                |> Other
+                |> Failed
                 |> Reply.nothing
 
-        DrawingSaveCompleted (Err err) ->
-            Failed err
+        DrawingUpdateCompleted (Err err) ->
+            err
+                |> Other
+                |> Failed
                 |> Reply.nothing
 
-        OneSecondExpired ->
+        DrawingCreateCompleted (Ok drawing) ->
+            ( Success
+            , drawing
+                |> Just
+                |> OneSecondExpired
+                |> Util.delay 100
+            , NoReply
+            )
+
+        DrawingCreateCompleted (Err "Error: Request failed with status code 403") ->
+            ExceededMemoryLimit
+                |> Failed
+                |> Reply.nothing
+
+        DrawingCreateCompleted (Err err) ->
+            err
+                |> Other
+                |> Failed
+                |> Reply.nothing
+
+        OneSecondExpired Nothing ->
             ( model
             , Cmd.none
             , CloseMenu
+            )
+
+        OneSecondExpired (Just drawing) ->
+            ( model
+            , Cmd.none
+            , IncorporateDrawing drawing
+            )
+
+        OpenHomeClicked ->
+            ( model
+            , Helpers.Window.openWindow
+                config.mountPath
+                Home
+            , NoReply
+            )
+
+        TryAgainClicked ->
+            ( model
+            , Cmd.none
+            , TrySaving
             )
 
 
@@ -72,12 +136,22 @@ update msg model =
 
 type Class
     = Text
+    | ButtonsContainer
+    | Button
 
 
 css : Stylesheet
 css =
     [ Css.class Text
-        [ marginBottom (px 8) ]
+        [ marginBottom (px 8)
+        , maxWidth (px 500)
+        ]
+    , Css.class ButtonsContainer
+        [ displayFlex
+        , justifyContent center
+        ]
+    , Css.class Button
+        [ marginLeft (px 8) ]
     ]
         |> namespace saveNamespace
         |> stylesheet
@@ -96,7 +170,7 @@ saveNamespace =
     Html.CssHelpers.withNamespace saveNamespace
 
 
-view : Model -> List (Html msg)
+view : Model -> List (Html Msg)
 view model =
     case model of
         Saving str ->
@@ -106,17 +180,47 @@ view model =
             , Html.Custom.spinner []
             ]
 
-        Failed error ->
+        Failed (Other _) ->
             [ p
                 [ class [ Text ] ]
                 [ Html.text "Oh no, there was a problem saving" ]
             ]
 
+        Failed ExceededMemoryLimit ->
+            [ p
+                [ class [ Text ] ]
+                [ Html.text exceededText ]
+            , div
+                [ class [ ButtonsContainer ] ]
+                [ a
+                    [ class [ Button ]
+                    , onClick TryAgainClicked
+                    ]
+                    [ Html.text "try again" ]
+                , a
+                    [ class [ Button ]
+                    , onClick OpenHomeClicked
+                    ]
+                    [ Html.text "open drawings page" ]
+                ]
+            ]
+
         Success ->
-            [ p 
+            [ p
                 [ class [ Text ] ]
                 [ Html.text "Save succeeded!" ]
             ]
+
+
+exceededText : String
+exceededText =
+    """
+    Your account tier only permits one drawing
+    of cloud storage. You already have a drawing stored,
+    you need to delete it in order to save this drawing.
+    To delete it, go to your drawings page and delete the
+    drawing you have in memory.
+    """
 
 
 savingText : String -> String

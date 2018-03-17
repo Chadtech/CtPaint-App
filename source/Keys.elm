@@ -7,6 +7,7 @@ import Data.Minimap exposing (State(..))
 import Data.Tool as Tool exposing (Tool(..))
 import Draw
 import Helpers.Color
+import Helpers.Drawing
 import Helpers.History as History
 import Helpers.Menu
 import Helpers.Zoom as Zoom
@@ -274,19 +275,7 @@ exec keyCmd model =
             transform Draw.invert model
 
         Key.Save ->
-            case Model.toSavePayload model of
-                Just savePayload ->
-                    { model
-                        | menu =
-                            Menu.initSave
-                                savePayload.name
-                                model.windowSize
-                                |> Just
-                    }
-                        & Ports.send (Ports.Save savePayload)
-
-                Nothing ->
-                    model & Cmd.none
+            Helpers.Drawing.save model
 
         SetTransparency ->
             case model.selection of

@@ -273,7 +273,7 @@ updateContent config msg model =
                 Save subModel ->
                     let
                         ( newSubModel, cmd, reply ) =
-                            Save.update subMsg subModel
+                            Save.update config subMsg subModel
                     in
                     { model
                         | content =

@@ -5,7 +5,7 @@ import Canvas exposing (Canvas, Point)
 import Color exposing (Color)
 import Html exposing (Attribute, Html)
 import Html.Attributes exposing (style, value)
-import Html.Events
+import Html.Events exposing (keyCode, on)
 import Id exposing (Origin(Local, Remote))
 import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode exposing (Value)
@@ -111,6 +111,22 @@ toColor colorMaybe =
 
 
 -- HTML --
+
+
+onEnter : msg -> Attribute msg
+onEnter msg =
+    on "keydown"
+        (keyCode |> Decode.andThen (enterDecoder msg))
+
+
+enterDecoder : msg -> Int -> Decoder msg
+enterDecoder msg keyCode =
+    case keyCode of
+        13 ->
+            Decode.succeed msg
+
+        _ ->
+            Decode.fail "Not enter key"
 
 
 valueIfFocus : field -> Maybe field -> String -> Attribute msg

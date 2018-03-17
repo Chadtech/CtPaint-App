@@ -7,12 +7,13 @@ module Data.User
         , getEmail
         , initModel
         , isLoggedIn
+        , setDrawingId
         , stateDecoder
         , toggleOptionsDropped
         )
 
 import Data.Keys as Keys
-import Id exposing (Origin(Local, Remote))
+import Id exposing (Id, Origin(Local, Remote))
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline
     exposing
@@ -162,6 +163,17 @@ isLoggedIn state =
 
         _ ->
             False
+
+
+setDrawingId : Id -> State -> State
+setDrawingId id state =
+    case state of
+        LoggedIn user ->
+            { user | drawingId = Remote id }
+                |> LoggedIn
+
+        _ ->
+            state
 
 
 toggleOptionsDropped : Model -> Model

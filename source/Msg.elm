@@ -99,13 +99,27 @@ toMsg browser type_ =
             Drawing.decoder
                 |> Decode.map DrawingLoaded
 
-        "drawing save completed" ->
+        "drawing update completed" ->
             [ Decode.string
-                |> Decode.map (Ok >> Menu.drawingSaveCompleted)
+                |> Decode.map
+                    (Ok >> Menu.drawingUpdateCompleted)
             , "Result had no data"
                 |> Err
-                |> Menu.drawingSaveCompleted
+                |> Menu.drawingUpdateCompleted
                 |> Decode.null
+            ]
+                |> Decode.oneOf
+                |> Decode.map MenuMsg
+
+        "drawing create completed" ->
+            [ Decode.string
+                |> Decode.map
+                    (Err >> Menu.drawingCreateCompleted)
+            , { fromErr = Err >> Menu.drawingCreateCompleted
+              , fromData = Ok >> Menu.drawingCreateCompleted
+              , decoder = Drawing.decoder
+              }
+                |> recordingDecoder
             ]
                 |> Decode.oneOf
                 |> Decode.map MenuMsg
@@ -115,6 +129,30 @@ toMsg browser type_ =
                 |> UnrecognizedMsgType
                 |> MsgDecodeFailed
                 |> Decode.succeed
+
+
+type alias RecordingConfig a msg =
+    { fromErr : String -> msg
+    , fromData : a -> msg
+    , decoder : Decoder a
+    }
+
+
+recordingDecoder : RecordingConfig a msg -> Decoder msg
+recordingDecoder config =
+    Decode.value
+        |> Decode.andThen
+            (toResult config >> Decode.succeed)
+
+
+toResult : RecordingConfig a msg -> Value -> msg
+toResult { fromErr, fromData, decoder } json =
+    case Decode.decodeValue decoder json of
+        Ok data ->
+            fromData data
+
+        Err err ->
+            fromErr err
 
 
 payload : Decoder a -> Decoder a

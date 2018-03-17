@@ -15,22 +15,39 @@ payload ==
 	}
 */
 function save(Client, toElm, payload) {
-    var save;
     if (payload.id === null) {
-        save = Client.createDrawing;
+        createDrawing(Client, toElm, payload);
     } else {
-        save = Client.updateDrawing;
+        updateDrawing(Client, toElm, payload);
     }
-    save(payload, {
+}
+
+function createDrawing(Client, toElm, payload) {
+    Client.createDrawing(payload, {
         onSuccess: function(result) {
-            var code = toCode(result);
-            toElm("drawing save completed", code);
+            console.log("Result", result);
+            toElm("drawing create completd", result);
         },
         onFailure: function(err) {
-            toElm("drawing save completed", String(err));
+            console.log("Error", err);
+            toElm("drawing create completed", String(err));
         }
     });
 }
+
+function updateDrawing(Client, toElm, payload) {
+    Client.updateDrawing(payload, {
+        onSuccess: function(result) {
+            var code = toCode(result);
+            toElm("drawing update completed", code);
+        },
+        onFailure: function(err) {
+            console.log("Err", err);
+            toElm("drawing update completed", String(err));
+        }
+    });
+}
+
 
 function toCode(result) {
     if (result.data) {
