@@ -5,6 +5,7 @@ module Data.Menu
         , Menu(..)
         , Model
         , Msg(..)
+        , drawingSaveCompleted
         , fileNotImage
         , fileRead
         , loginFailed
@@ -102,6 +103,11 @@ fileNotImage =
         |> Upload.UploadFailed
         |> UploadMsg
         |> ContentMsg
+
+
+drawingSaveCompleted : Result String String -> Msg
+drawingSaveCompleted =
+    Save.DrawingSaveCompleted >> SaveMsg >> ContentMsg
 
 
 loginFailed : String -> Msg

@@ -22,8 +22,8 @@ import Util
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update message model =
-    case message of
+update msg model =
+    case msg of
         ClientMouseMoved position ->
             Tool.handleClientMouseMovement position model & Cmd.none
 

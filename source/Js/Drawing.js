@@ -1,6 +1,6 @@
 /*
 payload ==
-	{ canvas : String 
+	{ canvas : String
 	, palette : List String
 	, swatches :
 		{ top : String
@@ -15,26 +15,28 @@ payload ==
 	}
 */
 function save(Client, toElm, payload) {
-	console.log(payload);
-	if (payload.id === null) {
-		Client.createDrawing(payload, {
-			onSuccess: function(result) {
-				console.log("Result!", result);
-			},
-			onFailure: function(err) {
-				console.log("Error!", err);
-			}
-		});
-	} else {
-		Client.updateDrawing(payload, {
-			onSuccess: function(result) {
-				console.log("Result!", result);
-			},
-			onFailure: function(err) {
-				console.log("Error!", err);
-			}
-		});
-	}
+    var save;
+    if (payload.id === null) {
+        save = Client.createDrawing;
+    } else {
+        save = Client.updateDrawing;
+    }
+    save(payload, {
+        onSuccess: function(result) {
+            var code = toCode(result);
+            toElm("drawing save completed", code);
+        },
+        onFailure: function(err) {
+            toElm("drawing save completed", String(err));
+        }
+    });
+}
+
+function toCode(result) {
+    if (result.data) {
+        return String(result.data.statusCode);
+    }
+    return null;
 }
 
 function get(Client, toElm, payload) {

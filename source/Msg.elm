@@ -44,7 +44,7 @@ type Msg
 
 type DecodeProblem
     = Other String
-    | UnrecognizedMsgType
+    | UnrecognizedMsgType String
 
 
 
@@ -91,15 +91,29 @@ toMsg browser type_ =
                 |> Decode.map (Menu.fileRead >> MenuMsg)
 
         "file not image" ->
-            MenuMsg Menu.fileNotImage
+            Menu.fileNotImage
+                |> MenuMsg
                 |> Decode.succeed
 
         "drawing loaded" ->
             Drawing.decoder
                 |> Decode.map DrawingLoaded
 
+        "drawing save completed" ->
+            [ Decode.string
+                |> Decode.map (Ok >> Menu.drawingSaveCompleted)
+            , "Result had no data"
+                |> Err
+                |> Menu.drawingSaveCompleted
+                |> Decode.null
+            ]
+                |> Decode.oneOf
+                |> Decode.map MenuMsg
+
         _ ->
-            MsgDecodeFailed UnrecognizedMsgType
+            type_
+                |> UnrecognizedMsgType
+                |> MsgDecodeFailed
                 |> Decode.succeed
 
 

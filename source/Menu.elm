@@ -271,11 +271,16 @@ updateContent config msg model =
         SaveMsg subMsg ->
             case model.content of
                 Save subModel ->
-                    subModel
-                        |> Save.update subMsg
-                        |> mapContent Menu.Save model
-                        |> mapCmd SaveMsg
-                        & NoReply
+                    let
+                        ( newSubModel, cmd, reply ) =
+                            Save.update subMsg subModel
+                    in
+                    { model
+                        | content =
+                            Menu.Save newSubModel
+                    }
+                        & Cmd.map (ContentMsg << SaveMsg) cmd
+                        & reply
 
                 _ ->
                     model & Cmd.none & NoReply

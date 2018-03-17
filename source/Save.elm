@@ -13,15 +13,20 @@ import Css.Namespace exposing (namespace)
 import Html exposing (Html, div, p)
 import Html.CssHelpers
 import Html.Custom
+import Reply exposing (Reply(CloseMenu, NoReply))
 import Tuple.Infix exposing ((&))
+import Util
 
 
 type Model
     = Saving String
+    | Failed String
+    | Success
 
 
 type Msg
-    = Noop
+    = DrawingSaveCompleted (Result String String)
+    | OneSecondExpired
 
 
 
@@ -37,11 +42,28 @@ init =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> ( Model, Cmd Msg, Reply )
 update msg model =
     case msg of
-        Noop ->
-            model & Cmd.none
+        DrawingSaveCompleted (Ok "200") ->
+            ( Success
+            , Util.delay 1000 OneSecondExpired
+            , NoReply
+            )
+
+        DrawingSaveCompleted (Ok code) ->
+            Failed code
+                |> Reply.nothing
+
+        DrawingSaveCompleted (Err err) ->
+            Failed err
+                |> Reply.nothing
+
+        OneSecondExpired ->
+            ( model
+            , Cmd.none
+            , CloseMenu
+            )
 
 
 
@@ -82,6 +104,18 @@ view model =
                 [ class [ Text ] ]
                 [ Html.text (savingText str) ]
             , Html.Custom.spinner []
+            ]
+
+        Failed error ->
+            [ p
+                [ class [ Text ] ]
+                [ Html.text "Oh no, there was a problem saving" ]
+            ]
+
+        Success ->
+            [ p 
+                [ class [ Text ] ]
+                [ Html.text "Save succeeded!" ]
             ]
 
 
