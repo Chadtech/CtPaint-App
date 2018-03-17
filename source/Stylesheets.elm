@@ -15,7 +15,6 @@ import Logout
 import Menu
 import Minimap
 import New
-import Open
 import Palette
 import ReplaceColor
 import Resize
@@ -53,7 +52,6 @@ main =
     , Import.css
     , Scale.css
     , Text.css
-    , Open.css
     , Eraser.css
     , About.css
     , BugReport.css

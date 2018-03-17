@@ -217,9 +217,10 @@ exceededText =
     """
     Your account tier only permits one drawing
     of cloud storage. You already have a drawing stored,
-    you need to delete it in order to save this drawing.
+    so you need to delete it in order to save this drawing.
     To delete it, go to your drawings page and delete the
-    drawing you have in memory.
+    drawing you have in memory. If you click the button below,
+    the drawings page will open in a new window.
     """
 
 

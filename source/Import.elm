@@ -10,6 +10,7 @@ import Html.Attributes exposing (class, placeholder, value)
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
+import Html.Loaded as Loaded
 import Reply
     exposing
         ( Reply
@@ -26,13 +27,15 @@ type Msg
     = FieldUpdated String
     | ImportPressed
     | Submitted
-    | ImageLoaded (Result Error Canvas)
+    | CanvasLoaded (Result Error Canvas)
     | TryAgainPressed
+    | LoadedMsg Loaded.Msg
 
 
 type Model
     = Url String
     | Loading
+    | Loaded Canvas
     | Fail
 
 
@@ -131,6 +134,11 @@ view model =
         Loading ->
             loadingView
 
+        Loaded canvas ->
+            canvas
+                |> Loaded.view
+                |> List.map (Html.map LoadedMsg)
+
         Fail ->
             errorView
 
@@ -165,17 +173,29 @@ update msg model =
         Submitted ->
             attemptLoad model
 
-        ImageLoaded (Ok canvas) ->
+        CanvasLoaded (Ok canvas) ->
             ( model
             , Cmd.none
             , IncorporateImageAsSelection canvas
             )
 
-        ImageLoaded (Err err) ->
+        CanvasLoaded (Err err) ->
             Reply.nothing Fail
 
         TryAgainPressed ->
             Reply.nothing init
+
+        LoadedMsg subMsg ->
+            case model of
+                Loaded canvas ->
+                    ( model
+                    , Cmd.none
+                    , Loaded.update subMsg canvas
+                    )
+
+                _ ->
+                    model
+                        |> Reply.nothing
 
 
 attemptLoad : Model -> ( Model, Cmd Msg, Reply )
@@ -191,6 +211,6 @@ attemptLoad model =
 sendLoadCmd : String -> ( Model, Cmd Msg, Reply )
 sendLoadCmd url =
     ( Loading
-    , Helpers.Import.loadCmd url ImageLoaded
+    , Helpers.Import.loadCmd url CanvasLoaded
     , NoReply
     )

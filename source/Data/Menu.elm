@@ -26,7 +26,6 @@ import Logout
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
 import New
-import Open
 import ReplaceColor
 import Resize
 import Save
@@ -44,7 +43,6 @@ type Menu
     | About About.State
     | ReplaceColor ReplaceColor.Model
     | New New.Model
-    | Open Open.Model
     | Login Login.Model
     | Loading Loading.Model
     | Upload Upload.Model
@@ -85,7 +83,6 @@ type ContentMsg
     | BugReportMsg BugReport.Msg
     | ReplaceColorMsg ReplaceColor.Msg
     | NewMsg New.Msg
-    | OpenMsg Open.Msg
     | LoginMsg Login.Msg
     | UploadMsg Upload.Msg
     | ResizeMsg Resize.Msg

@@ -47,17 +47,18 @@ update msg model =
             case model.menu of
                 Just menu ->
                     let
-                        ( ( newMenu, menuCmd ), reply ) =
+                        ( newMenu, menuCmd, reply ) =
                             Menu.update model.config subMsg menu
 
                         ( newModel, modelCmd ) =
                             Menu.incorporate reply newMenu model
                     in
-                    [ modelCmd
-                    , Cmd.map MenuMsg menuCmd
-                    ]
-                        |> Cmd.batch
-                        |& newModel
+                    ( newModel
+                    , Cmd.batch
+                        [ modelCmd
+                        , Cmd.map MenuMsg menuCmd
+                        ]
+                    )
 
                 Nothing ->
                     model & Cmd.none

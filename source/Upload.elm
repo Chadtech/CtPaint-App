@@ -16,14 +16,8 @@ import Html exposing (Html, div, p)
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick)
-import Reply
-    exposing
-        ( Reply
-            ( IncorporateImageAsCanvas
-            , IncorporateImageAsSelection
-            , NoReply
-            )
-        )
+import Html.Loaded as Loaded
+import Reply exposing (Reply(NoReply))
 import Task
 import Tuple.Infix exposing ((&), (|&))
 
@@ -35,8 +29,7 @@ type Msg
     = UploadFailed Problem
     | GotDataUrl String
     | LoadedCanvas (Result Canvas.Error Canvas)
-    | AsSelectionClicked
-    | AsCanvasClicked
+    | LoadedMsg Loaded.Msg
 
 
 type Problem
@@ -64,10 +57,6 @@ type Class
     = Text
     | LoadingText
     | FailText
-    | CanvasContainer
-    | UploadedCanvas
-    | ButtonsContainer
-    | Button
 
 
 css : Stylesheet
@@ -76,12 +65,6 @@ css =
         [ maxWidth (px 500)
         , marginBottom (px 8)
         ]
-    , (Css.class CanvasContainer << List.append Html.Custom.indent)
-        [ marginBottom (px 8) ]
-    , Css.class UploadedCanvas
-        [ maxWidth (px 500)
-        , property "image-rendering" "auto"
-        ]
     , Css.class LoadingText
         [ textAlign center
         , marginTop (px 8)
@@ -89,12 +72,6 @@ css =
     , Css.class FailText
         [ textAlign center
         , marginBottom (px 8)
-        ]
-    , Css.class ButtonsContainer
-        [ textAlign center ]
-    , Css.class Button
-        [ display inlineBlock
-        , marginRight (px 8)
         ]
     ]
         |> namespace uploadNamespace
@@ -121,7 +98,9 @@ view model =
             loadingView
 
         Loaded canvas ->
-            loadedView canvas
+            canvas
+                |> Loaded.view
+                |> List.map (Html.map LoadedMsg)
 
         Failed problem ->
             failedView problem
@@ -136,38 +115,6 @@ loadingView =
     ]
 
 
-loadedView : Canvas -> List (Html Msg)
-loadedView canvas =
-    [ div
-        [ class [ CanvasContainer ] ]
-        [ Canvas.toHtml
-            [ class [ UploadedCanvas ] ]
-            canvas
-        ]
-    , p
-        [ class [ Text ] ]
-        [ Html.text "Would you like to bring this in as a selection, or just replace the whole canvas with your upload? Replacing the canvas will whip out the current state of the canvas." ]
-    , buttons
-    ]
-
-
-buttons : Html Msg
-buttons =
-    div
-        [ class [ ButtonsContainer ] ]
-        [ Html.Custom.menuButton
-            [ class [ Button ]
-            , onClick AsSelectionClicked
-            ]
-            [ Html.text "load as selecton" ]
-        , Html.Custom.menuButton
-            [ class [ Button ]
-            , onClick AsCanvasClicked
-            ]
-            [ Html.text "load as canvas" ]
-        ]
-
-
 failedView : Problem -> List (Html Msg)
 failedView problem =
     []
@@ -177,41 +124,37 @@ failedView problem =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( ( Model, Cmd Msg ), Reply )
+update : Msg -> Model -> ( Model, Cmd Msg, Reply )
 update msg model =
     case msg of
         UploadFailed problem ->
-            Failed problem & Cmd.none & NoReply
+            Failed problem
+                |> Reply.nothing
 
         GotDataUrl url ->
-            url
+            ( Loading
+            , url
                 |> Canvas.loadImage
                 |> Task.attempt LoadedCanvas
-                |& Loading
-                & NoReply
+            , NoReply
+            )
 
         LoadedCanvas (Ok canvas) ->
-            Loaded canvas & Cmd.none & NoReply
+            Loaded canvas
+                |> Reply.nothing
 
         LoadedCanvas (Err err) ->
-            Failed CouldNotReadDataUrl & Cmd.none & NoReply
+            Failed CouldNotReadDataUrl
+                |> Reply.nothing
 
-        AsSelectionClicked ->
+        LoadedMsg subMsg ->
             case model of
                 Loaded canvas ->
-                    model
-                        & Cmd.none
-                        & IncorporateImageAsSelection canvas
+                    ( model
+                    , Cmd.none
+                    , Loaded.update subMsg canvas
+                    )
 
                 _ ->
-                    model & Cmd.none & NoReply
-
-        AsCanvasClicked ->
-            case model of
-                Loaded canvas ->
                     model
-                        & Cmd.none
-                        & IncorporateImageAsCanvas canvas
-
-                _ ->
-                    model & Cmd.none & NoReply
+                        |> Reply.nothing

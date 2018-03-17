@@ -25,11 +25,9 @@ function save(Client, toElm, payload) {
 function createDrawing(Client, toElm, payload) {
     Client.createDrawing(payload, {
         onSuccess: function(result) {
-            console.log("Result", result);
             toElm("drawing create completd", result);
         },
         onFailure: function(err) {
-            console.log("Error", err);
             toElm("drawing create completed", String(err));
         }
     });
@@ -42,7 +40,6 @@ function updateDrawing(Client, toElm, payload) {
             toElm("drawing update completed", code);
         },
         onFailure: function(err) {
-            console.log("Err", err);
             toElm("drawing update completed", String(err));
         }
     });

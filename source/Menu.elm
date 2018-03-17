@@ -26,7 +26,6 @@ import Login
 import Logout
 import Mouse exposing (Position)
 import New
-import Open
 import ReplaceColor
 import Reply exposing (Reply(CloseMenu, NoReply))
 import Resize
@@ -42,23 +41,26 @@ import Window exposing (Size)
 -- UPDATE --
 
 
-update : Config -> Msg -> Model -> ( ( Model, Cmd Msg ), Reply )
+update : Config -> Msg -> Model -> ( Model, Cmd Msg, Reply )
 update config msg model =
     case msg of
         XButtonMouseDown ->
             { model
                 | click = XButtonIsDown
             }
-                & Cmd.none
-                & NoReply
+                |> Reply.nothing
 
         XButtonMouseUp ->
-            model & Cmd.none & CloseMenu
+            ( model
+            , Cmd.none
+            , CloseMenu
+            )
 
         HeaderMouseDown { targetPos, clientPos } ->
             case model.click of
                 XButtonIsDown ->
-                    model & Cmd.none & NoReply
+                    model
+                        |> Reply.nothing
 
                 _ ->
                     { model
@@ -68,8 +70,7 @@ update config msg model =
                             }
                                 |> ClickAt
                     }
-                        & Cmd.none
-                        & NoReply
+                        |> Reply.nothing
 
         HeaderMouseMove p ->
             case model.click of
@@ -80,218 +81,161 @@ update config msg model =
                             , y = p.y - click.y - 4
                             }
                     }
-                        & Cmd.none
-                        & NoReply
+                        |> Reply.nothing
 
                 _ ->
-                    model & Cmd.none & NoReply
+                    model
+                        |> Reply.nothing
 
         HeaderMouseUp ->
             { model | click = NoClick }
-                & Cmd.none
-                & NoReply
+                |> Reply.nothing
 
         ContentMsg subMsg ->
             updateContent config subMsg model
 
 
-updateContent : Config -> ContentMsg -> Model -> ( ( Model, Cmd Msg ), Reply )
+updateContent : Config -> ContentMsg -> Model -> ( Model, Cmd Msg, Reply )
 updateContent config msg model =
     case msg of
         DownloadMsg subMsg ->
             case model.content of
                 Download subModel ->
-                    let
-                        ( newSubModel, cmd, reply ) =
-                            Download.update subMsg subModel
-                    in
-                    { model
-                        | content = Download newSubModel
-                    }
-                        & Cmd.map (ContentMsg << DownloadMsg) cmd
-                        & reply
+                    subModel
+                        |> Download.update subMsg
+                        |> return3 model Menu.Download DownloadMsg
 
                 _ ->
-                    model & Cmd.none & NoReply
+                    model |> Reply.nothing
 
         ImportMsg subMsg ->
             case model.content of
                 Import subModel ->
-                    let
-                        ( newSubModel, cmd, reply ) =
-                            Import.update subMsg subModel
-                    in
-                    { model | content = Import newSubModel }
-                        & Cmd.map (ContentMsg << ImportMsg) cmd
-                        & reply
+                    subModel
+                        |> Import.update subMsg
+                        |> return3 model Menu.Import ImportMsg
 
                 _ ->
-                    model & Cmd.none & NoReply
+                    model |> Reply.nothing
 
         ScaleMsg subMsg ->
             case model.content of
                 Scale subModel ->
-                    let
-                        ( newSubModel, reply ) =
-                            Scale.update subMsg subModel
-                    in
-                    { model | content = Scale newSubModel }
-                        & Cmd.none
-                        & reply
+                    subModel
+                        |> Scale.update subMsg
+                        |> noCmd model Menu.Scale
 
                 _ ->
-                    model & Cmd.none & NoReply
+                    model |> Reply.nothing
 
         TextMsg subMsg ->
             case model.content of
                 Text subModel ->
-                    let
-                        ( newSubModel, reply ) =
-                            Text.update subMsg subModel
-                    in
-                    { model | content = Text newSubModel }
-                        & Cmd.none
-                        & reply
+                    subModel
+                        |> Text.update subMsg
+                        |> noCmd model Menu.Text
 
                 _ ->
-                    model & Cmd.none & NoReply
+                    model |> Reply.nothing
 
         BugReportMsg subMsg ->
             case model.content of
                 BugReport subModel ->
-                    let
-                        ( newSubModel, cmd, reply ) =
-                            BugReport.update subMsg subModel
-                    in
-                    { model | content = BugReport newSubModel }
-                        & Cmd.map (ContentMsg << BugReportMsg) cmd
-                        & reply
+                    subModel
+                        |> BugReport.update subMsg
+                        |> return3 model Menu.BugReport BugReportMsg
 
                 _ ->
-                    model & Cmd.none & NoReply
+                    model |> Reply.nothing
 
         ReplaceColorMsg subMsg ->
             case model.content of
                 ReplaceColor subModel ->
-                    let
-                        ( newSubModel, reply ) =
-                            ReplaceColor.update subMsg subModel
-                    in
-                    { model | content = ReplaceColor newSubModel }
-                        & Cmd.none
-                        & reply
+                    subModel
+                        |> ReplaceColor.update subMsg
+                        |> noCmd model Menu.ReplaceColor
 
                 _ ->
-                    model & Cmd.none & NoReply
+                    model |> Reply.nothing
 
         LoginMsg subMsg ->
             case model.content of
                 Login subModel ->
-                    let
-                        ( newSubModel, cmd, reply ) =
-                            Login.update config subMsg subModel
-                    in
-                    { model | content = Login newSubModel }
-                        & Cmd.map (ContentMsg << LoginMsg) cmd
-                        & reply
+                    subModel
+                        |> Login.update config subMsg
+                        |> return3 model Menu.Login LoginMsg
 
                 _ ->
-                    model & Cmd.none & NoReply
+                    model |> Reply.nothing
 
         UploadMsg subMsg ->
             case model.content of
                 Upload subModel ->
-                    let
-                        ( ( newSubModel, cmd ), reply ) =
-                            Upload.update subMsg subModel
-                    in
-                    { model | content = Upload newSubModel }
-                        & Cmd.map (ContentMsg << UploadMsg) cmd
-                        & reply
+                    subModel
+                        |> Upload.update subMsg
+                        |> return3 model Menu.Upload UploadMsg
 
                 _ ->
-                    model & Cmd.none & NoReply
+                    model |> Reply.nothing
 
         ResizeMsg subMsg ->
             case model.content of
                 Resize subModel ->
-                    let
-                        ( newSubModel, reply ) =
-                            Resize.update subMsg subModel
-                    in
-                    { model | content = Resize newSubModel }
-                        & Cmd.none
-                        & reply
+                    subModel
+                        |> Resize.update subMsg
+                        |> noCmd model Menu.Resize
 
                 _ ->
-                    model & Cmd.none & NoReply
+                    model |> Reply.nothing
 
         NewMsg subMsg ->
             case model.content of
                 New subModel ->
-                    let
-                        ( newSubModel, reply ) =
-                            New.update subMsg subModel
-                    in
-                    { model | content = New newSubModel }
-                        & Cmd.none
-                        & reply
+                    subModel
+                        |> New.update subMsg
+                        |> noCmd model Menu.New
 
                 _ ->
-                    model & Cmd.none & NoReply
-
-        OpenMsg subMsg ->
-            case model.content of
-                Open subModel ->
-                    let
-                        ( newSubModel, _ ) =
-                            Open.update subMsg subModel
-                    in
-                    { model | content = Open newSubModel }
-                        & Cmd.none
-                        & NoReply
-
-                _ ->
-                    model & Cmd.none & NoReply
+                    model |> Reply.nothing
 
         DrawingMsg subMsg ->
             case model.content of
                 Drawing subModel ->
-                    let
-                        ( newSubModel, reply ) =
-                            Drawing.update subMsg subModel
-                    in
-                    { model | content = Menu.Drawing newSubModel }
-                        & Cmd.none
-                        & reply
+                    subModel
+                        |> Drawing.update subMsg
+                        |> noCmd model Menu.Drawing
 
                 _ ->
-                    model & Cmd.none & NoReply
+                    model |> Reply.nothing
 
         SaveMsg subMsg ->
             case model.content of
                 Save subModel ->
-                    let
-                        ( newSubModel, cmd, reply ) =
-                            Save.update config subMsg subModel
-                    in
-                    { model
-                        | content =
-                            Menu.Save newSubModel
-                    }
-                        & Cmd.map (ContentMsg << SaveMsg) cmd
-                        & reply
+                    subModel
+                        |> Save.update config subMsg
+                        |> return3 model Menu.Save SaveMsg
 
                 _ ->
-                    model & Cmd.none & NoReply
+                    model |> Reply.nothing
 
         LogoutMsg subMsg ->
             case model.content of
                 Logout ->
-                    model & Cmd.none & Logout.update subMsg
+                    ( model
+                    , Cmd.none
+                    , Logout.update subMsg
+                    )
 
                 _ ->
-                    model & Cmd.none & NoReply
+                    model |> Reply.nothing
+
+
+noCmd : Model -> (a -> Menu) -> ( a, Reply ) -> ( Model, Cmd Msg, Reply )
+noCmd model toMenu ( subModel, reply ) =
+    ( { model | content = toMenu subModel }
+    , Cmd.none
+    , reply
+    )
 
 
 mapContent : (a -> Menu) -> Model -> ( a, Cmd msg ) -> ( Model, Cmd msg )
@@ -302,6 +246,14 @@ mapContent toMenu model ( subModel, cmd ) =
 mapCmd : (msg -> ContentMsg) -> ( Model, Cmd msg ) -> ( Model, Cmd Msg )
 mapCmd toMsg ( model, cmd ) =
     model & Cmd.map (ContentMsg << toMsg) cmd
+
+
+return3 : Model -> (a -> Menu) -> (b -> ContentMsg) -> ( a, Cmd b, Reply ) -> ( Model, Cmd Msg, Reply )
+return3 model toMenu toContentMsg ( subModel, cmd, reply ) =
+    ( { model | content = toMenu subModel }
+    , Cmd.map (toContentMsg >> ContentMsg) cmd
+    , reply
+    )
 
 
 
@@ -415,10 +367,6 @@ contentView menu =
         New subModel ->
             List.map (Html.map NewMsg) <|
                 New.view subModel
-
-        Open subModel ->
-            List.map (Html.map OpenMsg) <|
-                Open.view subModel
 
         Login subModel ->
             List.map (Html.map LoginMsg) <|
