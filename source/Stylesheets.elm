@@ -8,6 +8,7 @@ import Drawing
 import Eraser
 import Error
 import Html.Custom
+import Html.Loaded
 import Import
 import Loading
 import Login
@@ -55,6 +56,7 @@ main =
     , Eraser.css
     , About.css
     , BugReport.css
+    , Html.Loaded.css
     , Save.css
     , New.css
     ]

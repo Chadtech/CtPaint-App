@@ -15,11 +15,9 @@ import Css.Namespace exposing (namespace)
 import Html exposing (Html, div, p)
 import Html.CssHelpers
 import Html.Custom
-import Html.Events exposing (onClick)
 import Html.Loaded as Loaded
 import Reply exposing (Reply(NoReply))
 import Task
-import Tuple.Infix exposing ((&), (|&))
 
 
 -- TYPES --

@@ -174,10 +174,8 @@ update msg model =
             attemptLoad model
 
         CanvasLoaded (Ok canvas) ->
-            ( model
-            , Cmd.none
-            , IncorporateImageAsSelection canvas
-            )
+            Loaded canvas
+                |> Reply.nothing
 
         CanvasLoaded (Err err) ->
             Reply.nothing Fail

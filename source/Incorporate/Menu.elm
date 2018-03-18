@@ -50,7 +50,13 @@ incorporate reply menu model =
                 |> closeMenu
 
         IncorporateImageAsCanvas image ->
-            { model | canvas = image }
+            { model
+                | canvas = image
+                , canvasPosition =
+                    Util.center
+                        model.windowSize
+                        (Canvas.getSize image)
+            }
                 |> closeMenu
 
         ScaleTo w h ->

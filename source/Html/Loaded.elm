@@ -63,10 +63,16 @@ css =
         , marginBottom (px 8)
         ]
     , (Css.class CanvasContainer << List.append Html.Custom.indent)
-        [ marginBottom (px 8) ]
+        [ marginBottom (px 8)
+        , overflow hidden
+        , maxWidth (px 500)
+        , displayFlex
+        , justifyContent center
+        ]
     , Css.class UploadedCanvas
         [ maxWidth (px 500)
         , property "image-rendering" "auto"
+        , alignSelf center
         ]
     , Css.class ButtonsContainer
         [ textAlign center ]
@@ -111,7 +117,7 @@ loadedText : String
 loadedText =
     """
     Would you like to bring this in as a selection,
-    or just replace the whole canvas with your upload?
+    or just replace the whole canvas with your image?
     Replacing the canvas will whip out the current state of the canvas.
     """
 

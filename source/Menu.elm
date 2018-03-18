@@ -32,7 +32,6 @@ import Resize
 import Save
 import Scale
 import Text
-import Tuple.Infix exposing ((&))
 import Upload
 import Util exposing (toolbarWidth)
 import Window exposing (Size)
@@ -236,16 +235,6 @@ noCmd model toMenu ( subModel, reply ) =
     , Cmd.none
     , reply
     )
-
-
-mapContent : (a -> Menu) -> Model -> ( a, Cmd msg ) -> ( Model, Cmd msg )
-mapContent toMenu model ( subModel, cmd ) =
-    { model | content = toMenu subModel } & cmd
-
-
-mapCmd : (msg -> ContentMsg) -> ( Model, Cmd msg ) -> ( Model, Cmd Msg )
-mapCmd toMsg ( model, cmd ) =
-    model & Cmd.map (ContentMsg << toMsg) cmd
 
 
 return3 : Model -> (a -> Menu) -> (b -> ContentMsg) -> ( a, Cmd b, Reply ) -> ( Model, Cmd Msg, Reply )

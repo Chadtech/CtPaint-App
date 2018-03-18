@@ -250,7 +250,7 @@ css =
         , giveDropdownWidth (Dropdown Help) 180
         , giveDropdownWidth (Dropdown View) 200
         , giveDropdownWidth (Dropdown Edit) 220
-        , giveDropdownWidth (Dropdown File) 220
+        , giveDropdownWidth (Dropdown File) 280
         , giveDropdownWidth (Dropdown Tools) 300
         , giveDropdownWidth (Dropdown Data.Taskbar.User) 150
         , hover [ color Ct.point0 ]
@@ -838,7 +838,7 @@ fileDropped model =
         , disabled = False
         }
     , option
-        { label = "import"
+        { label = "import from url"
         , cmdKeys = keysLabel model InitImport
         , clickMsg = KeyCmdClicked InitImport
         , disabled = False
