@@ -516,10 +516,10 @@ minimapLabel : Model -> String
 minimapLabel model =
     case model.minimap of
         Opened _ ->
-            "Hide Mini Map"
+            "hide mini map"
 
         _ ->
-            "Show Mini Map"
+            "show mini map"
 
 
 
@@ -653,9 +653,9 @@ colorsDropped model =
 colorPickerLabel : Model -> String
 colorPickerLabel model =
     if model.color.picker.window.show then
-        "Hide Color Picker"
+        "hide color picker"
     else
-        "Show Color Picker"
+        "show color picker"
 
 
 
