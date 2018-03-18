@@ -55,8 +55,13 @@ loadingNamespace =
     Html.CssHelpers.withNamespace loadingNamespace
 
 
-view : Model -> List (Html msg)
-view model =
+view : Model -> Html msg
+view =
+    viewBody >> Html.Custom.cardBody []
+
+
+viewBody : Model -> List (Html msg)
+viewBody model =
     case model of
         Just name ->
             [ p

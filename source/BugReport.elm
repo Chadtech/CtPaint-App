@@ -139,8 +139,13 @@ bugReportNamespace =
     Html.CssHelpers.withNamespace bugReportNamespace
 
 
-view : Model -> List (Html Msg)
-view model =
+view : Model -> Html Msg
+view =
+    viewBody >> Html.Custom.cardBody []
+
+
+viewBody : Model -> List (Html Msg)
+viewBody model =
     case model of
         Ready str ->
             loggedInView str False

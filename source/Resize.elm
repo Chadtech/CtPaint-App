@@ -137,7 +137,7 @@ resizeNamespace =
     Html.CssHelpers.withNamespace resizeNamespace
 
 
-view : Model -> List (Html Msg)
+view : Model -> Html Msg
 view model =
     [ header "size"
     , widthField model
@@ -153,6 +153,7 @@ view model =
         ]
         [ Html.text "resize" ]
     ]
+        |> Html.Custom.cardBody []
 
 
 header : String -> Html Msg

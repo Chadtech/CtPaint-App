@@ -296,7 +296,6 @@ view ({ title, content } as model) =
             , xButtonMouseUp = XButtonMouseUp
             }
         , contentView content
-            |> Html.Custom.cardBody []
             |> Html.map ContentMsg
         ]
 
@@ -323,66 +322,78 @@ extraClass model =
             Nothing
 
 
-contentView : Menu -> List (Html ContentMsg)
+contentView : Menu -> Html ContentMsg
 contentView menu =
     case menu of
         Download subModel ->
-            List.map (Html.map DownloadMsg) <|
-                Download.view subModel
+            subModel
+                |> Download.view
+                |> Html.map DownloadMsg
 
         Import subModel ->
-            List.map (Html.map ImportMsg) <|
-                Import.view subModel
+            subModel
+                |> Import.view
+                |> Html.map ImportMsg
 
         Scale subModel ->
-            List.map (Html.map ScaleMsg) <|
-                Scale.view subModel
+            subModel
+                |> Scale.view
+                |> Html.map ScaleMsg
 
         Text subModel ->
-            List.map (Html.map TextMsg) <|
-                Text.view subModel
+            subModel
+                |> Text.view
+                |> Html.map TextMsg
 
         BugReport subModel ->
-            List.map (Html.map BugReportMsg) <|
-                BugReport.view subModel
+            subModel
+                |> BugReport.view
+                |> Html.map BugReportMsg
 
         About state ->
             About.view state
 
         ReplaceColor subModel ->
-            List.map (Html.map ReplaceColorMsg) <|
-                ReplaceColor.view subModel
+            subModel
+                |> ReplaceColor.view
+                |> Html.map ReplaceColorMsg
 
         New subModel ->
-            List.map (Html.map NewMsg) <|
-                New.view subModel
+            subModel
+                |> New.view
+                |> Html.map NewMsg
 
         Login subModel ->
-            List.map (Html.map LoginMsg) <|
-                Login.view subModel
+            subModel
+                |> Login.view
+                |> Html.map LoginMsg
 
         Loading subModel ->
             Loading.view subModel
 
         Upload subModel ->
-            List.map (Html.map UploadMsg) <|
-                Upload.view subModel
+            subModel
+                |> Upload.view
+                |> Html.map UploadMsg
 
         Resize subModel ->
-            List.map (Html.map ResizeMsg) <|
-                Resize.view subModel
+            subModel
+                |> Resize.view
+                |> Html.map ResizeMsg
 
         Drawing subModel ->
-            List.map (Html.map DrawingMsg) <|
-                Drawing.view subModel
+            subModel
+                |> Drawing.view
+                |> Html.map DrawingMsg
 
         Save subModel ->
-            List.map (Html.map SaveMsg) <|
-                Save.view subModel
+            subModel
+                |> Save.view
+                |> Html.map SaveMsg
 
         Logout ->
-            List.map (Html.map LogoutMsg) <|
-                Logout.view
+            Logout.view
+                |> Html.map LogoutMsg
 
 
 

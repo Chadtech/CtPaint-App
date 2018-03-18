@@ -72,7 +72,7 @@ fileName { field, placeholder } =
 -- VIEW --
 
 
-view : Model -> List (Html Msg)
+view : Model -> Html Msg
 view model =
     [ Html.Custom.field
         [ onSubmit Submitted
@@ -89,6 +89,7 @@ view model =
         [ onClick DownloadButtonPressed ]
         [ Html.text "download" ]
     ]
+        |> Html.Custom.cardBody []
 
 
 

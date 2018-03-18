@@ -193,7 +193,7 @@ replaceNamespace =
     Html.CssHelpers.withNamespace replaceNamespace
 
 
-view : Model -> List (Html Msg)
+view : Model -> Html Msg
 view model =
     [ targetSide model
     , replacementSide model
@@ -203,6 +203,7 @@ view model =
         ]
         [ Html.text "replace" ]
     ]
+        |> Html.Custom.cardBody []
 
 
 targetSide : Model -> Html Msg

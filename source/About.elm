@@ -49,7 +49,7 @@ aboutNamespace =
     Html.CssHelpers.withNamespace aboutNamespace
 
 
-view : State -> List (Html msg)
+view : State -> Html msg
 view { buildNumber } =
     [ p_ "CtPaint 2017 Basic "
     , p_ ("build number " ++ toString buildNumber)
@@ -58,6 +58,7 @@ view { buildNumber } =
     , br [] []
     , p_ "It was made by one guy named \"Chadtech\" over the course of two years in his free time. You can reach him at chadtech@programhouse.us."
     ]
+        |> Html.Custom.cardBody []
 
 
 p_ : String -> Html msg

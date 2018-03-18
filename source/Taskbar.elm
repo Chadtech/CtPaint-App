@@ -211,7 +211,6 @@ css =
         , withClass Dropped
             (outdent ++ [ zIndex (int 3) ])
         , active outdent
-        , marginRight (px 1)
         , border3 (px 2) solid Ct.ignorable2
         ]
     , Css.class LoginButton
@@ -254,7 +253,6 @@ css =
         , giveDropdownWidth (Dropdown Tools) 300
         , giveDropdownWidth (Dropdown Data.Taskbar.User) 150
         , hover [ color Ct.point0 ]
-        , padding (px 4)
         ]
     , Css.class Divider
         [ height (px 16)
@@ -276,6 +274,7 @@ css =
         , justifyContent spaceBetween
         , verticalAlign middle
         , displayFlex
+        , margin (px 0)
         , children
             [ Css.Elements.p
                 [ height (px 32)
@@ -320,7 +319,7 @@ giveDropdownWidth dropdownClass dropdownWidth =
         [ width (px dropdownWidth)
         , children
             [ Css.class Option
-                [ width (px (dropdownWidth - 6)) ]
+                [ width (px dropdownWidth) ]
             , Css.class Divider
                 [ children
                     [ Css.class Strike

@@ -8,6 +8,7 @@ module Drawing
         , view
         )
 
+import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Html exposing (Html, input, p)
@@ -61,6 +62,7 @@ init name =
 type Class
     = Field
     | Button
+    | Error
 
 
 css : Stylesheet
@@ -69,6 +71,8 @@ css =
         [ marginBottom (px 0) ]
     , Css.class Button
         [ marginTop (px 8) ]
+    , Css.class Error
+        [ backgroundColor Ct.lowWarning ]
     ]
         |> namespace projectNamespace
         |> stylesheet
@@ -87,17 +91,20 @@ projectNamespace =
     Html.CssHelpers.withNamespace projectNamespace
 
 
-view : Model -> List (Html Msg)
+view : Model -> Html Msg
 view model =
     case model.state of
         Ready ->
             readyView model
+                |> Html.Custom.cardBody []
 
         Saving ->
             savingView model
+                |> Html.Custom.cardBody []
 
         Fail problem ->
             failView problem
+                |> Html.Custom.cardBody [ class [ Error ] ]
 
 
 readyView : Model -> List (Html Msg)

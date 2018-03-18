@@ -10,6 +10,7 @@ module Upload
         )
 
 import Canvas exposing (Canvas)
+import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Html exposing (Html, div, p)
@@ -55,6 +56,7 @@ type Class
     = Text
     | LoadingText
     | FailText
+    | Error
 
 
 css : Stylesheet
@@ -71,6 +73,8 @@ css =
         [ textAlign center
         , marginBottom (px 8)
         ]
+    , Css.class Error
+        [ backgroundColor Ct.lowWarning ]
     ]
         |> namespace uploadNamespace
         |> stylesheet
@@ -89,7 +93,7 @@ uploadNamespace =
     Html.CssHelpers.withNamespace uploadNamespace
 
 
-view : Model -> List (Html Msg)
+view : Model -> Html Msg
 view model =
     case model of
         Loading ->
@@ -98,24 +102,38 @@ view model =
         Loaded canvas ->
             canvas
                 |> Loaded.view
-                |> List.map (Html.map LoadedMsg)
+                |> Html.map LoadedMsg
 
         Failed problem ->
             failedView problem
 
 
-loadingView : List (Html Msg)
+loadingView : Html Msg
 loadingView =
     [ Html.Custom.spinner []
     , p
         [ class [ LoadingText ] ]
         [ Html.text "Loading.." ]
     ]
+        |> Html.Custom.cardBody []
 
 
-failedView : Problem -> List (Html Msg)
+failedView : Problem -> Html Msg
 failedView problem =
-    []
+    [ p
+        [ class [ FailText ] ]
+        [ Html.text failText ]
+    ]
+        |> Html.Custom.cardBody [ class [ Error ] ]
+
+
+failText : String
+failText =
+    """
+    I couldnt load your image. Either
+    something is wrong with your image
+    or Im broken.
+    """
 
 
 

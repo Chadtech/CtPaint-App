@@ -154,7 +154,7 @@ scaleNamespace =
     Html.CssHelpers.withNamespace scaleNamespace
 
 
-view : Model -> List (Html Msg)
+view : Model -> Html Msg
 view model =
     [ percentScaling model
     , absoluteScaling model
@@ -166,6 +166,7 @@ view model =
         [ onClick ScaleClick ]
         [ Html.text "set size" ]
     ]
+        |> Html.Custom.cardBody []
 
 
 lock : Bool -> Html Msg

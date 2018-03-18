@@ -229,7 +229,7 @@ newNamespace =
     Html.CssHelpers.withNamespace newNamespace
 
 
-view : Model -> List (Html Msg)
+view : Model -> Html Msg
 view model =
     [ Html.Custom.field
         [ class [ Field ]
@@ -287,8 +287,7 @@ view model =
         (startNewButtonAttrs model)
         [ Html.text "start" ]
     ]
-        |> div [ onSubmit StartSubmitted ]
-        |> List.singleton
+        |> Html.Custom.cardBody []
 
 
 startNewButtonAttrs : Model -> List (Attribute Msg)

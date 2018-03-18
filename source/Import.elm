@@ -1,6 +1,7 @@
 module Import exposing (..)
 
 import Canvas exposing (Canvas, Error)
+import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
@@ -47,6 +48,7 @@ type Class
     = Field
     | LoadingText
     | FailText
+    | Error
 
 
 css : Stylesheet
@@ -67,6 +69,8 @@ css =
         [ textAlign center
         , marginBottom (px 8)
         ]
+    , Css.class Error
+        [ backgroundColor Ct.lowWarning ]
     ]
         |> namespace importNamespace
         |> stylesheet
@@ -85,7 +89,7 @@ importNamespace =
     Html.CssHelpers.withNamespace importNamespace
 
 
-normalView : String -> List (Html Msg)
+normalView : String -> Html Msg
 normalView str =
     [ Html.Custom.field
         [ class [ Field ]
@@ -103,9 +107,10 @@ normalView str =
         [ onClick ImportPressed ]
         [ Html.text "import" ]
     ]
+        |> Html.Custom.cardBody []
 
 
-errorView : List (Html Msg)
+errorView : Html Msg
 errorView =
     [ p
         [ class [ FailText ] ]
@@ -114,18 +119,21 @@ errorView =
         [ onClick TryAgainPressed ]
         [ Html.text "try again" ]
     ]
+        |> Html.Custom.cardBody
+            [ class [ Error ] ]
 
 
-loadingView : List (Html Msg)
+loadingView : Html Msg
 loadingView =
     [ Html.Custom.spinner []
     , p
         [ class [ LoadingText ] ]
         [ Html.text "Loading.." ]
     ]
+        |> Html.Custom.cardBody []
 
 
-view : Model -> List (Html Msg)
+view : Model -> Html Msg
 view model =
     case model of
         Url str ->
@@ -137,7 +145,7 @@ view model =
         Loaded canvas ->
             canvas
                 |> Loaded.view
-                |> List.map (Html.map LoadedMsg)
+                |> Html.map LoadedMsg
 
         Fail ->
             errorView

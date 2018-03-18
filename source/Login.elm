@@ -94,6 +94,7 @@ init =
 
 type Class
     = Error
+    | ErrorBackground
     | ForgotLink
     | SubmitButton
 
@@ -102,6 +103,8 @@ css : Stylesheet
 css =
     [ Css.class Error
         [ marginBottom (px 8) ]
+    , Css.class ErrorBackground
+        [ backgroundColor Ct.lowWarning ]
     , Css.class ForgotLink
         [ color Ct.important0
         , hover
@@ -129,7 +132,7 @@ loginNamespace =
     Html.CssHelpers.withNamespace loginNamespace
 
 
-view : Model -> List (Html Msg)
+view : Model -> Html Msg
 view model =
     let
         value_ : String -> Attribute Msg
@@ -177,6 +180,17 @@ view model =
         ]
         [ Html.text "log in" ]
     ]
+        |> Html.Custom.cardBody (bodyAttrs model)
+
+
+bodyAttrs : Model -> List (Attribute Msg)
+bodyAttrs model =
+    case model.responseError of
+        Just _ ->
+            [ class [ ErrorBackground ] ]
+
+        Nothing ->
+            []
 
 
 responseErrorView : Maybe Problem -> Html Msg

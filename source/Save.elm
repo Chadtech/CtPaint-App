@@ -8,6 +8,7 @@ module Save
         , view
         )
 
+import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Data.Config exposing (Config)
@@ -138,6 +139,7 @@ type Class
     = Text
     | ButtonsContainer
     | Button
+    | Error
 
 
 css : Stylesheet
@@ -152,6 +154,8 @@ css =
         ]
     , Css.class Button
         [ marginLeft (px 8) ]
+    , Css.class Error
+        [ backgroundColor Ct.lowWarning ]
     ]
         |> namespace saveNamespace
         |> stylesheet
@@ -170,7 +174,7 @@ saveNamespace =
     Html.CssHelpers.withNamespace saveNamespace
 
 
-view : Model -> List (Html Msg)
+view : Model -> Html Msg
 view model =
     case model of
         Saving str ->
@@ -179,12 +183,14 @@ view model =
                 [ Html.text (savingText str) ]
             , Html.Custom.spinner []
             ]
+                |> Html.Custom.cardBody []
 
         Failed (Other _) ->
             [ p
                 [ class [ Text ] ]
                 [ Html.text "Oh no, there was a problem saving" ]
             ]
+                |> Html.Custom.cardBody [ class [ Error ] ]
 
         Failed ExceededMemoryLimit ->
             [ p
@@ -204,12 +210,14 @@ view model =
                     [ Html.text "open drawings page" ]
                 ]
             ]
+                |> Html.Custom.cardBody [ class [ Error ] ]
 
         Success ->
             [ p
                 [ class [ Text ] ]
                 [ Html.text "Save succeeded!" ]
             ]
+                |> Html.Custom.cardBody []
 
 
 exceededText : String

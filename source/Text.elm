@@ -79,7 +79,7 @@ textNamespace =
     Html.CssHelpers.withNamespace textNamespace
 
 
-view : String -> List (Html Msg)
+view : String -> Html Msg
 view str =
     [ textarea
         [ onInput FieldUpdated
@@ -92,3 +92,4 @@ view str =
         [ onClick AddTextClicked ]
         [ Html.text "add text" ]
     ]
+        |> Html.Custom.cardBody []

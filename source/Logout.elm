@@ -63,7 +63,7 @@ logoutNamespace =
     Html.CssHelpers.withNamespace logoutNamespace
 
 
-view : List (Html Msg)
+view : Html Msg
 view =
     [ p
         [ class [ Text ] ]
@@ -72,6 +72,7 @@ view =
         [ onClick LogoutClicked ]
         [ Html.text "logout anyway" ]
     ]
+        |> Html.Custom.cardBody []
 
 
 warningText : String

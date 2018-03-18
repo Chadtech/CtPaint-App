@@ -98,7 +98,7 @@ loadedNamespace =
     Html.CssHelpers.withNamespace loadedNamespace
 
 
-view : Canvas -> List (Html Msg)
+view : Canvas -> Html Msg
 view canvas =
     [ div
         [ class [ CanvasContainer ] ]
@@ -111,6 +111,7 @@ view canvas =
         [ Html.text loadedText ]
     , buttons
     ]
+        |> Html.Custom.cardBody []
 
 
 loadedText : String
