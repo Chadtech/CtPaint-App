@@ -37,26 +37,7 @@ PaintApp = function(manifest) {
 	var Drawing = require("./Js/Drawing")(Client, toElm);
 	var User = require("./Js/User")(Client, toElm);
 	var Keys = require("./Js/Keys")(app);
-
-	var fileUploader = document.createElement("input");
-	fileUploader.type = "file";
-	fileUploader.addEventListener("change", function(event) {
-		var reader = new FileReader();
-
-		reader.onload = function() {
-			toElm("file read", reader.result);
-		};
-
-		var imageIndex = ["image/png", "image/jpeg"].indexOf(
-			fileUploader.files[0].type
-		);
-
-		if (imageIndex !== -1) {
-			reader.readAsDataURL(fileUploader.files[0]);
-		} else {
-			toElm("file not image", null);
-		}
-	});
+	var Upload = require("./Js/Upload")(toElm);
 
 	function redirectPageTo(payload) {
 		window.onbeforeunload = null;
@@ -72,7 +53,7 @@ PaintApp = function(manifest) {
 		logout: User.logout,
 		openNewWindow: window.open,
 		redirectPageTo: redirectPageTo,
-		openUpFileUpload: fileUploader.click,
+		openUpFileUpload: Upload,
 		loadDrawing: Drawing.get,
 		track: track
 	};
