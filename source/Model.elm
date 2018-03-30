@@ -1,11 +1,12 @@
-module Model exposing (Model, toSavePayload)
+module Model exposing (Model, toSavePayload, updateCanvas)
 
 import Canvas exposing (Canvas, DrawOp, Point, Size)
 import Data.Color
 import Data.Config exposing (Config)
-import Data.History
+import Data.History as History
 import Data.Menu as Menu
 import Data.Minimap as Minimap
+import Data.Selection as Selection
 import Data.Taskbar exposing (Dropdown)
 import Data.Tool exposing (Tool)
 import Data.User as User
@@ -27,9 +28,9 @@ type alias Model =
     , tool : Tool
     , zoom : Int
     , galleryView : Bool
-    , history : Data.History.Model
+    , history : History.Model
     , mousePosition : Maybe Position
-    , selection : Maybe ( Position, Canvas )
+    , selection : Maybe Selection.Model
     , clipboard : Maybe ( Position, Canvas )
     , taskbarDropped : Maybe Dropdown
     , minimap : Minimap.State
@@ -39,6 +40,15 @@ type alias Model =
     , shiftIsDown : Bool
     , config : Config
     }
+
+
+
+-- HELPERS --
+
+
+updateCanvas : (Canvas -> Canvas) -> Model -> Model
+updateCanvas f model =
+    { model | canvas = f model.canvas }
 
 
 toSavePayload : Model -> Maybe SavePayload

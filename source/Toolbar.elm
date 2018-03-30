@@ -4,6 +4,7 @@ import Canvas
 import Chadtech.Colors exposing (ignorable2, ignorable3)
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
+import Data.Selection as Selection
 import Data.Tool exposing (Tool(..))
 import Draw
 import Eraser
@@ -58,12 +59,12 @@ update msg model =
 
         OtherButtonClicked Invert ->
             case model.selection of
-                Just ( position, selection ) ->
+                Just selection ->
                     { model
                         | selection =
-                            selection
-                                |> Draw.invert
-                                |& position
+                            Selection.updateCanvas
+                                Draw.invert
+                                selection
                                 |> Just
                     }
                         & Cmd.none
@@ -80,13 +81,12 @@ update msg model =
 
         OtherButtonClicked Transparency ->
             case model.selection of
-                Just ( pos, selection ) ->
+                Just selection ->
                     { model
                         | selection =
-                            selection
-                                |> Canvas.transparentColor
-                                    model.color.swatches.bottom
-                                |& pos
+                            Selection.updateCanvas
+                                (Canvas.transparentColor model.color.swatches.bottom)
+                                selection
                                 |> Just
                     }
                         & Cmd.none

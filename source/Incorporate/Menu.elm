@@ -3,6 +3,7 @@ module Incorporate.Menu exposing (incorporate)
 import Canvas
 import Data.Flags exposing (Init(NormalInit), projectNameGenerator)
 import Data.Menu as Menu
+import Data.Selection as Selection
 import Data.User as User
 import Draw
 import Helpers.Drawing
@@ -41,10 +42,13 @@ incorporate reply menu model =
             in
             { model
                 | selection =
-                    { x = (canvas.width - size.width) // 2
-                    , y = (canvas.height - size.height) // 2
+                    { canvas = image
+                    , position =
+                        { x = (canvas.width - size.width) // 2
+                        , y = (canvas.height - size.height) // 2
+                        }
+                    , origin = Selection.Other
                     }
-                        & image
                         |> Just
             }
                 |> closeMenu
@@ -62,19 +66,17 @@ incorporate reply menu model =
         ScaleTo w h ->
             case model.selection of
                 Nothing ->
-                    { model
-                        | canvas =
-                            Canvas.scale w h model.canvas
-                    }
+                    model
                         |> History.canvas
+                        |> Model.updateCanvas (Canvas.scale w h)
                         |> closeMenu
 
-                Just ( pos, selection ) ->
+                Just selection ->
                     { model
                         | selection =
-                            selection
-                                |> Canvas.scale w h
-                                |& pos
+                            Selection.updateCanvas
+                                (Canvas.scale w h)
+                                selection
                                 |> Just
                     }
                         |> closeMenu
@@ -84,25 +86,20 @@ incorporate reply menu model =
 
         Replace target replacement ->
             case model.selection of
-                Just ( position, selection ) ->
+                Just selection ->
                     { model
                         | selection =
-                            selection
-                                |> Draw.replace target replacement
-                                |& position
+                            Selection.updateCanvas
+                                (Draw.replace target replacement)
+                                selection
                                 |> Just
                     }
                         |> closeMenu
 
                 Nothing ->
-                    { model
-                        | canvas =
-                            Draw.replace
-                                target
-                                replacement
-                                model.canvas
-                    }
+                    model
                         |> History.canvas
+                        |> Model.updateCanvas (Draw.replace target replacement)
                         |> closeMenu
 
         SetUser user ->
@@ -129,17 +126,11 @@ incorporate reply menu model =
             }
                 & Cmd.none
 
-        ResizeTo left top width height ->
-            { model
-                | canvas =
-                    Draw.resize
-                        left
-                        top
-                        width
-                        height
-                        model.color.swatches.bottom
-                        model.canvas
-            }
+        ResizeTo position size ->
+            model
+                |> History.canvas
+                |> Model.updateCanvas
+                    (Draw.resize position size model.color.swatches.bottom)
                 |> closeMenu
 
         IncorporateDrawing { id } ->
@@ -214,7 +205,7 @@ addText str ({ color } as model) =
         selection =
             Draw.text str color.swatches.top
 
-        position =
+        { x, y } =
             Zoom.pointInMiddle
                 model.windowSize
                 model.zoom
@@ -226,10 +217,13 @@ addText str ({ color } as model) =
     { model
         | menu = Nothing
         , selection =
-            { x = position.x - (width // 2)
-            , y = position.y - (height // 2)
+            { canvas = Draw.text str color.swatches.top
+            , position =
+                { x = x - (width // 2)
+                , y = y - (height // 2)
+                }
+            , origin = Selection.Other
             }
-                & selection
                 |> Just
     }
         & Ports.returnFocus

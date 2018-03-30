@@ -313,7 +313,13 @@ update msg model =
                 & NoReply
 
         ResizeClicked ->
-            ResizeTo model.left model.top model.width model.height
+            ResizeTo
+                { x = model.left
+                , y = model.top
+                }
+                { width = model.width
+                , height = model.height
+                }
                 |& model
 
 

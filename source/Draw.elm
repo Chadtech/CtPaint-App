@@ -26,18 +26,12 @@ import Util
 -- RESIZE --
 
 
-resize : Int -> Int -> Int -> Int -> Color -> Canvas -> Canvas
-resize left top width height fillerColor canvas =
-    let
-        size =
-            { width = width
-            , height = height
-            }
-    in
+resize : Position -> Size -> Color -> Canvas -> Canvas
+resize position size fillerColor canvas =
     size
         |> Canvas.initialize
         |> Canvas.draw (filledRectangle fillerColor size { x = 0, y = 0 })
-        |> Canvas.draw (pasteSelection { x = left, y = top } canvas)
+        |> Canvas.draw (pasteSelection position canvas)
 
 
 

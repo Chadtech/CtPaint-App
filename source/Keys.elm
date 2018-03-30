@@ -1,9 +1,10 @@
 module Keys exposing (..)
 
-import Canvas exposing (Canvas)
+import Canvas exposing (Canvas, DrawOp)
 import Clipboard
 import Data.Keys as Key exposing (Cmd(..))
 import Data.Minimap exposing (State(..))
+import Data.Selection as Selection
 import Data.Tool as Tool exposing (Tool(..))
 import Draw
 import Helpers.Color
@@ -116,18 +117,16 @@ exec keyCmd model =
 
         SelectAll ->
             { model
-                | selection = Just ( { x = 0, y = 0 }, model.canvas )
+                | selection =
+                    { position = { x = 0, y = 0 }
+                    , canvas = model.canvas
+                    , origin = Selection.Other
+                    }
+                        |> Just
                 , canvas =
-                    let
-                        drawOp =
-                            Draw.filledRectangle
-                                model.color.swatches.bottom
-                                (Canvas.getSize model.canvas)
-                                { x = 0, y = 0 }
-                    in
                     Canvas.getSize model.canvas
                         |> Canvas.initialize
-                        |> Canvas.draw drawOp
+                        |> Canvas.draw (clearAllOp model)
             }
                 & Cmd.none
 
@@ -217,22 +216,13 @@ exec keyCmd model =
                 & Ports.stealFocus
 
         InitScale ->
-            let
-                menu =
-                    case model.selection of
-                        Just ( _, selection ) ->
-                            Menu.initScale
-                                (Canvas.getSize selection)
-                                model.windowSize
-                                |> Just
-
-                        Nothing ->
-                            Menu.initScale
-                                (Canvas.getSize model.canvas)
-                                model.windowSize
-                                |> Just
-            in
-            { model | menu = menu }
+            { model
+                | menu =
+                    Menu.initScale
+                        (Canvas.getSize (initScaleCanvas model))
+                        model.windowSize
+                        |> Just
+            }
                 & Ports.stealFocus
 
         InitReplaceColor ->
@@ -282,13 +272,12 @@ exec keyCmd model =
                 Nothing ->
                     model & Cmd.none
 
-                Just ( pos, selection ) ->
+                Just selection ->
                     { model
                         | selection =
-                            selection
-                                |> Canvas.transparentColor
-                                    model.color.swatches.bottom
-                                |& pos
+                            Selection.updateCanvas
+                                (Canvas.transparentColor model.color.swatches.bottom)
+                                selection
                                 |> Just
                     }
                         & Cmd.none
@@ -313,25 +302,48 @@ exec keyCmd model =
                 & Ports.stealFocus
 
 
+
+-- PRIVATE HELPERS --
+
+
+clearAllOp : Model -> DrawOp
+clearAllOp model =
+    Draw.filledRectangle
+        model.color.swatches.bottom
+        (Canvas.getSize model.canvas)
+        { x = 0, y = 0 }
+
+
+initScaleCanvas : Model -> Canvas
+initScaleCanvas model =
+    case model.selection of
+        Just { canvas } ->
+            canvas
+
+        Nothing ->
+            model.canvas
+
+
 transform : (Canvas -> Canvas) -> Model -> ( Model, Platform.Cmd msg )
 transform transformation model =
     case model.selection of
-        Just ( position, selection ) ->
+        Just selection ->
             { model
                 | selection =
-                    ( position
-                    , transformation selection
-                    )
+                    Selection.updateCanvas
+                        transformation
+                        selection
                         |> Just
             }
                 & Cmd.none
 
         Nothing ->
-            { model
-                | canvas =
-                    transformation model.canvas
-            }
+            model
+                |> History.canvas
+                |> Model.updateCanvas transformation
                 & Cmd.none
+
+
 
 
 swatchesTurnLeft : Model -> Model

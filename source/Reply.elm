@@ -5,10 +5,11 @@ module Reply
         , nothing
         )
 
-import Canvas exposing (Canvas)
+import Canvas exposing (Canvas, Size)
 import Color exposing (Color)
 import Data.Drawing exposing (Drawing)
 import Data.User exposing (User)
+import Mouse exposing (Position)
 
 
 type Reply
@@ -23,7 +24,7 @@ type Reply
     | AttemptingLogin
     | NoLongerLoggingIn
     | SaveDrawingAttrs String
-    | ResizeTo Int Int Int Int
+    | ResizeTo Position Size
     | StartNewDrawing String Bool Canvas
     | IncorporateDrawing Drawing
     | TrySaving

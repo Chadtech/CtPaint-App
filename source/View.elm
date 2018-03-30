@@ -613,16 +613,16 @@ canvasStyles { zoom, canvasPosition, canvas } =
 selection : Model -> Html Msg
 selection model =
     case model.selection of
-        Just ( position, selection ) ->
+        Just { position, canvas } ->
             div
                 [ class [ SelectionCanvasContainer ]
-                , selectionContainerStyle model position selection
+                , selectionContainerStyle model position canvas
                 ]
                 [ Canvas.toHtml
                     [ class [ SelectionCanvas ]
-                    , selectionStyle model position selection
+                    , selectionStyle model position canvas
                     ]
-                    selection
+                    canvas
                 ]
 
         Nothing ->

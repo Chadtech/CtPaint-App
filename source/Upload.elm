@@ -67,7 +67,7 @@ css =
         ]
     , Css.class LoadingText
         [ textAlign center
-        , marginTop (px 8)
+        , marginBottom (px 8)
         ]
     , Css.class FailText
         [ textAlign center
@@ -110,11 +110,7 @@ view model =
 
 loadingView : Html Msg
 loadingView =
-    [ Html.Custom.spinner []
-    , p
-        [ class [ LoadingText ] ]
-        [ Html.text "Loading.." ]
-    ]
+    [ Html.Custom.spinner [] ]
         |> Html.Custom.cardBody []
 
 

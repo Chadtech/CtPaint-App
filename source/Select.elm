@@ -7,13 +7,13 @@ module Select
 
 import Canvas
 import Color exposing (Color)
+import Data.Selection as Selection
 import Data.Tool exposing (Tool(Select))
 import Draw
 import Helpers.History as History
 import Helpers.Tool exposing (adjustPosition)
 import Model exposing (Model)
 import Mouse exposing (Position)
-import Tuple.Infix exposing ((&))
 import Util exposing (positionMin)
 
 
@@ -86,11 +86,14 @@ handleClientMouseUp newPosition priorPosition model =
                     |> Canvas.batch
             , drawAtRender = Canvas.batch []
             , selection =
-                adjustedPosition
-                    |> positionMin priorPosition
-                    & newSelection
+                { position =
+                    positionMin priorPosition adjustedPosition
+                , canvas = newSelection
+                , origin = Selection.MainCanvas
+                }
                     |> Just
         }
+            |> History.canvas
 
 
 
@@ -100,16 +103,26 @@ handleClientMouseUp newPosition priorPosition model =
 handleExistingSelection : Model -> Model
 handleExistingSelection model =
     case model.selection of
-        Just ( position, selection ) ->
+        Just { position, canvas, origin } ->
             { model
                 | pendingDraw =
                     [ model.pendingDraw
-                    , Draw.pasteSelection position selection
+                    , Draw.pasteSelection position canvas
                     ]
                         |> Canvas.batch
                 , selection = Nothing
             }
-                |> History.canvas
+                |> historyIf origin
 
         Nothing ->
+            model
+
+
+historyIf : Selection.Origin -> Model -> Model
+historyIf origin model =
+    case origin of
+        Selection.Other ->
+            History.canvas model
+
+        Selection.MainCanvas ->
             model

@@ -25,6 +25,7 @@ import Data.Minimap
         , Reply(..)
         , State(..)
         )
+import Data.Selection as Selection
 import Data.Tool exposing (Tool(..))
 import Helpers.Zoom as Zoom
 import Html exposing (Attribute, Html, a, div, p)
@@ -344,7 +345,7 @@ minimapNamespace =
     Html.CssHelpers.withNamespace minimapNamespace
 
 
-view : Model -> Canvas -> Maybe ( Mouse.Position, Canvas ) -> Html Msg
+view : Model -> Canvas -> Maybe Selection.Model -> Html Msg
 view model canvas maybeSelection =
     card
         [ class [ Minimap ]
@@ -396,20 +397,19 @@ view model canvas maybeSelection =
         ]
 
 
-withSelection : Canvas -> Maybe ( Mouse.Position, Canvas ) -> Canvas
+withSelection : Canvas -> Maybe Selection.Model -> Canvas
 withSelection canvas maybeSelection =
     case maybeSelection of
         Nothing ->
             canvas
 
-        Just ( position, selection ) ->
-            let
-                drawOp =
-                    DrawImage
-                        selection
-                        (At (toPoint position))
-            in
-            Canvas.draw drawOp canvas
+        Just selection ->
+            Canvas.draw (drawSelectionOp selection) canvas
+
+
+drawSelectionOp : Selection.Model -> DrawOp
+drawSelectionOp { position, canvas } =
+    DrawImage canvas (At (toPoint position))
 
 
 canvasAttrs : Model -> Canvas -> List (Attribute Msg)
