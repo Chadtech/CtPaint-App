@@ -22,6 +22,9 @@ import Model exposing (Model)
 import Mouse exposing (Position)
 
 
+-- TYPES --
+
+
 type alias State msg =
     { size : Int
     , increaseMsg : msg

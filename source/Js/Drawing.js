@@ -25,7 +25,7 @@ function save(Client, toElm, payload) {
 function createDrawing(Client, toElm, payload) {
     Client.createDrawing(payload, {
         onSuccess: function(result) {
-            toElm("drawing create completd", result);
+            toElm("drawing create completed", result.data);
         },
         onFailure: function(err) {
             toElm("drawing create completed", String(err));
