@@ -39,6 +39,9 @@ exec keyCmd model =
         SetToolToFill ->
             { model | tool = Fill } & Cmd.none
 
+        SetToolToEraser ->
+            { model | tool = Eraser Nothing } & Cmd.none
+
         SetToolToSample ->
             { model | tool = Sample } & Cmd.none
 
@@ -342,8 +345,6 @@ transform transformation model =
                 |> History.canvas
                 |> Model.updateCanvas transformation
                 & Cmd.none
-
-
 
 
 swatchesTurnLeft : Model -> Model

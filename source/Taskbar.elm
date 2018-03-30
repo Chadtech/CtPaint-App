@@ -710,6 +710,12 @@ toolsDropped model =
         , disabled = False
         }
     , option
+        { label = "eraser"
+        , cmdKeys = keysLabel model SetToolToEraser
+        , clickMsg = KeyCmdClicked SetToolToEraser
+        , disabled = False
+        }
+    , option
         { label = "pencil"
         , cmdKeys = keysLabel model SetToolToPencil
         , clickMsg = KeyCmdClicked SetToolToPencil
