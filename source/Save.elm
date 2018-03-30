@@ -89,7 +89,7 @@ update config msg model =
             , drawing
                 |> Just
                 |> OneSecondExpired
-                |> Util.delay 100
+                |> Util.delay 1000
             , NoReply
             )
 
