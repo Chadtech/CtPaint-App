@@ -1,6 +1,7 @@
 module Incorporate.Menu exposing (incorporate)
 
 import Canvas
+import Data.Drawing as Drawing
 import Data.Flags exposing (Init(NormalInit), projectNameGenerator)
 import Data.Menu as Menu
 import Data.Selection as Selection
@@ -10,7 +11,6 @@ import Helpers.Drawing
 import Helpers.History as History
 import Helpers.Random as Random
 import Helpers.Zoom as Zoom
-import Id exposing (Origin(Local))
 import Init
 import Model exposing (Model)
 import Msg exposing (Msg)
@@ -106,7 +106,7 @@ incorporate reply menu model =
             { model
                 | user =
                     user
-                        |> User.initModel Local
+                        |> User.initModel Drawing.Local
                         |> User.LoggedIn
                 , menu = Nothing
             }
@@ -133,9 +133,17 @@ incorporate reply menu model =
                     (Draw.resize position size model.color.swatches.bottom)
                 |> closeMenu
 
-        IncorporateDrawing { id } ->
+        IncorporateDrawing drawing ->
             { model
-                | user = User.setDrawingId id model.user
+                | user =
+                    case model.user of
+                        User.LoggedIn user ->
+                            user
+                                |> User.setDrawing drawing
+                                |> User.LoggedIn
+
+                        _ ->
+                            model.user
             }
                 |> closeMenu
 

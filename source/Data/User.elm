@@ -4,16 +4,19 @@ module Data.User
         , State(..)
         , User
         , decoder
+        , drawingLoaded
         , getEmail
+        , getPublicId
         , initModel
         , isLoggedIn
-        , setDrawingId
+        , setDrawing
         , stateDecoder
         , toggleOptionsDropped
         )
 
+import Data.Drawing as Drawing exposing (Drawing)
 import Data.Keys as Keys
-import Id exposing (Id, Origin(Local, Remote))
+import Id exposing (Id)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline
     exposing
@@ -37,7 +40,7 @@ type State
 type alias Model =
     { user : User
     , optionsDropped : Bool
-    , drawingId : Origin
+    , drawing : Drawing.State
     }
 
 
@@ -49,11 +52,11 @@ type alias User =
     }
 
 
-initModel : Origin -> User -> Model
-initModel origin user =
+initModel : Drawing.State -> User -> Model
+initModel drawingState user =
     { user = user
     , optionsDropped = False
-    , drawingId = origin
+    , drawing = drawingState
     }
 
 
@@ -67,12 +70,12 @@ getEmail model =
             Nothing
 
 
-stateDecoder : Origin -> Browser -> Decoder State
-stateDecoder drawingId browser =
+stateDecoder : Drawing.State -> Browser -> Decoder State
+stateDecoder drawingState browser =
     [ Decode.null LoggedOut
     , Decode.string |> Decode.andThen fromString
     , decoder browser
-        |> Decode.map (initModel drawingId)
+        |> Decode.map (initModel drawingState)
         |> Decode.map LoggedIn
     ]
         |> Decode.oneOf
@@ -165,15 +168,39 @@ isLoggedIn state =
             False
 
 
-setDrawingId : Id -> State -> State
-setDrawingId id state =
+drawingLoaded : State -> Bool
+drawingLoaded state =
     case state of
-        LoggedIn user ->
-            { user | drawingId = Remote id }
-                |> LoggedIn
+        LoggedIn { drawing } ->
+            case drawing of
+                Drawing.Loaded _ ->
+                    True
+
+                _ ->
+                    False
 
         _ ->
-            state
+            False
+
+
+getPublicId : State -> Maybe Id
+getPublicId state =
+    case state of
+        LoggedIn { drawing } ->
+            case drawing of
+                Drawing.Loaded { publicId } ->
+                    Just publicId
+
+                _ ->
+                    Nothing
+
+        _ ->
+            Nothing
+
+
+setDrawing : Drawing -> Model -> Model
+setDrawing drawing model =
+    { model | drawing = Drawing.Loaded drawing }
 
 
 toggleOptionsDropped : Model -> Model

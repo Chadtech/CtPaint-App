@@ -24,7 +24,15 @@ import Keys
 import Menu
 import Model exposing (Model)
 import Platform.Cmd as Platform
-import Ports exposing (JsMsg(Logout, OpenUpFileUpload, StealFocus))
+import Ports
+    exposing
+        ( JsMsg
+            ( Logout
+            , OpenNewWindow
+            , OpenUpFileUpload
+            , StealFocus
+            )
+        )
 import Tuple.Infix exposing ((&), (|&))
 import Util exposing (toolbarWidth)
 
@@ -46,6 +54,7 @@ type Msg
     | UploadClicked
     | ToolClicked Tool
     | DrawingClicked
+    | OpenImageLinkClicked
 
 
 
@@ -160,6 +169,19 @@ update msg model =
                         |> Just
             }
                 & Ports.stealFocus
+
+        OpenImageLinkClicked ->
+            case User.getPublicId model.user of
+                Just publicId ->
+                    publicId
+                        |> Window.Drawing
+                        |> Window.toUrl model.config.mountPath
+                        |> OpenNewWindow
+                        |> Ports.send
+                        |& model
+
+                _ ->
+                    model & Cmd.none
 
 
 
@@ -854,6 +876,12 @@ fileDropped model =
         , cmdKeys = ""
         , clickMsg = DrawingClicked
         , disabled = False
+        }
+    , option
+        { label = "open image link"
+        , cmdKeys = ""
+        , clickMsg = OpenImageLinkClicked
+        , disabled = not <| User.drawingLoaded model.user
         }
     ]
         |> taskbarButtonOpen "file" File

@@ -3,6 +3,7 @@ module Init exposing (Error(..), fromFlags, init)
 import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Data.Color
 import Data.Config as Config
+import Data.Drawing as Drawing
 import Data.Flags as Flags exposing (Flags, Init(..))
 import Data.History
 import Data.Menu as Menu
@@ -97,8 +98,8 @@ withTracking ( model, cmd ) =
         , email = User.getEmail model.user
         , drawingId =
             case model.user of
-                User.LoggedIn { drawingId } ->
-                    drawingId
+                User.LoggedIn { drawing } ->
+                    Drawing.toOrigin drawing
 
                 _ ->
                     Local

@@ -1,4 +1,10 @@
-module Data.Window exposing (Window(..), toUrl)
+module Data.Window
+    exposing
+        ( Window(..)
+        , toUrl
+        )
+
+import Id exposing (Id)
 
 
 type Window
@@ -7,27 +13,29 @@ type Window
     | Register
     | ForgotPassword
     | AllowanceExceeded
+    | Drawing Id
 
 
 toUrl : String -> Window -> String
 toUrl mountPath window =
-    mountPath ++ toUrlHelper window
-
-
-toUrlHelper : Window -> String
-toUrlHelper window =
     case window of
         Settings ->
-            "/settings"
+            mountPath ++ "/settings"
 
         Home ->
-            "/"
+            mountPath ++ "/"
 
         Register ->
-            "/register"
+            mountPath ++ "/register"
 
         ForgotPassword ->
-            "/forgotpassword"
+            mountPath ++ "/forgotpassword"
 
         AllowanceExceeded ->
-            "/allowanceexceeded"
+            mountPath ++ "/allowanceexceeded"
+
+        Drawing id ->
+            [ "https://s3.us-east-2.amazonaws.com/ctpaint-drawings-uploads"
+            , Id.toString id
+            ]
+                |> String.join "/"

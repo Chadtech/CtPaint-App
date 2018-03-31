@@ -11,6 +11,7 @@ import Data.Color
         ( BackgroundColor(Black, White)
         , backgroundColorDecoder
         )
+import Data.Drawing as Drawing
 import Data.User as User
 import Helpers.Canvas exposing (Params)
 import Helpers.Random as Random
@@ -103,18 +104,8 @@ userDecoder =
 
 toUserState : ( Browser, Maybe Id ) -> Decoder User.State
 toUserState ( browser, maybeId ) =
-    User.stateDecoder (originFromMaybe maybeId) browser
+    User.stateDecoder (Drawing.fromMaybe maybeId) browser
         |> Decode.field "user"
-
-
-originFromMaybe : Maybe Id -> Origin
-originFromMaybe maybeId =
-    case maybeId of
-        Just id ->
-            Remote id
-
-        Nothing ->
-            Local
 
 
 browserDecoder : Decoder Browser

@@ -1,8 +1,9 @@
 module Model exposing (Model, toSavePayload, updateCanvas)
 
 import Canvas exposing (Canvas, DrawOp, Point, Size)
-import Data.Color
+import Data.Color as Color
 import Data.Config exposing (Config)
+import Data.Drawing as Drawing
 import Data.History as History
 import Data.Menu as Menu
 import Data.Minimap as Minimap
@@ -18,7 +19,7 @@ import Random.Pcg as Random exposing (Seed)
 type alias Model =
     { user : User.State
     , canvas : Canvas
-    , color : Data.Color.Model
+    , color : Color.Model
     , drawingName : String
     , drawingNameIsGenerated : Bool
     , canvasPosition : Position
@@ -54,14 +55,14 @@ updateCanvas f model =
 toSavePayload : Model -> Maybe SavePayload
 toSavePayload model =
     case model.user of
-        User.LoggedIn { user, drawingId } ->
+        User.LoggedIn { user, drawing } ->
             { canvas = model.canvas
             , name = model.drawingName
             , nameIsGenerated = model.drawingNameIsGenerated
             , palette = model.color.palette
             , swatches = model.color.swatches
             , email = user.email
-            , id = drawingId
+            , id = Drawing.toOrigin drawing
             }
                 |> Just
 

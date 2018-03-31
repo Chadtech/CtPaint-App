@@ -174,17 +174,26 @@ update msg model =
                 |& model
 
         DrawingDeblobed drawing (Ok canvas) ->
-            { model
-                | menu = Nothing
-                , drawingName = drawing.name
-                , drawingNameIsGenerated = drawing.nameIsGenerated
-                , canvas = canvas
-                , canvasPosition =
-                    Util.center
-                        model.windowSize
-                        (Canvas.getSize canvas)
-            }
-                & Cmd.none
+            case model.user of
+                User.LoggedIn user ->
+                    { model
+                        | menu = Nothing
+                        , drawingName = drawing.name
+                        , drawingNameIsGenerated = drawing.nameIsGenerated
+                        , canvas = canvas
+                        , canvasPosition =
+                            Util.center
+                                model.windowSize
+                                (Canvas.getSize canvas)
+                        , user =
+                            user
+                                |> User.setDrawing drawing
+                                |> User.LoggedIn
+                    }
+                        & Cmd.none
+
+                _ ->
+                    model & Cmd.none
 
         DrawingDeblobed drawing (Err _) ->
             model & Cmd.none
