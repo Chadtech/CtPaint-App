@@ -273,6 +273,7 @@ css =
         , giveDropdownWidth (Dropdown Edit) 220
         , giveDropdownWidth (Dropdown File) 280
         , giveDropdownWidth (Dropdown Tools) 300
+        , giveDropdownWidth (Dropdown Data.Taskbar.Colors) 390
         , giveDropdownWidth (Dropdown Data.Taskbar.User) 150
         , hover [ color Ct.point0 ]
         ]
@@ -411,7 +412,7 @@ spinner =
 offlineButton : Html Msg
 offlineButton =
     a
-        [ class [ Button, UserButton, Null ] ]
+        [ class [ Button, UserButton ] ]
         [ Html.text "offline" ]
 
 
@@ -798,19 +799,19 @@ editDropped model =
         { label = "cut"
         , cmdKeys = keysLabel model Cut
         , clickMsg = KeyCmdClicked Cut
-        , disabled = False
+        , disabled = model.selection == Nothing
         }
     , option
         { label = "copy"
         , cmdKeys = keysLabel model Copy
         , clickMsg = KeyCmdClicked Copy
-        , disabled = False
+        , disabled = model.selection == Nothing
         }
     , option
         { label = "paste"
         , cmdKeys = keysLabel model Paste
         , clickMsg = KeyCmdClicked Paste
-        , disabled = False
+        , disabled = model.clipboard == Nothing
         }
     , divider
     , option
