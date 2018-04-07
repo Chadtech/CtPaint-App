@@ -16,8 +16,7 @@ import Color exposing (Color)
 import Data.Picker as Picker
 import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode exposing (Value)
-import Tuple.Infix exposing ((:=))
-import Util
+import Util exposing (def)
 
 
 -- TYPES --
@@ -119,10 +118,10 @@ encodeColor =
 
 encodeSwatches : Swatches -> Value
 encodeSwatches { top, left, bottom, right } =
-    [ "top" := encodeColor top
-    , "left" := encodeColor left
-    , "bottom" := encodeColor bottom
-    , "right" := encodeColor right
+    [ def "top" <| encodeColor top
+    , def "left" <| encodeColor left
+    , def "bottom" <| encodeColor bottom
+    , def "right" <| encodeColor right
     ]
         |> Encode.object
 

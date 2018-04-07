@@ -20,8 +20,8 @@ import Model exposing (Model)
 import Mouse exposing (Position)
 import Msg exposing (Msg(InitFromUrl))
 import Ports exposing (JsMsg(LoadDrawing, RedirectPageTo))
+import Return2 as R2
 import Tracking exposing (Event(AppFailedToInitialize, AppLoaded))
-import Tuple.Infix exposing ((&), (|&))
 import Util exposing (tbw)
 
 
@@ -43,14 +43,16 @@ init json =
                         |> Window.toUrl flags.mountPath
                         |> RedirectPageTo
                         |> Ports.send
-                        |& Err AllowanceExceeded
+                        |> R2.withModel
+                            (Err AllowanceExceeded)
 
                 _ ->
                     fromFlags flags
                         |> Tuple.mapFirst Ok
 
         Err err ->
-            Err (Other err) & Cmd.none
+            Err (Other err)
+                |> R2.withNoCmd
 
 
 fromFlags : Flags -> ( Model, Cmd Msg )
@@ -86,7 +88,7 @@ fromFlags flags =
     , shiftIsDown = False
     , config = Config.init flags
     }
-        & fields.cmd
+        |> R2.withCmd fields.cmd
         |> withTracking
 
 
@@ -107,7 +109,7 @@ withTracking ( model, cmd ) =
     , cmd
     ]
         |> Cmd.batch
-        |& model
+        |> R2.withModel model
 
 
 type alias InitFields =

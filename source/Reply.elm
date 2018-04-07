@@ -1,8 +1,9 @@
 module Reply
     exposing
         ( Reply(..)
-        , fromModel
-        , nothing
+        , withModel
+        , withNoReply
+        , withReply
         )
 
 import Canvas exposing (Canvas, Size)
@@ -13,8 +14,7 @@ import Mouse exposing (Position)
 
 
 type Reply
-    = NoReply
-    | CloseMenu
+    = CloseMenu
     | IncorporateImageAsSelection Canvas
     | IncorporateImageAsCanvas Canvas
     | ScaleTo Int Int
@@ -31,11 +31,16 @@ type Reply
     | Logout
 
 
-nothing : model -> ( model, Cmd msg, Reply )
-nothing model =
-    ( model, Cmd.none, NoReply )
+withReply : reply -> model -> ( model, Maybe reply )
+withReply reply model =
+    ( model, Just reply )
 
 
-fromModel : Cmd msg -> Reply -> model -> ( model, Cmd msg, Reply )
-fromModel cmd reply model =
-    ( model, cmd, reply )
+withModel : model -> reply -> ( model, Maybe reply )
+withModel model reply =
+    ( model, Just reply )
+
+
+withNoReply : model -> ( model, Maybe reply )
+withNoReply model =
+    ( model, Nothing )

@@ -4,7 +4,7 @@ import Array
 import Menu
 import Model exposing (Model)
 import Ports
-import Tuple.Infix exposing ((&))
+import Return2 as R2
 
 
 initReplaceColor : Model -> ( Model, Cmd msg )
@@ -18,4 +18,4 @@ initReplaceColor model =
                 model.windowSize
                 |> Just
     }
-        & Ports.stealFocus
+        |> R2.withCmd Ports.stealFocus

@@ -8,8 +8,7 @@ module Tracking
 import Id exposing (Id, Origin)
 import Json.Encode as Encode exposing (Value)
 import Json.Encode.Extra as Encode
-import Tuple.Infix exposing ((:=))
-import Util
+import Util exposing (def)
 
 
 type alias Payload =
@@ -27,10 +26,10 @@ type Event
 
 encode : Payload -> Value
 encode { event, sessionId, email, drawingId } =
-    [ "event" := encodeEvent event
-    , "sessionId" := Id.encode sessionId
-    , "email" := Encode.maybe Encode.string email
-    , "drawingId" := Util.encodeOrigin drawingId
+    [ def "event" <| encodeEvent event
+    , def "sessionId" <| Id.encode sessionId
+    , def "email" <| Encode.maybe Encode.string email
+    , def "drawingId" <| Util.encodeOrigin drawingId
     ]
         |> Encode.object
 
@@ -39,11 +38,11 @@ encodeEvent : Event -> Value
 encodeEvent event =
     case event of
         AppLoaded ->
-            [ "name" := Encode.string "app loaded" ]
+            [ def "name" <| Encode.string "app loaded" ]
                 |> Encode.object
 
         AppFailedToInitialize problem ->
-            [ "name" := Encode.string "app failed to load"
-            , "problem" := Encode.string problem
+            [ def "name" <| Encode.string "app failed to load"
+            , def "problem" <| Encode.string problem
             ]
                 |> Encode.object

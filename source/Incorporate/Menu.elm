@@ -16,19 +16,26 @@ import Model exposing (Model)
 import Msg exposing (Msg)
 import Ports
 import Reply exposing (Reply(..))
-import Tuple.Infix exposing ((&), (|&))
+import Return2 as R2
 import Util
 
 
-incorporate : Reply -> Menu.Model -> Model -> ( Model, Cmd Msg )
-incorporate reply menu model =
-    case reply of
-        NoReply ->
+incorporate : Maybe Reply -> Menu.Model -> Model -> ( Model, Cmd Msg )
+incorporate maybeReply menu model =
+    case maybeReply of
+        Nothing ->
             { model
                 | menu = Just menu
             }
-                & Cmd.none
+                |> R2.withNoCmd
 
+        Just reply ->
+            handleReply reply menu model
+
+
+handleReply : Reply -> Menu.Model -> Model -> ( Model, Cmd Msg )
+handleReply reply menu model =
+    case reply of
         CloseMenu ->
             closeMenu model
 
@@ -110,21 +117,21 @@ incorporate reply menu model =
                         |> User.LoggedIn
                 , menu = Nothing
             }
-                & Cmd.none
+                |> R2.withNoCmd
 
         AttemptingLogin ->
             { model
                 | user = User.LoggingIn
                 , menu = Just menu
             }
-                & Cmd.none
+                |> R2.withNoCmd
 
         NoLongerLoggingIn ->
             { model
                 | user = User.LoggedOut
                 , menu = Just menu
             }
-                & Cmd.none
+                |> R2.withNoCmd
 
         ResizeTo position size ->
             model
@@ -204,7 +211,8 @@ incorporate reply menu model =
 
 closeMenu : Model -> ( Model, Cmd msg )
 closeMenu model =
-    { model | menu = Nothing } & Ports.returnFocus
+    { model | menu = Nothing }
+        |> R2.withCmd Ports.returnFocus
 
 
 addText : String -> Model -> ( Model, Cmd msg )
@@ -234,4 +242,4 @@ addText str ({ color } as model) =
             }
                 |> Just
     }
-        & Ports.returnFocus
+        |> R2.withCmd Ports.returnFocus

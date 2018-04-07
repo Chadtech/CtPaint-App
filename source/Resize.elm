@@ -27,8 +27,7 @@ import Html.Events
         , onInput
         , onSubmit
         )
-import Reply exposing (Reply(NoReply, ResizeTo))
-import Tuple.Infix exposing ((&), (|&))
+import Reply as R exposing (Reply(ResizeTo))
 import Util exposing (valueIfFocus)
 import Window exposing (Size)
 
@@ -275,42 +274,42 @@ field =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Reply )
+update : Msg -> Model -> ( Model, Maybe Reply )
 update msg model =
     case msg of
         FieldUpdated Left str ->
             { model | leftField = str }
                 |> cohere Left str
-                & NoReply
+                |> R.withNoReply
 
         FieldUpdated Right str ->
             { model | rightField = str }
                 |> cohere Right str
-                & NoReply
+                |> R.withNoReply
 
         FieldUpdated Top str ->
             { model | topField = str }
                 |> cohere Top str
-                & NoReply
+                |> R.withNoReply
 
         FieldUpdated Bottom str ->
             { model | bottomField = str }
                 |> cohere Bottom str
-                & NoReply
+                |> R.withNoReply
 
         FieldUpdated Width str ->
             { model | widthField = str }
                 |> cohere Width str
-                & NoReply
+                |> R.withNoReply
 
         FieldUpdated Height str ->
             { model | heightField = str }
                 |> cohere Height str
-                & NoReply
+                |> R.withNoReply
 
         FieldFocused field ->
             { model | focus = Just field }
-                & NoReply
+                |> R.withNoReply
 
         ResizeClicked ->
             ResizeTo
@@ -320,7 +319,7 @@ update msg model =
                 { width = model.width
                 , height = model.height
                 }
-                |& model
+                |> R.withModel model
 
 
 cohere : Field -> String -> Model -> Model

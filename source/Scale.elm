@@ -30,8 +30,7 @@ import Html.Events
         , onInput
         , onSubmit
         )
-import Reply exposing (Reply(NoReply, ScaleTo))
-import Tuple.Infix exposing ((&))
+import Reply as R exposing (Reply(ScaleTo))
 import Util exposing (valueIfFocus)
 import Window exposing (Size)
 
@@ -272,31 +271,29 @@ field =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Reply )
+update : Msg -> Model -> ( Model, Maybe Reply )
 update msg model =
     case msg of
         FieldUpdated field str ->
-            updateField field str model & NoReply
+            updateField field str model
+                |> R.withNoReply
 
         LockButtonClicked ->
             { model
                 | lockRatio =
                     not model.lockRatio
             }
-                & NoReply
+                |> R.withNoReply
 
         FieldFocused field ->
             { model
                 | focus = Just field
             }
-                & NoReply
+                |> R.withNoReply
 
         ScaleClick ->
-            let
-                { fixedWidth, fixedHeight } =
-                    model
-            in
-            model & ScaleTo fixedWidth fixedHeight
+            ScaleTo model.fixedWidth model.fixedHeight
+                |> R.withModel model
 
 
 updateField : Field -> String -> Model -> Model

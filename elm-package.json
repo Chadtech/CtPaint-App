@@ -15,7 +15,7 @@
         "Chadtech/hfnss": "1.0.1 <= v < 2.0.0",
         "Chadtech/id": "3.2.0 <= v < 4.0.0",
         "Chadtech/keyboard-extra-browser": "1.0.0 <= v < 2.0.0",
-        "Chadtech/tuple-infix": "1.1.1 <= v < 2.0.0",
+        "Chadtech/return": "1.0.1 <= v < 2.0.0",
         "Elm-Canvas/raster-shapes": "1.1.1 <= v < 2.0.0",
         "NoRedInk/elm-decode-pipeline": "3.0.0 <= v < 4.0.0",
         "NoRedInk/list-selection": "1.1.0 <= v < 2.0.0",

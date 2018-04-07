@@ -8,16 +8,13 @@ import Data.Selection as Selection
 import Data.Tool exposing (Tool(Hand))
 import Model exposing (Model)
 import Mouse exposing (Position)
-import Tuple.Infix exposing ((&), (|&))
 
 
 handleScreenMouseDown : Position -> Model -> Model
 handleScreenMouseDown clientPos model =
     { model
         | tool =
-            model
-                |> getInitialPosition
-                & clientPos
+            ( getInitialPosition model, clientPos )
                 |> Just
                 |> Hand
     }

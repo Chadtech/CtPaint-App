@@ -27,6 +27,11 @@ type ClickState
     | ClickAt Mouse.Position
 
 
+def : a -> b -> ( a, b )
+def =
+    (,)
+
+
 withIndex : List a -> List ( Int, a )
 withIndex =
     List.indexedMap (,)

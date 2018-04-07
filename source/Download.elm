@@ -13,7 +13,9 @@ import Html.Attributes exposing (class, placeholder, value)
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Ports exposing (JsMsg(Download))
-import Reply exposing (Reply(CloseMenu, NoReply))
+import Reply exposing (Reply(CloseMenu))
+import Return2 as R2
+import Return3 as R3 exposing (Return)
 
 
 type Msg
@@ -32,11 +34,12 @@ type alias Model =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Cmd Msg, Reply )
+update : Msg -> Model -> Return Model Msg Reply
 update msg model =
     case msg of
         FieldUpdated str ->
-            Reply.nothing { model | field = str }
+            { model | field = str }
+                |> R3.withNothing
 
         Submitted ->
             download model
@@ -45,12 +48,11 @@ update msg model =
             download model
 
 
-download : Model -> ( Model, Cmd Msg, Reply )
+download : Model -> Return Model Msg Reply
 download model =
-    ( model
-    , downloadCmd model
-    , CloseMenu
-    )
+    model
+        |> R2.withCmd (downloadCmd model)
+        |> R3.withReply CloseMenu
 
 
 downloadCmd : Model -> Cmd Msg

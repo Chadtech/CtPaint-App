@@ -33,7 +33,7 @@ import Ports
             , StealFocus
             )
         )
-import Tuple.Infix exposing ((&), (|&))
+import Return2 as R2
 import Util exposing (toolbarWidth)
 
 
@@ -68,27 +68,27 @@ update msg model =
             { model
                 | taskbarDropped = Nothing
             }
-                & Cmd.none
+                |> R2.withNoCmd
 
         DropdownClicked dropdown ->
             { model
                 | taskbarDropped = Just dropdown
             }
-                & Cmd.none
+                |> R2.withNoCmd
 
         HoveredOnto dropdown ->
             case model.taskbarDropped of
                 Nothing ->
-                    model & Cmd.none
+                    model |> R2.withNoCmd
 
                 Just currentDropdown ->
                     if currentDropdown == dropdown then
-                        model & Cmd.none
+                        model |> R2.withNoCmd
                     else
                         { model
                             | taskbarDropped = Just dropdown
                         }
-                            & Cmd.none
+                            |> R2.withNoCmd
 
         LoginClicked ->
             { model
@@ -97,7 +97,7 @@ update msg model =
                         |> Menu.initLogin
                         |> Just
             }
-                & Cmd.batch
+                |> R2.withCmds
                     [ Ports.stealFocus
                     , Ports.send Ports.Logout
                     ]
@@ -110,10 +110,10 @@ update msg model =
                             User.toggleOptionsDropped user
                                 |> User.LoggedIn
                     }
-                        & Cmd.none
+                        |> R2.withNoCmd
 
                 _ ->
-                    model & Cmd.none
+                    model |> R2.withNoCmd
 
         LogoutClicked ->
             { model
@@ -122,7 +122,7 @@ update msg model =
                         |> Menu.initLogout
                         |> Just
             }
-                & Cmd.none
+                |> R2.withNoCmd
 
         AboutClicked ->
             { model
@@ -132,7 +132,7 @@ update msg model =
                             model.config.buildNumber
                         |> Just
             }
-                & Cmd.none
+                |> R2.withNoCmd
 
         ReportBugClicked ->
             { model
@@ -142,7 +142,7 @@ update msg model =
                             (User.isLoggedIn model.user)
                         |> Just
             }
-                & Ports.stealFocus
+                |> R2.withCmd Ports.stealFocus
 
         KeyCmdClicked keyCmd ->
             Keys.exec keyCmd model
@@ -152,13 +152,15 @@ update msg model =
                 |> Window.toUrl model.config.mountPath
                 |> Ports.OpenNewWindow
                 |> Ports.send
-                |& model
+                |> R2.withModel model
 
         UploadClicked ->
-            model & Ports.send OpenUpFileUpload
+            model
+                |> R2.withCmd (Ports.send OpenUpFileUpload)
 
         ToolClicked tool ->
-            { model | tool = tool } & Cmd.none
+            { model | tool = tool }
+                |> R2.withNoCmd
 
         DrawingClicked ->
             { model
@@ -168,7 +170,7 @@ update msg model =
                         model.windowSize
                         |> Just
             }
-                & Ports.stealFocus
+                |> R2.withCmd Ports.stealFocus
 
         OpenImageLinkClicked ->
             case User.getPublicId model.user of
@@ -178,10 +180,10 @@ update msg model =
                         |> Window.toUrl model.config.mountPath
                         |> OpenNewWindow
                         |> Ports.send
-                        |& model
+                        |> R2.withModel model
 
                 _ ->
-                    model & Cmd.none
+                    model |> R2.withNoCmd
 
 
 

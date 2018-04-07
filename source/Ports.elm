@@ -16,8 +16,7 @@ import Data.Color as Color exposing (Swatches)
 import Id exposing (Id, Origin(Local, Remote))
 import Json.Encode as Encode exposing (Value)
 import Tracking
-import Tuple.Infix exposing ((:=))
-import Util
+import Util exposing (def)
 
 
 type JsMsg
@@ -59,8 +58,8 @@ stealFocus =
 
 toCmd : String -> Value -> Cmd msg
 toCmd type_ payload =
-    [ "type" := Encode.string type_
-    , "payload" := payload
+    [ def "type" <| Encode.string type_
+    , def "payload" payload
     ]
         |> Encode.object
         |> toJs
@@ -81,13 +80,13 @@ send msg =
             toCmd "returnFocus" Encode.null
 
         Save { swatches, palette, canvas, name, nameIsGenerated, id, email } ->
-            [ "canvas" := Color.encodeCanvas canvas
-            , "palette" := Color.encodePalette palette
-            , "swatches" := Color.encodeSwatches swatches
-            , "name" := Encode.string name
-            , "nameIsGenerated" := Encode.bool nameIsGenerated
-            , "email" := Encode.string email
-            , "id" := Util.encodeOrigin id
+            [ def "canvas" <| Color.encodeCanvas canvas
+            , def "palette" <| Color.encodePalette palette
+            , def "swatches" <| Color.encodeSwatches swatches
+            , def "name" <| Encode.string name
+            , def "nameIsGenerated" <| Encode.bool nameIsGenerated
+            , def "email" <| Encode.string email
+            , def "id" <| Util.encodeOrigin id
             ]
                 |> Encode.object
                 |> toCmd "save"
@@ -96,8 +95,8 @@ send msg =
             toCmd "download" (Encode.string fn)
 
         AttemptLogin email password ->
-            [ "email" := Encode.string email
-            , "password" := Encode.string password
+            [ def "email" <| Encode.string email
+            , def "password" <| Encode.string password
             ]
                 |> Encode.object
                 |> toCmd "attemptLogin"

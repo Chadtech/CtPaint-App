@@ -3,7 +3,7 @@ module Helpers.Drawing exposing (save)
 import Menu
 import Model exposing (Model)
 import Ports exposing (JsMsg(Save))
-import Tuple.Infix exposing ((&))
+import Return2 as R2
 
 
 save : Model -> ( Model, Cmd msg )
@@ -17,8 +17,9 @@ save model =
                         model.windowSize
                         |> Just
             }
-                & Ports.send
-                    (Ports.Save savePayload)
+                |> R2.withCmd
+                    (Ports.send (Ports.Save savePayload))
 
         Nothing ->
-            model & Cmd.none
+            model
+                |> R2.withNoCmd

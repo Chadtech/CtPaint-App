@@ -23,11 +23,8 @@ import Util
 
 
 type Reply
-    = NoReply
-    | SetColor Int Color
+    = SetColor Int Color
     | UpdateHistory Int Color
-    | StealFocus
-    | ReturnFocus
 
 
 type WindowMsg

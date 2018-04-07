@@ -52,8 +52,10 @@ import Html.Events
         )
 import Mouse
 import MouseEvents exposing (MouseEvent)
-import Tuple.Infix exposing ((&), (:=))
-import Util exposing (toColor)
+import Ports
+import Return2 as R2
+import Return3 as R3 exposing (Return)
+import Util exposing (def, toColor)
 
 
 -- SUBSCRIPTIONS --
@@ -103,14 +105,18 @@ integrateWindow model window =
     { model | window = window }
 
 
-updateFields : FieldsMsg -> Fields -> ( Fields, Reply )
+updateFields : FieldsMsg -> Fields -> ( Fields, Cmd Msg, Maybe Reply )
 updateFields msg fields =
     case msg of
         SetFocus True ->
-            fields & StealFocus
+            fields
+                |> R2.withCmd Ports.stealFocus
+                |> R3.withNoReply
 
         SetFocus False ->
-            fields & ReturnFocus
+            fields
+                |> R2.withCmd Ports.returnFocus
+                |> R3.withNoReply
 
         UpdateColorHexField hex ->
             let
@@ -129,22 +135,24 @@ updateFields msg fields =
                     { fields
                         | colorHexField = newHexField
                     }
-                        & NoReply
+                        |> R3.withNothing
 
         StealSubmit ->
-            fields & NoReply
+            fields |> R3.withNothing
 
         SetNoGradientClickedOn ->
             { fields
                 | gradientClickedOn = Nothing
             }
-                & NoReply
+                |> R3.withNothing
 
         MouseDownOnPointer gradient ->
             { fields
                 | gradientClickedOn = Just gradient
             }
-                & UpdateHistory fields.index fields.color
+                |> R2.withNoCmd
+                |> R3.withReply
+                    (UpdateHistory fields.index fields.color)
 
         MouseMoveInGradient gradient { targetPos, clientPos } ->
             let
@@ -162,13 +170,14 @@ updateFields msg fields =
             arrowHandler gradient direction fields
 
 
-updateWindow : WindowMsg -> Window -> ( Window, Reply )
+updateWindow : WindowMsg -> Window -> Return Window Msg Reply
 updateWindow msg window =
     case msg of
         HeaderMouseDown { targetPos, clientPos } ->
             case window.clickState of
                 XButtonIsDown ->
-                    window & NoReply
+                    window
+                        |> R3.withNothing
 
                 _ ->
                     { window
@@ -178,15 +187,17 @@ updateWindow msg window =
                             }
                                 |> ClickAt
                     }
-                        & NoReply
+                        |> R3.withNothing
 
         HeaderMouseMove position ->
             case window.clickState of
                 NoClicks ->
-                    window & NoReply
+                    window
+                        |> R3.withNothing
 
                 XButtonIsDown ->
-                    window & NoReply
+                    window
+                        |> R3.withNothing
 
                 ClickAt originalClick ->
                     { window
@@ -195,43 +206,43 @@ updateWindow msg window =
                             , y = position.y - originalClick.y
                             }
                     }
-                        & NoReply
+                        |> R3.withNothing
 
         HeaderMouseUp ->
             { window | clickState = NoClicks }
-                & NoReply
+                |> R3.withNothing
 
         XButtonMouseDown ->
             { window | clickState = XButtonIsDown }
-                & NoReply
+                |> R3.withNothing
 
         XButtonMouseUp ->
             { window
                 | show = False
                 , clickState = NoClicks
             }
-                & NoReply
+                |> R3.withNothing
 
 
-update : Msg -> Model -> ( Model, Reply )
+update : Msg -> Model -> Return Model Msg Reply
 update message model =
     case message of
         HandleFieldsMsg fieldsMsg ->
             model.fields
                 |> updateFields fieldsMsg
-                |> Tuple.mapFirst (integrateFields model)
+                |> R3.mapModel (integrateFields model)
 
         HandleWindowMsg windowMsg ->
             model.window
                 |> updateWindow windowMsg
-                |> Tuple.mapFirst (integrateWindow model)
+                |> R3.mapModel (integrateWindow model)
 
 
 
 -- MESSAGE HANDLERS --
 
 
-arrowHandler : Gradient -> Direction -> Fields -> ( Fields, Reply )
+arrowHandler : Gradient -> Direction -> Fields -> Return Fields Msg Reply
 arrowHandler gradient direction fields =
     let
         { hue, saturation, lightness } =
@@ -258,7 +269,8 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields & NoReply
+                        fields
+                            |> R3.withNothing
 
                 Right ->
                     if lightnessInt < 255 then
@@ -271,7 +283,8 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields & NoReply
+                        fields
+                            |> R3.withNothing
 
         Saturation ->
             let
@@ -290,7 +303,8 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields & NoReply
+                        fields
+                            |> R3.withNothing
 
                 Right ->
                     if saturationInt < 255 then
@@ -303,7 +317,8 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields & NoReply
+                        fields
+                            |> R3.withNothing
 
         Hue ->
             let
@@ -343,7 +358,8 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields & NoReply
+                        fields
+                            |> R3.withNothing
 
                 Right ->
                     if red < 255 then
@@ -356,7 +372,8 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields & NoReply
+                        fields
+                            |> R3.withNothing
 
         Green ->
             case direction of
@@ -371,7 +388,8 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields & NoReply
+                        fields
+                            |> R3.withNothing
 
                 Right ->
                     if green < 255 then
@@ -384,7 +402,8 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields & NoReply
+                        fields
+                            |> R3.withNothing
 
         Blue ->
             case direction of
@@ -399,7 +418,8 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields & NoReply
+                        fields
+                            |> R3.withNothing
 
                 Right ->
                     if blue < 255 then
@@ -412,10 +432,11 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields & NoReply
+                        fields
+                            |> R3.withNothing
 
 
-fieldHandler : Gradient -> String -> Fields -> ( Fields, Reply )
+fieldHandler : Gradient -> String -> Fields -> Return Fields Msg Reply
 fieldHandler gradient str fields =
     case String.toInt str of
         Ok int ->
@@ -423,9 +444,10 @@ fieldHandler gradient str fields =
 
         Err _ ->
             fieldHandlerErr gradient str fields
+                |> R3.withNothing
 
 
-fieldHandlerOk : Gradient -> String -> Int -> Fields -> ( Fields, Reply )
+fieldHandlerOk : Gradient -> String -> Int -> Fields -> Return Fields Msg Reply
 fieldHandlerOk gradient str int fields =
     let
         { hue, saturation, lightness } =
@@ -517,29 +539,29 @@ validateHue oldColor newColor int =
         newColor
 
 
-fieldHandlerErr : Gradient -> String -> Fields -> ( Fields, Reply )
+fieldHandlerErr : Gradient -> String -> Fields -> Fields
 fieldHandlerErr gradient str fields =
     case gradient of
         Lightness ->
-            { fields | lightnessField = str } & NoReply
+            { fields | lightnessField = str }
 
         Saturation ->
-            { fields | saturationField = str } & NoReply
+            { fields | saturationField = str }
 
         Hue ->
-            { fields | hueField = str } & NoReply
+            { fields | hueField = str }
 
         Blue ->
-            { fields | blueField = str } & NoReply
+            { fields | blueField = str }
 
         Green ->
-            { fields | greenField = str } & NoReply
+            { fields | greenField = str }
 
         Red ->
-            { fields | redField = str } & NoReply
+            { fields | redField = str }
 
 
-sliderHandler : Int -> Gradient -> Fields -> ( Fields, Reply )
+sliderHandler : Int -> Gradient -> Fields -> Return Fields Msg Reply
 sliderHandler x gradient fields =
     case gradient of
         Lightness ->
@@ -619,14 +641,16 @@ sliderHandler x gradient fields =
 -- INTERNAL HELPERS --
 
 
-cohereAndSet : Fields -> ( Fields, Reply )
+cohereAndSet : Fields -> Return Fields Msg Reply
 cohereAndSet =
     cohereModel >> setColor
 
 
-setColor : Fields -> ( Fields, Reply )
+setColor : Fields -> Return Fields Msg Reply
 setColor ({ index, color } as fields) =
-    fields & SetColor index color
+    fields
+        |> R2.withNoCmd
+        |> R3.withReply (SetColor index color)
 
 
 cohereModel : Fields -> Fields
@@ -810,7 +834,7 @@ body ({ colorHexField, color } as model) =
     [ div
         [ class [ Visualization ]
         , style
-            [ "background" := Util.toHexColor color ]
+            [ def "background" <| Util.toHexColor color ]
         ]
         []
     , form
@@ -890,8 +914,8 @@ redGradient { color, gradientClickedOn } =
         attributes
         [ div
             [ classList
-                [ "pointer" := True
-                , "transparent" := (gradientClickedOn == Just Red)
+                [ def "pointer" True
+                , def "transparent" (gradientClickedOn == Just Red)
                 ]
             , style [ Util.left (red - 2) ]
             , Html.Events.onMouseDown (MouseDownOnPointer Red)
@@ -924,8 +948,8 @@ greenGradient { color, gradientClickedOn } =
         attributes
         [ div
             [ classList
-                [ "pointer" := True
-                , "transparent" := (gradientClickedOn == Just Green)
+                [ def "pointer" True
+                , def "transparent" (gradientClickedOn == Just Green)
                 ]
             , style [ Util.left (green - 2) ]
             , Html.Events.onMouseDown (MouseDownOnPointer Green)
@@ -958,8 +982,8 @@ blueGradient { color, gradientClickedOn } =
         attributes
         [ div
             [ classList
-                [ "pointer" := True
-                , "transparent" := (gradientClickedOn == Just Blue)
+                [ def "pointer" True
+                , def "transparent" (gradientClickedOn == Just Blue)
                 ]
             , style [ Util.left (blue - 2) ]
             , Html.Events.onMouseDown (MouseDownOnPointer Blue)
@@ -1007,8 +1031,8 @@ hueGradient { color, gradientClickedOn } =
         attributes
         [ div
             [ classList
-                [ "pointer" := True
-                , "transparent" := (gradientClickedOn == Just Hue)
+                [ def "pointer" True
+                , def "transparent" (gradientClickedOn == Just Hue)
                 ]
             , style
                 [ Util.left (floor ((hue / (2 * pi)) * 255)) ]
@@ -1052,8 +1076,8 @@ saturationGradient { color, gradientClickedOn } =
         attributes
         [ div
             [ classList
-                [ "pointer" := True
-                , "transparent" := (gradientClickedOn == Just Saturation)
+                [ def "pointer" True
+                , def "transparent" (gradientClickedOn == Just Saturation)
                 ]
             , style
                 [ Util.left (floor (saturation * 255) - 2) ]
@@ -1094,8 +1118,8 @@ lightnessGradient { color, gradientClickedOn } =
         attributes
         [ div
             [ classList
-                [ "pointer" := True
-                , "transparent" := (gradientClickedOn == Just Lightness)
+                [ def "pointer" True
+                , def "transparent" (gradientClickedOn == Just Lightness)
                 ]
             , style
                 [ Util.left (floor (lightness * 255) - 2) ]

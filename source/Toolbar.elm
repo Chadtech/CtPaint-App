@@ -17,8 +17,8 @@ import Html.Events exposing (onClick)
 import Menu
 import Model exposing (Model)
 import Ports
+import Return2 as R2
 import Tool
-import Tuple.Infix exposing ((&), (|&))
 
 
 -- TYPES --
@@ -46,7 +46,8 @@ update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
     case msg of
         ToolButtonClicked tool ->
-            { model | tool = tool } & Cmd.none
+            { model | tool = tool }
+                |> R2.withNoCmd
 
         OtherButtonClicked Text ->
             { model
@@ -55,7 +56,7 @@ update msg model =
                         |> Menu.initText
                         |> Just
             }
-                & Ports.stealFocus
+                |> R2.withCmd Ports.stealFocus
 
         OtherButtonClicked Invert ->
             case model.selection of
@@ -67,14 +68,14 @@ update msg model =
                                 selection
                                 |> Just
                     }
-                        & Cmd.none
+                        |> R2.withNoCmd
 
                 Nothing ->
                     { model
                         | canvas =
                             Draw.invert model.canvas
                     }
-                        & Cmd.none
+                        |> R2.withNoCmd
 
         OtherButtonClicked Replace ->
             Helpers.Menu.initReplaceColor model
@@ -89,24 +90,37 @@ update msg model =
                                 selection
                                 |> Just
                     }
-                        & Cmd.none
+                        |> R2.withNoCmd
 
                 Nothing ->
-                    model & Cmd.none
+                    model
+                        |> R2.withNoCmd
 
         IncreaseEraserClicked ->
-            if model.eraserSize < 9 then
-                { model | eraserSize = model.eraserSize + 1 }
-                    & Cmd.none
-            else
-                model & Cmd.none
+            model
+                |> increaseEraser
+                |> R2.withNoCmd
 
         DecreaseEraserClicked ->
-            if model.eraserSize < 2 then
-                model & Cmd.none
-            else
-                { model | eraserSize = model.eraserSize - 1 }
-                    & Cmd.none
+            model
+                |> decreaseEraser
+                |> R2.withNoCmd
+
+
+increaseEraser : Model -> Model
+increaseEraser model =
+    if model.eraserSize < 9 then
+        { model | eraserSize = model.eraserSize + 1 }
+    else
+        model
+
+
+decreaseEraser : Model -> Model
+decreaseEraser model =
+    if model.eraserSize < 2 then
+        model
+    else
+        { model | eraserSize = model.eraserSize - 1 }
 
 
 

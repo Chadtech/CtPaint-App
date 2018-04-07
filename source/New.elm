@@ -10,9 +10,8 @@ import Html.Attributes as Attrs
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Reply exposing (Reply(NoReply, StartNewDrawing))
-import Tuple.Infix exposing ((&), (:=))
-import Util
+import Reply as R exposing (Reply(StartNewDrawing))
+import Util exposing (def)
 
 
 -- TYPES --
@@ -63,45 +62,46 @@ init name =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Reply )
+update : Msg -> Model -> ( Model, Maybe Reply )
 update msg model =
     case msg of
         FieldUpdated Width str ->
             { model | widthField = str }
                 |> validateWidth
-                & NoReply
+                |> R.withNoReply
 
         FieldUpdated Height str ->
             { model | heightField = str }
                 |> validateHeight
-                & NoReply
+                |> R.withNoReply
 
         FieldUpdated Name str ->
             { model
                 | nameField = str
             }
-                & NoReply
+                |> R.withNoReply
 
         ColorClicked color ->
             { model | backgroundColor = color }
-                & NoReply
+                |> R.withNoReply
 
         StartClicked ->
-            model & startReply model
+            startReply model
 
         StartSubmitted ->
-            model & startReply model
+            startReply model
 
         EnterPressed ->
-            model & startReply model
+            startReply model
 
 
-startReply : Model -> Reply
+startReply : Model -> ( Model, Maybe Reply )
 startReply model =
     model
         |> toParams
         |> Canvas.fromParams
         |> StartNewDrawing (determineName model) (model.nameField /= "")
+        |> R.withModel model
 
 
 toParams : Model -> Canvas.Params
@@ -301,10 +301,10 @@ colorBox : BackgroundColor -> BackgroundColor -> Html Msg
 colorBox thisColor selectedColor =
     div
         [ classList
-            [ ColorBox := True
-            , colorToStyle thisColor := True
-            , Selected := (selectedColor == thisColor)
-            , Left := thisColor == Black
+            [ def ColorBox True
+            , def (colorToStyle thisColor) True
+            , def Selected (selectedColor == thisColor)
+            , def Left (thisColor == Black)
             ]
         , onClick (ColorClicked thisColor)
         ]

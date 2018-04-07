@@ -14,7 +14,7 @@ import Css.Namespace exposing (namespace)
 import Data.Config exposing (Config)
 import Data.Drawing exposing (Drawing)
 import Data.Window exposing (Window(Home))
-import Helpers.Window
+import Helpers.Window exposing (openWindow)
 import Html exposing (Html, a, div, p)
 import Html.CssHelpers
 import Html.Custom
@@ -24,10 +24,11 @@ import Reply
         ( Reply
             ( CloseMenu
             , IncorporateDrawing
-            , NoReply
             , TrySaving
             )
         )
+import Return2 as R2
+import Return3 as R3 exposing (Return)
 import Util
 
 
@@ -63,72 +64,62 @@ init =
 -- UPDATE --
 
 
-update : Config -> Msg -> Model -> ( Model, Cmd Msg, Reply )
+update : Config -> Msg -> Model -> Return Model Msg Reply
 update config msg model =
     case msg of
         DrawingUpdateCompleted (Ok "200") ->
-            ( Success
-            , Util.delay 1000 (OneSecondExpired Nothing)
-            , NoReply
-            )
+            Util.delay 1000 (OneSecondExpired Nothing)
+                |> R2.withModel Success
+                |> R3.withNoReply
 
         DrawingUpdateCompleted (Ok code) ->
             code
                 |> Other
                 |> Failed
-                |> Reply.nothing
+                |> R3.withNothing
 
         DrawingUpdateCompleted (Err err) ->
             err
                 |> Other
                 |> Failed
-                |> Reply.nothing
+                |> R3.withNothing
 
         DrawingCreateCompleted (Ok drawing) ->
-            ( Success
-            , drawing
+            drawing
                 |> Just
                 |> OneSecondExpired
                 |> Util.delay 1000
-            , NoReply
-            )
+                |> R2.withModel Success
+                |> R3.withNoReply
 
         DrawingCreateCompleted (Err "Error: Request failed with status code 403") ->
             ExceededMemoryLimit
                 |> Failed
-                |> Reply.nothing
+                |> R3.withNothing
 
         DrawingCreateCompleted (Err err) ->
             err
                 |> Other
                 |> Failed
-                |> Reply.nothing
+                |> R3.withNothing
 
         OneSecondExpired Nothing ->
-            ( model
-            , Cmd.none
-            , CloseMenu
-            )
+            CloseMenu
+                |> R3.withTuple ( model, Cmd.none )
 
         OneSecondExpired (Just drawing) ->
-            ( model
-            , Cmd.none
-            , IncorporateDrawing drawing
-            )
+            IncorporateDrawing drawing
+                |> R3.withTuple ( model, Cmd.none )
 
         OpenHomeClicked ->
-            ( model
-            , Helpers.Window.openWindow
-                config.mountPath
-                Home
-            , NoReply
-            )
+            Home
+                |> openWindow config.mountPath
+                |> R2.withModel model
+                |> R3.withNoReply
 
         TryAgainClicked ->
-            ( model
-            , Cmd.none
-            , TrySaving
-            )
+            TrySaving
+                |> R3.withTuple ( model, Cmd.none )
 
 
 

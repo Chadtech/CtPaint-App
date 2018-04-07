@@ -33,10 +33,11 @@ import Reply
         ( Reply
             ( AttemptingLogin
             , NoLongerLoggingIn
-            , NoReply
             , SetUser
             )
         )
+import Return2 as R2
+import Return3 as R3 exposing (Return)
 import Util
 
 
@@ -247,22 +248,21 @@ errorStr problem =
 -- UPDATE --
 
 
-update : Config -> Msg -> Model -> ( Model, Cmd Msg, Reply )
+update : Config -> Msg -> Model -> Return Model Msg Reply
 update config msg model =
     case msg of
         FieldUpdated Email email ->
             { model | email = email }
-                |> Reply.nothing
+                |> R3.withNothing
 
         ForgotPasswordClicked ->
-            ( model
-            , openForgotPassword config
-            , NoReply
-            )
+            openForgotPassword config
+                |> R2.withModel model
+                |> R3.withNoReply
 
         FieldUpdated Password password ->
             { model | password = password }
-                |> Reply.nothing
+                |> R3.withNothing
 
         LoginButtonPressed ->
             attemptLogin model
@@ -276,15 +276,13 @@ update config msg model =
                 , showFields = True
                 , password = ""
             }
-                |> Reply.fromModel
-                    Cmd.none
-                    NoLongerLoggingIn
+                |> R2.withNoCmd
+                |> R3.withReply NoLongerLoggingIn
 
         LoginSucceeded user ->
-            ( { model | email = "", password = "" }
-            , Ports.returnFocus
-            , SetUser user
-            )
+            { model | email = "", password = "" }
+                |> R2.withCmd Ports.returnFocus
+                |> R3.withReply (SetUser user)
 
 
 openForgotPassword : Config -> Cmd Msg
@@ -308,7 +306,7 @@ errorToProblem err =
             Other other
 
 
-attemptLogin : Model -> ( Model, Cmd Msg, Reply )
+attemptLogin : Model -> Return Model Msg Reply
 attemptLogin model =
     { model
         | responseError = Nothing
@@ -353,13 +351,14 @@ check condition error =
         Nothing
 
 
-submitIfNoErrors : Model -> ( Model, Cmd Msg, Reply )
+submitIfNoErrors : Model -> Return Model Msg Reply
 submitIfNoErrors model =
     if List.isEmpty model.errors then
-        ( { model | showFields = False, password = "" }
-        , AttemptLogin model.email model.password
+        AttemptLogin model.email model.password
             |> Ports.send
-        , AttemptingLogin
-        )
+            |> R2.withModel
+                { model | showFields = False, password = "" }
+            |> R3.withReply AttemptingLogin
     else
-        model |> Reply.nothing
+        model
+            |> R3.withNothing

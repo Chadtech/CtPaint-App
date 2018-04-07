@@ -5,20 +5,16 @@ import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
-import Helpers.Import
+import Helpers.Import exposing (loadCmd)
 import Html exposing (Html, a, div, form, input, p, text)
 import Html.Attributes exposing (class, placeholder, value)
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Html.Loaded as Loaded
-import Reply
-    exposing
-        ( Reply
-            ( IncorporateImageAsSelection
-            , NoReply
-            )
-        )
+import Reply exposing (Reply(IncorporateImageAsSelection))
+import Return2 as R2
+import Return3 as R3 exposing (Return)
 
 
 -- TYPES --
@@ -164,16 +160,18 @@ init =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Cmd Msg, Reply )
+update : Msg -> Model -> Return Model Msg Reply
 update msg model =
     case msg of
         FieldUpdated str ->
             case model of
                 Url _ ->
-                    Reply.nothing (Url str)
+                    Url str
+                        |> R3.withNothing
 
                 _ ->
-                    Reply.nothing model
+                    model
+                        |> R3.withNothing
 
         ImportPressed ->
             attemptLoad model
@@ -183,40 +181,40 @@ update msg model =
 
         CanvasLoaded (Ok canvas) ->
             Loaded canvas
-                |> Reply.nothing
+                |> R3.withNothing
 
         CanvasLoaded (Err err) ->
-            Reply.nothing Fail
+            Fail
+                |> R3.withNothing
 
         TryAgainPressed ->
-            Reply.nothing init
+            init
+                |> R3.withNothing
 
         LoadedMsg subMsg ->
             case model of
                 Loaded canvas ->
-                    ( model
-                    , Cmd.none
-                    , Loaded.update subMsg canvas
-                    )
+                    Loaded.update subMsg canvas
+                        |> R3.withTuple ( model, Cmd.none )
 
                 _ ->
                     model
-                        |> Reply.nothing
+                        |> R3.withNothing
 
 
-attemptLoad : Model -> ( Model, Cmd Msg, Reply )
+attemptLoad : Model -> Return Model Msg Reply
 attemptLoad model =
     case model of
         Url url ->
             sendLoadCmd url
 
         _ ->
-            Reply.nothing model
+            model
+                |> R3.withNothing
 
 
-sendLoadCmd : String -> ( Model, Cmd Msg, Reply )
+sendLoadCmd : String -> Return Model Msg Reply
 sendLoadCmd url =
-    ( Loading
-    , Helpers.Import.loadCmd url CanvasLoaded
-    , NoReply
-    )
+    Loading
+        |> R2.withCmd (loadCmd url CanvasLoaded)
+        |> R3.withNoReply

@@ -14,8 +14,7 @@ import Html.Attributes exposing (spellcheck, value)
 import Html.CssHelpers
 import Html.Custom exposing (indent)
 import Html.Events exposing (onClick, onInput)
-import Reply exposing (Reply(AddText, NoReply))
-import Tuple.Infix exposing ((&))
+import Reply as R exposing (Reply(AddText))
 
 
 -- TYPES --
@@ -39,14 +38,16 @@ init =
 -- UPDATE --
 
 
-update : Msg -> String -> ( String, Reply )
+update : Msg -> String -> ( String, Maybe Reply )
 update msg model =
     case msg of
         FieldUpdated str ->
-            str & NoReply
+            str
+                |> R.withNoReply
 
         AddTextClicked ->
-            model & AddText model
+            model
+                |> R.withReply (AddText model)
 
 
 

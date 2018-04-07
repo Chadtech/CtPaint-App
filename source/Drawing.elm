@@ -16,8 +16,8 @@ import Html.Attributes exposing (value)
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Reply exposing (Reply(NoReply, SaveDrawingAttrs))
-import Tuple.Infix exposing ((&), (|&))
+import Reply as R exposing (Reply(SaveDrawingAttrs))
+import Util exposing (def)
 
 
 -- TYPES --
@@ -142,13 +142,14 @@ failView problem =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Reply )
+update : Msg -> Model -> ( Model, Maybe Reply )
 update msg model =
     case msg of
         NameUpdated name ->
             { model | name = name }
-                & NoReply
+                |> R.withNoReply
 
         SaveClicked ->
-            { model | state = Saving }
-                & SaveDrawingAttrs model.name
+            SaveDrawingAttrs model.name
+                |> R.withModel
+                    { model | state = Saving }

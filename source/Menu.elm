@@ -27,8 +27,9 @@ import Logout
 import Mouse exposing (Position)
 import New
 import ReplaceColor
-import Reply exposing (Reply(CloseMenu, NoReply))
+import Reply exposing (Reply(CloseMenu))
 import Resize
+import Return3 as R3 exposing (Return)
 import Save
 import Scale
 import Text
@@ -40,26 +41,24 @@ import Window exposing (Size)
 -- UPDATE --
 
 
-update : Config -> Msg -> Model -> ( Model, Cmd Msg, Reply )
+update : Config -> Msg -> Model -> Return Model Msg Reply
 update config msg model =
     case msg of
         XButtonMouseDown ->
             { model
                 | click = XButtonIsDown
             }
-                |> Reply.nothing
+                |> R3.withNothing
 
         XButtonMouseUp ->
-            ( model
-            , Cmd.none
-            , CloseMenu
-            )
+            CloseMenu
+                |> R3.withTuple ( model, Cmd.none )
 
         HeaderMouseDown { targetPos, clientPos } ->
             case model.click of
                 XButtonIsDown ->
                     model
-                        |> Reply.nothing
+                        |> R3.withNothing
 
                 _ ->
                     { model
@@ -69,7 +68,7 @@ update config msg model =
                             }
                                 |> ClickAt
                     }
-                        |> Reply.nothing
+                        |> R3.withNothing
 
         HeaderMouseMove p ->
             case model.click of
@@ -80,21 +79,21 @@ update config msg model =
                             , y = p.y - click.y - 4
                             }
                     }
-                        |> Reply.nothing
+                        |> R3.withNothing
 
                 _ ->
                     model
-                        |> Reply.nothing
+                        |> R3.withNothing
 
         HeaderMouseUp ->
             { model | click = NoClick }
-                |> Reply.nothing
+                |> R3.withNothing
 
         ContentMsg subMsg ->
             updateContent config subMsg model
 
 
-updateContent : Config -> ContentMsg -> Model -> ( Model, Cmd Msg, Reply )
+updateContent : Config -> ContentMsg -> Model -> Return Model Msg Reply
 updateContent config msg model =
     case msg of
         DownloadMsg subMsg ->
@@ -102,20 +101,20 @@ updateContent config msg model =
                 Download subModel ->
                     subModel
                         |> Download.update subMsg
-                        |> return3 model Menu.Download DownloadMsg
+                        |> mapReturn model Menu.Download DownloadMsg
 
                 _ ->
-                    model |> Reply.nothing
+                    model |> R3.withNothing
 
         ImportMsg subMsg ->
             case model.content of
                 Import subModel ->
                     subModel
                         |> Import.update subMsg
-                        |> return3 model Menu.Import ImportMsg
+                        |> mapReturn model Menu.Import ImportMsg
 
                 _ ->
-                    model |> Reply.nothing
+                    model |> R3.withNothing
 
         ScaleMsg subMsg ->
             case model.content of
@@ -125,7 +124,7 @@ updateContent config msg model =
                         |> noCmd model Menu.Scale
 
                 _ ->
-                    model |> Reply.nothing
+                    model |> R3.withNothing
 
         TextMsg subMsg ->
             case model.content of
@@ -135,17 +134,17 @@ updateContent config msg model =
                         |> noCmd model Menu.Text
 
                 _ ->
-                    model |> Reply.nothing
+                    model |> R3.withNothing
 
         BugReportMsg subMsg ->
             case model.content of
                 BugReport subModel ->
                     subModel
                         |> BugReport.update subMsg
-                        |> return3 model Menu.BugReport BugReportMsg
+                        |> mapReturn model Menu.BugReport BugReportMsg
 
                 _ ->
-                    model |> Reply.nothing
+                    model |> R3.withNothing
 
         ReplaceColorMsg subMsg ->
             case model.content of
@@ -155,27 +154,27 @@ updateContent config msg model =
                         |> noCmd model Menu.ReplaceColor
 
                 _ ->
-                    model |> Reply.nothing
+                    model |> R3.withNothing
 
         LoginMsg subMsg ->
             case model.content of
                 Login subModel ->
                     subModel
                         |> Login.update config subMsg
-                        |> return3 model Menu.Login LoginMsg
+                        |> mapReturn model Menu.Login LoginMsg
 
                 _ ->
-                    model |> Reply.nothing
+                    model |> R3.withNothing
 
         UploadMsg subMsg ->
             case model.content of
                 Upload subModel ->
                     subModel
                         |> Upload.update subMsg
-                        |> return3 model Menu.Upload UploadMsg
+                        |> mapReturn model Menu.Upload UploadMsg
 
                 _ ->
-                    model |> Reply.nothing
+                    model |> R3.withNothing
 
         ResizeMsg subMsg ->
             case model.content of
@@ -185,7 +184,7 @@ updateContent config msg model =
                         |> noCmd model Menu.Resize
 
                 _ ->
-                    model |> Reply.nothing
+                    model |> R3.withNothing
 
         NewMsg subMsg ->
             case model.content of
@@ -195,7 +194,7 @@ updateContent config msg model =
                         |> noCmd model Menu.New
 
                 _ ->
-                    model |> Reply.nothing
+                    model |> R3.withNothing
 
         DrawingMsg subMsg ->
             case model.content of
@@ -205,44 +204,48 @@ updateContent config msg model =
                         |> noCmd model Menu.Drawing
 
                 _ ->
-                    model |> Reply.nothing
+                    model |> R3.withNothing
 
         SaveMsg subMsg ->
             case model.content of
                 Save subModel ->
                     subModel
                         |> Save.update config subMsg
-                        |> return3 model Menu.Save SaveMsg
+                        |> mapReturn model Menu.Save SaveMsg
 
                 _ ->
-                    model |> Reply.nothing
+                    model
+                        |> R3.withNothing
 
         LogoutMsg subMsg ->
             case model.content of
                 Logout ->
-                    ( model
-                    , Cmd.none
-                    , Logout.update subMsg
-                    )
+                    Logout.update subMsg
+                        |> R3.withTuple ( model, Cmd.none )
 
                 _ ->
-                    model |> Reply.nothing
+                    model
+                        |> R3.withNothing
 
 
-noCmd : Model -> (a -> Menu) -> ( a, Reply ) -> ( Model, Cmd Msg, Reply )
+noCmd : Model -> (a -> Menu) -> ( a, Maybe Reply ) -> Return Model Msg Reply
 noCmd model toMenu ( subModel, reply ) =
-    ( { model | content = toMenu subModel }
+    ( setContent toMenu model subModel
     , Cmd.none
     , reply
     )
 
 
-return3 : Model -> (a -> Menu) -> (b -> ContentMsg) -> ( a, Cmd b, Reply ) -> ( Model, Cmd Msg, Reply )
-return3 model toMenu toContentMsg ( subModel, cmd, reply ) =
-    ( { model | content = toMenu subModel }
-    , Cmd.map (toContentMsg >> ContentMsg) cmd
-    , reply
-    )
+mapReturn : Model -> (a -> Menu) -> (b -> ContentMsg) -> Return a b Reply -> Return Model Msg Reply
+mapReturn model toMenu toContentMsg return =
+    return
+        |> R3.mapModel (setContent toMenu model)
+        |> R3.mapCmd (toContentMsg >> ContentMsg)
+
+
+setContent : (a -> Menu) -> Model -> a -> Model
+setContent toMenu model subModel =
+    { model | content = toMenu subModel }
 
 
 

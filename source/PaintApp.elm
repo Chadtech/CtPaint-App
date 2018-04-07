@@ -6,8 +6,8 @@ import Init exposing (init)
 import Json.Decode as Decode exposing (Decoder, Value, value)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
+import Return2 as R2
 import Subscriptions exposing (subscriptions)
-import Tuple.Infix exposing ((&), (|&))
 import Update
 import View
 
@@ -54,4 +54,5 @@ update msg result =
                 |> Tuple.mapFirst Ok
 
         Err err ->
-            Err err & Cmd.none
+            Err err
+                |> R2.withNoCmd

@@ -17,7 +17,9 @@ import Html exposing (Html, div, p)
 import Html.CssHelpers
 import Html.Custom
 import Html.Loaded as Loaded
-import Reply exposing (Reply(NoReply))
+import Reply exposing (Reply)
+import Return2 as R2
+import Return3 as R3 exposing (Return)
 import Task
 
 
@@ -136,37 +138,41 @@ failText =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Cmd Msg, Reply )
+update : Msg -> Model -> Return Model Msg Reply
 update msg model =
     case msg of
         UploadFailed problem ->
             Failed problem
-                |> Reply.nothing
+                |> R3.withNothing
 
         GotDataUrl url ->
-            ( Loading
-            , url
-                |> Canvas.loadImage
-                |> Task.attempt LoadedCanvas
-            , NoReply
-            )
+            Loading
+                |> R2.withCmd (loadCmd url)
+                |> R3.withNoReply
 
         LoadedCanvas (Ok canvas) ->
             Loaded canvas
-                |> Reply.nothing
+                |> R3.withNothing
 
         LoadedCanvas (Err err) ->
             Failed CouldNotReadDataUrl
-                |> Reply.nothing
+                |> R3.withNothing
 
         LoadedMsg subMsg ->
             case model of
                 Loaded canvas ->
-                    ( model
-                    , Cmd.none
-                    , Loaded.update subMsg canvas
-                    )
+                    model
+                        |> R2.withNoCmd
+                        |> R3.withReply
+                            (Loaded.update subMsg canvas)
 
                 _ ->
                     model
-                        |> Reply.nothing
+                        |> R3.withNothing
+
+
+loadCmd : String -> Cmd Msg
+loadCmd url =
+    url
+        |> Canvas.loadImage
+        |> Task.attempt LoadedCanvas

@@ -39,8 +39,7 @@ import Msg exposing (Msg(..))
 import Palette
 import Taskbar
 import Toolbar
-import Tuple.Infix exposing ((:=))
-import Util exposing (toolbarWidth)
+import Util exposing (def, toolbarWidth)
 
 
 -- STYLES --
@@ -300,8 +299,8 @@ sampleColor model =
                 [ Html.text "color("
                 , span
                     [ Attr.style
-                        [ "color" := colorStr
-                        , "background" := backgroundColor
+                        [ def "color" colorStr
+                        , def "background" backgroundColor
                         ]
                     ]
                     [ Html.text colorStr ]

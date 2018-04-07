@@ -17,7 +17,7 @@ import Minimap
 import Model exposing (Model)
 import Platform.Cmd as Platform
 import Ports exposing (JsMsg(..))
-import Tuple.Infix exposing ((&), (|&))
+import Return2 as R2
 import Zoom
 
 
@@ -25,98 +25,98 @@ exec : Key.Cmd -> Model -> ( Model, Platform.Cmd msg )
 exec keyCmd model =
     case keyCmd of
         NoCmd ->
-            model & Cmd.none
+            model |> R2.withNoCmd
 
         SetToolToPencil ->
-            { model | tool = Pencil Nothing } & Cmd.none
+            { model | tool = Pencil Nothing } |> R2.withNoCmd
 
         SetToolToHand ->
-            { model | tool = Hand Nothing } & Cmd.none
+            { model | tool = Hand Nothing } |> R2.withNoCmd
 
         SetToolToSelect ->
-            { model | tool = Select Nothing } & Cmd.none
+            { model | tool = Select Nothing } |> R2.withNoCmd
 
         SetToolToFill ->
-            { model | tool = Fill } & Cmd.none
+            { model | tool = Fill } |> R2.withNoCmd
 
         SetToolToEraser ->
-            { model | tool = Eraser Nothing } & Cmd.none
+            { model | tool = Eraser Nothing } |> R2.withNoCmd
 
         SetToolToSample ->
-            { model | tool = Sample } & Cmd.none
+            { model | tool = Sample } |> R2.withNoCmd
 
         SetToolToLine ->
-            { model | tool = Line Nothing } & Cmd.none
+            { model | tool = Line Nothing } |> R2.withNoCmd
 
         SetToolToRectangle ->
-            { model | tool = Rectangle Nothing } & Cmd.none
+            { model | tool = Rectangle Nothing } |> R2.withNoCmd
 
         SetToolToRectangleFilled ->
-            { model | tool = RectangleFilled Nothing } & Cmd.none
+            { model | tool = RectangleFilled Nothing } |> R2.withNoCmd
 
         SwatchesTurnLeft ->
-            swatchesTurnLeft model & Cmd.none
+            swatchesTurnLeft model |> R2.withNoCmd
 
         SwatchesTurnRight ->
-            swatchesTurnRight model & Cmd.none
+            swatchesTurnRight model |> R2.withNoCmd
 
         SwatchesQuickTurnLeft ->
             if model.color.swatches.keyIsDown then
-                model & Cmd.none
+                model |> R2.withNoCmd
             else
                 model
                     |> swatchesTurnLeft
                     |> setKeyAsDown
-                    & Cmd.none
+                    |> R2.withNoCmd
 
         RevertQuickTurnLeft ->
             swatchesTurnRight (setKeyAsUp model)
-                & Cmd.none
+                |> R2.withNoCmd
 
         SwatchesQuickTurnRight ->
             if model.color.swatches.keyIsDown then
-                model & Cmd.none
+                model |> R2.withNoCmd
             else
                 model
                     |> swatchesTurnRight
                     |> setKeyAsDown
-                    & Cmd.none
+                    |> R2.withNoCmd
 
         RevertQuickTurnRight ->
             swatchesTurnLeft (setKeyAsUp model)
-                & Cmd.none
+                |> R2.withNoCmd
 
         SwatchesQuickTurnDown ->
             if model.color.swatches.keyIsDown then
-                model & Cmd.none
+                model |> R2.withNoCmd
             else
                 model
                     |> swatchesTurnLeft
                     |> swatchesTurnLeft
                     |> setKeyAsDown
-                    & Cmd.none
+                    |> R2.withNoCmd
 
         RevertQuickTurnDown ->
             model
                 |> swatchesTurnLeft
                 |> swatchesTurnLeft
                 |> setKeyAsUp
-                & Cmd.none
+                |> R2.withNoCmd
 
         Undo ->
-            History.undo model & Cmd.none
+            History.undo model |> R2.withNoCmd
 
         Redo ->
-            History.redo model & Cmd.none
+            History.redo model |> R2.withNoCmd
 
         Copy ->
-            Clipboard.copy model & Cmd.none
+            Clipboard.copy model |> R2.withNoCmd
 
         Cut ->
-            Clipboard.cut model & Cmd.none
+            Clipboard.cut model |> R2.withNoCmd
 
         Paste ->
-            Clipboard.paste model & Cmd.none
+            Clipboard.paste model |> R2.withNoCmd
 
         SelectAll ->
             { model
@@ -131,7 +131,7 @@ exec keyCmd model =
                         |> Canvas.initialize
                         |> Canvas.draw (clearAllOp model)
             }
-                & Cmd.none
+                |> R2.withNoCmd
 
         Key.ZoomIn ->
             let
@@ -139,9 +139,9 @@ exec keyCmd model =
                     Zoom.next model.zoom
             in
             if model.zoom == newZoom then
-                model & Cmd.none
+                model |> R2.withNoCmd
             else
-                Zoom.set newZoom model & Cmd.none
+                Zoom.set newZoom model |> R2.withNoCmd
 
         Key.ZoomOut ->
             let
@@ -149,9 +149,9 @@ exec keyCmd model =
                     Zoom.prev model.zoom
             in
             if model.zoom == newZoom then
-                model & Cmd.none
+                model |> R2.withNoCmd
             else
-                Zoom.set newZoom model & Cmd.none
+                Zoom.set newZoom model |> R2.withNoCmd
 
         ToggleMinimap ->
             case model.minimap of
@@ -161,7 +161,7 @@ exec keyCmd model =
                             minimapModel.externalPosition
                                 |> Closed
                     }
-                        & Cmd.none
+                        |> R2.withNoCmd
 
                 Closed position ->
                     { model
@@ -170,7 +170,7 @@ exec keyCmd model =
                                 |> Minimap.init (Just position)
                                 |> Opened
                     }
-                        & Cmd.none
+                        |> R2.withNoCmd
 
                 NotInitialized ->
                     { model
@@ -179,13 +179,13 @@ exec keyCmd model =
                                 |> Minimap.init Nothing
                                 |> Opened
                     }
-                        & Cmd.none
+                        |> R2.withNoCmd
 
         SwitchGalleryView ->
             { model
                 | galleryView = not model.galleryView
             }
-                & Cmd.none
+                |> R2.withNoCmd
 
         InitImport ->
             { model
@@ -194,7 +194,7 @@ exec keyCmd model =
                         |> Menu.initImport
                         |> Just
             }
-                & Ports.stealFocus
+                |> R2.withCmd Ports.stealFocus
 
         InitDownload ->
             { model
@@ -207,7 +207,7 @@ exec keyCmd model =
                         model.windowSize
                         |> Just
             }
-                & Ports.stealFocus
+                |> R2.withCmd Ports.stealFocus
 
         InitText ->
             { model
@@ -216,7 +216,7 @@ exec keyCmd model =
                         |> Menu.initText
                         |> Just
             }
-                & Ports.stealFocus
+                |> R2.withCmd Ports.stealFocus
 
         InitScale ->
             { model
@@ -226,7 +226,7 @@ exec keyCmd model =
                         model.windowSize
                         |> Just
             }
-                & Ports.stealFocus
+                |> R2.withCmd Ports.stealFocus
 
         InitReplaceColor ->
             Helpers.Menu.initReplaceColor model
@@ -236,7 +236,7 @@ exec keyCmd model =
                 | color =
                     Helpers.Color.toggleColorPicker model.color
             }
-                & Cmd.none
+                |> R2.withNoCmd
 
         Delete ->
             case model.selection of
@@ -244,10 +244,10 @@ exec keyCmd model =
                     { model
                         | selection = Nothing
                     }
-                        & Cmd.none
+                        |> R2.withNoCmd
 
                 Nothing ->
-                    model & Cmd.none
+                    model |> R2.withNoCmd
 
         FlipHorizontal ->
             transform Draw.flipHorizontal model
@@ -273,7 +273,7 @@ exec keyCmd model =
         SetTransparency ->
             case model.selection of
                 Nothing ->
-                    model & Cmd.none
+                    model |> R2.withNoCmd
 
                 Just selection ->
                     { model
@@ -283,7 +283,7 @@ exec keyCmd model =
                                 selection
                                 |> Just
                     }
-                        & Cmd.none
+                        |> R2.withNoCmd
 
         InitUpload ->
             { model
@@ -292,7 +292,7 @@ exec keyCmd model =
                         |> Menu.initUpload
                         |> Just
             }
-                & Ports.send OpenUpFileUpload
+                |> R2.withCmd (Ports.send OpenUpFileUpload)
 
         InitResize ->
             { model
@@ -302,7 +302,7 @@ exec keyCmd model =
                             (Canvas.getSize model.canvas)
                         |> Just
             }
-                & Ports.stealFocus
+                |> R2.withCmd Ports.stealFocus
 
 
 
@@ -338,13 +338,13 @@ transform transformation model =
                         selection
                         |> Just
             }
-                & Cmd.none
+                |> R2.withNoCmd
 
         Nothing ->
             model
                 |> History.canvas
                 |> Model.updateCanvas transformation
-                & Cmd.none
+                |> R2.withNoCmd
 
 
 swatchesTurnLeft : Model -> Model

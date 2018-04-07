@@ -3,7 +3,6 @@ module Update exposing (update)
 import Canvas exposing (DrawOp(Batch))
 import ColorPicker
 import Data.User as User
-import Helpers.History as History
 import Helpers.Keys
 import Incorporate.Color
 import Incorporate.Menu as Menu
@@ -13,11 +12,12 @@ import Minimap
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Palette
+import Return2 as R2
+import Return3 as R3
 import Task
 import Taskbar
 import Tool
 import Toolbar
-import Tuple.Infix exposing ((&), (|&))
 import Util
 
 
@@ -25,10 +25,12 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ClientMouseMoved position ->
-            Tool.handleClientMouseMovement position model & Cmd.none
+            Tool.handleClientMouseMovement position model
+                |> R2.withNoCmd
 
         ClientMouseUp position ->
-            Tool.handleClientMouseUp position model & Cmd.none
+            Tool.handleClientMouseUp position model
+                |> R2.withNoCmd
 
         ToolbarMsg subMsg ->
             Toolbar.update subMsg model
@@ -41,7 +43,7 @@ update msg model =
                 | color =
                     Palette.update subMsg model.color
             }
-                & Cmd.none
+                |> R2.withNoCmd
 
         MenuMsg subMsg ->
             case model.menu of
@@ -61,10 +63,10 @@ update msg model =
                     )
 
                 Nothing ->
-                    model & Cmd.none
+                    model |> R2.withNoCmd
 
         WindowSizeReceived size ->
-            { model | windowSize = size } & Cmd.none
+            { model | windowSize = size } |> R2.withNoCmd
 
         KeyboardEvent (Ok event) ->
             model
@@ -72,12 +74,12 @@ update msg model =
                 |> Keys.exec (Helpers.Keys.getCmd model.config event)
 
         KeyboardEvent (Err err) ->
-            model & Cmd.none
+            model |> R2.withNoCmd
 
         Tick _ ->
             case model.pendingDraw of
                 Batch [] ->
-                    model & Cmd.none
+                    model |> R2.withNoCmd
 
                 _ ->
                     { model
@@ -88,36 +90,29 @@ update msg model =
                         , pendingDraw =
                             Canvas.batch []
                     }
-                        & Cmd.none
+                        |> R2.withNoCmd
 
         ColorPickerMsg subMsg ->
-            let
-                ( ( newColorModel, cmd ), reply ) =
-                    model.color.picker
-                        |> ColorPicker.update subMsg
-                        |> Incorporate.Color.picker model.color
-            in
-            case reply of
-                Incorporate.Color.NoReply ->
-                    { model | color = newColorModel } & cmd
-
-                Incorporate.Color.ColorHistory index color ->
-                    { model | color = newColorModel }
-                        |> History.color index color
-                        & cmd
+            model.color.picker
+                |> ColorPicker.update subMsg
+                |> R3.mapCmd ColorPickerMsg
+                |> Incorporate.Color.picker model.color
+                |> R3.incorp Incorporate.Color.model model
 
         MinimapMsg subMsg ->
             { model
                 | minimap =
                     Minimap.update subMsg model.minimap
             }
-                & Cmd.none
+                |> R2.withNoCmd
 
         ScreenMouseUp mouseEvent ->
-            Tool.handleScreenMouseUp mouseEvent model & Cmd.none
+            Tool.handleScreenMouseUp mouseEvent model
+                |> R2.withNoCmd
 
         ScreenMouseDown mouseEvent ->
-            Tool.handleScreenMouseDown mouseEvent model & Cmd.none
+            Tool.handleScreenMouseDown mouseEvent model
+                |> R2.withNoCmd
 
         ScreenMouseMove { targetPos, clientPos } ->
             let
@@ -134,24 +129,24 @@ update msg model =
                     }
                         |> Just
             }
-                & Cmd.none
+                |> R2.withNoCmd
 
         ScreenMouseExit ->
             { model
                 | mousePosition =
                     Nothing
             }
-                & Cmd.none
+                |> R2.withNoCmd
 
         LogoutSucceeded ->
             { model | user = User.LoggedOut }
-                & Cmd.none
+                |> R2.withNoCmd
 
         LogoutFailed err ->
-            model & Cmd.none
+            model |> R2.withNoCmd
 
         MsgDecodeFailed _ ->
-            model & Cmd.none
+            model |> R2.withNoCmd
 
         InitFromUrl (Ok canvas) ->
             { model
@@ -162,16 +157,16 @@ update msg model =
                         (Canvas.getSize canvas)
                 , menu = Nothing
             }
-                & Cmd.none
+                |> R2.withNoCmd
 
         InitFromUrl (Err err) ->
-            model & Cmd.none
+            model |> R2.withNoCmd
 
         DrawingLoaded drawing ->
             drawing.data
                 |> Canvas.loadImage
                 |> Task.attempt (DrawingDeblobed drawing)
-                |& model
+                |> R2.withModel model
 
         DrawingDeblobed drawing (Ok canvas) ->
             case model.user of
@@ -190,10 +185,10 @@ update msg model =
                                 |> User.setDrawing drawing
                                 |> User.LoggedIn
                     }
-                        & Cmd.none
+                        |> R2.withNoCmd
 
                 _ ->
-                    model & Cmd.none
+                    model |> R2.withNoCmd
 
         DrawingDeblobed drawing (Err _) ->
-            model & Cmd.none
+            model |> R2.withNoCmd

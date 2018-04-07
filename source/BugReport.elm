@@ -17,9 +17,10 @@ import Html.CssHelpers
 import Html.Custom exposing (indent)
 import Html.Events exposing (onClick, onInput)
 import Ports exposing (JsMsg(ReportBug))
-import Reply exposing (Reply(CloseMenu, NoReply))
-import Tuple.Infix exposing ((&), (:=))
-import Util
+import Reply exposing (Reply(CloseMenu))
+import Return2 as R2
+import Return3 as R3 exposing (Return)
+import Util exposing (def)
 
 
 -- TYPES --
@@ -53,21 +54,21 @@ init loggedIn =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Cmd Msg, Reply )
+update : Msg -> Model -> Return Model Msg Reply
 update msg model =
     case msg of
         FieldUpdated str ->
             updateField str model
-                |> Reply.nothing
+                |> R3.withNothing
 
         SubmitBugClicked ->
             submitBug model
+                |> R3.withNoReply
 
         TwoSecondsExpired ->
-            ( model
-            , Cmd.none
-            , CloseMenu
-            )
+            model
+                |> R2.withNoCmd
+                |> R3.withReply CloseMenu
 
 
 updateField : String -> Model -> Model
@@ -80,23 +81,23 @@ updateField str model =
             model
 
 
-submitBug : Model -> ( Model, Cmd Msg, Reply )
+submitBug : Model -> ( Model, Cmd Msg )
 submitBug model =
     case model of
         Ready "" ->
-            model |> Reply.nothing
+            model
+                |> R2.withNoCmd
 
         Ready str ->
-            ( Done
-            , Cmd.batch
-                [ Ports.send (ReportBug str)
-                , Util.delay 2000 TwoSecondsExpired
-                ]
-            , NoReply
-            )
+            Done
+                |> R2.withCmds
+                    [ Ports.send (ReportBug str)
+                    , Util.delay 2000 TwoSecondsExpired
+                    ]
 
         _ ->
-            model |> Reply.nothing
+            model
+                |> R2.withNoCmd
 
 
 
@@ -191,8 +192,8 @@ loggedInView str disabled =
     [ textarea
         [ onInput FieldUpdated
         , classList
-            [ Text := True
-            , Disabled := disabled
+            [ def Text True
+            , def Disabled disabled
             ]
         , spellcheck False
         , value str
@@ -200,8 +201,8 @@ loggedInView str disabled =
         []
     , Html.Custom.menuButton
         [ classList
-            [ SubmitButton := True
-            , Disabled := disabled
+            [ def SubmitButton True
+            , def Disabled disabled
             ]
         , onClick SubmitBugClicked
         ]

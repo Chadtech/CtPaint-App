@@ -10,8 +10,7 @@ import Html.Attributes exposing (spellcheck, value)
 import Html.CssHelpers
 import Html.Custom exposing (indent)
 import Html.Events exposing (onClick, onInput)
-import Reply exposing (Reply(NoReply, Replace))
-import Tuple.Infix exposing ((&))
+import Reply as R exposing (Reply(Replace))
 import Util
 
 
@@ -41,11 +40,12 @@ type alias Model =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Reply )
+update : Msg -> Model -> ( Model, Maybe Reply )
 update msg model =
     case msg of
         ReplaceButtonClicked ->
-            model & Replace model.target model.replacement
+            Replace model.target model.replacement
+                |> R.withModel model
 
         SquareClicked Replacement index color ->
             { model
@@ -56,7 +56,7 @@ update msg model =
                         |> Util.toHexColor
                         |> String.dropLeft 1
             }
-                & NoReply
+                |> R.withNoReply
 
         SquareClicked Target index color ->
             { model
@@ -67,7 +67,7 @@ update msg model =
                         |> Util.toHexColor
                         |> String.dropLeft 1
             }
-                & NoReply
+                |> R.withNoReply
 
         UpdateHexField Replacement str ->
             { model
@@ -75,7 +75,7 @@ update msg model =
                 , replacementPaletteIndex = Nothing
             }
                 |> cohereReplacementColor
-                & NoReply
+                |> R.withNoReply
 
         UpdateHexField Target str ->
             { model
@@ -83,7 +83,7 @@ update msg model =
                 , targetPaletteIndex = Nothing
             }
                 |> cohereTargetColor
-                & NoReply
+                |> R.withNoReply
 
 
 cohereReplacementColor : Model -> Model
