@@ -1,6 +1,7 @@
 module Helpers.Canvas
     exposing
         ( Params
+        , backgroundColorStr
         , blank
         , fromParams
         , noop
@@ -102,6 +103,11 @@ toColor backgroundColor =
 
         White ->
             Color.white
+
+
+backgroundColorStr : BackgroundColor -> String
+backgroundColorStr =
+    toString >> String.toLower
 
 
 fillOp : BackgroundColor -> Canvas -> DrawOp

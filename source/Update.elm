@@ -3,6 +3,7 @@ module Update exposing (update)
 import Canvas exposing (DrawOp(Batch))
 import ColorPicker
 import Data.Keys as Key
+import Data.Minimap as Minimap
 import Data.User as User
 import Helpers.Keys
 import Incorporate.Color
@@ -104,11 +105,10 @@ update msg model =
                 |> R3.incorp Incorporate.Color.model model
 
         MinimapMsg subMsg ->
-            { model
-                | minimap =
-                    Minimap.update subMsg model.minimap
-            }
-                |> R2.withNoCmd
+            model.minimap
+                |> Minimap.update model.taco subMsg
+                |> R2.mapCmd MinimapMsg
+                |> R2.mapModel (setMinimap model)
 
         ScreenMouseUp mouseEvent ->
             Tool.handleScreenMouseUp mouseEvent model
@@ -196,6 +196,11 @@ update msg model =
 
         DrawingDeblobed drawing (Err _) ->
             model |> R2.withNoCmd
+
+
+setMinimap : Model -> Minimap.State -> Model
+setMinimap model state =
+    { model | minimap = state }
 
 
 trackKeyEvent : Model -> Key.Cmd -> Key.Event -> Cmd Msg

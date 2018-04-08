@@ -25,14 +25,25 @@ import Loading
 import Login
 import Logout
 import Mouse exposing (Position)
+import MouseEvents exposing (MouseEvent)
 import New
+import Ports
 import ReplaceColor
 import Reply exposing (Reply(CloseMenu))
 import Resize
+import Return2 as R2
 import Return3 as R3 exposing (Return)
 import Save
 import Scale
 import Text
+import Tracking
+    exposing
+        ( Event
+            ( MenuHeaderMouseDown
+            , MenuHeaderMouseUp
+            , MenuXMouseUp
+            )
+        )
 import Upload
 import Util exposing (toolbarWidth)
 import Window exposing (Size)
@@ -51,24 +62,23 @@ update taco msg model =
                 |> R3.withNothing
 
         XButtonMouseUp ->
-            CloseMenu
-                |> R3.withTuple ( model, Cmd.none )
+            Menu.toString model.content
+                |> MenuXMouseUp
+                |> Ports.track taco
+                |> R2.withModel model
+                |> R3.withReply CloseMenu
 
-        HeaderMouseDown { targetPos, clientPos } ->
+        HeaderMouseDown mouseEvent ->
             case model.click of
                 XButtonIsDown ->
                     model
                         |> R3.withNothing
 
                 _ ->
-                    { model
-                        | click =
-                            { x = clientPos.x - targetPos.x
-                            , y = clientPos.y - targetPos.y
-                            }
-                                |> ClickAt
-                    }
-                        |> R3.withNothing
+                    handleHeaderMouseDown
+                        taco
+                        mouseEvent
+                        model
 
         HeaderMouseMove p ->
             case model.click of
@@ -85,12 +95,40 @@ update taco msg model =
                     model
                         |> R3.withNothing
 
-        HeaderMouseUp ->
+        HeaderMouseUp p ->
             { model | click = NoClick }
-                |> R3.withNothing
+                |> R2.withCmd
+                    (trackHeaderMouseUp taco p model)
+                |> R3.withNoReply
 
         ContentMsg subMsg ->
             updateContent taco subMsg model
+
+
+handleHeaderMouseDown : Taco -> MouseEvent -> Model -> Return Model Msg Reply
+handleHeaderMouseDown taco mouseEvent model =
+    { model
+        | click = ClickAt (Util.elRel mouseEvent)
+    }
+        |> R2.withCmd
+            (trackHeaderMouseDown taco mouseEvent.clientPos model)
+        |> R3.withNoReply
+
+
+trackHeaderMouseDown : Taco -> Mouse.Position -> Model -> Cmd Msg
+trackHeaderMouseDown taco position model =
+    model.content
+        |> Menu.toString
+        |> MenuHeaderMouseDown position
+        |> Ports.track taco
+
+
+trackHeaderMouseUp : Taco -> Mouse.Position -> Model -> Cmd Msg
+trackHeaderMouseUp taco position model =
+    model.content
+        |> Menu.toString
+        |> MenuHeaderMouseUp position
+        |> Ports.track taco
 
 
 updateContent : Taco -> ContentMsg -> Model -> Return Model Msg Reply
@@ -190,8 +228,8 @@ updateContent taco msg model =
             case model.content of
                 New subModel ->
                     subModel
-                        |> New.update subMsg
-                        |> noCmd model Menu.New
+                        |> New.update taco subMsg
+                        |> mapReturn model Menu.New NewMsg
 
                 _ ->
                     model |> R3.withNothing
@@ -563,6 +601,6 @@ initSave name =
 subscriptions : Sub Msg
 subscriptions =
     [ Mouse.moves HeaderMouseMove
-    , Mouse.ups (always HeaderMouseUp)
+    , Mouse.ups HeaderMouseUp
     ]
         |> Sub.batch

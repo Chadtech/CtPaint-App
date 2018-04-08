@@ -26,6 +26,7 @@ import Data.Minimap
         , State(..)
         )
 import Data.Selection as Selection
+import Data.Taco exposing (Taco)
 import Data.Tool exposing (Tool(..))
 import Helpers.Zoom as Zoom
 import Html exposing (Attribute, Html, a, div, p)
@@ -35,7 +36,18 @@ import Html.Custom exposing (card, cardBody, header, indent)
 import Html.Events exposing (onClick)
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
+import Ports
+import Return2 as R2
 import Tool
+import Tracking
+    exposing
+        ( Event
+            ( MinimapXMouseUp
+            , MinimapZeroClick
+            , MinimapZoomInClick
+            , MinimapZoomOutClick
+            )
+        )
 import Util exposing (toPoint)
 import Window exposing (Size)
 
@@ -94,40 +106,49 @@ subscriptions model =
 -- UPDATE --
 
 
-update : Msg -> State -> State
-update msg state =
+update : Taco -> Msg -> State -> ( State, Cmd Msg )
+update taco msg state =
     case state of
         NotInitialized ->
             NotInitialized
+                |> R2.withNoCmd
 
         Closed position ->
             Closed position
+                |> R2.withNoCmd
 
         Opened model ->
-            updateOpened msg model
+            updateOpened taco msg model
 
 
-updateOpened : Msg -> Model -> State
-updateOpened msg model =
+updateOpened : Taco -> Msg -> Model -> ( State, Cmd Msg )
+updateOpened taco msg model =
     case msg of
         XButtonMouseUp ->
             Closed model.externalPosition
+                |> R2.withCmd (Ports.track taco MinimapXMouseUp)
 
         XButtonMouseDown ->
             { model
                 | clickState = XButtonIsDown
             }
                 |> Opened
+                |> R2.withNoCmd
 
         ZoomInClicked ->
-            zoomIn model |> Opened
+            zoomIn model
+                |> Opened
+                |> R2.withCmd (Ports.track taco MinimapZoomInClick)
 
         ZoomOutClicked ->
-            zoomOut model |> Opened
+            zoomOut model
+                |> Opened
+                |> R2.withCmd (Ports.track taco MinimapZoomOutClick)
 
         ZeroClicked ->
             { model | internalPosition = { x = 0, y = 0 } }
                 |> Opened
+                |> R2.withCmd (Ports.track taco MinimapZeroClick)
 
         ScreenMouseDown { targetPos, clientPos } ->
             { model
@@ -142,29 +163,33 @@ updateOpened msg model =
                         |> ClickedInScreenAt
             }
                 |> Opened
+                |> R2.withNoCmd
 
-        HeaderMouseDown { targetPos, clientPos } ->
+        HeaderMouseDown mouseEvent ->
             case model.clickState of
                 XButtonIsDown ->
                     Opened model
+                        |> R2.withNoCmd
 
                 _ ->
                     { model
                         | clickState =
-                            { x = clientPos.x - targetPos.x
-                            , y = clientPos.y - targetPos.y
-                            }
+                            mouseEvent
+                                |> Util.elRel
                                 |> ClickedInHeaderAt
                     }
                         |> Opened
+                        |> R2.withNoCmd
 
         MouseMoved position ->
             case model.clickState of
                 NoClicks ->
                     Opened model
+                        |> R2.withNoCmd
 
                 XButtonIsDown ->
                     Opened model
+                        |> R2.withNoCmd
 
                 ClickedInHeaderAt originalClick ->
                     { model
@@ -174,6 +199,7 @@ updateOpened msg model =
                             }
                     }
                         |> Opened
+                        |> R2.withNoCmd
 
                 ClickedInScreenAt originalClick ->
                     { model
@@ -183,12 +209,14 @@ updateOpened msg model =
                             }
                     }
                         |> Opened
+                        |> R2.withNoCmd
 
         MouseUp ->
             { model
                 | clickState = NoClicks
             }
                 |> Opened
+                |> R2.withNoCmd
 
 
 zoomOut : Model -> Model

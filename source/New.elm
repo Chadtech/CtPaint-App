@@ -4,14 +4,31 @@ import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Data.Color exposing (BackgroundColor(Black, White))
-import Helpers.Canvas as Canvas exposing (Params)
+import Data.Taco exposing (Taco)
+import Helpers.Canvas as Canvas
+    exposing
+        ( Params
+        , backgroundColorStr
+        )
 import Html exposing (Attribute, Html, a, div, form, input, p)
 import Html.Attributes as Attrs
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Reply as R exposing (Reply(StartNewDrawing))
+import Ports
+import Reply exposing (Reply(StartNewDrawing))
+import Return2 as R2
+import Return3 as R3 exposing (Return)
+import Tracking
+    exposing
+        ( Event
+            ( MenuNewColorClick
+            , MenuNewStartClick
+            , MenuNewStartEnterPress
+            )
+        )
 import Util exposing (def)
+import Window exposing (Size)
 
 
 -- TYPES --
@@ -42,6 +59,13 @@ type alias Model =
     }
 
 
+toSize : Model -> Size
+toSize model =
+    { width = model.width
+    , height = model.height
+    }
+
+
 
 -- INIT --
 
@@ -62,46 +86,78 @@ init name =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Maybe Reply )
-update msg model =
+update : Taco -> Msg -> Model -> Return Model Msg Reply
+update taco msg model =
     case msg of
         FieldUpdated Width str ->
             { model | widthField = str }
                 |> validateWidth
-                |> R.withNoReply
+                |> R3.withNothing
 
         FieldUpdated Height str ->
             { model | heightField = str }
                 |> validateHeight
-                |> R.withNoReply
+                |> R3.withNothing
 
         FieldUpdated Name str ->
             { model
                 | nameField = str
             }
-                |> R.withNoReply
+                |> R3.withNothing
 
         ColorClicked color ->
             { model | backgroundColor = color }
-                |> R.withNoReply
+                |> R2.withCmd (trackColorClick taco color)
+                |> R3.withNoReply
 
         StartClicked ->
-            startReply model
+            trackStartClick taco model
+                |> R2.withModel model
+                |> R3.withReply (startReply model)
 
         StartSubmitted ->
-            startReply model
+            trackStartEnterPress taco model
+                |> R2.withModel model
+                |> R3.withReply (startReply model)
 
         EnterPressed ->
-            startReply model
+            trackStartEnterPress taco model
+                |> R2.withModel model
+                |> R3.withReply (startReply model)
 
 
-startReply : Model -> ( Model, Maybe Reply )
+trackStartClick : Taco -> Model -> Cmd Msg
+trackStartClick taco model =
+    model.backgroundColor
+        |> backgroundColorStr
+        |> MenuNewStartClick (toSize model)
+        |> Ports.track taco
+
+
+trackStartEnterPress : Taco -> Model -> Cmd Msg
+trackStartEnterPress taco model =
+    model.backgroundColor
+        |> backgroundColorStr
+        |> MenuNewStartEnterPress (toSize model)
+        |> Ports.track taco
+
+
+trackColorClick : Taco -> BackgroundColor -> Cmd Msg
+trackColorClick taco bgColor =
+    bgColor
+        |> backgroundColorStr
+        |> MenuNewColorClick
+        |> Ports.track taco
+
+
+startReply : Model -> Reply
 startReply model =
     model
         |> toParams
         |> Canvas.fromParams
-        |> StartNewDrawing (determineName model) (model.nameField /= "")
-        |> R.withModel model
+        |> StartNewDrawing
+            (determineName model)
+            (model.nameField /= "")
 
 
 toParams : Model -> Canvas.Params

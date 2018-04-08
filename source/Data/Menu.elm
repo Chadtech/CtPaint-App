@@ -11,6 +11,7 @@ module Data.Menu
         , fileRead
         , loginFailed
         , loginSucceeded
+        , toString
         )
 
 import About
@@ -32,6 +33,9 @@ import Save
 import Scale
 import Text
 import Upload
+
+
+-- TYPES --
 
 
 type Menu
@@ -69,7 +73,7 @@ type ClickState
 type Msg
     = HeaderMouseDown MouseEvent
     | HeaderMouseMove Mouse.Position
-    | HeaderMouseUp
+    | HeaderMouseUp Mouse.Position
     | XButtonMouseDown
     | XButtonMouseUp
     | ContentMsg ContentMsg
@@ -89,6 +93,10 @@ type ContentMsg
     | DrawingMsg Drawing.Msg
     | SaveMsg Save.Msg
     | LogoutMsg Logout.Msg
+
+
+
+-- MSG HELPERS --
 
 
 fileRead : String -> Msg
@@ -122,3 +130,56 @@ loginFailed =
 loginSucceeded : User -> Msg
 loginSucceeded =
     Login.LoginSucceeded >> LoginMsg >> ContentMsg
+
+
+
+-- HELPERS --
+
+
+toString : Menu -> String
+toString menu =
+    case menu of
+        Download _ ->
+            "download"
+
+        Import _ ->
+            "import"
+
+        Scale _ ->
+            "scale"
+
+        Text _ ->
+            "text"
+
+        BugReport _ ->
+            "bug-report"
+
+        About _ ->
+            "about"
+
+        ReplaceColor _ ->
+            "replace-color"
+
+        New _ ->
+            "new"
+
+        Login _ ->
+            "login"
+
+        Loading _ ->
+            "loading"
+
+        Upload _ ->
+            "upload"
+
+        Resize _ ->
+            "resize"
+
+        Drawing _ ->
+            "drawing"
+
+        Save _ ->
+            "save"
+
+        Logout ->
+            "logout"

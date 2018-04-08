@@ -10,7 +10,9 @@ module Tracking
 import Id exposing (Id, Origin)
 import Json.Encode as Encode exposing (Value)
 import Json.Encode.Extra as Encode
+import Mouse exposing (Position)
 import Util exposing (def)
+import Window exposing (Size)
 
 
 -- TYPES --
@@ -38,8 +40,30 @@ type Event
     | MenuImportEnterPress
     | MenuImportTryAgainClick
     | MenuImportCanvasLoad (Maybe Error)
+    | MenuLoginForgotPasswordClick
+    | MenuLoginClick
+    | MenuLoginEnterPress
+    | MenuLoginResponse (Maybe Error)
+    | MenuXMouseUp MenuName
+    | MenuHeaderMouseDown Position MenuName
+    | MenuHeaderMouseUp Position MenuName
+    | MinimapXMouseUp
+    | MinimapZoomInClick
+    | MinimapZoomOutClick
+    | MinimapZeroClick
+    | MenuNewStartClick Size BackgroundColor
+    | MenuNewStartEnterPress Size BackgroundColor
+    | MenuNewColorClick BackgroundColor
     | KeyboardEvent String String
     | KeyboardEventFail Error
+
+
+type alias BackgroundColor =
+    String
+
+
+type alias MenuName =
+    String
 
 
 type alias Error =
@@ -110,6 +134,48 @@ toNamePieces event =
         MenuImportCanvasLoad _ ->
             [ "menu", "import", "canvas", "load" ]
 
+        MenuLoginForgotPasswordClick ->
+            [ "menu", "login", "forgot-password", "click" ]
+
+        MenuLoginClick ->
+            [ "menu", "login", "click" ]
+
+        MenuLoginEnterPress ->
+            [ "menu", "login", "enter", "press" ]
+
+        MenuLoginResponse _ ->
+            [ "menu", "login", "response" ]
+
+        MenuXMouseUp _ ->
+            [ "menu", "x", "mouse", "up" ]
+
+        MenuHeaderMouseDown _ _ ->
+            [ "menu", "header", "mouse", "down" ]
+
+        MenuHeaderMouseUp _ _ ->
+            [ "menu", "header", "mouse", "up" ]
+
+        MinimapXMouseUp ->
+            [ "minimap", "x", "mouse", "up" ]
+
+        MinimapZoomInClick ->
+            [ "minimap", "zoom-in", "click" ]
+
+        MinimapZoomOutClick ->
+            [ "minimap", "zoom-out", "click" ]
+
+        MinimapZeroClick ->
+            [ "minimap", "zero", "click" ]
+
+        MenuNewStartClick _ _ ->
+            [ "menu", "new", "start", "click" ]
+
+        MenuNewStartEnterPress _ _ ->
+            [ "menu", "new", "start", "enter", "press" ]
+
+        MenuNewColorClick _ ->
+            [ "menu", "new", "color", "click" ]
+
         KeyboardEvent _ _ ->
             [ "keyboard", "event" ]
 
@@ -159,6 +225,56 @@ eventProperties event =
         MenuImportCanvasLoad maybeError ->
             [ maybeErrorField maybeError ]
 
+        MenuLoginForgotPasswordClick ->
+            []
+
+        MenuLoginClick ->
+            []
+
+        MenuLoginEnterPress ->
+            []
+
+        MenuLoginResponse maybeError ->
+            [ maybeErrorField maybeError ]
+
+        MenuXMouseUp menuName ->
+            [ menuField menuName ]
+
+        MenuHeaderMouseDown position menuName ->
+            [ menuField menuName
+            , positionField position
+            ]
+
+        MenuHeaderMouseUp position menuName ->
+            [ menuField menuName
+            , positionField position
+            ]
+
+        MinimapXMouseUp ->
+            []
+
+        MinimapZoomInClick ->
+            []
+
+        MinimapZoomOutClick ->
+            []
+
+        MinimapZeroClick ->
+            []
+
+        MenuNewStartClick size backgroundColor ->
+            [ sizeField size
+            , backgroundColorField backgroundColor
+            ]
+
+        MenuNewStartEnterPress size backgroundColor ->
+            [ sizeField size
+            , backgroundColorField backgroundColor
+            ]
+
+        MenuNewColorClick backgroundColor ->
+            [ backgroundColorField backgroundColor ]
+
         KeyboardEvent keyCmd keyEvent ->
             [ def "cmd" <| Encode.string keyCmd
             , def "event" <| Encode.string keyEvent
@@ -166,6 +282,26 @@ eventProperties event =
 
         KeyboardEventFail err ->
             [ errorField err ]
+
+
+backgroundColorField : String -> ( String, Value )
+backgroundColorField =
+    def "background-color" << Encode.string
+
+
+sizeField : Size -> ( String, Value )
+sizeField =
+    def "size" << Util.encodeSize
+
+
+positionField : Position -> ( String, Value )
+positionField =
+    def "position" << Util.encodePosition
+
+
+menuField : String -> ( String, Value )
+menuField =
+    def "menu" << Encode.string
 
 
 errorField : String -> ( String, Value )

@@ -10,6 +10,7 @@ import Id exposing (Origin(Local, Remote))
 import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode exposing (Value)
 import Mouse exposing (Position)
+import MouseEvents exposing (MouseEvent)
 import ParseInt
 import Process
 import Random.Pcg as Random
@@ -236,6 +237,34 @@ toolbarWidth =
 
 
 -- POSITION AND POINT --
+
+
+encodePosition : Position -> Value
+encodePosition { x, y } =
+    [ def "x" <| Encode.int x
+    , def "y" <| Encode.int y
+    ]
+        |> Encode.object
+
+
+encodeSize : Size -> Value
+encodeSize { width, height } =
+    [ def "width" <| Encode.int width
+    , def "height" <| Encode.int height
+    ]
+        |> Encode.object
+
+
+{-| "elRel" means "element relative",
+as in the click position relative to
+the origin of the element that was clicked
+on
+-}
+elRel : MouseEvent -> Position
+elRel { clientPos, targetPos } =
+    { x = clientPos.x - targetPos.x
+    , y = clientPos.y - targetPos.y
+    }
 
 
 center : Size -> Size -> Position

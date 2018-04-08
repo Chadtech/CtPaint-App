@@ -173,7 +173,7 @@ updateFields msg fields =
 updateWindow : WindowMsg -> Window -> Return Window Msg Reply
 updateWindow msg window =
     case msg of
-        HeaderMouseDown { targetPos, clientPos } ->
+        HeaderMouseDown mouseEvent ->
             case window.clickState of
                 XButtonIsDown ->
                     window
@@ -182,9 +182,8 @@ updateWindow msg window =
                 _ ->
                     { window
                         | clickState =
-                            { x = clientPos.x - targetPos.x
-                            , y = clientPos.y - targetPos.y
-                            }
+                            mouseEvent
+                                |> Util.elRel
                                 |> ClickAt
                     }
                         |> R3.withNothing

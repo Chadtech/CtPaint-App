@@ -39,6 +39,15 @@ import Reply
         )
 import Return2 as R2
 import Return3 as R3 exposing (Return)
+import Tracking
+    exposing
+        ( Event
+            ( MenuLoginClick
+            , MenuLoginEnterPress
+            , MenuLoginForgotPasswordClick
+            , MenuLoginResponse
+            )
+        )
 import Util
 
 
@@ -250,14 +259,18 @@ errorStr problem =
 
 
 update : Taco -> Msg -> Model -> Return Model Msg Reply
-update { config } msg model =
+update taco msg model =
     case msg of
         FieldUpdated Email email ->
             { model | email = email }
                 |> R3.withNothing
 
         ForgotPasswordClicked ->
-            openForgotPassword config
+            [ openForgotPassword taco.config
+            , MenuLoginForgotPasswordClick
+                |> Ports.track taco
+            ]
+                |> Cmd.batch
                 |> R2.withModel model
                 |> R3.withNoReply
 
@@ -267,9 +280,13 @@ update { config } msg model =
 
         LoginButtonPressed ->
             attemptLogin model
+                |> R3.addCmd
+                    (Ports.track taco MenuLoginClick)
 
         FormSubmitted ->
             attemptLogin model
+                |> R3.addCmd
+                    (Ports.track taco MenuLoginEnterPress)
 
         LoginFailed err ->
             { model
@@ -277,13 +294,21 @@ update { config } msg model =
                 , showFields = True
                 , password = ""
             }
-                |> R2.withNoCmd
+                |> R2.withCmd (trackResponse taco (Just err))
                 |> R3.withReply NoLongerLoggingIn
 
         LoginSucceeded user ->
             { model | email = "", password = "" }
-                |> R2.withCmd Ports.returnFocus
+                |> R2.withCmds
+                    [ Ports.returnFocus
+                    , trackResponse taco Nothing
+                    ]
                 |> R3.withReply (SetUser user)
+
+
+trackResponse : Taco -> Maybe String -> Cmd Msg
+trackResponse taco maybeError =
+    Ports.track taco (MenuLoginResponse maybeError)
 
 
 openForgotPassword : Config -> Cmd Msg
