@@ -3,11 +3,11 @@ module Scale exposing (..)
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
+import Data.Taco exposing (Taco)
 import Html
     exposing
         ( Attribute
         , Html
-        , a
         , div
         , form
         , input
@@ -30,7 +30,17 @@ import Html.Events
         , onInput
         , onSubmit
         )
+import Ports
 import Reply as R exposing (Reply(ScaleTo))
+import Return2 as R2
+import Return3 as R3 exposing (Return)
+import Tracking
+    exposing
+        ( Event
+            ( MenuScaleClick
+            , MenuScaleLockClick
+            )
+        )
 import Util exposing (valueIfFocus)
 import Window exposing (Size)
 
@@ -271,29 +281,43 @@ field =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Maybe Reply )
-update msg model =
+update : Taco -> Msg -> Model -> Return Model Msg Reply
+update taco msg model =
     case msg of
         FieldUpdated field str ->
             updateField field str model
-                |> R.withNoReply
+                |> R3.withNothing
 
         LockButtonClicked ->
-            { model
-                | lockRatio =
-                    not model.lockRatio
-            }
-                |> R.withNoReply
+            MenuScaleLockClick
+                |> Ports.track taco
+                |> R2.withModel
+                    { model
+                        | lockRatio =
+                            not model.lockRatio
+                    }
+                |> R3.withNoReply
 
         FieldFocused field ->
             { model
                 | focus = Just field
             }
-                |> R.withNoReply
+                |> R3.withNothing
 
         ScaleClick ->
-            ScaleTo model.fixedWidth model.fixedHeight
-                |> R.withModel model
+            MenuScaleClick
+                model.initialSize
+                { width = model.fixedWidth
+                , height = model.fixedHeight
+                }
+                |> Ports.track taco
+                |> R2.withModel model
+                |> R3.withReply (scaleReply model)
+
+
+scaleReply : Model -> Reply
+scaleReply model =
+    ScaleTo model.fixedWidth model.fixedHeight
 
 
 updateField : Field -> String -> Model -> Model

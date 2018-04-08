@@ -19,6 +19,7 @@ import Html exposing (Html, a, div, p)
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick)
+import Ports
 import Reply
     exposing
         ( Reply
@@ -29,6 +30,15 @@ import Reply
         )
 import Return2 as R2
 import Return3 as R3 exposing (Return)
+import Tracking
+    exposing
+        ( Event
+            ( MenuSaveCreateResponse
+            , MenuSaveOpenHomeClick
+            , MenuSaveTryAgainClick
+            , MenuSaveUpdateResponse
+            )
+        )
 import Util
 
 
@@ -65,43 +75,42 @@ init =
 
 
 update : Taco -> Msg -> Model -> Return Model Msg Reply
-update { config } msg model =
+update taco msg model =
     case msg of
         DrawingUpdateCompleted (Ok "200") ->
-            Util.delay 1000 (OneSecondExpired Nothing)
+            [ Util.delay 1000 (OneSecondExpired Nothing)
+            , Ports.track taco (MenuSaveUpdateResponse Nothing)
+            ]
+                |> Cmd.batch
                 |> R2.withModel Success
                 |> R3.withNoReply
 
         DrawingUpdateCompleted (Ok code) ->
-            code
-                |> Other
-                |> Failed
-                |> R3.withNothing
+            Ports.track taco (MenuSaveUpdateResponse (Just code))
+                |> R2.withModel (Failed <| Other code)
+                |> R3.withNoReply
 
         DrawingUpdateCompleted (Err err) ->
-            err
-                |> Other
-                |> Failed
-                |> R3.withNothing
+            Ports.track taco (MenuSaveUpdateResponse (Just err))
+                |> R2.withModel (Failed <| Other err)
+                |> R3.withNoReply
 
         DrawingCreateCompleted (Ok drawing) ->
-            drawing
+            [ drawing
                 |> Just
                 |> OneSecondExpired
                 |> Util.delay 1000
+            , Ports.track taco (MenuSaveCreateResponse Nothing)
+            ]
+                |> Cmd.batch
                 |> R2.withModel Success
                 |> R3.withNoReply
 
-        DrawingCreateCompleted (Err "Error: Request failed with status code 403") ->
-            ExceededMemoryLimit
-                |> Failed
-                |> R3.withNothing
-
         DrawingCreateCompleted (Err err) ->
-            err
-                |> Other
-                |> Failed
-                |> R3.withNothing
+            MenuSaveCreateResponse (Just err)
+                |> Ports.track taco
+                |> R2.withModel (Failed <| toError err)
+                |> R3.withNoReply
 
         OneSecondExpired Nothing ->
             CloseMenu
@@ -112,14 +121,28 @@ update { config } msg model =
                 |> R3.withTuple ( model, Cmd.none )
 
         OpenHomeClicked ->
-            Home
-                |> openWindow config.mountPath
+            [ openWindow taco.config.mountPath Home
+            , Ports.track taco MenuSaveOpenHomeClick
+            ]
+                |> Cmd.batch
                 |> R2.withModel model
                 |> R3.withNoReply
 
         TryAgainClicked ->
-            TrySaving
-                |> R3.withTuple ( model, Cmd.none )
+            MenuSaveTryAgainClick
+                |> Ports.track taco
+                |> R2.withModel model
+                |> R3.withReply TrySaving
+
+
+toError : String -> Error
+toError err =
+    case err of
+        "Error: Request failed with status code 403" ->
+            ExceededMemoryLimit
+
+        _ ->
+            Other err
 
 
 

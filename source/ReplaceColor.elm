@@ -5,13 +5,27 @@ import Color exposing (Color)
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
+import Data.Taco exposing (Taco)
 import Html exposing (Html, a, div, input, p, text)
 import Html.Attributes exposing (spellcheck, value)
 import Html.CssHelpers
 import Html.Custom exposing (indent)
 import Html.Events exposing (onClick, onInput)
-import Reply as R exposing (Reply(Replace))
-import Util
+import Ports
+import Reply exposing (Reply(Replace))
+import Return2 as R2
+import Return3 as R3 exposing (Return)
+import Tracking
+    exposing
+        ( Event
+            ( MenuReplaceColorColorClick
+            , MenuReplaceColorReplaceClick
+            )
+        )
+import Util exposing (toHexColor)
+
+
+-- TYPES --
 
 
 type Msg
@@ -40,12 +54,11 @@ type alias Model =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Maybe Reply )
-update msg model =
+update : Taco -> Msg -> Model -> Return Model Msg Reply
+update taco msg model =
     case msg of
         ReplaceButtonClicked ->
-            Replace model.target model.replacement
-                |> R.withModel model
+            replace taco model
 
         SquareClicked Replacement index color ->
             { model
@@ -56,7 +69,8 @@ update msg model =
                         |> Util.toHexColor
                         |> String.dropLeft 1
             }
-                |> R.withNoReply
+                |> R2.withCmd (trackColorClick taco)
+                |> R3.withNoReply
 
         SquareClicked Target index color ->
             { model
@@ -67,7 +81,8 @@ update msg model =
                         |> Util.toHexColor
                         |> String.dropLeft 1
             }
-                |> R.withNoReply
+                |> R2.withCmd (trackColorClick taco)
+                |> R3.withNoReply
 
         UpdateHexField Replacement str ->
             { model
@@ -75,7 +90,7 @@ update msg model =
                 , replacementPaletteIndex = Nothing
             }
                 |> cohereReplacementColor
-                |> R.withNoReply
+                |> R3.withNothing
 
         UpdateHexField Target str ->
             { model
@@ -83,7 +98,27 @@ update msg model =
                 , targetPaletteIndex = Nothing
             }
                 |> cohereTargetColor
-                |> R.withNoReply
+                |> R3.withNothing
+
+
+trackColorClick : Taco -> Cmd Msg
+trackColorClick taco =
+    Ports.track taco MenuReplaceColorColorClick
+
+
+replace : Taco -> Model -> Return Model Msg Reply
+replace taco model =
+    MenuReplaceColorReplaceClick
+        (toHexColor model.target)
+        (toHexColor model.replacement)
+        |> Ports.track taco
+        |> R2.withModel model
+        |> R3.withReply (replaceReply model)
+
+
+replaceReply : Model -> Reply
+replaceReply model =
+    Replace model.target model.replacement
 
 
 cohereReplacementColor : Model -> Model

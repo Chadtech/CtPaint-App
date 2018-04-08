@@ -11,6 +11,7 @@ module Resize
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
+import Data.Taco exposing (Taco)
 import Html
     exposing
         ( Html
@@ -27,7 +28,12 @@ import Html.Events
         , onInput
         , onSubmit
         )
+import Mouse
+import Ports
 import Reply as R exposing (Reply(ResizeTo))
+import Return2 as R2
+import Return3 as R3 exposing (Return)
+import Tracking exposing (Event(MenuResizeClick))
 import Util exposing (valueIfFocus)
 import Window exposing (Size)
 
@@ -52,6 +58,18 @@ type alias Model =
     , sourceHeight : Int
     , focus : Maybe Field
     }
+
+
+getSourceSize : Model -> Size
+getSourceSize model =
+    { width = model.sourceWidth
+    , height = model.sourceHeight
+    }
+
+
+toPosition : Model -> Mouse.Position
+toPosition model =
+    { x = model.left, y = model.top }
 
 
 type Msg
@@ -274,52 +292,62 @@ field =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Maybe Reply )
-update msg model =
+update : Taco -> Msg -> Model -> Return Model Msg Reply
+update taco msg model =
     case msg of
         FieldUpdated Left str ->
             { model | leftField = str }
                 |> cohere Left str
-                |> R.withNoReply
+                |> R3.withNothing
 
         FieldUpdated Right str ->
             { model | rightField = str }
                 |> cohere Right str
-                |> R.withNoReply
+                |> R3.withNothing
 
         FieldUpdated Top str ->
             { model | topField = str }
                 |> cohere Top str
-                |> R.withNoReply
+                |> R3.withNothing
 
         FieldUpdated Bottom str ->
             { model | bottomField = str }
                 |> cohere Bottom str
-                |> R.withNoReply
+                |> R3.withNothing
 
         FieldUpdated Width str ->
             { model | widthField = str }
                 |> cohere Width str
-                |> R.withNoReply
+                |> R3.withNothing
 
         FieldUpdated Height str ->
             { model | heightField = str }
                 |> cohere Height str
-                |> R.withNoReply
+                |> R3.withNothing
 
         FieldFocused field ->
             { model | focus = Just field }
-                |> R.withNoReply
+                |> R3.withNothing
 
         ResizeClicked ->
-            ResizeTo
-                { x = model.left
-                , y = model.top
-                }
-                { width = model.width
-                , height = model.height
-                }
-                |> R.withModel model
+            let
+                newSize =
+                    { width = model.width
+                    , height = model.height
+                    }
+            in
+            MenuResizeClick
+                (getSourceSize model)
+                newSize
+                |> Ports.track taco
+                |> R2.withModel model
+                |> R3.withReply
+                    (resizeReply model newSize)
+
+
+resizeReply : Model -> Size -> Reply
+resizeReply model newSize =
+    ResizeTo (toPosition model) newSize
 
 
 cohere : Field -> String -> Model -> Model

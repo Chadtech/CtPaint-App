@@ -57,6 +57,15 @@ type Event
     | PaletteSquareClick Int Color Bool
     | PaletteSquareRightClick Int Color
     | PaletteAddSquareClick
+    | MenuReplaceColorReplaceClick Color Color
+    | MenuReplaceColorColorClick
+    | MenuResizeClick Size Size
+    | MenuSaveTryAgainClick
+    | MenuSaveOpenHomeClick
+    | MenuSaveUpdateResponse (Maybe Error)
+    | MenuSaveCreateResponse (Maybe Error)
+    | MenuScaleLockClick
+    | MenuScaleClick Size Size
     | KeyboardEvent String String
     | KeyboardEventFail Error
 
@@ -194,6 +203,33 @@ toNameSpaces event =
         PaletteAddSquareClick ->
             "palette add square click"
 
+        MenuReplaceColorReplaceClick _ _ ->
+            "menu replace color replace click"
+
+        MenuReplaceColorColorClick ->
+            "menu replace color click"
+
+        MenuResizeClick _ _ ->
+            "menu resize click"
+
+        MenuSaveTryAgainClick ->
+            "menu save try-again click"
+
+        MenuSaveOpenHomeClick ->
+            "menu save open-home click"
+
+        MenuSaveUpdateResponse _ ->
+            "menu save update response"
+
+        MenuSaveCreateResponse _ ->
+            "menu save create response"
+
+        MenuScaleLockClick ->
+            "menu scale lock click"
+
+        MenuScaleClick _ _ ->
+            "menu scale click"
+
         KeyboardEvent _ _ ->
             "keyboard event"
 
@@ -306,6 +342,39 @@ eventProperties event =
 
         PaletteAddSquareClick ->
             []
+
+        MenuReplaceColorReplaceClick target replacement ->
+            [ def "target" <| Encode.string target
+            , def "replacement" <| Encode.string replacement
+            ]
+
+        MenuReplaceColorColorClick ->
+            []
+
+        MenuResizeClick oldSize newSize ->
+            [ def "old-size" <| Util.encodeSize oldSize
+            , def "new-size" <| Util.encodeSize newSize
+            ]
+
+        MenuSaveTryAgainClick ->
+            []
+
+        MenuSaveOpenHomeClick ->
+            []
+
+        MenuSaveUpdateResponse maybeError ->
+            [ maybeErrorField maybeError ]
+
+        MenuSaveCreateResponse maybeError ->
+            [ maybeErrorField maybeError ]
+
+        MenuScaleLockClick ->
+            []
+
+        MenuScaleClick oldSize newSize ->
+            [ def "old-size" <| Util.encodeSize oldSize
+            , def "new-size" <| Util.encodeSize newSize
+            ]
 
         KeyboardEvent keyCmd keyEvent ->
             [ def "cmd" <| Encode.string keyCmd

@@ -158,8 +158,8 @@ updateContent taco msg model =
             case model.content of
                 Scale subModel ->
                     subModel
-                        |> Scale.update subMsg
-                        |> noCmd model Menu.Scale
+                        |> Scale.update taco subMsg
+                        |> mapReturn model Menu.Scale ScaleMsg
 
                 _ ->
                     model |> R3.withNothing
@@ -188,8 +188,8 @@ updateContent taco msg model =
             case model.content of
                 ReplaceColor subModel ->
                     subModel
-                        |> ReplaceColor.update subMsg
-                        |> noCmd model Menu.ReplaceColor
+                        |> ReplaceColor.update taco subMsg
+                        |> mapReturn model Menu.ReplaceColor ReplaceColorMsg
 
                 _ ->
                     model |> R3.withNothing
@@ -218,8 +218,8 @@ updateContent taco msg model =
             case model.content of
                 Resize subModel ->
                     subModel
-                        |> Resize.update subMsg
-                        |> noCmd model Menu.Resize
+                        |> Resize.update taco subMsg
+                        |> mapReturn model Menu.Resize ResizeMsg
 
                 _ ->
                     model |> R3.withNothing
