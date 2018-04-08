@@ -9,12 +9,17 @@ module Text
 
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
+import Data.Taco exposing (Taco)
 import Html exposing (Html, a, p, textarea)
 import Html.Attributes exposing (spellcheck, value)
 import Html.CssHelpers
 import Html.Custom exposing (indent)
 import Html.Events exposing (onClick, onInput)
-import Reply as R exposing (Reply(AddText))
+import Ports
+import Reply exposing (Reply(AddText))
+import Return2 as R2
+import Return3 as R3 exposing (Return)
+import Tracking exposing (Event(MenuTextClick))
 
 
 -- TYPES --
@@ -38,16 +43,18 @@ init =
 -- UPDATE --
 
 
-update : Msg -> String -> ( String, Maybe Reply )
-update msg model =
+update : Taco -> Msg -> String -> Return String Msg Reply
+update taco msg model =
     case msg of
         FieldUpdated str ->
             str
-                |> R.withNoReply
+                |> R3.withNothing
 
         AddTextClicked ->
-            model
-                |> R.withReply (AddText model)
+            MenuTextClick (String.length model)
+                |> Ports.track taco
+                |> R2.withModel model
+                |> R3.withReply (AddText model)
 
 
 

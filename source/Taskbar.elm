@@ -6,7 +6,8 @@ import Css.Elements
 import Css.Namespace exposing (namespace)
 import Data.Keys as Key exposing (Cmd(..), QuickKey)
 import Data.Minimap exposing (State(..))
-import Data.Taskbar exposing (Dropdown(..))
+import Data.Taco exposing (Taco)
+import Data.Taskbar as Taskbar exposing (Dropdown(..))
 import Data.Tool as Tool exposing (Tool)
 import Data.User as User exposing (User)
 import Data.Window as Window exposing (Window(..))
@@ -34,6 +35,26 @@ import Ports
             )
         )
 import Return2 as R2
+import Tool
+import Tracking
+    exposing
+        ( Event
+            ( TaskbarAboutClick
+            , TaskbarDrawingClick
+            , TaskbarDropdownClick
+            , TaskbarDropdownHoverOnto
+            , TaskbarDropdownOutClick
+            , TaskbarKeyCmdClick
+            , TaskbarLoginClick
+            , TaskbarLogoutClick
+            , TaskbarOpenImageLinkClick
+            , TaskbarReportBugClick
+            , TaskbarToolClick
+            , TaskbarUploadClick
+            , TaskbarUserClick
+            , TaskbarWindowClick
+            )
+        )
 import Util exposing (toolbarWidth)
 
 
@@ -65,30 +86,23 @@ update : Msg -> Model -> ( Model, Platform.Cmd msg )
 update msg model =
     case msg of
         DropdownClickedOut ->
-            { model
-                | taskbarDropped = Nothing
-            }
-                |> R2.withNoCmd
+            TaskbarDropdownOutClick
+                |> Ports.track model.taco
+                |> R2.withModel
+                    { model
+                        | taskbarDropped = Nothing
+                    }
 
         DropdownClicked dropdown ->
-            { model
-                | taskbarDropped = Just dropdown
-            }
-                |> R2.withNoCmd
+            TaskbarDropdownClick (Taskbar.toString dropdown)
+                |> Ports.track model.taco
+                |> R2.withModel
+                    { model
+                        | taskbarDropped = Just dropdown
+                    }
 
         HoveredOnto dropdown ->
-            case model.taskbarDropped of
-                Nothing ->
-                    model |> R2.withNoCmd
-
-                Just currentDropdown ->
-                    if currentDropdown == dropdown then
-                        model |> R2.withNoCmd
-                    else
-                        { model
-                            | taskbarDropped = Just dropdown
-                        }
-                            |> R2.withNoCmd
+            hoverOnto dropdown model
 
         LoginClicked ->
             { model
@@ -100,6 +114,8 @@ update msg model =
                 |> R2.withCmds
                     [ Ports.stealFocus
                     , Ports.send Ports.Logout
+                    , TaskbarLoginClick
+                        |> Ports.track model.taco
                     ]
 
         UserClicked ->
@@ -110,7 +126,8 @@ update msg model =
                             User.toggleOptionsDropped user
                                 |> User.LoggedIn
                     }
-                        |> R2.withNoCmd
+                        |> R2.withCmd
+                            (Ports.track model.taco TaskbarUserClick)
 
                 _ ->
                     model |> R2.withNoCmd
@@ -122,7 +139,8 @@ update msg model =
                         |> Menu.initLogout
                         |> Just
             }
-                |> R2.withNoCmd
+                |> R2.withCmd
+                    (Ports.track model.taco TaskbarLogoutClick)
 
         AboutClicked ->
             { model
@@ -132,7 +150,8 @@ update msg model =
                             model.taco.config.buildNumber
                         |> Just
             }
-                |> R2.withNoCmd
+                |> R2.withCmd
+                    (Ports.track model.taco TaskbarAboutClick)
 
         ReportBugClicked ->
             { model
@@ -142,25 +161,45 @@ update msg model =
                             (User.isLoggedIn model.user)
                         |> Just
             }
-                |> R2.withCmd Ports.stealFocus
+                |> R2.withCmds
+                    [ Ports.stealFocus
+                    , TaskbarReportBugClick
+                        |> Ports.track model.taco
+                    ]
 
         KeyCmdClicked keyCmd ->
             Keys.exec keyCmd model
+                |> R2.addCmd
+                    (trackKeyCmdClick model.taco keyCmd)
 
         NewWindowClicked window ->
-            window
+            [ window
                 |> Window.toUrl model.taco.config.mountPath
                 |> Ports.OpenNewWindow
                 |> Ports.send
+            , window
+                |> Window.toString
+                |> TaskbarWindowClick
+                |> Ports.track model.taco
+            ]
+                |> Cmd.batch
                 |> R2.withModel model
 
         UploadClicked ->
-            model
-                |> R2.withCmd (Ports.send OpenUpFileUpload)
+            [ Ports.send OpenUpFileUpload
+            , TaskbarUploadClick
+                |> Ports.track model.taco
+            ]
+                |> Cmd.batch
+                |> R2.withModel model
 
         ToolClicked tool ->
-            { model | tool = tool }
-                |> R2.withNoCmd
+            tool
+                |> Tool.name
+                |> TaskbarToolClick
+                |> Ports.track model.taco
+                |> R2.withModel
+                    { model | tool = tool }
 
         DrawingClicked ->
             { model
@@ -170,20 +209,65 @@ update msg model =
                         model.windowSize
                         |> Just
             }
-                |> R2.withCmd Ports.stealFocus
+                |> R2.withCmds
+                    [ Ports.stealFocus
+                    , TaskbarDrawingClick
+                        |> Ports.track model.taco
+                    ]
 
         OpenImageLinkClicked ->
             case User.getPublicId model.user of
                 Just publicId ->
-                    publicId
+                    [ publicId
                         |> Window.Drawing
                         |> Window.toUrl model.taco.config.mountPath
                         |> OpenNewWindow
                         |> Ports.send
+                    , TaskbarOpenImageLinkClick
+                        |> Ports.track model.taco
+                    ]
+                        |> Cmd.batch
                         |> R2.withModel model
 
                 _ ->
                     model |> R2.withNoCmd
+
+
+trackKeyCmdClick : Taco -> Key.Cmd -> Platform.Cmd msg
+trackKeyCmdClick taco keyCmd =
+    keyCmd
+        |> toString
+        |> TaskbarKeyCmdClick
+        |> Ports.track taco
+
+
+hoverOnto : Dropdown -> Model -> ( Model, Platform.Cmd msg )
+hoverOnto dropdown model =
+    case model.taskbarDropped of
+        Nothing ->
+            model
+                |> R2.withNoCmd
+
+        Just currentDropdown ->
+            if currentDropdown == dropdown then
+                dropdown
+                    |> trackHoverOnto model.taco
+                    |> R2.withModel model
+            else
+                dropdown
+                    |> trackHoverOnto model.taco
+                    |> R2.withModel
+                        { model
+                            | taskbarDropped = Just dropdown
+                        }
+
+
+trackHoverOnto : Taco -> Dropdown -> Platform.Cmd msg
+trackHoverOnto taco dropdown =
+    dropdown
+        |> Taskbar.toString
+        |> TaskbarDropdownHoverOnto
+        |> Ports.track taco
 
 
 
@@ -275,8 +359,8 @@ css =
         , giveDropdownWidth (Dropdown Edit) 220
         , giveDropdownWidth (Dropdown File) 280
         , giveDropdownWidth (Dropdown Tools) 300
-        , giveDropdownWidth (Dropdown Data.Taskbar.Colors) 390
-        , giveDropdownWidth (Dropdown Data.Taskbar.User) 150
+        , giveDropdownWidth (Dropdown Taskbar.Colors) 390
+        , giveDropdownWidth (Dropdown Taskbar.User) 150
         , hover [ color Ct.point0 ]
         ]
     , Css.class Divider
@@ -460,7 +544,7 @@ userDropdown user =
         , disabled = False
         }
     ]
-        |> dropdownView Data.Taskbar.User
+        |> dropdownView Taskbar.User
 
 
 loginButton : Html Msg

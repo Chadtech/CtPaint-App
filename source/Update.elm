@@ -13,6 +13,7 @@ import Keys
 import Menu
 import Minimap
 import Model exposing (Model)
+import Mouse exposing (Position)
 import Msg exposing (Msg(..))
 import Palette
 import Ports
@@ -23,6 +24,13 @@ import Taskbar
 import Tool
 import Toolbar
 import Tracking
+    exposing
+        ( Event
+            ( Logout
+            , MsgDecodeFail
+            , WindowSize
+            )
+        )
 import Util
 
 
@@ -35,7 +43,7 @@ update msg model =
 
         ClientMouseUp position ->
             Tool.handleClientMouseUp position model
-                |> R2.withNoCmd
+                |> R2.withCmd (trackClientMouseUp position model)
 
         ToolbarMsg subMsg ->
             Toolbar.update subMsg model
@@ -61,7 +69,11 @@ update msg model =
                     model |> R2.withNoCmd
 
         WindowSizeReceived size ->
-            { model | windowSize = size } |> R2.withNoCmd
+            size
+                |> WindowSize
+                |> Ports.track model.taco
+                |> R2.withModel
+                    { model | windowSize = size }
 
         KeyboardEvent (Ok event) ->
             let
@@ -112,11 +124,13 @@ update msg model =
 
         ScreenMouseUp mouseEvent ->
             Tool.handleScreenMouseUp mouseEvent model
-                |> R2.withNoCmd
+                |> R2.withCmd
+                    (trackScreenMouseUp mouseEvent.clientPos model)
 
         ScreenMouseDown mouseEvent ->
             Tool.handleScreenMouseDown mouseEvent model
-                |> R2.withNoCmd
+                |> R2.withCmd
+                    (trackScreenMouseDown mouseEvent.clientPos model)
 
         ScreenMouseMove { targetPos, clientPos } ->
             let
@@ -143,14 +157,24 @@ update msg model =
                 |> R2.withNoCmd
 
         LogoutSucceeded ->
-            { model | user = User.LoggedOut }
-                |> R2.withNoCmd
+            Logout Nothing
+                |> Ports.track model.taco
+                |> R2.withModel
+                    { model | user = User.LoggedOut }
 
         LogoutFailed err ->
-            model |> R2.withNoCmd
+            err
+                |> Just
+                |> Logout
+                |> Ports.track model.taco
+                |> R2.withModel model
 
-        MsgDecodeFailed _ ->
-            model |> R2.withNoCmd
+        MsgDecodeFailed err ->
+            err
+                |> toString
+                |> MsgDecodeFail
+                |> Ports.track model.taco
+                |> R2.withModel model
 
         InitFromUrl (Ok canvas) ->
             { model
@@ -196,6 +220,27 @@ update msg model =
 
         DrawingDeblobed drawing (Err _) ->
             model |> R2.withNoCmd
+
+
+trackScreenMouseDown : Position -> Model -> Cmd Msg
+trackScreenMouseDown position model =
+    position
+        |> Tracking.ScreenMouseDown
+        |> Ports.track model.taco
+
+
+trackScreenMouseUp : Position -> Model -> Cmd Msg
+trackScreenMouseUp position model =
+    position
+        |> Tracking.ScreenMouseUp
+        |> Ports.track model.taco
+
+
+trackClientMouseUp : Position -> Model -> Cmd Msg
+trackClientMouseUp position model =
+    position
+        |> Tracking.ClientMouseUp
+        |> Ports.track model.taco
 
 
 setColorModel : Model -> Color.Model -> Model

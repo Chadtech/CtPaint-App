@@ -19,6 +19,15 @@ import Model exposing (Model)
 import Ports
 import Return2 as R2
 import Tool
+import Tracking
+    exposing
+        ( Event
+            ( ToolbarDecreaseEraserClick
+            , ToolbarIncreaseEraserClick
+            , ToolbarOtherButtonClick
+            , ToolbarToolButtonClick
+            )
+        )
 
 
 -- TYPES --
@@ -46,10 +55,42 @@ update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
     case msg of
         ToolButtonClicked tool ->
-            { model | tool = tool }
+            tool
+                |> Tool.name
+                |> ToolbarToolButtonClick
+                |> Ports.track model.taco
+                |> R2.withModel
+                    { model | tool = tool }
+
+        OtherButtonClicked otherThing ->
+            handleOtherButtonClick otherThing model
+                |> R2.addCmd
+                    (trackOtherButtonClick otherThing model)
+
+        IncreaseEraserClicked ->
+            model
+                |> increaseEraser
                 |> R2.withNoCmd
 
-        OtherButtonClicked Text ->
+        DecreaseEraserClicked ->
+            model
+                |> decreaseEraser
+                |> R2.withNoCmd
+
+
+trackOtherButtonClick : OtherThing -> Model -> Cmd msg
+trackOtherButtonClick otherThing model =
+    otherThing
+        |> toString
+        |> String.toLower
+        |> ToolbarOtherButtonClick
+        |> Ports.track model.taco
+
+
+handleOtherButtonClick : OtherThing -> Model -> ( Model, Cmd msg )
+handleOtherButtonClick otherThing model =
+    case otherThing of
+        Text ->
             { model
                 | menu =
                     model.windowSize
@@ -58,7 +99,7 @@ update msg model =
             }
                 |> R2.withCmd Ports.stealFocus
 
-        OtherButtonClicked Invert ->
+        Invert ->
             case model.selection of
                 Just selection ->
                     { model
@@ -77,10 +118,10 @@ update msg model =
                     }
                         |> R2.withNoCmd
 
-        OtherButtonClicked Replace ->
+        Replace ->
             Helpers.Menu.initReplaceColor model
 
-        OtherButtonClicked Transparency ->
+        Transparency ->
             case model.selection of
                 Just selection ->
                     { model
@@ -95,16 +136,6 @@ update msg model =
                 Nothing ->
                     model
                         |> R2.withNoCmd
-
-        IncreaseEraserClicked ->
-            model
-                |> increaseEraser
-                |> R2.withNoCmd
-
-        DecreaseEraserClicked ->
-            model
-                |> decreaseEraser
-                |> R2.withNoCmd
 
 
 increaseEraser : Model -> Model

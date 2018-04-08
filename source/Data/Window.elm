@@ -1,6 +1,7 @@
 module Data.Window
     exposing
         ( Window(..)
+        , toString
         , toUrl
         )
 
@@ -39,3 +40,15 @@ toUrl mountPath window =
             , Id.toString id
             ]
                 |> String.join "/"
+
+
+toString : Window -> String
+toString window =
+    case window of
+        Drawing _ ->
+            "drawing"
+
+        _ ->
+            window
+                |> Basics.toString
+                |> String.toLower

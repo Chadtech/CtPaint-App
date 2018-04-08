@@ -66,8 +66,34 @@ type Event
     | MenuSaveCreateResponse (Maybe Error)
     | MenuScaleLockClick
     | MenuScaleClick Size Size
+    | TaskbarDropdownOutClick
+    | TaskbarDropdownClick String
+    | TaskbarDropdownHoverOnto String
+    | TaskbarLoginClick
+    | TaskbarUserClick
+    | TaskbarLogoutClick
+    | TaskbarAboutClick
+    | TaskbarReportBugClick
+    | TaskbarKeyCmdClick String
+    | TaskbarWindowClick String
+    | TaskbarUploadClick
+    | TaskbarToolClick String
+    | TaskbarDrawingClick
+    | TaskbarOpenImageLinkClick
+    | MenuTextClick Int
+    | ToolbarToolButtonClick String
+    | ToolbarOtherButtonClick String
+    | ToolbarIncreaseEraserClick Int
+    | ToolbarDecreaseEraserClick Int
+    | ClientMouseUp Position
+    | ScreenMouseUp Position
+    | ScreenMouseDown Position
+    | WindowSize Size
     | KeyboardEvent String String
     | KeyboardEventFail Error
+    | Logout (Maybe Error)
+    | MsgDecodeFail Error
+    | InitFromUrl (Maybe Error)
 
 
 type alias Color =
@@ -230,11 +256,89 @@ toNameSpaces event =
         MenuScaleClick _ _ ->
             "menu scale click"
 
+        TaskbarDropdownOutClick ->
+            "taskbar dropdown out click"
+
+        TaskbarDropdownClick _ ->
+            "taskbar dropdown click"
+
+        TaskbarDropdownHoverOnto _ ->
+            "taskbar dropdown hover-onto"
+
+        TaskbarLoginClick ->
+            "taskbar login click"
+
+        TaskbarUserClick ->
+            "taskbar user click"
+
+        TaskbarLogoutClick ->
+            "taskbar logout click"
+
+        TaskbarAboutClick ->
+            "taskbar about click"
+
+        TaskbarReportBugClick ->
+            "taskbar report-bug click"
+
+        TaskbarKeyCmdClick _ ->
+            "taskbar key-cmd click"
+
+        TaskbarWindowClick _ ->
+            "taskbar window click"
+
+        TaskbarUploadClick ->
+            "taskbar upload click"
+
+        TaskbarToolClick _ ->
+            "taskbar tool click"
+
+        TaskbarDrawingClick ->
+            "taskbar drawing click"
+
+        TaskbarOpenImageLinkClick ->
+            "task bar open-image-link click"
+
+        MenuTextClick _ ->
+            "menu text click"
+
+        ToolbarToolButtonClick _ ->
+            "toolbar tool button click"
+
+        ToolbarOtherButtonClick _ ->
+            "toolbar other button click"
+
+        ToolbarIncreaseEraserClick _ ->
+            "toolbar increase eraser click"
+
+        ToolbarDecreaseEraserClick _ ->
+            "toolbar decrease eraser click"
+
+        ClientMouseUp _ ->
+            "client mouse up"
+
+        ScreenMouseUp _ ->
+            "screen mouse up"
+
+        ScreenMouseDown _ ->
+            "screen mouse down"
+
+        WindowSize _ ->
+            "window size"
+
         KeyboardEvent _ _ ->
             "keyboard event"
 
         KeyboardEventFail _ ->
             "keyboard event fail"
+
+        Logout _ ->
+            "logout"
+
+        MsgDecodeFail _ ->
+            "msg decode fail"
+
+        InitFromUrl _ ->
+            "init from url"
 
 
 encodeProperties : Payload -> Value
@@ -376,13 +480,106 @@ eventProperties event =
             , def "new-size" <| Util.encodeSize newSize
             ]
 
+        TaskbarDropdownOutClick ->
+            []
+
+        TaskbarDropdownClick dropdown ->
+            [ dropdownField dropdown ]
+
+        TaskbarDropdownHoverOnto dropdown ->
+            [ dropdownField dropdown ]
+
+        TaskbarLoginClick ->
+            []
+
+        TaskbarUserClick ->
+            []
+
+        TaskbarLogoutClick ->
+            []
+
+        TaskbarAboutClick ->
+            []
+
+        TaskbarReportBugClick ->
+            []
+
+        TaskbarKeyCmdClick keyCmd ->
+            [ cmdField keyCmd ]
+
+        TaskbarWindowClick window ->
+            [ def "window" <| Encode.string window ]
+
+        TaskbarUploadClick ->
+            []
+
+        TaskbarToolClick tool ->
+            [ toolField tool ]
+
+        TaskbarDrawingClick ->
+            []
+
+        TaskbarOpenImageLinkClick ->
+            []
+
+        MenuTextClick length ->
+            [ def "text-length" <| Encode.int length ]
+
+        ToolbarToolButtonClick tool ->
+            [ toolField tool ]
+
+        ToolbarOtherButtonClick otherButton ->
+            [ def "button" <| Encode.string otherButton ]
+
+        ToolbarIncreaseEraserClick size ->
+            [ def "eraser-size" <| Encode.int size ]
+
+        ToolbarDecreaseEraserClick size ->
+            [ def "eraser-size" <| Encode.int size ]
+
+        ClientMouseUp position ->
+            [ positionField position ]
+
+        ScreenMouseUp position ->
+            [ positionField position ]
+
+        ScreenMouseDown position ->
+            [ positionField position ]
+
+        WindowSize size ->
+            [ sizeField size ]
+
         KeyboardEvent keyCmd keyEvent ->
-            [ def "cmd" <| Encode.string keyCmd
+            [ cmdField keyCmd
             , def "event" <| Encode.string keyEvent
             ]
 
         KeyboardEventFail err ->
             [ errorField err ]
+
+        Logout maybeError ->
+            [ maybeErrorField maybeError ]
+
+        MsgDecodeFail error ->
+            [ errorField error ]
+
+        InitFromUrl maybeError ->
+            [ maybeErrorField maybeError ]
+
+
+toolField : String -> ( String, Value )
+toolField =
+    def "tool" << Encode.string
+
+
+cmdField : String -> ( String, Value )
+cmdField =
+    def "cmd" << Encode.string
+
+
+dropdownField : String -> ( String, Value )
+dropdownField =
+    def "dropdown" << Encode.string
 
 
 shiftField : Bool -> ( String, Value )

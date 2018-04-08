@@ -168,8 +168,8 @@ updateContent taco msg model =
             case model.content of
                 Text subModel ->
                     subModel
-                        |> Text.update subMsg
-                        |> noCmd model Menu.Text
+                        |> Text.update taco subMsg
+                        |> mapReturn model Menu.Text TextMsg
 
                 _ ->
                     model |> R3.withNothing
