@@ -54,8 +54,15 @@ type Event
     | MenuNewStartClick Size BackgroundColor
     | MenuNewStartEnterPress Size BackgroundColor
     | MenuNewColorClick BackgroundColor
+    | PaletteSquareClick Int Color Bool
+    | PaletteSquareRightClick Int Color
+    | PaletteAddSquareClick
     | KeyboardEvent String String
     | KeyboardEventFail Error
+
+
+type alias Color =
+    String
 
 
 type alias BackgroundColor =
@@ -98,89 +105,100 @@ encodeName =
 
 toName : Event -> String
 toName =
-    toNamePieces >> String.join "_"
+    toNameSpaces
+        >> String.split " "
+        >> String.join "_"
 
 
-toNamePieces : Event -> List String
-toNamePieces event =
+toNameSpaces : Event -> String
+toNameSpaces event =
     case event of
         AppInit _ ->
-            [ "app", "init" ]
+            "app init"
 
         AppInitFail _ ->
-            [ "app", "init", "fail" ]
+            "app init fail"
 
         AllowanceExceed ->
-            [ "allowance-exceed" ]
+            "allowance-exceed"
 
         ReportBug _ ->
-            [ "report", "bug" ]
+            "report bug"
 
         MenuDownloadClick ->
-            [ "menu", "download", "click" ]
+            "menu download click"
 
         MenuDrawingSaveClick ->
-            [ "menu", "drawing", "save", "click" ]
+            "menu drawing save click"
 
         MenuImportClick ->
-            [ "menu", "import", "click" ]
+            "menu import click"
 
         MenuImportEnterPress ->
-            [ "menu", "import", "enter", "press" ]
+            "menu import enter press"
 
         MenuImportTryAgainClick ->
-            [ "menu", "import", "try-again", "click" ]
+            "menu import try-again click"
 
         MenuImportCanvasLoad _ ->
-            [ "menu", "import", "canvas", "load" ]
+            "menu import canvas load"
 
         MenuLoginForgotPasswordClick ->
-            [ "menu", "login", "forgot-password", "click" ]
+            "menu login forgot-password click"
 
         MenuLoginClick ->
-            [ "menu", "login", "click" ]
+            "menu login click"
 
         MenuLoginEnterPress ->
-            [ "menu", "login", "enter", "press" ]
+            "menu login enter press"
 
         MenuLoginResponse _ ->
-            [ "menu", "login", "response" ]
+            "menu login response"
 
         MenuXMouseUp _ ->
-            [ "menu", "x", "mouse", "up" ]
+            "menu x mouse up"
 
         MenuHeaderMouseDown _ _ ->
-            [ "menu", "header", "mouse", "down" ]
+            "menu header mouse down"
 
         MenuHeaderMouseUp _ _ ->
-            [ "menu", "header", "mouse", "up" ]
+            "menu header mouse up"
 
         MinimapXMouseUp ->
-            [ "minimap", "x", "mouse", "up" ]
+            "minimap x mouse up"
 
         MinimapZoomInClick ->
-            [ "minimap", "zoom-in", "click" ]
+            "minimap zoom-in click"
 
         MinimapZoomOutClick ->
-            [ "minimap", "zoom-out", "click" ]
+            "minimap zoom-out click"
 
         MinimapZeroClick ->
-            [ "minimap", "zero", "click" ]
+            "minimap zero click"
 
         MenuNewStartClick _ _ ->
-            [ "menu", "new", "start", "click" ]
+            "menu new start click"
 
         MenuNewStartEnterPress _ _ ->
-            [ "menu", "new", "start", "enter", "press" ]
+            "menu new start enter press"
 
         MenuNewColorClick _ ->
-            [ "menu", "new", "color", "click" ]
+            "menu new color click"
+
+        PaletteSquareClick _ _ _ ->
+            "palette square click"
+
+        PaletteSquareRightClick _ _ ->
+            "palette square right click"
+
+        PaletteAddSquareClick ->
+            "palette add square click"
 
         KeyboardEvent _ _ ->
-            [ "keyboard", "event" ]
+            "keyboard event"
 
         KeyboardEventFail _ ->
-            [ "keyboard", "event", "fail" ]
+            "keyboard event fail"
 
 
 encodeProperties : Payload -> Value
@@ -275,6 +293,20 @@ eventProperties event =
         MenuNewColorClick backgroundColor ->
             [ backgroundColorField backgroundColor ]
 
+        PaletteSquareClick index color shift ->
+            [ colorField color
+            , indexField index
+            , shiftField shift
+            ]
+
+        PaletteSquareRightClick index color ->
+            [ colorField color
+            , indexField index
+            ]
+
+        PaletteAddSquareClick ->
+            []
+
         KeyboardEvent keyCmd keyEvent ->
             [ def "cmd" <| Encode.string keyCmd
             , def "event" <| Encode.string keyEvent
@@ -282,6 +314,21 @@ eventProperties event =
 
         KeyboardEventFail err ->
             [ errorField err ]
+
+
+shiftField : Bool -> ( String, Value )
+shiftField =
+    def "shift-is-down" << Encode.bool
+
+
+colorField : String -> ( String, Value )
+colorField =
+    def "color" << Encode.string
+
+
+indexField : Int -> ( String, Value )
+indexField =
+    def "index" << Encode.int
 
 
 backgroundColorField : String -> ( String, Value )

@@ -14,6 +14,7 @@ import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Data.Color exposing (Model, Swatches)
 import Data.Picker as Picker
+import Data.Taco exposing (Taco)
 import Helpers.Color
 import Html exposing (Attribute, Html, a, div, p, span)
 import Html.Attributes exposing (class, classList, style)
@@ -21,63 +22,78 @@ import Html.CssHelpers
 import Html.Custom exposing (cannotSelect, indent, outdent)
 import Html.Events exposing (on, onClick)
 import Json.Decode as Decode exposing (Decoder)
-import Util
+import Ports
+import Return2 as R2
+import Tracking
     exposing
-        ( background
-        , maybeCons
-        , tbw
-        , toColor
-        , toHex
-        , toolbarWidth
+        ( Event
+            ( PaletteAddSquareClick
+            , PaletteSquareClick
+            , PaletteSquareRightClick
+            )
         )
+import Util exposing (background, toHexColor)
 
 
 -- TYPES --
 
 
 type Msg
-    = PaletteSquareClick Int Color.Color Bool
-    | OpenColorPicker Color.Color Int
-    | AddPaletteSquare
+    = PaletteSquareClicked Int Color.Color Bool
+    | PaletteSquareRightClicked Color.Color Int
+    | AddPaletteSquareClicked
 
 
 
 -- UPDATE --
 
 
-update : Msg -> Model -> Model
-update msg model =
+update : Taco -> Msg -> Model -> ( Model, Cmd Msg )
+update taco msg model =
     case msg of
-        PaletteSquareClick index color shift ->
-            if shift then
-                { model
-                    | palette =
-                        Array.set
-                            index
-                            model.swatches.top
-                            model.palette
-                }
-            else
-                { model
-                    | swatches =
-                        Helpers.Color.setTop
-                            color
-                            model.swatches
-                }
+        -- This bool represents if shift is down
+        PaletteSquareClicked index color True ->
+            PaletteSquareClick index (toHexColor color) True
+                |> Ports.track taco
+                |> R2.withModel
+                    { model
+                        | palette =
+                            Array.set
+                                index
+                                model.swatches.top
+                                model.palette
+                    }
 
-        OpenColorPicker color index ->
-            { model
-                | picker =
-                    Picker.init True index color
-            }
+        PaletteSquareClicked index color False ->
+            PaletteSquareClick index (toHexColor color) False
+                |> Ports.track taco
+                |> R2.withModel
+                    { model
+                        | swatches =
+                            Helpers.Color.setTop
+                                color
+                                model.swatches
+                    }
 
-        AddPaletteSquare ->
-            { model
-                | palette =
-                    Array.push
-                        model.swatches.bottom
-                        model.palette
-            }
+        PaletteSquareRightClicked color index ->
+            PaletteSquareRightClick index (toHexColor color)
+                |> Ports.track taco
+                |> R2.withModel
+                    { model
+                        | picker =
+                            Picker.init True index color
+                    }
+
+        AddPaletteSquareClicked ->
+            PaletteAddSquareClick
+                |> Ports.track taco
+                |> R2.withModel
+                    { model
+                        | palette =
+                            Array.push
+                                model.swatches.bottom
+                                model.palette
+                    }
 
 
 
@@ -204,7 +220,7 @@ addColor : Html Msg
 addColor =
     div
         [ class [ Square, Plus ]
-        , onClick AddPaletteSquare
+        , onClick AddPaletteSquareClicked
         ]
         [ Html.text "+" ]
 
@@ -221,9 +237,9 @@ square picker ( index, color ) =
     div
         [ class (squareClasses (isSelected && shown))
         , background color
-        , OpenColorPicker color index
+        , PaletteSquareRightClicked color index
             |> Util.onContextMenu
-        , onClickWithShift (PaletteSquareClick index color)
+        , onClickWithShift (PaletteSquareClicked index color)
         ]
         []
 

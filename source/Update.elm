@@ -2,6 +2,7 @@ module Update exposing (update)
 
 import Canvas exposing (DrawOp(Batch))
 import ColorPicker
+import Data.Color as Color
 import Data.Keys as Key
 import Data.Minimap as Minimap
 import Data.User as User
@@ -43,11 +44,10 @@ update msg model =
             Taskbar.update subMsg model
 
         PaletteMsg subMsg ->
-            { model
-                | color =
-                    Palette.update subMsg model.color
-            }
-                |> R2.withNoCmd
+            model.color
+                |> Palette.update model.taco subMsg
+                |> R2.mapCmd PaletteMsg
+                |> R2.mapModel (setColorModel model)
 
         MenuMsg subMsg ->
             case model.menu of
@@ -196,6 +196,11 @@ update msg model =
 
         DrawingDeblobed drawing (Err _) ->
             model |> R2.withNoCmd
+
+
+setColorModel : Model -> Color.Model -> Model
+setColorModel model colorModel =
+    { model | color = colorModel }
 
 
 setMinimap : Model -> Minimap.State -> Model
