@@ -129,7 +129,7 @@ update msg model =
                 | menu =
                     model.windowSize
                         |> Menu.initAbout
-                            model.config.buildNumber
+                            model.taco.config.buildNumber
                         |> Just
             }
                 |> R2.withNoCmd
@@ -149,7 +149,7 @@ update msg model =
 
         NewWindowClicked window ->
             window
-                |> Window.toUrl model.config.mountPath
+                |> Window.toUrl model.taco.config.mountPath
                 |> Ports.OpenNewWindow
                 |> Ports.send
                 |> R2.withModel model
@@ -177,7 +177,7 @@ update msg model =
                 Just publicId ->
                     publicId
                         |> Window.Drawing
-                        |> Window.toUrl model.config.mountPath
+                        |> Window.toUrl model.taco.config.mountPath
                         |> OpenNewWindow
                         |> Ports.send
                         |> R2.withModel model
@@ -896,7 +896,7 @@ fileDropped model =
 
 keysLabel : Model -> Key.Cmd -> String
 keysLabel model =
-    Helpers.Keys.getKeysLabel model.config
+    Helpers.Keys.getKeysLabel model.taco.config
 
 
 taskbarButtonClose : String -> Dropdown -> Html Msg

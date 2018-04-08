@@ -13,6 +13,7 @@ import Array exposing (Array)
 import Canvas exposing (Canvas, Size)
 import Color exposing (Color)
 import Data.Color as Color exposing (Swatches)
+import Data.Taco exposing (Taco)
 import Id exposing (Id, Origin(Local, Remote))
 import Json.Encode as Encode exposing (Value)
 import Tracking
@@ -30,7 +31,6 @@ type JsMsg
     | RedirectPageTo String
     | OpenUpFileUpload
     | ReadFile
-    | ReportBug String
     | LoadDrawing Id
     | Track Tracking.Payload
 
@@ -65,9 +65,9 @@ toCmd type_ payload =
         |> toJs
 
 
-track : Tracking.Payload -> Cmd msg
-track =
-    Track >> send
+track : Taco -> Tracking.Event -> Cmd msg
+track { trackingCtor } =
+    trackingCtor >> Track >> send
 
 
 send : JsMsg -> Cmd msg
@@ -119,9 +119,6 @@ send msg =
 
         ReadFile ->
             toCmd "readFile" Encode.null
-
-        ReportBug bug ->
-            toCmd "bugReport" (Encode.string bug)
 
         LoadDrawing id ->
             toCmd "loadDrawing" (Id.encode id)

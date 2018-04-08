@@ -2,12 +2,11 @@ module Init exposing (Error(..), fromFlags, init)
 
 import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Data.Color
-import Data.Config as Config
-import Data.Drawing as Drawing
 import Data.Flags as Flags exposing (Flags, Init(..))
 import Data.History
 import Data.Menu as Menu
 import Data.Minimap
+import Data.Taco as Taco
 import Data.Tool as Tool
 import Data.User as User
 import Data.Window as Window
@@ -21,7 +20,7 @@ import Mouse exposing (Position)
 import Msg exposing (Msg(InitFromUrl))
 import Ports exposing (JsMsg(LoadDrawing, RedirectPageTo))
 import Return2 as R2
-import Tracking exposing (Event(AppFailedToInitialize, AppLoaded))
+import Tracking exposing (Event(AppInit, AppInitFail))
 import Util exposing (tbw)
 
 
@@ -39,10 +38,15 @@ init json =
         Ok flags ->
             case flags.user of
                 User.AllowanceExceeded ->
-                    Window.AllowanceExceeded
+                    [ Window.AllowanceExceeded
                         |> Window.toUrl flags.mountPath
                         |> RedirectPageTo
                         |> Ports.send
+                    , Ports.track
+                        (Taco.fromFlags flags)
+                        Tracking.AllowanceExceed
+                    ]
+                        |> Cmd.batch
                         |> R2.withModel
                             (Err AllowanceExceeded)
 
@@ -52,7 +56,17 @@ init json =
 
         Err err ->
             Err (Other err)
-                |> R2.withNoCmd
+                |> R2.withCmd (errCmd err)
+
+
+errCmd : String -> Cmd Msg
+errCmd err =
+    { sessionId = Id.fromString "ERROR"
+    , email = Nothing
+    , event = AppInitFail err
+    }
+        |> Ports.Track
+        |> Ports.send
 
 
 fromFlags : Flags -> ( Model, Cmd Msg )
@@ -86,7 +100,7 @@ fromFlags flags =
     , seed = flags.randomValues.seed
     , eraserSize = 5
     , shiftIsDown = False
-    , config = Config.init flags
+    , taco = Taco.fromFlags flags
     }
         |> R2.withCmd fields.cmd
         |> withTracking
@@ -94,18 +108,10 @@ fromFlags flags =
 
 withTracking : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 withTracking ( model, cmd ) =
-    [ Ports.track
-        { event = AppLoaded
-        , sessionId = model.config.sessionId
-        , email = User.getEmail model.user
-        , drawingId =
-            case model.user of
-                User.LoggedIn { drawing } ->
-                    Drawing.toOrigin drawing
-
-                _ ->
-                    Local
-        }
+    [ model.user
+        |> User.getDrawingOrigin
+        |> AppInit
+        |> Ports.track model.taco
     , cmd
     ]
         |> Cmd.batch

@@ -5,6 +5,7 @@ module Data.User
         , User
         , decoder
         , drawingLoaded
+        , getDrawingOrigin
         , getEmail
         , getPublicId
         , initModel
@@ -16,7 +17,7 @@ module Data.User
 
 import Data.Drawing as Drawing exposing (Drawing)
 import Data.Keys as Keys
-import Id exposing (Id)
+import Id exposing (Id, Origin(Local))
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline
     exposing
@@ -196,6 +197,16 @@ getPublicId state =
 
         _ ->
             Nothing
+
+
+getDrawingOrigin : State -> Origin
+getDrawingOrigin state =
+    case state of
+        LoggedIn { drawing } ->
+            Drawing.toOrigin drawing
+
+        _ ->
+            Local
 
 
 setDrawing : Drawing -> Model -> Model

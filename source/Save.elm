@@ -11,8 +11,8 @@ module Save
 import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
-import Data.Config exposing (Config)
 import Data.Drawing exposing (Drawing)
+import Data.Taco exposing (Taco)
 import Data.Window exposing (Window(Home))
 import Helpers.Window exposing (openWindow)
 import Html exposing (Html, a, div, p)
@@ -64,8 +64,8 @@ init =
 -- UPDATE --
 
 
-update : Config -> Msg -> Model -> Return Model Msg Reply
-update config msg model =
+update : Taco -> Msg -> Model -> Return Model Msg Reply
+update { config } msg model =
     case msg of
         DrawingUpdateCompleted (Ok "200") ->
             Util.delay 1000 (OneSecondExpired Nothing)

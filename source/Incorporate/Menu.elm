@@ -20,8 +20,8 @@ import Return2 as R2
 import Util
 
 
-incorporate : Maybe Reply -> Menu.Model -> Model -> ( Model, Cmd Msg )
-incorporate maybeReply menu model =
+incorporate : Menu.Model -> Maybe Reply -> Model -> ( Model, Cmd Msg )
+incorporate menu maybeReply model =
     case maybeReply of
         Nothing ->
             { model
@@ -159,12 +159,12 @@ handleReply reply menu model =
 
         Logout ->
             { windowSize = model.windowSize
-            , isMac = model.config.isMac
-            , browser = model.config.browser
+            , isMac = model.taco.config.isMac
+            , browser = model.taco.config.browser
             , user = User.LoggedOut
             , init = NormalInit
-            , mountPath = model.config.mountPath
-            , buildNumber = model.config.buildNumber
+            , mountPath = model.taco.config.mountPath
+            , buildNumber = model.taco.config.buildNumber
             , randomValues =
                 let
                     ( newProjectName, newSeed ) =
@@ -172,7 +172,7 @@ handleReply reply menu model =
                             |> Random.from model.seed
                             |> Random.value projectNameGenerator
                 in
-                { sessionId = model.config.sessionId
+                { sessionId = model.taco.config.sessionId
                 , projectName = newProjectName
                 , seed = newSeed
                 }

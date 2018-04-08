@@ -11,13 +11,17 @@ module Drawing
 import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
+import Data.Taco exposing (Taco)
 import Html exposing (Html, input, p)
 import Html.Attributes exposing (value)
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Reply as R exposing (Reply(SaveDrawingAttrs))
-import Util exposing (def)
+import Ports
+import Reply exposing (Reply(SaveDrawingAttrs))
+import Return2 as R2
+import Return3 as R3 exposing (Return)
+import Tracking
 
 
 -- TYPES --
@@ -142,14 +146,19 @@ failView problem =
 -- UPDATE --
 
 
-update : Msg -> Model -> ( Model, Maybe Reply )
-update msg model =
+update : Taco -> Msg -> Model -> Return Model Msg Reply
+update taco msg model =
     case msg of
         NameUpdated name ->
             { model | name = name }
-                |> R.withNoReply
+                |> R3.withNothing
 
         SaveClicked ->
-            SaveDrawingAttrs model.name
-                |> R.withModel
-                    { model | state = Saving }
+            { model | state = Saving }
+                |> R2.withCmd (trackSaveClick taco)
+                |> R3.withReply (SaveDrawingAttrs model.name)
+
+
+trackSaveClick : Taco -> Cmd Msg
+trackSaveClick taco =
+    Ports.track taco Tracking.MenuDrawingSaveClick

@@ -2,12 +2,12 @@ module Model exposing (Model, toSavePayload, updateCanvas)
 
 import Canvas exposing (Canvas, DrawOp, Point, Size)
 import Data.Color as Color
-import Data.Config exposing (Config)
 import Data.Drawing as Drawing
 import Data.History as History
 import Data.Menu as Menu
 import Data.Minimap as Minimap
 import Data.Selection as Selection
+import Data.Taco exposing (Taco)
 import Data.Taskbar exposing (Dropdown)
 import Data.Tool exposing (Tool)
 import Data.User as User
@@ -39,7 +39,7 @@ type alias Model =
     , seed : Seed
     , eraserSize : Int
     , shiftIsDown : Bool
-    , config : Config
+    , taco : Taco
     }
 
 

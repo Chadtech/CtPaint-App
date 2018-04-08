@@ -850,21 +850,59 @@ body ({ colorHexField, color } as model) =
             ]
             []
         ]
-    , slider "H" model.hueField Hue (hueGradient model)
-    , slider "S" model.saturationField Saturation (saturationGradient model)
-    , slider "L" model.lightnessField Lightness (lightnessGradient model)
-    , slider "R" model.redField Red (redGradient model)
-    , slider "G" model.greenField Green (greenGradient model)
-    , slider "B" model.blueField Blue (blueGradient model)
+    , slider
+        { label = "H"
+        , fieldContent = model.hueField
+        , gradient = Hue
+        , gradientSlider = hueGradient model
+        }
+    , slider
+        { label = "S"
+        , fieldContent = model.saturationField
+        , gradient = Saturation
+        , gradientSlider = saturationGradient model
+        }
+    , slider
+        { label = "L"
+        , fieldContent = model.lightnessField
+        , gradient = Lightness
+        , gradientSlider = lightnessGradient model
+        }
+    , slider
+        { label = "R"
+        , fieldContent = model.redField
+        , gradient = Red
+        , gradientSlider = redGradient model
+        }
+    , slider
+        { label = "G"
+        , fieldContent = model.greenField
+        , gradient = Green
+        , gradientSlider = greenGradient model
+        }
+    , slider
+        { label = "B"
+        , fieldContent = model.blueField
+        , gradient = Blue
+        , gradientSlider = blueGradient model
+        }
     ]
 
 
-slider : String -> String -> Gradient -> Html FieldsMsg -> Html FieldsMsg
-slider label fieldContent gradient sliderGradient =
+type alias SliderModel =
+    { label : String
+    , fieldContent : String
+    , gradient : Gradient
+    , gradientSlider : Html FieldsMsg
+    }
+
+
+slider : SliderModel -> Html FieldsMsg
+slider { label, fieldContent, gradient, gradientSlider } =
     div
         [ class [ SliderContainer ] ]
         [ p [] [ Html.text label ]
-        , sliderGradient
+        , gradientSlider
         , arrow Left gradient TriangleLeft fieldContent
         , arrow Right gradient TriangleRight fieldContent
         , input

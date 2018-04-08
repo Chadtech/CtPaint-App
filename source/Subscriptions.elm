@@ -40,7 +40,7 @@ fromModel model =
     , minimap model.minimap
     , keyEvent keyboardMsg
     , menu model.menu
-    , Ports.fromJs (Msg.decode model.config.browser)
+    , Ports.fromJs (Msg.decode model.taco.config.browser)
     , Mouse.moves ClientMouseMoved
     , Mouse.ups ClientMouseUp
     ]

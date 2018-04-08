@@ -8,6 +8,7 @@ module Download
         , view
         )
 
+import Data.Taco exposing (Taco)
 import Html exposing (Html, a, form, input, p, text)
 import Html.Attributes exposing (class, placeholder, value)
 import Html.Custom
@@ -16,6 +17,7 @@ import Ports exposing (JsMsg(Download))
 import Reply exposing (Reply(CloseMenu))
 import Return2 as R2
 import Return3 as R3 exposing (Return)
+import Tracking exposing (Event(MenuDownloadClick))
 
 
 type Msg
@@ -34,24 +36,27 @@ type alias Model =
 -- UPDATE --
 
 
-update : Msg -> Model -> Return Model Msg Reply
-update msg model =
+update : Taco -> Msg -> Model -> Return Model Msg Reply
+update taco msg model =
     case msg of
         FieldUpdated str ->
             { model | field = str }
                 |> R3.withNothing
 
         Submitted ->
-            download model
+            download taco model
 
         DownloadButtonPressed ->
-            download model
+            download taco model
 
 
-download : Model -> Return Model Msg Reply
-download model =
+download : Taco -> Model -> Return Model Msg Reply
+download taco model =
     model
-        |> R2.withCmd (downloadCmd model)
+        |> R2.withCmds
+            [ downloadCmd model
+            , Ports.track taco MenuDownloadClick
+            ]
         |> R3.withReply CloseMenu
 
 

@@ -13,6 +13,7 @@ import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Data.Config exposing (Config)
+import Data.Taco exposing (Taco)
 import Data.User exposing (User)
 import Data.Window as Window exposing (Window(ForgotPassword))
 import Html exposing (Attribute, Html, div, input, p, span)
@@ -248,8 +249,8 @@ errorStr problem =
 -- UPDATE --
 
 
-update : Config -> Msg -> Model -> Return Model Msg Reply
-update config msg model =
+update : Taco -> Msg -> Model -> Return Model Msg Reply
+update { config } msg model =
     case msg of
         FieldUpdated Email email ->
             { model | email = email }

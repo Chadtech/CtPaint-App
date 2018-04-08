@@ -2,6 +2,7 @@ module Update exposing (update)
 
 import Canvas exposing (DrawOp(Batch))
 import ColorPicker
+import Data.Keys as Key
 import Data.User as User
 import Helpers.Keys
 import Incorporate.Color
@@ -12,12 +13,14 @@ import Minimap
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Palette
+import Ports
 import Return2 as R2
 import Return3 as R3
 import Task
 import Taskbar
 import Tool
 import Toolbar
+import Tracking
 import Util
 
 
@@ -48,19 +51,10 @@ update msg model =
         MenuMsg subMsg ->
             case model.menu of
                 Just menu ->
-                    let
-                        ( newMenu, menuCmd, reply ) =
-                            Menu.update model.config subMsg menu
-
-                        ( newModel, modelCmd ) =
-                            Menu.incorporate reply newMenu model
-                    in
-                    ( newModel
-                    , Cmd.batch
-                        [ modelCmd
-                        , Cmd.map MenuMsg menuCmd
-                        ]
-                    )
+                    menu
+                        |> Menu.update model.taco subMsg
+                        |> R3.mapCmd MenuMsg
+                        |> R3.incorp Menu.incorporate model
 
                 Nothing ->
                     model |> R2.withNoCmd
@@ -69,12 +63,22 @@ update msg model =
             { model | windowSize = size } |> R2.withNoCmd
 
         KeyboardEvent (Ok event) ->
+            let
+                keyCmd =
+                    Helpers.Keys.getCmd
+                        model.taco.config
+                        event
+            in
             model
                 |> Helpers.Keys.setShift event
-                |> Keys.exec (Helpers.Keys.getCmd model.config event)
+                |> Keys.exec keyCmd
+                |> R2.addCmd (trackKeyEvent model keyCmd event)
 
         KeyboardEvent (Err err) ->
-            model |> R2.withNoCmd
+            err
+                |> Tracking.KeyboardEventFail
+                |> Ports.track model.taco
+                |> R2.withModel model
 
         Tick _ ->
             case model.pendingDraw of
@@ -192,3 +196,11 @@ update msg model =
 
         DrawingDeblobed drawing (Err _) ->
             model |> R2.withNoCmd
+
+
+trackKeyEvent : Model -> Key.Cmd -> Key.Event -> Cmd Msg
+trackKeyEvent { taco } keyCmd keyEvent =
+    Tracking.KeyboardEvent
+        (toString keyCmd)
+        (toString keyEvent)
+        |> Ports.track taco

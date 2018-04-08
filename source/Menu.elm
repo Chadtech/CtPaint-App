@@ -5,7 +5,6 @@ import BugReport
 import Color
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
-import Data.Config exposing (Config)
 import Data.Menu as Menu
     exposing
         ( ClickState(..)
@@ -14,6 +13,7 @@ import Data.Menu as Menu
         , Model
         , Msg(..)
         )
+import Data.Taco exposing (Taco)
 import Download
 import Drawing
 import Html exposing (Attribute, Html, a, div, p, text)
@@ -41,8 +41,8 @@ import Window exposing (Size)
 -- UPDATE --
 
 
-update : Config -> Msg -> Model -> Return Model Msg Reply
-update config msg model =
+update : Taco -> Msg -> Model -> Return Model Msg Reply
+update taco msg model =
     case msg of
         XButtonMouseDown ->
             { model
@@ -90,17 +90,17 @@ update config msg model =
                 |> R3.withNothing
 
         ContentMsg subMsg ->
-            updateContent config subMsg model
+            updateContent taco subMsg model
 
 
-updateContent : Config -> ContentMsg -> Model -> Return Model Msg Reply
-updateContent config msg model =
+updateContent : Taco -> ContentMsg -> Model -> Return Model Msg Reply
+updateContent taco msg model =
     case msg of
         DownloadMsg subMsg ->
             case model.content of
                 Download subModel ->
                     subModel
-                        |> Download.update subMsg
+                        |> Download.update taco subMsg
                         |> mapReturn model Menu.Download DownloadMsg
 
                 _ ->
@@ -110,7 +110,7 @@ updateContent config msg model =
             case model.content of
                 Import subModel ->
                     subModel
-                        |> Import.update subMsg
+                        |> Import.update taco subMsg
                         |> mapReturn model Menu.Import ImportMsg
 
                 _ ->
@@ -140,7 +140,7 @@ updateContent config msg model =
             case model.content of
                 BugReport subModel ->
                     subModel
-                        |> BugReport.update subMsg
+                        |> BugReport.update taco subMsg
                         |> mapReturn model Menu.BugReport BugReportMsg
 
                 _ ->
@@ -160,7 +160,7 @@ updateContent config msg model =
             case model.content of
                 Login subModel ->
                     subModel
-                        |> Login.update config subMsg
+                        |> Login.update taco subMsg
                         |> mapReturn model Menu.Login LoginMsg
 
                 _ ->
@@ -200,8 +200,8 @@ updateContent config msg model =
             case model.content of
                 Drawing subModel ->
                     subModel
-                        |> Drawing.update subMsg
-                        |> noCmd model Menu.Drawing
+                        |> Drawing.update taco subMsg
+                        |> mapReturn model Menu.Drawing DrawingMsg
 
                 _ ->
                     model |> R3.withNothing
@@ -210,7 +210,7 @@ updateContent config msg model =
             case model.content of
                 Save subModel ->
                     subModel
-                        |> Save.update config subMsg
+                        |> Save.update taco subMsg
                         |> mapReturn model Menu.Save SaveMsg
 
                 _ ->

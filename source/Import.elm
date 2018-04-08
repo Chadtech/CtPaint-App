@@ -5,6 +5,7 @@ import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
+import Data.Taco exposing (Taco)
 import Helpers.Import exposing (loadCmd)
 import Html exposing (Html, a, div, form, input, p, text)
 import Html.Attributes exposing (class, placeholder, value)
@@ -12,9 +13,19 @@ import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Html.Loaded as Loaded
+import Ports
 import Reply exposing (Reply(IncorporateImageAsSelection))
 import Return2 as R2
 import Return3 as R3 exposing (Return)
+import Tracking
+    exposing
+        ( Event
+            ( MenuImportCanvasLoad
+            , MenuImportClick
+            , MenuImportEnterPress
+            , MenuImportTryAgainClick
+            )
+        )
 
 
 -- TYPES --
@@ -160,8 +171,8 @@ init =
 -- UPDATE --
 
 
-update : Msg -> Model -> Return Model Msg Reply
-update msg model =
+update : Taco -> Msg -> Model -> Return Model Msg Reply
+update taco msg model =
     case msg of
         FieldUpdated str ->
             case model of
@@ -175,21 +186,31 @@ update msg model =
 
         ImportPressed ->
             attemptLoad model
+                |> R3.addCmd
+                    (Ports.track taco MenuImportClick)
 
         Submitted ->
             attemptLoad model
+                |> R3.addCmd
+                    (Ports.track taco MenuImportEnterPress)
 
         CanvasLoaded (Ok canvas) ->
-            Loaded canvas
-                |> R3.withNothing
+            MenuImportCanvasLoad Nothing
+                |> Ports.track taco
+                |> R2.withModel (Loaded canvas)
+                |> R3.withNoReply
 
         CanvasLoaded (Err err) ->
-            Fail
-                |> R3.withNothing
+            MenuImportCanvasLoad (Just <| toString err)
+                |> Ports.track taco
+                |> R2.withModel Fail
+                |> R3.withNoReply
 
         TryAgainPressed ->
-            init
-                |> R3.withNothing
+            MenuImportTryAgainClick
+                |> Ports.track taco
+                |> R2.withModel init
+                |> R3.withNoReply
 
         LoadedMsg subMsg ->
             case model of
