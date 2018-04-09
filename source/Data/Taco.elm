@@ -2,7 +2,7 @@ module Data.Taco
     exposing
         ( Taco
         , fromFlags
-        , handleNewUserState
+        , setUser
         )
 
 import Data.Config as Config exposing (Config)
@@ -13,29 +13,17 @@ import Tracking
 
 type alias Taco =
     { config : Config
-    , trackingCtor : Tracking.Ctor
+    , user : User.State
     }
 
 
 fromFlags : Flags -> Taco
 fromFlags flags =
-    let
-        config =
-            Config.init flags
-    in
-    { config = config
-    , trackingCtor =
-        Tracking.makeCtor
-            config.sessionId
-            (User.getEmail flags.user)
+    { config = Config.init flags
+    , user = flags.user
     }
 
 
-handleNewUserState : User.State -> Taco -> Taco
-handleNewUserState state taco =
-    { taco
-        | trackingCtor =
-            Tracking.makeCtor
-                taco.config.sessionId
-                (User.getEmail state)
-    }
+setUser : Taco -> User.State -> Taco
+setUser taco state =
+    { taco | user = state }

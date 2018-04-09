@@ -78,8 +78,7 @@ fromFlags flags =
         canvasSize =
             Canvas.getSize fields.canvas
     in
-    { user = flags.user
-    , canvas = fields.canvas
+    { canvas = fields.canvas
     , color = fields.color
     , canvasPosition = fields.canvasPosition
     , drawingName = fields.drawingName
@@ -108,7 +107,7 @@ fromFlags flags =
 
 withTracking : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 withTracking ( model, cmd ) =
-    [ model.user
+    [ model.taco.user
         |> User.getDrawingOrigin
         |> AppInit
         |> Ports.track model.taco

@@ -1,4 +1,10 @@
-module Model exposing (Model, toSavePayload, updateCanvas)
+module Model
+    exposing
+        ( Model
+        , setTaco
+        , toSavePayload
+        , updateCanvas
+        )
 
 import Canvas exposing (Canvas, DrawOp, Point, Size)
 import Data.Color as Color
@@ -17,8 +23,7 @@ import Random.Pcg as Random exposing (Seed)
 
 
 type alias Model =
-    { user : User.State
-    , canvas : Canvas
+    { canvas : Canvas
     , color : Color.Model
     , drawingName : String
     , drawingNameIsGenerated : Bool
@@ -47,6 +52,11 @@ type alias Model =
 -- HELPERS --
 
 
+setTaco : Model -> Taco -> Model
+setTaco model taco =
+    { model | taco = taco }
+
+
 updateCanvas : (Canvas -> Canvas) -> Model -> Model
 updateCanvas f model =
     { model | canvas = f model.canvas }
@@ -54,7 +64,7 @@ updateCanvas f model =
 
 toSavePayload : Model -> Maybe SavePayload
 toSavePayload model =
-    case model.user of
+    case model.taco.user of
         User.LoggedIn { user, drawing } ->
             { canvas = model.canvas
             , name = model.drawingName

@@ -5,6 +5,7 @@ import ColorPicker
 import Data.Color as Color
 import Data.Keys as Key
 import Data.Minimap as Minimap
+import Data.Taco as Taco
 import Data.User as User
 import Helpers.Keys
 import Incorporate.Color
@@ -159,8 +160,7 @@ update msg model =
         LogoutSucceeded ->
             Logout Nothing
                 |> Ports.track model.taco
-                |> R2.withModel
-                    { model | user = User.LoggedOut }
+                |> R2.withModel model
 
         LogoutFailed err ->
             err
@@ -197,7 +197,7 @@ update msg model =
                 |> R2.withModel model
 
         DrawingDeblobed drawing (Ok canvas) ->
-            case model.user of
+            case model.taco.user of
                 User.LoggedIn user ->
                     { model
                         | menu = Nothing
@@ -208,10 +208,11 @@ update msg model =
                             Util.center
                                 model.windowSize
                                 (Canvas.getSize canvas)
-                        , user =
+                        , taco =
                             user
                                 |> User.setDrawing drawing
                                 |> User.LoggedIn
+                                |> Taco.setUser model.taco
                     }
                         |> R2.withNoCmd
 

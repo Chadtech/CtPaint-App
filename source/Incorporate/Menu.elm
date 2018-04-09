@@ -111,33 +111,31 @@ handleReply reply menu model =
                         |> closeMenu
 
         SetUser user ->
-            let
-                newUserState =
+            { model
+                | menu = Nothing
+                , taco =
                     user
                         |> User.initModel Drawing.Local
                         |> User.LoggedIn
-            in
-            { model
-                | user = newUserState
-                , menu = Nothing
-                , taco =
-                    Taco.handleNewUserState
-                        newUserState
-                        model.taco
+                        |> Taco.setUser model.taco
             }
                 |> R2.withNoCmd
 
         AttemptingLogin ->
             { model
-                | user = User.LoggingIn
-                , menu = Just menu
+                | menu = Just menu
+                , taco =
+                    User.LoggingIn
+                        |> Taco.setUser model.taco
             }
                 |> R2.withNoCmd
 
         NoLongerLoggingIn ->
             { model
-                | user = User.LoggedOut
-                , menu = Just menu
+                | menu = Just menu
+                , taco =
+                    User.LoggedOut
+                        |> Taco.setUser model.taco
             }
                 |> R2.withNoCmd
 
@@ -150,15 +148,16 @@ handleReply reply menu model =
 
         IncorporateDrawing drawing ->
             { model
-                | user =
-                    case model.user of
+                | taco =
+                    case model.taco.user of
                         User.LoggedIn user ->
                             user
                                 |> User.setDrawing drawing
                                 |> User.LoggedIn
+                                |> Taco.setUser model.taco
 
                         _ ->
-                            model.user
+                            model.taco
             }
                 |> closeMenu
 

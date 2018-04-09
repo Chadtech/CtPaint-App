@@ -14,6 +14,7 @@ import Canvas exposing (Canvas, Size)
 import Color exposing (Color)
 import Data.Color as Color exposing (Swatches)
 import Data.Taco exposing (Taco)
+import Data.User as User
 import Id exposing (Id, Origin(Local, Remote))
 import Json.Encode as Encode exposing (Value)
 import Tracking
@@ -66,8 +67,13 @@ toCmd type_ payload =
 
 
 track : Taco -> Tracking.Event -> Cmd msg
-track { trackingCtor } =
-    trackingCtor >> Track >> send
+track { config, user } event =
+    { sessionId = config.sessionId
+    , email = User.getEmail user
+    , event = event
+    }
+        |> Track
+        |> send
 
 
 send : JsMsg -> Cmd msg

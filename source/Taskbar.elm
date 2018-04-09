@@ -6,7 +6,7 @@ import Css.Elements
 import Css.Namespace exposing (namespace)
 import Data.Keys as Key exposing (Cmd(..), QuickKey)
 import Data.Minimap exposing (State(..))
-import Data.Taco exposing (Taco)
+import Data.Taco as Taco exposing (Taco)
 import Data.Taskbar as Taskbar exposing (Dropdown(..))
 import Data.Tool as Tool exposing (Tool)
 import Data.User as User exposing (User)
@@ -119,14 +119,13 @@ update msg model =
                     ]
 
         UserClicked ->
-            case model.user of
+            case model.taco.user of
                 User.LoggedIn user ->
-                    { model
-                        | user =
-                            user
-                                |> User.toggleOptionsDropped
-                                |> User.LoggedIn
-                    }
+                    user
+                        |> User.toggleOptionsDropped
+                        |> User.LoggedIn
+                        |> Taco.setUser model.taco
+                        |> Model.setTaco model
                         |> R2.withCmd
                             (Ports.track model.taco TaskbarUserClick)
 
@@ -159,7 +158,7 @@ update msg model =
                 | menu =
                     model.windowSize
                         |> Menu.initBugReport
-                            (User.isLoggedIn model.user)
+                            (User.isLoggedIn model.taco.user)
                         |> Just
             }
                 |> R2.withCmds
@@ -217,7 +216,7 @@ update msg model =
                     ]
 
         OpenImageLinkClicked ->
-            case User.getPublicId model.user of
+            case User.getPublicId model.taco.user of
                 Just publicId ->
                     [ publicId
                         |> Window.Drawing
@@ -454,7 +453,7 @@ taskbarNamespace =
 
 
 view : Model -> Html Msg
-view ({ taskbarDropped, user } as model) =
+view ({ taskbarDropped, taco } as model) =
     div
         [ class [ Taskbar ] ]
         [ file model
@@ -464,7 +463,7 @@ view ({ taskbarDropped, user } as model) =
         , colors model
         , view_ model
         , help taskbarDropped
-        , userButton user
+        , userButton taco.user
         , invisibleWall taskbarDropped
         ]
 
@@ -938,7 +937,7 @@ fileDropped model =
         { label = "save"
         , cmdKeys = keysLabel model Save
         , clickMsg = KeyCmdClicked Save
-        , disabled = not <| User.isLoggedIn model.user
+        , disabled = not <| User.isLoggedIn model.taco.user
         }
     , option
         { label = "download"
@@ -969,7 +968,7 @@ fileDropped model =
         { label = "open image link"
         , cmdKeys = ""
         , clickMsg = OpenImageLinkClicked
-        , disabled = not <| User.drawingLoaded model.user
+        , disabled = not <| User.drawingLoaded model.taco.user
         }
     ]
         |> taskbarButtonOpen "file" File
