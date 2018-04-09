@@ -8,7 +8,6 @@ module Data.Taco
 import Data.Config as Config exposing (Config)
 import Data.Flags exposing (Flags)
 import Data.User as User
-import Tracking
 
 
 type alias Taco =

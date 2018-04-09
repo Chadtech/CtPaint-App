@@ -4,12 +4,12 @@ module Tracking
         , Event(..)
         , Payload
         , encode
-        , makeCtor
         )
 
 import Id exposing (Id, Origin)
 import Json.Encode as Encode exposing (Value)
 import Json.Encode.Extra as Encode
+import Keyboard.Extra.Browser exposing (Browser)
 import Mouse exposing (Position)
 import Util exposing (def)
 import Window exposing (Size)
@@ -29,8 +29,17 @@ type alias Payload =
     }
 
 
+type alias InitValues =
+    { windowSize : Size
+    , isMac : Bool
+    , browser : Browser
+    , buildNumber : Int
+    , drawingId : Origin
+    }
+
+
 type Event
-    = AppInit Origin
+    = AppInit InitValues
     | AppInitFail String
     | AllowanceExceed
     | ReportBug String
@@ -122,11 +131,6 @@ encode payload =
     , def "properties" <| encodeProperties payload
     ]
         |> Encode.object
-
-
-makeCtor : Id -> Maybe String -> Event -> Payload
-makeCtor =
-    Payload
 
 
 
@@ -353,8 +357,23 @@ encodeProperties payload =
 eventProperties : Event -> List ( String, Value )
 eventProperties event =
     case event of
-        AppInit drawingId ->
-            [ drawingIdField drawingId ]
+        AppInit initValues ->
+            [ drawingIdField initValues.drawingId
+            , initValues.isMac
+                |> Encode.bool
+                |> def "is-mac"
+            , initValues.browser
+                |> toString
+                |> String.toLower
+                |> Encode.string
+                |> def "browser"
+            , initValues.buildNumber
+                |> Encode.int
+                |> def "build-number"
+            , initValues.windowSize
+                |> Util.encodeSize
+                |> def "window-size"
+            ]
 
         AppInitFail problem ->
             [ def "problem" <| Encode.string problem ]

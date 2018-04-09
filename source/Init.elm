@@ -107,8 +107,12 @@ fromFlags flags =
 
 withTracking : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 withTracking ( model, cmd ) =
-    [ model.taco.user
-        |> User.getDrawingOrigin
+    [ { windowSize = model.windowSize
+      , isMac = model.taco.config.isMac
+      , browser = model.taco.config.browser
+      , buildNumber = model.taco.config.buildNumber
+      , drawingId = User.getDrawingOrigin model.taco.user
+      }
         |> AppInit
         |> Ports.track model.taco
     , cmd
