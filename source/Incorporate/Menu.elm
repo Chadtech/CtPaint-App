@@ -5,6 +5,7 @@ import Data.Drawing as Drawing
 import Data.Flags exposing (Init(NormalInit), projectNameGenerator)
 import Data.Menu as Menu
 import Data.Selection as Selection
+import Data.Taco as Taco
 import Data.User as User
 import Draw
 import Helpers.Drawing
@@ -110,12 +111,19 @@ handleReply reply menu model =
                         |> closeMenu
 
         SetUser user ->
-            { model
-                | user =
+            let
+                newUserState =
                     user
                         |> User.initModel Drawing.Local
                         |> User.LoggedIn
+            in
+            { model
+                | user = newUserState
                 , menu = Nothing
+                , taco =
+                    Taco.handleNewUserState
+                        newUserState
+                        model.taco
             }
                 |> R2.withNoCmd
 

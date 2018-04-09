@@ -2,6 +2,7 @@ module Data.Taco
     exposing
         ( Taco
         , fromFlags
+        , handleNewUserState
         )
 
 import Data.Config as Config exposing (Config)
@@ -27,4 +28,14 @@ fromFlags flags =
         Tracking.makeCtor
             config.sessionId
             (User.getEmail flags.user)
+    }
+
+
+handleNewUserState : User.State -> Taco -> Taco
+handleNewUserState state taco =
+    { taco
+        | trackingCtor =
+            Tracking.makeCtor
+                taco.config.sessionId
+                (User.getEmail state)
     }

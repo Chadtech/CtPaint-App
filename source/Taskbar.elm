@@ -123,7 +123,8 @@ update msg model =
                 User.LoggedIn user ->
                     { model
                         | user =
-                            User.toggleOptionsDropped user
+                            user
+                                |> User.toggleOptionsDropped
                                 |> User.LoggedIn
                     }
                         |> R2.withCmd
