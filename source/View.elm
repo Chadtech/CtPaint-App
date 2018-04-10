@@ -73,6 +73,7 @@ css : Stylesheet
 css =
     [ Css.class Main
         [ width (pct 100)
+        , height (pct 100)
         , withClass Gallery
             [ cursor none
             , children

@@ -3,7 +3,7 @@ module.exports = {
         var lastVisit = localStorage.getItem("date of last visit");
         var today = new Date().toISOString().slice(0, 10);
         localStorage.setItem("date of last visit", today);
-        if (typeof lastVisit === "undefined") {
+        if (typeof lastVisit === "undefined" || lastVisit === null) {
             lastVisit = today;
         }
 

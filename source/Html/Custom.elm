@@ -170,7 +170,10 @@ input =
     , fontSize (em 2)
     , fontFamilies [ "hfnss" ]
     , color Ct.point0
+    , property "-moz-osx-font-smoothing" "grayscale"
     , property "-webkit-font-smoothing" "none"
+    , height (px 25)
+    , lineHeight (px 19)
     , margin (px 0)
     , padding (px 0)
     , withClass Long
@@ -196,6 +199,7 @@ headerStyle =
             , cursor default
             , margin (px 0)
             , display inlineBlock
+            , lineHeight (px 25)
             ]
         , a
             [ height (px 21)
@@ -291,6 +295,8 @@ basicFont : List Style
 basicFont =
     [ fontFamilies [ "hfnss" ]
     , color Ct.point0
+    , lineHeight (px 19)
+    , property "-moz-osx-font-smoothing" "grayscale"
     , property "-webkit-font-smoothing" "none"
     , fontSize (px 32)
     ]

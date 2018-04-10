@@ -176,6 +176,7 @@ css =
         , width (px 20)
         , backgroundColor Ct.ignorable2
         , textAlign center
+        , lineHeight (px 19)
         ]
     ]
         |> namespace paletteNamespace

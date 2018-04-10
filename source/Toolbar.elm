@@ -175,6 +175,7 @@ css =
         , top (px 0)
         , left (px 0)
         , maxWidth fitContent
+        , property "width" "-moz-fit-content"
         ]
     , Css.class Button
         [ display block
