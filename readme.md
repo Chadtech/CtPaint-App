@@ -20,6 +20,8 @@ This repo is organized as..
 │   ├── Menu.elm
 │   ├── Minimap.elm
 │   ├── Picker.elm
+│   ├── Selection.elm
+│   ├── Taco.elm
 │   ├── Taskbar.elm
 │   ├── Tool.elm
 │   ├── User.elm
@@ -56,8 +58,8 @@ This repo is organized as..
 │   ├── Allowance.js
 │   ├── Drawing.js
 │   ├── Flags.js
-│   ├── Init.js
 │   ├── Keys.js
+│   ├── Upload.js
 │   └── User.js
 ├── Keys.elm
 ├── Line.elm
