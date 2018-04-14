@@ -278,7 +278,7 @@ type Class
     = Taskbar
     | InvisibleWall
     | Button
-    | LoginButton
+    | Right
     | UserButton
     | Null
     | Dropped
@@ -321,7 +321,7 @@ css =
         , active outdent
         , border3 (px 2) solid Ct.ignorable2
         ]
-    , Css.class LoginButton
+    , Css.class Right
         [ float right
         , marginRight (px 2)
         ]
@@ -463,9 +463,24 @@ view ({ taskbarDropped, taco } as model) =
         , colors model
         , view_ model
         , help taskbarDropped
+        , homeButton taco.user
         , userButton taco.user
         , invisibleWall taskbarDropped
         ]
+
+
+homeButton : User.State -> Html Msg
+homeButton userModel =
+    case userModel of
+        User.LoggedOut ->
+            a
+                [ class [ Button, Right ]
+                , onClick (NewWindowClicked Home)
+                ]
+                [ Html.text "home" ]
+
+        _ ->
+            Html.text ""
 
 
 userButton : User.State -> Html Msg
@@ -550,7 +565,7 @@ userDropdown user =
 loginButton : Html Msg
 loginButton =
     a
-        [ class [ Button, LoginButton ]
+        [ class [ Button, Right ]
         , onClick LoginClicked
         ]
         [ Html.text "login" ]
