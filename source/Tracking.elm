@@ -139,7 +139,7 @@ encode payload =
 
 encodeName : Event -> Value
 encodeName =
-    Encode.string << toName
+    Encode.string << (++) "paint-app_" << toName
 
 
 toName : Event -> String
