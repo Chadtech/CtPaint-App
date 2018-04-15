@@ -46,30 +46,41 @@ gulp.task("elm", [ "elm-make", "elm-css" ]);
 gulp.task("elm-make", function() {
   if (!waitApp) {
     startWaiting("app");
-    var cmd = [
-      "elm-make",
-      paths.mainElm,
-      "--warn",
-      "--output",
+    cp.spawn("elm-make", [ 
+      paths.mainElm, 
+      "--warn", 
+      "--output", 
       paths.development + "/paint-app-elm.js"
-    ].join(" ");
-    return cp.exec(cmd, function(error, stdout, stderr) {
-      if (error) {
-        error = (String(error)).slice(0, (String(error)).length - 1);
-        (error.split("\n")).forEach(function(line) {
-          return util.log(util.colors.red(String(line)));
-        });
-      } else {
-        stderr = stderr.slice(0, stderr.length - 1);
-        (stderr.split("\n")).forEach(function(line) {
-          return util.log(util.colors.yellow(String(line)));
-        });
-      }
-      stdout = stdout.slice(0, stdout.length - 1);
-      return (stdout.split("\n")).forEach(function(line) {
-        return util.log(util.colors.cyan("Elm"), line);
-      });
+    ], { 
+      stdio: 'inherit' 
+    }).on('close', function() {
+      util.log(util.colors.cyan("elm-make finished"));
     });
+  //   startWaiting("app");
+  //   var cmd = [
+  //     "elm-make",
+  //     paths.mainElm,
+  //     "--warn",
+  //     "--output",
+  //     paths.development + "/paint-app-elm.js"
+  //   ].join(" ");
+  //   return cp.exec(cmd, function(error, stdout, stderr) {
+  //     if (error) {
+  //       error = (String(error)).slice(0, (String(error)).length - 1);
+  //       (error.split("\n")).forEach(function(line) {
+  //         return util.log(util.colors.red(String(line)));
+  //       });
+  //     } else {
+  //       stderr = stderr.slice(0, stderr.length - 1);
+  //       (stderr.split("\n")).forEach(function(line) {
+  //         return util.log(util.colors.yellow(String(line)));
+  //       });
+  //     }
+  //     stdout = stdout.slice(0, stdout.length - 1);
+  //     return (stdout.split("\n")).forEach(function(line) {
+  //       return util.log(util.colors.cyan("Elm"), line);
+  //     });
+  //   });
   }
 });
 
@@ -77,27 +88,32 @@ gulp.task("elm-make", function() {
 gulp.task("elm-css", function() {
   if (!waitStylesheet) {
     startWaiting("stylesheet");
-    var cmd = [
-      "elm-css",
-      "./source/Stylesheets.elm",
-    ].join(" ");
-    return cp.exec(cmd, function(error, stdout, stderr) {
-      if (error) {
-        error = (String(error)).slice(0, (String(error)).length - 1);
-        (error.split("\n")).forEach(function(line) {
-          util.log(util.colors.red(String(line)));
-        });
-      } else {
-        stderr = stderr.slice(0, stderr.length);
-        (stderr.split("\n")).forEach(function(line) {
-          util.log(util.colors.yellow(String(line)));
-        });
-      }
-      stdout = stdout.slice(0, stdout.length - 1);
-      (stdout.split("\n")).forEach(function(line) {
-        util.log(util.colors.cyan("Elm Css"), line);
-      });
+    cp.spawn("elm-css", [ "./source/Stylesheets.elm" ], { 
+      stdio: 'inherit' 
+    }).on('close', function() {
+      util.log(util.colors.cyan("elm-css finished"));
     });
+    // var cmd = [
+    //   "elm-css",
+    //   "./source/Stylesheets.elm",
+    // ].join(" ");
+    // return cp.exec(cmd, function(error, stdout, stderr) {
+    //   if (error) {
+    //     error = (String(error)).slice(0, (String(error)).length - 1);
+    //     (error.split("\n")).forEach(function(line) {
+    //       util.log(util.colors.red(String(line)));
+    //     });
+    //   } else {
+    //     stderr = stderr.slice(0, stderr.length);
+    //     (stderr.split("\n")).forEach(function(line) {
+    //       util.log(util.colors.yellow(String(line)));
+    //     });
+    //   }
+    //   stdout = stdout.slice(0, stdout.length - 1);
+    //   (stdout.split("\n")).forEach(function(line) {
+    //     util.log(util.colors.cyan("Elm Css"), line);
+    //   });
+    // });
   }
 });
 
