@@ -50,7 +50,8 @@ gulp.task("elm-make", function() {
       paths.mainElm, 
       "--warn", 
       "--output", 
-      paths.development + "/paint-app-elm.js"
+      paths.development + "/paint-app-elm.js",
+      "--yes"
     ], { 
       stdio: 'inherit' 
     }).on('close', function() {
