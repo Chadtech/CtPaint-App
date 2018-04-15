@@ -88,11 +88,11 @@ gulp.task("elm-make", function() {
 gulp.task("elm-css", function() {
   if (!waitStylesheet) {
     startWaiting("stylesheet");
-    cp.spawn("elm-css", [ "./source/Stylesheets.elm" ], { 
-      stdio: 'inherit' 
-    }).on('close', function() {
-      util.log(util.colors.cyan("elm-css finished"));
-    });
+    // cp.spawn("elm-css", [ "./source/Stylesheets.elm" ], { 
+    //   stdio: 'inherit' 
+    // }).on('close', function() {
+    //   util.log(util.colors.cyan("elm-css finished"));
+    // });
     // var cmd = [
     //   "elm-css",
     //   "./source/Stylesheets.elm",
