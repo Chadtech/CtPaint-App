@@ -77,7 +77,7 @@ css =
     , (Css.class ToolButton << List.append outdent)
         [ width (px 20)
         , height (px 20)
-        , fontFamilies [ "icons" ]
+        , fontFamilies [ "HFICON" ]
         , fontSize (em 1)
         , textAlign center
         , padding (px 0)
