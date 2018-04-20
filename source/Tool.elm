@@ -1,5 +1,6 @@
 module Tool exposing (..)
 
+import Char
 import Data.Tool exposing (Tool(..))
 import Eraser
 import Fill
@@ -193,40 +194,56 @@ all =
 
 
 icon : Tool -> String
-icon tool =
+icon =
+    iconHelper >> Char.fromCode >> String.fromChar
+
+
+iconHelper : Tool -> Int
+iconHelper tool =
     case tool of
         Hand _ ->
-            "\xEA0A"
+            --"\xEA0A"
+            59914
 
         Sample ->
-            "\xEA08"
+            --"\xEA08"
+            59912
 
         Fill ->
-            "\xEA16"
+            --"\xEA16"
+            59926
 
         Pencil _ ->
-            "\xEA02"
+            --"\xEA02"
+            59907
 
         Line _ ->
-            "\xEA09"
+            --"\xEA09"
+            59913
 
         Rectangle _ ->
-            "\xEA03"
+            --"\xEA03"
+            59907
 
         RectangleFilled _ ->
-            "\xEA04"
+            --"\xEA04"
+            59908
 
         Select _ ->
-            "\xEA07"
+            --"\xEA07"
+            59911
 
         ZoomIn ->
-            "\xEA17"
+            --"\xEA17"
+            59927
 
         ZoomOut ->
-            "\xEA18"
+            --"\xEA18"
+            59928
 
         Eraser _ ->
-            "\xEA1B"
+            --"\xEA1B"
+            59931
 
 
 name : Tool -> String

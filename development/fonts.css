@@ -1,8 +1,8 @@
 @font-face {
   font-family: HFNSS;
-  src: url("https://cdn.rawgit.com/Chadtech-Online-1/Chadtech-Online-1.github.io/master/HFNSS.ttf");
+  src: url("https://cdn.rawgit.com/Chadtech-Online-1/Chadtech-Online-1.github.io/master/HFNSS.ttf") format('truetype');
 }
 @font-face {
   font-family: HFICON;
-  src: url("https://cdn.rawgit.com/Chadtech/ctpaint-demos/25021925/public/ctpaint-icons.ttf");
+  src: url("https://cdn.rawgit.com/Chadtech/ctpaint-demos/25021925/public/ctpaint-icons.ttf") format('truetype');
 }

@@ -334,15 +334,16 @@ type alias ToolButtonState msg =
 
 toolButton : ToolButtonState msg -> Html msg
 toolButton state =
-    let
-        attrs =
-            classList
-                [ def ToolButton True
-                , def Selected state.selected
-                ]
-                :: state.attrs
-    in
-    Html.a attrs [ Html.text state.icon ]
+    Html.a (toolButtonAttrs state) [ Html.text state.icon ]
+
+
+toolButtonAttrs : ToolButtonState msg -> List (Html.Attribute msg)
+toolButtonAttrs state =
+    classList
+        [ def ToolButton True
+        , def Selected state.selected
+        ]
+        :: state.attrs
 
 
 type alias ToolbarButtonState msg =
