@@ -95,7 +95,6 @@ type Event
     | ToolbarIncreaseEraserClick Int
     | ToolbarDecreaseEraserClick Int
     | ClientMouseUp Position
-    | ScreenMouseUp Position
     | ScreenMouseDown Position
     | WindowSize Size
     | KeyboardEvent String String
@@ -319,9 +318,6 @@ toNameSpaces event =
 
         ClientMouseUp _ ->
             "client mouse up"
-
-        ScreenMouseUp _ ->
-            "screen mouse up"
 
         ScreenMouseDown _ ->
             "screen mouse down"
@@ -557,9 +553,6 @@ eventProperties event =
             [ def "eraser-size" <| Encode.int size ]
 
         ClientMouseUp position ->
-            [ positionField position ]
-
-        ScreenMouseUp position ->
             [ positionField position ]
 
         ScreenMouseDown position ->

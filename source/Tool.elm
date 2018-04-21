@@ -215,7 +215,7 @@ iconHelper tool =
 
         Pencil _ ->
             --"\xEA02"
-            59907
+            59906
 
         Line _ ->
             --"\xEA09"

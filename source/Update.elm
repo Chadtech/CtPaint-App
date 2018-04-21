@@ -125,8 +125,7 @@ update msg model =
 
         ScreenMouseUp mouseEvent ->
             Tool.handleScreenMouseUp mouseEvent model
-                |> R2.withCmd
-                    (trackScreenMouseUp mouseEvent.clientPos model)
+                |> R2.withNoCmd
 
         ScreenMouseDown mouseEvent ->
             Tool.handleScreenMouseDown mouseEvent model
@@ -227,13 +226,6 @@ trackScreenMouseDown : Position -> Model -> Cmd Msg
 trackScreenMouseDown position model =
     position
         |> Tracking.ScreenMouseDown
-        |> Ports.track model.taco
-
-
-trackScreenMouseUp : Position -> Model -> Cmd Msg
-trackScreenMouseUp position model =
-    position
-        |> Tracking.ScreenMouseUp
         |> Ports.track model.taco
 
 
