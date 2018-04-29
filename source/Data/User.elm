@@ -48,7 +48,6 @@ type alias Model =
 type alias User =
     { email : String
     , name : String
-    , profilePic : String
     , keyConfig : Keys.Config
     }
 
@@ -100,7 +99,6 @@ decoder browser =
     decode User
         |> required "email" Decode.string
         |> required "name" Decode.string
-        |> required "picture" Decode.string
         |> custom (configDecoder browser)
 
 
