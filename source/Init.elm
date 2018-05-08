@@ -63,6 +63,7 @@ errCmd : String -> Cmd Msg
 errCmd err =
     { sessionId = Id.fromString "ERROR"
     , email = Nothing
+    , buildNumber = -1
     , event = AppInitFail err
     }
         |> Ports.Track

@@ -25,6 +25,7 @@ type alias Ctor =
 type alias Payload =
     { sessionId : Id
     , email : Maybe String
+    , buildNumber : Int
     , event : Event
     }
 

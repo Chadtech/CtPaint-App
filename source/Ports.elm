@@ -70,6 +70,7 @@ track : Taco -> Tracking.Event -> Cmd msg
 track { config, user } event =
     { sessionId = config.sessionId
     , email = User.getEmail user
+    , buildNumber = config.buildNumber
     , event = event
     }
         |> Track
