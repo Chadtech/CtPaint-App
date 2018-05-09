@@ -57,3 +57,4 @@ getKeysLabel { cmdKey, quickKeys } cmd =
     quickKeys
         |> Dict.get (toString cmd)
         |> Maybe.withDefault ""
+        |> String.toLower

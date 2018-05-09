@@ -39,6 +39,7 @@ type Msg
     | InitFromUrl (Result Error Canvas)
     | DrawingLoaded Drawing
     | DrawingDeblobed Drawing (Result Error Canvas)
+    | GalleryScreenClicked
     | MsgDecodeFailed DecodeProblem
 
 

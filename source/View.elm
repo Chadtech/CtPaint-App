@@ -7,10 +7,12 @@ import ColorPicker
 import Css exposing (..)
 import Css.Elements exposing (canvas)
 import Css.Namespace exposing (namespace)
+import Data.Keys as Key
 import Data.Menu
 import Data.Minimap exposing (State(..))
 import Data.Tool
 import Draw
+import Helpers.Keys
 import Html
     exposing
         ( Attribute
@@ -23,7 +25,7 @@ import Html
 import Html.Attributes as Attr
 import Html.CssHelpers
 import Html.Custom exposing (indent)
-import Html.Events exposing (on, onMouseLeave)
+import Html.Events exposing (on, onClick, onMouseLeave)
 import Html.Lazy
 import Menu
 import Minimap
@@ -48,6 +50,8 @@ import Util exposing (def, toolbarWidth)
 type Class
     = Main
     | Gallery
+    | GalleryScreen
+    | GalleryNotice
     | CanvasArea
     | MainCanvas
     | SelectionCanvas
@@ -84,6 +88,25 @@ css =
                     ]
                 ]
             ]
+        ]
+    , Css.class GalleryScreen
+        [ width (pct 100)
+        , height (pct 100)
+        , position absolute
+        , left (px 0)
+        , top (px 0)
+        ]
+    , (Css.class GalleryNotice << List.concat)
+        [ [ left (px 8)
+          , top (px 8)
+          , position absolute
+          , textDecoration none
+          , backgroundColor Ct.ignorable2
+          , display inlineBlock
+          , padding4 (px 4) (px 8) (px 4) (px 8)
+          ]
+        , Html.Custom.outdent
+        , Html.Custom.cannotSelect
         ]
     , Css.class MainCanvas
         [ position absolute
@@ -200,7 +223,27 @@ galleryView : Model -> Html Msg
 galleryView model =
     div
         [ class [ Main, Gallery ] ]
-        [ Canvas.toHtml [] model.canvas ]
+        [ Canvas.toHtml [] model.canvas
+        , div
+            [ class [ GalleryScreen ]
+            , onClick GalleryScreenClicked
+            ]
+            [ galleryNotice model ]
+        ]
+
+
+galleryNotice : Model -> Html Msg
+galleryNotice model =
+    [ "Click anywhere or press"
+    , Helpers.Keys.getKeysLabel
+        model.taco.config
+        Key.SwitchGalleryView
+    , "to exit"
+    ]
+        |> String.join " "
+        |> Html.text
+        |> List.singleton
+        |> p [ class [ GalleryNotice ] ]
 
 
 

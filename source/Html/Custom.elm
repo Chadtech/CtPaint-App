@@ -245,8 +245,7 @@ aStyle =
             ]
                 |> List.concat
     in
-    [ padding zero
-    , textDecoration none
+    [ textDecoration none
     , backgroundColor Ct.ignorable2
     , display inlineBlock
     , padding4 (px 4) (px 8) (px 4) (px 8)

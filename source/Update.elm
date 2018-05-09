@@ -218,6 +218,10 @@ update msg model =
                 _ ->
                     model |> R2.withNoCmd
 
+        GalleryScreenClicked ->
+            { model | galleryView = False }
+                |> R2.withNoCmd
+
         DrawingDeblobed drawing (Err _) ->
             model |> R2.withNoCmd
 

@@ -618,7 +618,9 @@ view_ model =
         Just View ->
             [ option
                 { label = "gallery view"
-                , cmdKeys = "tab"
+                , cmdKeys = keysLabel model SwitchGalleryView
+
+                --, cmdKeys = "tab"
                 , clickMsg = KeyCmdClicked SwitchGalleryView
                 , disabled = False
                 }
