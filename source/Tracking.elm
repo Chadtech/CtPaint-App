@@ -144,9 +144,7 @@ encodeName =
 
 toName : Event -> String
 toName =
-    toNameSpaces
-        >> String.split " "
-        >> String.join "_"
+    toNameSpaces >> Util.replace " " "_"
 
 
 toNameSpaces : Event -> String

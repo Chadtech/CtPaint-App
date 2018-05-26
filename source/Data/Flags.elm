@@ -138,6 +138,7 @@ initDecoder =
         |> Decode.map FromId
     , Decode.string
         |> Decode.field "url"
+        |> Decode.map (Util.replace "%2F" "/")
         |> Decode.map FromUrl
     , paramsDecoder
         |> Decode.map FromParams
