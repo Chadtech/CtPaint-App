@@ -158,6 +158,7 @@ view model =
         [ p [] [ Html.text "email" ]
         , input
             [ onInput (FieldUpdated Email)
+            , Attr.name "email"
             , value_ model.email
             , placeholder "name@email.com"
             , Attr.spellcheck False
@@ -171,6 +172,7 @@ view model =
         [ p [] [ Html.text "password" ]
         , input
             [ onInput (FieldUpdated Password)
+            , Attr.name "password"
             , value_ model.password
             , type_ "password"
             , Attr.spellcheck False
