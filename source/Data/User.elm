@@ -73,7 +73,8 @@ getEmail model =
 stateDecoder : Drawing.State -> Browser -> Decoder State
 stateDecoder drawingState browser =
     [ Decode.null LoggedOut
-    , Decode.string |> Decode.andThen fromString
+    , Decode.string
+        |> Decode.andThen fromString
     , decoder browser
         |> Decode.map (initModel drawingState)
         |> Decode.map LoggedIn
@@ -91,7 +92,12 @@ fromString str =
             Decode.succeed AllowanceExceeded
 
         _ ->
-            Decode.fail "not offline or allowance exceeded"
+            Decode.fail (decodeFailMsg str)
+
+
+decodeFailMsg : String -> String
+decodeFailMsg =
+    (++) "user state is not offline or allowance exceeded -> "
 
 
 decoder : Browser -> Decoder User

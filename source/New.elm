@@ -78,7 +78,7 @@ init name =
     , widthField = ""
     , height = 400
     , heightField = ""
-    , backgroundColor = Black
+    , backgroundColor = White
     }
 
 

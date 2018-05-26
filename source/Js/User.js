@@ -56,7 +56,8 @@ function get(Client, init) {
             if (Allowance.exceeded()) {
                 err = "allowance exceeded";
             }
-            switch (String(err)) {
+            var errStr = String(err);
+            switch (errStr) {
                 case "no session":
                     init(null);
                     break;
@@ -70,7 +71,7 @@ function get(Client, init) {
                     break;
 
                 default:
-                    init("Unknown get session error");
+                    init("Unknown get session error -> " + errStr);
             }
         }
     });

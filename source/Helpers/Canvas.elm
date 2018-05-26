@@ -54,14 +54,14 @@ fromParams params =
 
 getColor : Maybe BackgroundColor -> BackgroundColor
 getColor =
-    Maybe.withDefault Black
+    Maybe.withDefault White
 
 
 blank : Canvas
 blank =
     defaultSize
         |> Canvas.initialize
-        |> fill Black
+        |> fill White
 
 
 defaultSize : Size

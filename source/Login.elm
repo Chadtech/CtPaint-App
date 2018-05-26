@@ -113,7 +113,9 @@ type Class
 css : Stylesheet
 css =
     [ Css.class Error
-        [ marginBottom (px 8) ]
+        [ marginBottom (px 8)
+        , width (px 333)
+        ]
     , Css.class ErrorBackground
         [ backgroundColor Ct.lowWarning ]
     , Css.class ForgotLink

@@ -73,7 +73,7 @@ errCmd err =
 fromFlags : Flags -> ( Model, Cmd Msg )
 fromFlags flags =
     let
-        fields =
+        ( fields, cmd ) =
             getFields flags
 
         canvasSize =
@@ -102,7 +102,7 @@ fromFlags flags =
     , shiftIsDown = False
     , taco = Taco.fromFlags flags
     }
-        |> R2.withCmd fields.cmd
+        |> R2.withCmd cmd
         |> withTracking
 
 
@@ -129,12 +129,11 @@ type alias InitFields =
     , drawingNameIsGenerated : Bool
     , id : Origin
     , menu : Maybe Menu.Model
-    , cmd : Cmd Msg
     , color : Data.Color.Model
     }
 
 
-getFields : Flags -> InitFields
+getFields : Flags -> ( InitFields, Cmd Msg )
 getFields ({ windowSize } as flags) =
     case flags.init of
         NormalInit ->
@@ -153,9 +152,9 @@ getFields ({ windowSize } as flags) =
                     flags.randomValues.projectName
                     flags.windowSize
                     |> Just
-            , cmd = Ports.stealFocus
             , color = Data.Color.init
             }
+                |> R2.withCmd Ports.stealFocus
 
         FromId id ->
             { canvas = Canvas.tiny
@@ -168,9 +167,10 @@ getFields ({ windowSize } as flags) =
                     Nothing
                     flags.windowSize
                     |> Just
-            , cmd = Ports.send (LoadDrawing id)
             , color = Data.Color.init
             }
+                |> R2.withCmd
+                    (Ports.send (LoadDrawing id))
 
         FromUrl url ->
             { canvas = Canvas.tiny
@@ -183,9 +183,10 @@ getFields ({ windowSize } as flags) =
                     (Just url)
                     flags.windowSize
                     |> Just
-            , cmd = Helpers.Import.loadCmd url InitFromUrl
             , color = Data.Color.init
             }
+                |> R2.withCmd
+                    (Helpers.Import.loadCmd url InitFromUrl)
 
         FromParams params ->
             let
@@ -204,9 +205,9 @@ getFields ({ windowSize } as flags) =
             , drawingNameIsGenerated = params.name /= Nothing
             , id = Local
             , menu = Nothing
-            , cmd = Cmd.none
             , color = Data.Color.init
             }
+                |> R2.withNoCmd
 
 
 offScreen : Position
