@@ -127,6 +127,18 @@ toColor colorMaybe =
 
 
 
+-- NUMBER --
+
+
+filterNan : Float -> Float
+filterNan fl =
+    if isNaN fl then
+        0
+    else
+        fl
+
+
+
 -- HTML --
 
 
@@ -373,13 +385,6 @@ toChar int =
 
 
 -- CMD --
-
-
-mixinCmd : Cmd msg -> ( model, Cmd msg ) -> ( model, Cmd msg )
-mixinCmd newCmd ( model, cmd ) =
-    ( model
-    , Cmd.batch [ newCmd, cmd ]
-    )
 
 
 delay : Time -> msg -> Cmd msg

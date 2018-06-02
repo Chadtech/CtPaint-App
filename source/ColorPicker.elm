@@ -564,7 +564,7 @@ setGradient x gradient model =
             { model
                 | color =
                     Color.hsl
-                        hue
+                        (Util.filterNan hue)
                         (toFloat x / 255)
                         lightness
             }

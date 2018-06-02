@@ -81,7 +81,11 @@ update taco msg model =
                 |> R2.withModel
                     { model
                         | picker =
-                            Picker.init True index color
+                            { show = True
+                            , index = index
+                            , color = color
+                            }
+                                |> Picker.init
                     }
 
         AddPaletteSquareClicked ->
@@ -113,6 +117,11 @@ type Class
     | Plus
 
 
+squareSize : Float
+squareSize =
+    20
+
+
 css : Stylesheet
 css =
     [ Css.class SwatchesContainer
@@ -123,7 +132,7 @@ css =
         ]
     , (Css.class Swatch << List.append indent)
         [ position absolute
-        , height (px 20)
+        , height (px squareSize)
         ]
     , Css.class Top
         [ top (px 0)
@@ -133,7 +142,7 @@ css =
     , Css.class Left
         [ top (px 28)
         , left (px 0)
-        , width (px 20)
+        , width (px squareSize)
         ]
     , Css.class Bottom
         [ top (px 28)
@@ -143,7 +152,7 @@ css =
     , Css.class Right
         [ top (px 28)
         , left (px 78)
-        , width (px 20)
+        , width (px squareSize)
         ]
     , (Css.class Colors << List.append indent)
         [ backgroundColor Ct.background2
@@ -154,14 +163,14 @@ css =
         , overflowY auto
         ]
     , (Css.class Square << List.append indent)
-        [ height (px 20)
-        , width (px 20)
+        [ height (px squareSize)
+        , width (px squareSize)
         , display inlineBlock
         , float left
         , withClass Selected
             [ border3 (px 2) solid Ct.ignorable0
-            , height (px 18)
-            , width (px 18)
+            , height (px squareSize)
+            , width (px squareSize)
             ]
         ]
     , (Css.class Plus << List.append outdent << List.append cannotSelect)
@@ -173,7 +182,7 @@ css =
         , fontSize (em 2)
         , paddingTop (px 1)
         , height (px 19)
-        , width (px 20)
+        , width (px squareSize)
         , backgroundColor Ct.ignorable2
         , textAlign center
         , lineHeight (px 19)

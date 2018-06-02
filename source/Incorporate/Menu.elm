@@ -185,7 +185,7 @@ handleReply reply menu model =
                 }
             }
                 |> Init.fromFlags
-                |> Util.mixinCmd (Ports.send Ports.Logout)
+                |> R2.addCmd (Ports.send Ports.Logout)
 
         SaveDrawingAttrs name ->
             let
@@ -196,7 +196,7 @@ handleReply reply menu model =
                 Just savePayload ->
                     newModel
                         |> closeMenu
-                        |> Util.mixinCmd
+                        |> R2.addCmd
                             (Ports.send (Ports.Save savePayload))
 
                 Nothing ->

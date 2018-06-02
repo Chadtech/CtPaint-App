@@ -2,6 +2,7 @@ module Data.Picker
     exposing
         ( ClickState(..)
         , Direction(..)
+        , Flags
         , Gradient(..)
         , Model
         , Msg(..)
@@ -82,22 +83,29 @@ type ClickState
 -- INIT --
 
 
-init : Bool -> Int -> Color.Color -> Model
-init show index color =
+type alias Flags =
+    { show : Bool
+    , index : Int
+    , color : Color.Color
+    }
+
+
+init : Flags -> Model
+init flags =
     let
         { red, green, blue } =
-            Color.toRgb color
+            Color.toRgb flags.color
 
         { hue, saturation, lightness } =
-            Color.toHsl color
+            Color.toHsl flags.color
     in
-    { color = color
-    , index = index
+    { color = flags.color
+    , index = flags.index
     , redField = toString red
     , greenField = toString green
     , blueField = toString blue
     , hueField =
-        (radians hue / (2 * pi) * 360)
+        (radians (Util.filterNan hue) / (2 * pi) * 360)
             |> floor
             |> toString
     , saturationField =
@@ -109,12 +117,12 @@ init show index color =
             |> floor
             |> toString
     , colorHexField =
-        color
+        flags.color
             |> Util.toHexColor
             |> String.dropLeft 1
     , gradientClickedOn = Nothing
     , position = { x = 50, y = 350 }
     , headerClickState = NoClicks
     , focusedOn = False
-    , show = show
+    , show = flags.show
     }

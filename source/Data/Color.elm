@@ -51,13 +51,33 @@ init : Model
 init =
     { palette = initPalette
     , swatches = initSwatches
-    , picker = Picker.init False 0 (Color.rgb 176 166 154)
+    , picker =
+        { show = False
+        , index = 0
+        , color = Color.black
+        }
+            |> Picker.init
     }
+
+
+ctPoint : Color
+ctPoint =
+    Color.rgb 176 166 154
+
+
+ctRed : Color
+ctRed =
+    Color.rgb 242 29 35
+
+
+ctPrettyBlue : Color
+ctPrettyBlue =
+    Color.rgb 23 92 254
 
 
 initPalette : Array Color
 initPalette =
-    [ Color.rgb 176 166 154
+    [ ctPoint
     , Color.black
     , Color.white
     , Color.rgb 101 92 74
@@ -68,7 +88,7 @@ initPalette =
     , Color.rgb 240 146 50
     , Color.rgb 255 91 49
     , Color.rgb 212 51 27
-    , Color.rgb 242 29 35
+    , ctRed
     , Color.rgb 252 164 132
     , Color.rgb 230 121 166
     , Color.rgb 80 0 87
@@ -78,7 +98,7 @@ initPalette =
     , Color.rgb 50 54 128
     , Color.rgb 36 33 157
     , Color.rgb 0 47 167
-    , Color.rgb 23 92 254
+    , ctPrettyBlue
     , Color.rgb 10 186 181
     , Color.rgb 159 170 210
     , Color.rgb 214 218 240
@@ -94,10 +114,10 @@ initPalette =
 
 initSwatches : Swatches
 initSwatches =
-    { top = Color.rgb 176 166 154
-    , left = Color.black
+    { top = Color.black
+    , left = ctPrettyBlue
     , bottom = Color.white
-    , right = Color.rgb 241 29 35
+    , right = ctRed
     , keyIsDown = False
     }
 
