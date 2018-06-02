@@ -5,7 +5,7 @@ import Mouse exposing (Position)
 
 init : Tool
 init =
-    Hand Nothing
+    Pencil Nothing
 
 
 type Tool
