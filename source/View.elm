@@ -503,7 +503,7 @@ minimap model =
 
 colorPicker : Model -> Html Msg
 colorPicker model =
-    if model.color.picker.window.show then
+    if model.color.picker.show then
         model.color.picker
             |> Html.Lazy.lazy ColorPicker.view
             |> Html.map ColorPickerMsg

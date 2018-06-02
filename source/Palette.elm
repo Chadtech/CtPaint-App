@@ -228,21 +228,19 @@ addColor =
 
 square : Picker.Model -> ( Int, Color.Color ) -> Html Msg
 square picker ( index, color ) =
-    let
-        isSelected =
-            index == picker.fields.index
-
-        shown =
-            picker.window.show
-    in
     div
-        [ class (squareClasses (isSelected && shown))
+        [ class (squareClasses index picker)
         , background color
         , PaletteSquareRightClicked color index
             |> Util.onContextMenu
         , onClickWithShift (PaletteSquareClicked index color)
         ]
         []
+
+
+squareIsSelected : Int -> Picker.Model -> Bool
+squareIsSelected index picker =
+    index == picker.index && picker.show
 
 
 onClickWithShift : (Bool -> Msg) -> Attribute Msg
@@ -255,9 +253,9 @@ shiftDecoder =
     Decode.field "shiftKey" Decode.bool
 
 
-squareClasses : Bool -> List Class
-squareClasses show =
-    if show then
+squareClasses : Int -> Picker.Model -> List Class
+squareClasses index picker =
+    if squareIsSelected index picker then
         [ Square, Selected ]
     else
         [ Square ]

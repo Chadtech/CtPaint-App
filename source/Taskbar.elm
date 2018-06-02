@@ -777,7 +777,7 @@ colorsDropped model =
 
 colorPickerLabel : Model -> String
 colorPickerLabel model =
-    if model.color.picker.window.show then
+    if model.color.picker.show then
         "hide color picker"
     else
         "show color picker"

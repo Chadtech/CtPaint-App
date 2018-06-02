@@ -16,14 +16,10 @@ import Data.Picker
     exposing
         ( ClickState(..)
         , Direction(Left, Right)
-        , Fields
-        , FieldsMsg(..)
         , Gradient(..)
         , Model
         , Msg(..)
         , Reply(..)
-        , Window
-        , WindowMsg(..)
         )
 import Html
     exposing
@@ -62,14 +58,12 @@ import Util exposing (def, toColor)
 
 
 subscriptions : Model -> Sub Msg
-subscriptions { window } =
-    if window.show && window.clickState /= NoClicks then
-        Sub.batch
-            [ Mouse.moves
-                (HandleWindowMsg << HeaderMouseMove)
-            , Mouse.ups
-                (always (HandleWindowMsg HeaderMouseUp))
-            ]
+subscriptions model =
+    if model.show then
+        [ Mouse.moves ClientMouseMove
+        , Mouse.ups (always ClientMouseUp)
+        ]
+            |> Sub.batch
     else
         Sub.none
 
@@ -95,160 +89,145 @@ doesntHaveHue color =
 -- UPDATE --
 
 
-integrateFields : Model -> Fields -> Model
-integrateFields model fields =
-    { model | fields = fields }
+calcGradientX : MouseEvent -> Int
+calcGradientX { targetPos, clientPos } =
+    (clientPos.x - targetPos.x - 4)
+        |> min 255
+        |> max 0
 
 
-integrateWindow : Model -> Window -> Model
-integrateWindow model window =
-    { model | window = window }
+movedInCurrentGradient : Model -> Gradient -> Bool
+movedInCurrentGradient { gradientClickedOn } gradient =
+    gradientClickedOn
+        |> Maybe.map ((==) gradient)
+        |> Maybe.withDefault False
 
 
-updateFields : FieldsMsg -> Fields -> ( Fields, Cmd Msg, Maybe Reply )
-updateFields msg fields =
-    case msg of
-        SetFocus True ->
-            fields
-                |> R2.withCmd Ports.stealFocus
-                |> R3.withNoReply
-
-        SetFocus False ->
-            fields
-                |> R2.withCmd Ports.returnFocus
-                |> R3.withNoReply
-
-        UpdateColorHexField hex ->
-            let
-                newHexField =
-                    String.toUpper hex
-            in
-            case toColor newHexField of
-                Just color ->
-                    { fields
-                        | color = color
-                        , colorHexField = newHexField
-                    }
-                        |> cohereAndSet
-
-                Nothing ->
-                    { fields
-                        | colorHexField = newHexField
-                    }
-                        |> R3.withNothing
-
-        StealSubmit ->
-            fields |> R3.withNothing
-
-        SetNoGradientClickedOn ->
-            { fields
-                | gradientClickedOn = Nothing
-            }
-                |> R3.withNothing
-
-        MouseDownOnPointer gradient ->
-            { fields
-                | gradientClickedOn = Just gradient
-            }
-                |> R2.withNoCmd
-                |> R3.withReply
-                    (UpdateHistory fields.index fields.color)
-
-        MouseMoveInGradient gradient { targetPos, clientPos } ->
-            let
-                x =
-                    (clientPos.x - targetPos.x - 4)
-                        |> min 255
-                        |> max 0
-            in
-            sliderHandler x gradient fields
-
-        FieldUpdate gradient str ->
-            fieldHandler gradient str fields
-
-        ArrowClicked gradient direction ->
-            arrowHandler gradient direction fields
-
-
-updateWindow : WindowMsg -> Window -> Return Window Msg Reply
-updateWindow msg window =
+update : Msg -> Model -> Return Model Msg Reply
+update msg model =
     case msg of
         HeaderMouseDown mouseEvent ->
-            case window.clickState of
+            case model.headerClickState of
                 XButtonIsDown ->
-                    window
+                    model
                         |> R3.withNothing
 
                 _ ->
-                    { window
-                        | clickState =
+                    { model
+                        | headerClickState =
                             mouseEvent
                                 |> Util.elRel
                                 |> ClickAt
                     }
                         |> R3.withNothing
 
-        HeaderMouseMove position ->
-            case window.clickState of
-                NoClicks ->
-                    window
-                        |> R3.withNothing
-
-                XButtonIsDown ->
-                    window
-                        |> R3.withNothing
-
-                ClickAt originalClick ->
-                    { window
-                        | position =
-                            { x = position.x - originalClick.x
-                            , y = position.y - originalClick.y
-                            }
-                    }
-                        |> R3.withNothing
-
-        HeaderMouseUp ->
-            { window | clickState = NoClicks }
-                |> R3.withNothing
-
         XButtonMouseDown ->
-            { window | clickState = XButtonIsDown }
+            { model | headerClickState = XButtonIsDown }
                 |> R3.withNothing
 
         XButtonMouseUp ->
-            { window
+            { model
                 | show = False
-                , clickState = NoClicks
+                , headerClickState = NoClicks
             }
                 |> R3.withNothing
 
+        InputFocused ->
+            model
+                |> R2.withCmd Ports.stealFocus
+                |> R3.withNoReply
 
-update : Msg -> Model -> Return Model Msg Reply
-update message model =
-    case message of
-        HandleFieldsMsg fieldsMsg ->
-            model.fields
-                |> updateFields fieldsMsg
-                |> R3.mapModel (integrateFields model)
+        InputBlurred ->
+            model
+                |> R2.withCmd Ports.returnFocus
+                |> R3.withNoReply
 
-        HandleWindowMsg windowMsg ->
-            model.window
-                |> updateWindow windowMsg
-                |> R3.mapModel (integrateWindow model)
+        HexFieldUpdated hex ->
+            let
+                newHexField =
+                    String.toUpper hex
+            in
+            case toColor newHexField of
+                Just color ->
+                    { model
+                        | color = color
+                        , colorHexField = newHexField
+                    }
+                        |> cohereAndSet
+
+                Nothing ->
+                    { model
+                        | colorHexField = newHexField
+                    }
+                        |> R3.withNothing
+
+        StealSubmit ->
+            model |> R3.withNothing
+
+        GradientMouseDown gradient event ->
+            { model
+                | gradientClickedOn = Just gradient
+            }
+                |> setGradient (calcGradientX event) gradient
+
+        MouseDownOnPointer gradient ->
+            { model
+                | gradientClickedOn = Just gradient
+            }
+                |> R2.withNoCmd
+                |> R3.withReply
+                    (UpdateHistory model.index model.color)
+
+        MouseMoveInGradient gradient event ->
+            if movedInCurrentGradient model gradient then
+                setGradient (calcGradientX event) gradient model
+            else
+                model
+                    |> R3.withNothing
+
+        FieldUpdated gradient str ->
+            fieldHandler gradient str model
+
+        ArrowClicked gradient direction ->
+            arrowHandler gradient direction model
+
+        ClientMouseUp ->
+            { model
+                | headerClickState = NoClicks
+                , gradientClickedOn = Nothing
+            }
+                |> R3.withNothing
+
+        ClientMouseMove position ->
+            { model
+                | position =
+                    case model.headerClickState of
+                        NoClicks ->
+                            model.position
+
+                        XButtonIsDown ->
+                            model.position
+
+                        ClickAt originalClick ->
+                            { x = position.x - originalClick.x
+                            , y = position.y - originalClick.y
+                            }
+            }
+                |> R3.withNothing
 
 
 
 -- MESSAGE HANDLERS --
 
 
-arrowHandler : Gradient -> Direction -> Fields -> Return Fields Msg Reply
-arrowHandler gradient direction fields =
+arrowHandler : Gradient -> Direction -> Model -> Return Model Msg Reply
+arrowHandler gradient direction model =
     let
         { hue, saturation, lightness } =
-            Color.toHsl fields.color
+            Color.toHsl model.color
 
         { red, green, blue } =
-            Color.toRgb fields.color
+            Color.toRgb model.color
     in
     case gradient of
         Lightness ->
@@ -259,7 +238,7 @@ arrowHandler gradient direction fields =
             case direction of
                 Left ->
                     if 0 < lightnessInt then
-                        { fields
+                        { model
                             | color =
                                 Color.hsl
                                     hue
@@ -268,12 +247,12 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields
+                        model
                             |> R3.withNothing
 
                 Right ->
                     if lightnessInt < 255 then
-                        { fields
+                        { model
                             | color =
                                 Color.hsl
                                     hue
@@ -282,7 +261,7 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields
+                        model
                             |> R3.withNothing
 
         Saturation ->
@@ -293,7 +272,7 @@ arrowHandler gradient direction fields =
             case direction of
                 Left ->
                     if 0 < saturationInt then
-                        { fields
+                        { model
                             | color =
                                 Color.hsl
                                     hue
@@ -302,12 +281,12 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields
+                        model
                             |> R3.withNothing
 
                 Right ->
                     if saturationInt < 255 then
-                        { fields
+                        { model
                             | color =
                                 Color.hsl
                                     hue
@@ -316,7 +295,7 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields
+                        model
                             |> R3.withNothing
 
         Hue ->
@@ -335,7 +314,7 @@ arrowHandler gradient direction fields =
                         |> toFloat
                         |> degrees
             in
-            { fields
+            { model
                 | color =
                     Color.hsl
                         newHue
@@ -348,7 +327,7 @@ arrowHandler gradient direction fields =
             case direction of
                 Left ->
                     if 0 < red then
-                        { fields
+                        { model
                             | color =
                                 Color.rgb
                                     (red - 1)
@@ -357,12 +336,12 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields
+                        model
                             |> R3.withNothing
 
                 Right ->
                     if red < 255 then
-                        { fields
+                        { model
                             | color =
                                 Color.rgb
                                     (red + 1)
@@ -371,14 +350,14 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields
+                        model
                             |> R3.withNothing
 
         Green ->
             case direction of
                 Left ->
                     if 0 < green then
-                        { fields
+                        { model
                             | color =
                                 Color.rgb
                                     red
@@ -387,12 +366,12 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields
+                        model
                             |> R3.withNothing
 
                 Right ->
                     if green < 255 then
-                        { fields
+                        { model
                             | color =
                                 Color.rgb
                                     red
@@ -401,14 +380,14 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields
+                        model
                             |> R3.withNothing
 
         Blue ->
             case direction of
                 Left ->
                     if 0 < blue then
-                        { fields
+                        { model
                             | color =
                                 Color.rgb
                                     red
@@ -417,12 +396,12 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields
+                        model
                             |> R3.withNothing
 
                 Right ->
                     if blue < 255 then
-                        { fields
+                        { model
                             | color =
                                 Color.rgb
                                     red
@@ -431,33 +410,33 @@ arrowHandler gradient direction fields =
                         }
                             |> cohereAndSet
                     else
-                        fields
+                        model
                             |> R3.withNothing
 
 
-fieldHandler : Gradient -> String -> Fields -> Return Fields Msg Reply
-fieldHandler gradient str fields =
+fieldHandler : Gradient -> String -> Model -> Return Model Msg Reply
+fieldHandler gradient str model =
     case String.toInt str of
         Ok int ->
-            fieldHandlerOk gradient str int fields
+            fieldHandlerOk gradient str int model
 
         Err _ ->
-            fieldHandlerErr gradient str fields
+            fieldHandlerErr gradient str model
                 |> R3.withNothing
 
 
-fieldHandlerOk : Gradient -> String -> Int -> Fields -> Return Fields Msg Reply
-fieldHandlerOk gradient str int fields =
+fieldHandlerOk : Gradient -> String -> Int -> Model -> Return Model Msg Reply
+fieldHandlerOk gradient str int model =
     let
         { hue, saturation, lightness } =
-            Color.toHsl fields.color
+            Color.toHsl model.color
 
         { red, green, blue } =
-            Color.toRgb fields.color
+            Color.toRgb model.color
     in
     case gradient of
         Lightness ->
-            { fields
+            { model
                 | lightnessField = str
                 , color =
                     Color.hsl
@@ -468,7 +447,7 @@ fieldHandlerOk gradient str int fields =
                 |> cohereAndSet
 
         Saturation ->
-            { fields
+            { model
                 | saturationField = str
                 , color =
                     Color.hsl
@@ -479,7 +458,7 @@ fieldHandlerOk gradient str int fields =
                 |> cohereAndSet
 
         Hue ->
-            { fields
+            { model
                 | hueField = str
                 , color =
                     Color.hsl
@@ -490,33 +469,33 @@ fieldHandlerOk gradient str int fields =
                 |> cohereAndSet
 
         Blue ->
-            { fields
+            { model
                 | blueField = str
                 , color =
                     validateHue
-                        fields.color
+                        model.color
                         (Color.rgb red green int)
                         int
             }
                 |> cohereAndSet
 
         Green ->
-            { fields
+            { model
                 | greenField = str
                 , color =
                     validateHue
-                        fields.color
+                        model.color
                         (Color.rgb red int blue)
                         int
             }
                 |> cohereAndSet
 
         Red ->
-            { fields
+            { model
                 | redField = str
                 , color =
                     validateHue
-                        fields.color
+                        model.color
                         (Color.rgb int green blue)
                         int
             }
@@ -538,37 +517,37 @@ validateHue oldColor newColor int =
         newColor
 
 
-fieldHandlerErr : Gradient -> String -> Fields -> Fields
-fieldHandlerErr gradient str fields =
+fieldHandlerErr : Gradient -> String -> Model -> Model
+fieldHandlerErr gradient str model =
     case gradient of
         Lightness ->
-            { fields | lightnessField = str }
+            { model | lightnessField = str }
 
         Saturation ->
-            { fields | saturationField = str }
+            { model | saturationField = str }
 
         Hue ->
-            { fields | hueField = str }
+            { model | hueField = str }
 
         Blue ->
-            { fields | blueField = str }
+            { model | blueField = str }
 
         Green ->
-            { fields | greenField = str }
+            { model | greenField = str }
 
         Red ->
-            { fields | redField = str }
+            { model | redField = str }
 
 
-sliderHandler : Int -> Gradient -> Fields -> Return Fields Msg Reply
-sliderHandler x gradient fields =
+setGradient : Int -> Gradient -> Model -> Return Model Msg Reply
+setGradient x gradient model =
     case gradient of
         Lightness ->
             let
                 { hue, saturation } =
-                    Color.toHsl fields.color
+                    Color.toHsl model.color
             in
-            { fields
+            { model
                 | color =
                     Color.hsl
                         hue
@@ -580,9 +559,9 @@ sliderHandler x gradient fields =
         Saturation ->
             let
                 { hue, lightness } =
-                    Color.toHsl fields.color
+                    Color.toHsl model.color
             in
-            { fields
+            { model
                 | color =
                     Color.hsl
                         hue
@@ -594,9 +573,9 @@ sliderHandler x gradient fields =
         Hue ->
             let
                 { saturation, lightness } =
-                    Color.toHsl fields.color
+                    Color.toHsl model.color
             in
-            { fields
+            { model
                 | color =
                     Color.hsl
                         (degrees ((toFloat x / 255) * 360))
@@ -608,9 +587,9 @@ sliderHandler x gradient fields =
         Red ->
             let
                 { green, blue } =
-                    Color.toRgb fields.color
+                    Color.toRgb model.color
             in
-            { fields
+            { model
                 | color = Color.rgb x green blue
             }
                 |> cohereAndSet
@@ -618,9 +597,9 @@ sliderHandler x gradient fields =
         Green ->
             let
                 { red, blue } =
-                    Color.toRgb fields.color
+                    Color.toRgb model.color
             in
-            { fields
+            { model
                 | color = Color.rgb red x blue
             }
                 |> cohereAndSet
@@ -628,9 +607,9 @@ sliderHandler x gradient fields =
         Blue ->
             let
                 { red, green } =
-                    Color.toRgb fields.color
+                    Color.toRgb model.color
             in
-            { fields
+            { model
                 | color = Color.rgb red green x
             }
                 |> cohereAndSet
@@ -640,28 +619,28 @@ sliderHandler x gradient fields =
 -- INTERNAL HELPERS --
 
 
-cohereAndSet : Fields -> Return Fields Msg Reply
+cohereAndSet : Model -> Return Model Msg Reply
 cohereAndSet =
     cohereModel >> setColor
 
 
-setColor : Fields -> Return Fields Msg Reply
-setColor ({ index, color } as fields) =
-    fields
+setColor : Model -> Return Model Msg Reply
+setColor ({ index, color } as model) =
+    model
         |> R2.withNoCmd
         |> R3.withReply (SetColor index color)
 
 
-cohereModel : Fields -> Fields
-cohereModel fields =
+cohereModel : Model -> Model
+cohereModel model =
     let
         { red, green, blue } =
-            Color.toRgb fields.color
+            Color.toRgb model.color
 
         { hue, saturation, lightness } =
-            Color.toHsl fields.color
+            Color.toHsl model.color
     in
-    { fields
+    { model
         | redField = toString red
         , greenField = toString green
         , blueField = toString blue
@@ -678,7 +657,7 @@ cohereModel fields =
                 |> floor
                 |> toString
         , colorHexField =
-            fields.color
+            model.color
                 |> Util.toHexColor
                 |> String.dropLeft 1
     }
@@ -691,9 +670,13 @@ cohereModel fields =
 type Class
     = ColorPicker
     | Visualization
+    | SliderLabel
+    | SliderInput
     | SliderContainer
     | Gradient
     | Pointer
+    | TriangleUp
+    | TriangleDown
     | Transparent
     | HexField
     | ArrowButton
@@ -770,19 +753,39 @@ css =
                 ]
             ]
         ]
+    , Css.class SliderLabel
+        Html.Custom.cannotSelect
+    , Css.class SliderInput
+        Html.Custom.cannotSelect
     , (Css.class Gradient << List.append indent)
         [ height (px 20)
         , width (px 256)
         , display inlineBlock
         , marginLeft (px 4)
         , position relative
+        , overflow hidden
         ]
     , Css.class Pointer
         [ position absolute
+
+        --, width (px 8)
         , height (px 20)
-        , borderLeft3 (px 2) solid Ct.point0
-        , borderRight3 (px 2) solid Ct.ignorable1
         , cursor pointer
+        ]
+    , Css.class TriangleUp
+        [ width (px 0)
+        , height (px 0)
+        , borderLeft3 (px 5) solid transparent
+        , borderRight3 (px 5) solid transparent
+        , borderTop3 (px 5) solid Ct.ignorable1
+        ]
+    , Css.class TriangleDown
+        [ width (px 0)
+        , height (px 0)
+        , borderLeft3 (px 5) solid transparent
+        , borderRight3 (px 5) solid transparent
+        , borderBottom3 (px 5) solid Ct.point0
+        , marginTop (px 10)
         ]
     , Css.class Transparent
         [ property "pointer-events" "none" ]
@@ -809,18 +812,17 @@ view model =
     card
         [ class [ ColorPicker ]
         , style
-            [ Util.left model.window.position.x
-            , Util.top model.window.position.y
+            [ Util.left model.position.x
+            , Util.top model.position.y
             ]
         ]
-        [ (header >> Html.map HandleWindowMsg)
+        [ header
             { text = "color picker"
             , headerMouseDown = HeaderMouseDown
             , xButtonMouseDown = XButtonMouseDown
             , xButtonMouseUp = XButtonMouseUp
             }
-        , cardBody [] (body model.fields)
-            |> Html.map HandleFieldsMsg
+        , cardBody [] (body model)
         ]
 
 
@@ -828,7 +830,7 @@ view model =
 -- BODY --
 
 
-body : Fields -> List (Html FieldsMsg)
+body : Model -> List (Html Msg)
 body ({ colorHexField, color } as model) =
     [ div
         [ class [ Visualization ]
@@ -842,9 +844,9 @@ body ({ colorHexField, color } as model) =
         ]
         [ input
             [ spellcheck False
-            , onFocus (SetFocus True)
-            , onBlur (SetFocus False)
-            , onInput UpdateColorHexField
+            , onFocus InputFocused
+            , onBlur InputBlurred
+            , onInput HexFieldUpdated
             , value colorHexField
             ]
             []
@@ -892,29 +894,30 @@ type alias SliderModel =
     { label : String
     , fieldContent : String
     , gradient : Gradient
-    , gradientSlider : Html FieldsMsg
+    , gradientSlider : Html Msg
     }
 
 
-slider : SliderModel -> Html FieldsMsg
+slider : SliderModel -> Html Msg
 slider { label, fieldContent, gradient, gradientSlider } =
     div
         [ class [ SliderContainer ] ]
-        [ p [] [ Html.text label ]
+        [ p [ class [ SliderLabel ] ] [ Html.text label ]
         , gradientSlider
         , arrow Left gradient TriangleLeft fieldContent
         , arrow Right gradient TriangleRight fieldContent
         , input
-            [ onInput (FieldUpdate gradient)
+            [ class [ SliderInput ]
+            , onInput (FieldUpdated gradient)
             , value fieldContent
-            , onFocus (SetFocus True)
-            , onBlur (SetFocus False)
+            , onFocus InputFocused
+            , onBlur InputBlurred
             ]
             []
         ]
 
 
-arrow : Direction -> Gradient -> Class -> String -> Html FieldsMsg
+arrow : Direction -> Gradient -> Class -> String -> Html Msg
 arrow direction gradient triangleClass fieldContent =
     Html.Custom.menuButton
         [ class [ ArrowButton ]
@@ -927,109 +930,82 @@ arrow direction gradient triangleClass fieldContent =
 -- SLIDERS --
 
 
-redGradient : Fields -> Html FieldsMsg
+redGradient : Model -> Html Msg
 redGradient { color, gradientClickedOn } =
     let
         { red, green, blue } =
             Color.toRgb color
 
-        attributes : List (Attribute FieldsMsg)
-        attributes =
-            let
-                gradientField =
-                    gradientStyle
-                        [ Color.rgb 0 green blue
-                        , Color.rgb 255 green blue
-                        ]
-            in
-            addMouseMoveHandler
-                (gradientAttributes gradientField)
-                gradientClickedOn
-                Red
+        attrs : List (Attribute Msg)
+        attrs =
+            [ Color.rgb 0 green blue
+            , Color.rgb 255 green blue
+            ]
+                |> gradientStyle
+                |> gradientAttributes Red
     in
     div
-        attributes
+        attrs
         [ div
-            [ classList
-                [ def "pointer" True
-                , def "transparent" (gradientClickedOn == Just Red)
-                ]
-            , style [ Util.left (red - 2) ]
+            [ pointerClasses gradientClickedOn Red
+            , style [ Util.left (red - 5) ]
             , Html.Events.onMouseDown (MouseDownOnPointer Red)
             ]
-            []
+            triangles
         ]
 
 
-greenGradient : Fields -> Html FieldsMsg
+greenGradient : Model -> Html Msg
 greenGradient { color, gradientClickedOn } =
     let
         { red, green, blue } =
             Color.toRgb color
 
-        attributes : List (Attribute FieldsMsg)
-        attributes =
-            let
-                gradientField =
-                    gradientStyle
-                        [ Color.rgb red 0 blue
-                        , Color.rgb red 255 blue
-                        ]
-            in
-            addMouseMoveHandler
-                (gradientAttributes gradientField)
-                gradientClickedOn
-                Green
+        attrs : List (Attribute Msg)
+        attrs =
+            [ Color.rgb red 0 blue
+            , Color.rgb red 255 blue
+            ]
+                |> gradientStyle
+                |> gradientAttributes Green
     in
     div
-        attributes
+        attrs
         [ div
-            [ classList
-                [ def "pointer" True
-                , def "transparent" (gradientClickedOn == Just Green)
-                ]
-            , style [ Util.left (green - 2) ]
+            [ pointerClasses gradientClickedOn Green
+            , style [ Util.left (green - 5) ]
             , Html.Events.onMouseDown (MouseDownOnPointer Green)
             ]
-            []
+            triangles
         ]
 
 
-blueGradient : Fields -> Html FieldsMsg
+blueGradient : Model -> Html Msg
 blueGradient { color, gradientClickedOn } =
     let
         { red, green, blue } =
             Color.toRgb color
 
-        attributes : List (Attribute FieldsMsg)
-        attributes =
-            let
-                gradientField =
-                    gradientStyle
-                        [ Color.rgb red green 0
-                        , Color.rgb red green 255
-                        ]
-            in
-            addMouseMoveHandler
-                (gradientAttributes gradientField)
-                gradientClickedOn
-                Blue
+        attrs : List (Attribute Msg)
+        attrs =
+            [ Color.rgb red green 0
+            , Color.rgb red green 255
+            ]
+                |> gradientStyle
+                |> gradientAttributes Blue
     in
     div
-        attributes
+        attrs
         [ div
-            [ classList
-                [ def "pointer" True
-                , def "transparent" (gradientClickedOn == Just Blue)
-                ]
-            , style [ Util.left (blue - 2) ]
+            [ pointerClasses gradientClickedOn Blue
+            , style [ Util.left (blue - 5) ]
             , Html.Events.onMouseDown (MouseDownOnPointer Blue)
             ]
-            []
+            triangles
         ]
 
 
-hueGradient : Fields -> Html FieldsMsg
+hueGradient : Model -> Html Msg
 hueGradient { color, gradientClickedOn } =
     let
         { red } =
@@ -1038,7 +1014,8 @@ hueGradient { color, gradientClickedOn } =
         { hue, saturation, lightness } =
             Color.toHsl color
 
-        nanSafeGradient =
+        style_ : ( String, String )
+        style_ =
             if doesntHaveHue color then
                 [ Color.rgb red red red
                 , Color.rgb red red red
@@ -1056,37 +1033,32 @@ hueGradient { color, gradientClickedOn } =
                 [ 0, 60, 120, 180, 240, 300, 360 ]
                     |> List.map atDegree
                     |> gradientStyle
-
-        attributes : List (Attribute FieldsMsg)
-        attributes =
-            addMouseMoveHandler
-                (gradientAttributes nanSafeGradient)
-                gradientClickedOn
-                Hue
     in
     div
-        attributes
+        (gradientAttributes Hue style_)
         [ div
-            [ classList
-                [ def "pointer" True
-                , def "transparent" (gradientClickedOn == Just Hue)
-                ]
-            , style
-                [ Util.left (floor ((hue / (2 * pi)) * 255)) ]
-            , Html.Events.onMouseDown (MouseDownOnPointer Hue)
+            [ pointerClasses gradientClickedOn Hue
+            , style [ Util.left (hueLeftPosition hue) ]
+            , Html.Events.onMouseDown
+                (MouseDownOnPointer Hue)
             ]
-            []
+            triangles
         ]
 
 
-saturationGradient : Fields -> Html FieldsMsg
+hueLeftPosition : Float -> Int
+hueLeftPosition hue =
+    floor ((hue / (2 * pi)) * 255) - 5
+
+
+saturationGradient : Model -> Html Msg
 saturationGradient { color, gradientClickedOn } =
     let
         { hue, saturation, lightness } =
             Color.toHsl color
 
-        nanSafeGradient : ( String, String )
-        nanSafeGradient =
+        style_ : ( String, String )
+        style_ =
             if doesntHaveHue color then
                 let
                     { red } =
@@ -1101,99 +1073,78 @@ saturationGradient { color, gradientClickedOn } =
                 , Color.hsl hue 1 lightness
                 ]
                     |> gradientStyle
-
-        attributes : List (Attribute FieldsMsg)
-        attributes =
-            addMouseMoveHandler
-                (gradientAttributes nanSafeGradient)
-                gradientClickedOn
-                Saturation
     in
     div
-        attributes
+        (gradientAttributes Saturation style_)
         [ div
-            [ classList
-                [ def "pointer" True
-                , def "transparent" (gradientClickedOn == Just Saturation)
-                ]
+            [ pointerClasses gradientClickedOn Saturation
             , style
-                [ Util.left (floor (saturation * 255) - 2) ]
-            , Html.Events.onMouseDown (MouseDownOnPointer Saturation)
+                [ Util.left (floor (saturation * 255) - 5) ]
+            , Html.Events.onMouseDown
+                (MouseDownOnPointer Saturation)
             ]
-            []
+            triangles
         ]
 
 
-lightnessGradient : Fields -> Html FieldsMsg
+lightnessGradient : Model -> Html Msg
 lightnessGradient { color, gradientClickedOn } =
     let
         { hue, saturation, lightness } =
             Color.toHsl color
 
-        nanSafeGradient : ( String, String )
-        nanSafeGradient =
+        gradientColors : List Color.Color
+        gradientColors =
             if doesntHaveHue color then
-                gradientStyle
-                    [ Color.rgb 0 0 0
-                    , Color.rgb 255 255 255
-                    ]
+                [ Color.rgb 0 0 0
+                , Color.rgb 255 255 255
+                ]
             else
-                gradientStyle
-                    [ Color.hsl hue saturation 0
-                    , Color.hsl hue saturation 0.5
-                    , Color.hsl hue saturation 1
-                    ]
-
-        attributes : List (Attribute FieldsMsg)
-        attributes =
-            addMouseMoveHandler
-                (gradientAttributes nanSafeGradient)
-                gradientClickedOn
-                Lightness
+                [ Color.hsl hue saturation 0
+                , Color.hsl hue saturation 0.5
+                , Color.hsl hue saturation 1
+                ]
     in
     div
-        attributes
+        (gradientAttributes Lightness (gradientStyle gradientColors))
         [ div
-            [ classList
-                [ def "pointer" True
-                , def "transparent" (gradientClickedOn == Just Lightness)
-                ]
+            [ pointerClasses gradientClickedOn Lightness
             , style
-                [ Util.left (floor (lightness * 255) - 2) ]
+                [ Util.left (floor (lightness * 255) - 5) ]
             , Html.Events.onMouseDown (MouseDownOnPointer Lightness)
             ]
-            []
+            triangles
         ]
+
+
+pointerClasses : Maybe Gradient -> Gradient -> Attribute msg
+pointerClasses gradientClickedOn thisGradient =
+    [ def Pointer True
+    , def
+        Transparent
+        (gradientClickedOn == Just thisGradient)
+    ]
+        |> classList
+
+
+triangles : List (Html msg)
+triangles =
+    [ div [ class [ TriangleUp ] ] []
+    , div [ class [ TriangleDown ] ] []
+    ]
 
 
 
 -- INTERNAL HELPERS --
 
 
-gradientAttributes : ( String, String ) -> List (Attribute FieldsMsg)
-gradientAttributes gradientStyle_ =
+gradientAttributes : Gradient -> ( String, String ) -> List (Attribute Msg)
+gradientAttributes gradient gradientStyle_ =
     [ class [ Gradient ]
     , style [ gradientStyle_ ]
-    , Html.Events.onMouseUp SetNoGradientClickedOn
+    , MouseEvents.onMouseDown (GradientMouseDown gradient)
+    , MouseEvents.onMouseMove (MouseMoveInGradient gradient)
     ]
-
-
-addMouseMoveHandler : List (Attribute FieldsMsg) -> Maybe Gradient -> Gradient -> List (Attribute FieldsMsg)
-addMouseMoveHandler attributes maybeGradient gradient =
-    case maybeGradient of
-        Just g ->
-            if g == gradient then
-                let
-                    moveHandler =
-                        MouseMoveInGradient gradient
-                            |> MouseEvents.onMouseMove
-                in
-                moveHandler :: attributes
-            else
-                attributes
-
-        Nothing ->
-            attributes
 
 
 gradientStyle : List Color.Color -> ( String, String )
@@ -1205,7 +1156,8 @@ gradientStyle colors =
         |> String.concat
     , ")"
     ]
-        |> (String.concat >> (,) "background")
+        |> String.concat
+        |> def "background"
 
 
 toCssString : Color.Color -> String

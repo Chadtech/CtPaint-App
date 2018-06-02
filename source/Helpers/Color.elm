@@ -17,7 +17,6 @@ import Data.Color
         ( Model
         , Swatches
         )
-import Data.Picker as Picker
 
 
 setTop : Color -> Swatches -> Swatches
@@ -35,16 +34,11 @@ setPaletteColor index color ({ palette, picker } as model) =
     { model
         | palette = Array.set index color palette
         , picker =
-            if picker.fields.index == index then
-                setPickerColor color picker
+            if picker.index == index then
+                { picker | color = color }
             else
                 picker
     }
-
-
-setPickerColor : Color -> Picker.Model -> Picker.Model
-setPickerColor color ({ fields } as picker) =
-    { picker | fields = { fields | color = color } }
 
 
 swatchesTurnLeft : Model -> Model
@@ -91,16 +85,9 @@ setKeyAsDown ({ swatches } as model) =
 
 toggleColorPicker : Model -> Model
 toggleColorPicker ({ picker } as model) =
-    let
-        { window } =
-            picker
-    in
     { model
         | picker =
             { picker
-                | window =
-                    { window
-                        | show = not window.show
-                    }
+                | show = not picker.show
             }
     }

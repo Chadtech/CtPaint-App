@@ -2,14 +2,10 @@ module Data.Picker
     exposing
         ( ClickState(..)
         , Direction(..)
-        , Fields
-        , FieldsMsg(..)
         , Gradient(..)
         , Model
         , Msg(..)
         , Reply(..)
-        , Window
-        , WindowMsg(..)
         , init
         )
 
@@ -27,33 +23,26 @@ type Reply
     | UpdateHistory Int Color
 
 
-type WindowMsg
-    = HeaderMouseDown MouseEvent
-    | HeaderMouseMove Position
-    | HeaderMouseUp
-    | XButtonMouseDown
-    | XButtonMouseUp
-
-
-type FieldsMsg
-    = SetFocus Bool
-    | StealSubmit
-    | UpdateColorHexField String
-    | MouseDownOnPointer Gradient
-    | SetNoGradientClickedOn
-    | MouseMoveInGradient Gradient MouseEvent
-    | FieldUpdate Gradient String
-    | ArrowClicked Gradient Direction
-
-
 type Direction
     = Left
     | Right
 
 
 type Msg
-    = HandleFieldsMsg FieldsMsg
-    | HandleWindowMsg WindowMsg
+    = InputFocused
+    | InputBlurred
+    | StealSubmit
+    | HexFieldUpdated String
+    | MouseDownOnPointer Gradient
+    | GradientMouseDown Gradient MouseEvent
+    | MouseMoveInGradient Gradient MouseEvent
+    | FieldUpdated Gradient String
+    | ArrowClicked Gradient Direction
+    | HeaderMouseDown MouseEvent
+    | XButtonMouseDown
+    | XButtonMouseUp
+    | ClientMouseUp
+    | ClientMouseMove Position
 
 
 type Gradient
@@ -66,14 +55,18 @@ type Gradient
 
 
 type alias Model =
-    { window : Window
-    , fields : Fields
-    }
-
-
-type alias Window =
-    { position : Position
-    , clickState : ClickState
+    { color : Color.Color
+    , index : Int
+    , redField : String
+    , greenField : String
+    , blueField : String
+    , hueField : String
+    , saturationField : String
+    , lightnessField : String
+    , colorHexField : String
+    , gradientClickedOn : Maybe Gradient
+    , position : Position
+    , headerClickState : ClickState
     , focusedOn : Bool
     , show : Bool
     }
@@ -85,33 +78,12 @@ type ClickState
     | XButtonIsDown
 
 
-type alias Fields =
-    { color : Color.Color
-    , index : Int
-    , redField : String
-    , greenField : String
-    , blueField : String
-    , hueField : String
-    , saturationField : String
-    , lightnessField : String
-    , colorHexField : String
-    , gradientClickedOn : Maybe Gradient
-    }
-
-
 
 -- INIT --
 
 
 init : Bool -> Int -> Color.Color -> Model
 init show index color =
-    { fields = initFields index color
-    , window = initWindow show
-    }
-
-
-initFields : Int -> Color.Color -> Fields
-initFields index color =
     let
         { red, green, blue } =
             Color.toRgb color
@@ -141,13 +113,8 @@ initFields index color =
             |> Util.toHexColor
             |> String.dropLeft 1
     , gradientClickedOn = Nothing
-    }
-
-
-initWindow : Bool -> Window
-initWindow show =
-    { position = { x = 50, y = 350 }
-    , clickState = NoClicks
+    , position = { x = 50, y = 350 }
+    , headerClickState = NoClicks
     , focusedOn = False
     , show = show
     }
