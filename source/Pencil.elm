@@ -8,23 +8,31 @@ import Canvas exposing (DrawOp(..))
 import Data.Tool exposing (Tool(Pencil))
 import Draw
 import Helpers.History as History
-import Helpers.Tool exposing (adjustPosition)
+import Helpers.Tool
+    exposing
+        ( adjustPosition
+        , getColor
+        )
 import Model exposing (Model)
 import Mouse exposing (Position)
+import Mouse.Extra as Mouse
 
 
-handleScreenMouseDown : Position -> Model -> Model
-handleScreenMouseDown clientPos model =
+handleScreenMouseDown : Position -> Mouse.Button -> Model -> Model
+handleScreenMouseDown clientPos button model =
     let
         position =
             adjustPosition model clientPos
     in
     { model
-        | tool = Pencil (Just position)
+        | tool =
+            ( position, button )
+                |> Just
+                |> Pencil
         , pendingDraw =
             [ model.pendingDraw
             , Draw.line
-                model.color.swatches.top
+                (getColor button model.color.swatches)
                 position
                 position
             ]
@@ -33,18 +41,21 @@ handleScreenMouseDown clientPos model =
         |> History.canvas
 
 
-handleClientMouseMovement : Position -> Position -> Model -> Model
-handleClientMouseMovement newPosition priorPosition model =
+handleClientMouseMovement : Position -> ( Position, Mouse.Button ) -> Model -> Model
+handleClientMouseMovement newPosition ( priorPosition, button ) model =
     let
         adjustedPosition =
             adjustPosition model newPosition
     in
     { model
-        | tool = Pencil (Just adjustedPosition)
+        | tool =
+            ( adjustedPosition, button )
+                |> Just
+                |> Pencil
         , pendingDraw =
             [ model.pendingDraw
             , Draw.line
-                model.color.swatches.top
+                (getColor button model.color.swatches)
                 priorPosition
                 adjustedPosition
             ]

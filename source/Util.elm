@@ -171,16 +171,6 @@ valueIfFocus thisField maybeFocusedField str =
             value ""
 
 
-onContextMenu : msg -> Attribute msg
-onContextMenu msg =
-    Html.Events.onWithOptions
-        "contextmenu"
-        { stopPropagation = False
-        , preventDefault = True
-        }
-        (Decode.succeed msg)
-
-
 viewIf : Bool -> Html msg -> Html msg
 viewIf condition html =
     if condition then

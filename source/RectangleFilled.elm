@@ -9,33 +9,38 @@ import Canvas exposing (Size)
 import Data.Tool exposing (Tool(..))
 import Draw exposing (makeRectParams)
 import Helpers.History as History
-import Helpers.Tool exposing (adjustPosition)
+import Helpers.Tool
+    exposing
+        ( adjustPosition
+        , getColor
+        )
 import Model exposing (Model)
 import Mouse exposing (Position)
+import Mouse.Extra as Mouse
 
 
-handleScreenMouseDown : Position -> Model -> Model
-handleScreenMouseDown clientPos model =
+handleScreenMouseDown : Position -> Mouse.Button -> Model -> Model
+handleScreenMouseDown clientPos button model =
     let
         adjustedPosition =
             adjustPosition model clientPos
     in
     { model
         | tool =
-            adjustedPosition
+            ( adjustedPosition, button )
                 |> Just
                 |> RectangleFilled
         , drawAtRender =
             Draw.filledRectangle
-                model.color.swatches.top
+                (getColor button model.color.swatches)
                 (Size 1 1)
                 adjustedPosition
     }
         |> History.canvas
 
 
-handleClientMouseMovement : Position -> Position -> Model -> Model
-handleClientMouseMovement newPosition priorPosition model =
+handleClientMouseMovement : Position -> ( Position, Mouse.Button ) -> Model -> Model
+handleClientMouseMovement newPosition ( priorPosition, button ) model =
     let
         ( drawPosition, size ) =
             makeRectParams
@@ -45,14 +50,14 @@ handleClientMouseMovement newPosition priorPosition model =
     { model
         | drawAtRender =
             Draw.filledRectangle
-                model.color.swatches.top
+                (getColor button model.color.swatches)
                 size
                 drawPosition
     }
 
 
-handleClientMouseUp : Position -> Position -> Model -> Model
-handleClientMouseUp newPosition priorPosition model =
+handleClientMouseUp : Position -> ( Position, Mouse.Button ) -> Model -> Model
+handleClientMouseUp newPosition ( priorPosition, button ) model =
     let
         ( drawPosition, size ) =
             makeRectParams
@@ -65,7 +70,7 @@ handleClientMouseUp newPosition priorPosition model =
         , pendingDraw =
             [ model.pendingDraw
             , Draw.filledRectangle
-                model.color.swatches.top
+                (getColor button model.color.swatches)
                 size
                 drawPosition
             ]

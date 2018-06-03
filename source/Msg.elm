@@ -10,6 +10,7 @@ import Data.User as User exposing (User)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Keyboard.Extra.Browser exposing (Browser)
 import Mouse exposing (Position)
+import Mouse.Extra exposing (Button)
 import MouseEvents exposing (MouseEvent)
 import Palette
 import Taskbar
@@ -27,9 +28,10 @@ type Msg
     | Tick Time
     | ColorPickerMsg Picker.Msg
     | MinimapMsg Minimap.Msg
-    | ScreenMouseDown MouseEvent
+    | ScreenMouseDown Button MouseEvent
     | ScreenMouseUp MouseEvent
     | ScreenMouseMove MouseEvent
+    | ScreenContextMenu
     | ScreenMouseExit
     | KeyboardEvent (Result String Key.Event)
     | LogoutSucceeded

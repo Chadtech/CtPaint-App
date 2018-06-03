@@ -17,11 +17,17 @@ import Data.Picker as Picker
 import Data.Taco exposing (Taco)
 import Helpers.Color
 import Html exposing (Attribute, Html, a, div, p, span)
-import Html.Attributes exposing (class, classList, style)
+import Html.Attributes exposing (style)
 import Html.CssHelpers
-import Html.Custom exposing (cannotSelect, indent, outdent)
+import Html.Custom
+    exposing
+        ( cannotSelect
+        , indent
+        , outdent
+        )
 import Html.Events exposing (on, onClick)
 import Json.Decode as Decode exposing (Decoder)
+import Mouse.Extra
 import Ports
 import Return2 as R2
 import Tracking
@@ -241,7 +247,7 @@ square picker ( index, color ) =
         [ class (squareClasses index picker)
         , background color
         , PaletteSquareRightClicked color index
-            |> Util.onContextMenu
+            |> Mouse.Extra.onContextMenu
         , onClickWithShift (PaletteSquareClicked index color)
         ]
         []

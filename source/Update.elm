@@ -127,10 +127,14 @@ update msg model =
             Tool.handleScreenMouseUp mouseEvent model
                 |> R2.withNoCmd
 
-        ScreenMouseDown mouseEvent ->
-            Tool.handleScreenMouseDown mouseEvent model
+        ScreenMouseDown button mouseEvent ->
+            Tool.handleScreenMouseDown button mouseEvent model
                 |> R2.withCmd
                     (trackScreenMouseDown mouseEvent.clientPos model)
+
+        ScreenContextMenu ->
+            model
+                |> R2.withNoCmd
 
         ScreenMouseMove { targetPos, clientPos } ->
             let

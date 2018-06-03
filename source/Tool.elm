@@ -8,6 +8,7 @@ import Hand
 import Line
 import Model exposing (Model)
 import Mouse exposing (Position)
+import Mouse.Extra as Mouse
 import MouseEvents exposing (MouseEvent)
 import Pencil
 import Rectangle
@@ -57,8 +58,8 @@ handleScreenMouseUp { clientPos } model =
             model
 
 
-handleScreenMouseDown : MouseEvent -> Model -> Model
-handleScreenMouseDown { clientPos } model =
+handleScreenMouseDown : Mouse.Button -> MouseEvent -> Model -> Model
+handleScreenMouseDown button { clientPos } model =
     case model.tool of
         Hand Nothing ->
             Hand.handleScreenMouseDown clientPos model
@@ -70,10 +71,10 @@ handleScreenMouseDown { clientPos } model =
             model
 
         Pencil Nothing ->
-            Pencil.handleScreenMouseDown clientPos model
+            Pencil.handleScreenMouseDown clientPos button model
 
         Line Nothing ->
-            Line.handleScreenMouseDown clientPos model
+            Line.handleScreenMouseDown clientPos button model
 
         ZoomIn ->
             model
@@ -82,16 +83,16 @@ handleScreenMouseDown { clientPos } model =
             model
 
         Rectangle Nothing ->
-            Rectangle.handleScreenMouseDown clientPos model
+            Rectangle.handleScreenMouseDown clientPos button model
 
         RectangleFilled Nothing ->
-            RectangleFilled.handleScreenMouseDown clientPos model
+            RectangleFilled.handleScreenMouseDown clientPos button model
 
         Select Nothing ->
             Select.handleScreenMouseDown clientPos model
 
         Eraser Nothing ->
-            Eraser.handleScreenMouseDown clientPos model
+            Eraser.handleScreenMouseDown clientPos button model
 
         _ ->
             model
@@ -121,17 +122,17 @@ handleClientMouseUp position model =
         ZoomOut ->
             model
 
-        Rectangle (Just priorPosition) ->
-            Rectangle.handleClientMouseUp position priorPosition model
+        Rectangle (Just subModel) ->
+            Rectangle.handleClientMouseUp position subModel model
 
-        RectangleFilled (Just priorPosition) ->
-            RectangleFilled.handleClientMouseUp position priorPosition model
+        RectangleFilled (Just subModel) ->
+            RectangleFilled.handleClientMouseUp position subModel model
 
-        Select (Just priorPosition) ->
-            Select.handleClientMouseUp position priorPosition model
+        Select (Just subModel) ->
+            Select.handleClientMouseUp position subModel model
 
-        Eraser _ ->
-            { model | tool = Eraser Nothing }
+        Eraser (Just subModel) ->
+            Eraser.handleClientMouseUp position subModel model
 
         _ ->
             model

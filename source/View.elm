@@ -31,6 +31,7 @@ import Menu
 import Minimap
 import Model exposing (Model)
 import Mouse
+import Mouse.Extra
 import MouseEvents
     exposing
         ( onMouseDown
@@ -391,8 +392,8 @@ toolContent ({ tool } as model) =
                 _ ->
                     []
 
-        Data.Tool.Rectangle maybePosition ->
-            case ( maybePosition, model.mousePosition ) of
+        Data.Tool.Rectangle subModel ->
+            case ( Maybe.map Tuple.first subModel, model.mousePosition ) of
                 ( Just origin, Just position ) ->
                     let
                         size =
@@ -423,8 +424,8 @@ toolContent ({ tool } as model) =
                 _ ->
                     []
 
-        Data.Tool.RectangleFilled maybePosition ->
-            case ( maybePosition, model.mousePosition ) of
+        Data.Tool.RectangleFilled subModel ->
+            case ( Maybe.map Tuple.first subModel, model.mousePosition ) of
                 ( Just origin, Just position ) ->
                     let
                         size =
@@ -522,8 +523,11 @@ clickScreen canvasAreaHeight model =
         , Attr.style [ Util.height canvasAreaHeight ]
         , onMouseLeave ScreenMouseExit
         , onMouseMove ScreenMouseMove
-        , onMouseDown ScreenMouseDown
+        , Mouse.Extra.onMouseDown
+            model.taco.config.isMac
+            ScreenMouseDown
         , onMouseUp ScreenMouseUp
+        , Mouse.Extra.onContextMenu ScreenContextMenu
         ]
         []
 

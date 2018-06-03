@@ -2,6 +2,7 @@ module Eraser
     exposing
         ( css
         , handleClientMouseMovement
+        , handleClientMouseUp
         , handleScreenMouseDown
         , view
         )
@@ -12,7 +13,11 @@ import Css.Namespace exposing (namespace)
 import Data.Tool exposing (Tool(Eraser))
 import Draw
 import Helpers.History as History
-import Helpers.Tool exposing (adjustPosition)
+import Helpers.Tool
+    exposing
+        ( adjustPosition
+        , getColor
+        )
 import Html exposing (Html, input)
 import Html.Attributes exposing (value)
 import Html.CssHelpers
@@ -20,6 +25,7 @@ import Html.Custom
 import Html.Events exposing (onClick)
 import Model exposing (Model)
 import Mouse exposing (Position)
+import Mouse.Extra as Mouse
 
 
 -- TYPES --
@@ -99,18 +105,21 @@ view { increaseMsg, decreaseMsg, size } =
     ]
 
 
-handleScreenMouseDown : Mouse.Position -> Model -> Model
-handleScreenMouseDown clientPos model =
+handleScreenMouseDown : Mouse.Position -> Mouse.Button -> Model -> Model
+handleScreenMouseDown clientPos button model =
     let
         position =
             adjustPosition model clientPos
     in
     { model
-        | tool = Eraser (Just position)
+        | tool =
+            ( position, button )
+                |> Just
+                |> Eraser
         , pendingDraw =
             [ model.pendingDraw
             , Draw.eraserPoint
-                model.color.swatches.top
+                (getColor button model.color.swatches)
                 model.eraserSize
                 position
             ]
@@ -119,21 +128,41 @@ handleScreenMouseDown clientPos model =
         |> History.canvas
 
 
-handleClientMouseMovement : Mouse.Position -> Mouse.Position -> Model -> Model
-handleClientMouseMovement newPosition priorPosition model =
+handleClientMouseMovement : Mouse.Position -> ( Mouse.Position, Mouse.Button ) -> Model -> Model
+handleClientMouseMovement newPosition ( priorPosition, button ) model =
     let
         adjustedPosition =
             adjustPosition model newPosition
     in
     { model
-        | tool = Eraser (Just adjustedPosition)
+        | tool =
+            ( adjustedPosition, button )
+                |> Just
+                |> Eraser
         , pendingDraw =
             [ model.pendingDraw
             , Draw.eraser
-                model.color.swatches.top
+                (getColor button model.color.swatches)
                 model.eraserSize
                 priorPosition
                 adjustedPosition
+            ]
+                |> Canvas.batch
+    }
+
+
+handleClientMouseUp : Mouse.Position -> ( Mouse.Position, Mouse.Button ) -> Model -> Model
+handleClientMouseUp newPosition ( priorPosition, button ) model =
+    { model
+        | tool = Eraser Nothing
+        , drawAtRender = Canvas.batch []
+        , pendingDraw =
+            [ model.pendingDraw
+            , Draw.eraser
+                (getColor button model.color.swatches)
+                model.eraserSize
+                priorPosition
+                (adjustPosition model newPosition)
             ]
                 |> Canvas.batch
     }
