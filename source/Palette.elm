@@ -90,6 +90,7 @@ update taco msg model =
                             { show = True
                             , index = index
                             , color = color
+                            , position = model.picker.position
                             }
                                 |> Picker.init
                     }

@@ -55,6 +55,7 @@ init =
         { show = False
         , index = 0
         , color = Color.black
+        , position = { x = 50, y = 350 }
         }
             |> Picker.init
     }

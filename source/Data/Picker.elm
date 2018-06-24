@@ -87,6 +87,7 @@ type alias Flags =
     { show : Bool
     , index : Int
     , color : Color.Color
+    , position : Position
     }
 
 
@@ -121,7 +122,7 @@ init flags =
             |> Util.toHexColor
             |> String.dropLeft 1
     , gradientClickedOn = Nothing
-    , position = { x = 50, y = 350 }
+    , position = flags.position
     , headerClickState = NoClicks
     , focusedOn = False
     , show = flags.show
