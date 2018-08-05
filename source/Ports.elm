@@ -5,19 +5,24 @@ port module Ports
         , fromJs
         , returnFocus
         , send
+        , sendTracking
         , stealFocus
-        , track
         )
 
 import Array exposing (Array)
 import Canvas exposing (Canvas, Size)
+import Canvas.Helpers
 import Color exposing (Color)
-import Data.Color as Color exposing (Swatches)
+import Color.Palette.Data as Palette
+import Color.Swatches.Data as Swatches
+    exposing
+        ( Swatches
+        )
 import Data.Taco exposing (Taco)
+import Data.Tracking as Tracking
 import Data.User as User
 import Id exposing (Id, Origin(Local, Remote))
 import Json.Encode as Encode exposing (Value)
-import Tracking
 import Util exposing (def)
 
 
@@ -66,15 +71,20 @@ toCmd type_ payload =
         |> toJs
 
 
-track : Taco -> Tracking.Event -> Cmd msg
-track { config, user } event =
-    { sessionId = config.sessionId
-    , email = User.getEmail user
-    , buildNumber = config.buildNumber
-    , event = event
-    }
-        |> Track
-        |> send
+sendTracking : Taco -> Maybe Tracking.Event -> Cmd msg
+sendTracking { config, user } trackingEvent =
+    case Tracking.namespace "desktop" trackingEvent of
+        Just ( name, properties ) ->
+            { sessionId = config.sessionId
+            , email = User.getEmail user
+            , name = name
+            , properties = properties
+            }
+                |> Track
+                |> send
+
+        Nothing ->
+            Cmd.none
 
 
 send : JsMsg -> Cmd msg
@@ -87,9 +97,9 @@ send msg =
             toCmd "returnFocus" Encode.null
 
         Save { swatches, palette, canvas, name, nameIsGenerated, id, email } ->
-            [ def "canvas" <| Color.encodeCanvas canvas
-            , def "palette" <| Color.encodePalette palette
-            , def "swatches" <| Color.encodeSwatches swatches
+            [ def "canvas" <| Canvas.Helpers.encode canvas
+            , def "palette" <| Palette.encode palette
+            , def "swatches" <| Swatches.encode swatches
             , def "name" <| Encode.string name
             , def "nameIsGenerated" <| Encode.bool nameIsGenerated
             , def "email" <| Encode.string email

@@ -8,8 +8,8 @@ module Data.Drawing
         )
 
 import Id exposing (Id)
-import Json.Decode as Decode exposing (Decoder)
-import Json.Decode.Pipeline exposing (decode, required)
+import Json.Decode as JD exposing (Decoder)
+import Json.Decode.Pipeline as JDP exposing (decode)
 
 
 -- TYPES --
@@ -37,11 +37,11 @@ type State
 decoder : Decoder Drawing
 decoder =
     decode Drawing
-        |> required "drawingId" Id.decoder
-        |> required "publicId" Id.decoder
-        |> required "canvas" Decode.string
-        |> required "name" Decode.string
-        |> required "nameIsGenerated" Decode.bool
+        |> JDP.required "drawingId" Id.decoder
+        |> JDP.required "publicId" Id.decoder
+        |> JDP.required "canvas" JD.string
+        |> JDP.required "name" JD.string
+        |> JDP.required "nameIsGenerated" JD.bool
 
 
 

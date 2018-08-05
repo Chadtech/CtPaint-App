@@ -8,7 +8,6 @@ import Data.Keys as Key exposing (Cmd(..), QuickKey)
 import Data.Minimap exposing (State(..))
 import Data.Taco as Taco exposing (Taco)
 import Data.Taskbar as Taskbar exposing (Dropdown(..))
-import Data.Tool as Tool exposing (Tool)
 import Data.User as User exposing (User)
 import Data.Window as Window exposing (Window(..))
 import Helpers.Keys
@@ -22,7 +21,7 @@ import Html.Events
         , onMouseOver
         )
 import Keys
-import Menu
+import Menu.Model as Menu
 import Model exposing (Model)
 import Platform.Cmd as Platform
 import Ports
@@ -35,27 +34,8 @@ import Ports
             )
         )
 import Return2 as R2
-import Tool
-import Tracking
-    exposing
-        ( Event
-            ( TaskbarAboutClick
-            , TaskbarDrawingClick
-            , TaskbarDropdownClick
-            , TaskbarDropdownHoverOnto
-            , TaskbarDropdownOutClick
-            , TaskbarKeyCmdClick
-            , TaskbarLoginClick
-            , TaskbarLogoutClick
-            , TaskbarOpenImageLinkClick
-            , TaskbarReportBugClick
-            , TaskbarToolClick
-            , TaskbarUploadClick
-            , TaskbarUserClick
-            , TaskbarWindowClick
-            )
-        )
-import Util exposing (toolbarWidth)
+import Style
+import Tool.Data as Tool exposing (Tool)
 
 
 -- TYPES --
@@ -86,23 +66,20 @@ update : Msg -> Model -> ( Model, Platform.Cmd msg )
 update msg model =
     case msg of
         DropdownClickedOut ->
-            TaskbarDropdownOutClick
-                |> Ports.track model.taco
-                |> R2.withModel
-                    { model
-                        | taskbarDropped = Nothing
-                    }
+            { model
+                | taskbarDropped = Nothing
+            }
+                |> R2.withNoCmd
 
         DropdownClicked dropdown ->
-            TaskbarDropdownClick (Taskbar.toString dropdown)
-                |> Ports.track model.taco
-                |> R2.withModel
-                    { model
-                        | taskbarDropped = Just dropdown
-                    }
+            { model
+                | taskbarDropped = Just dropdown
+            }
+                |> R2.withNoCmd
 
         HoveredOnto dropdown ->
             hoverOnto dropdown model
+                |> R2.withNoCmd
 
         LoginClicked ->
             { model
@@ -114,8 +91,6 @@ update msg model =
                 |> R2.withCmds
                     [ Ports.stealFocus
                     , Ports.send Ports.Logout
-                    , TaskbarLoginClick
-                        |> Ports.track model.taco
                     ]
 
         UserClicked ->
@@ -126,11 +101,11 @@ update msg model =
                         |> User.LoggedIn
                         |> Taco.setUser model.taco
                         |> Model.setTaco model
-                        |> R2.withCmd
-                            (Ports.track model.taco TaskbarUserClick)
+                        |> R2.withNoCmd
 
                 _ ->
-                    model |> R2.withNoCmd
+                    model
+                        |> R2.withNoCmd
 
         LogoutClicked ->
             { model
@@ -139,8 +114,7 @@ update msg model =
                         |> Menu.initLogout
                         |> Just
             }
-                |> R2.withCmd
-                    (Ports.track model.taco TaskbarLogoutClick)
+                |> R2.withNoCmd
 
         AboutClicked ->
             { model
@@ -150,8 +124,7 @@ update msg model =
                             model.taco.config.buildNumber
                         |> Just
             }
-                |> R2.withCmd
-                    (Ports.track model.taco TaskbarAboutClick)
+                |> R2.withNoCmd
 
         ReportBugClicked ->
             { model
@@ -161,45 +134,25 @@ update msg model =
                             (User.isLoggedIn model.taco.user)
                         |> Just
             }
-                |> R2.withCmds
-                    [ Ports.stealFocus
-                    , TaskbarReportBugClick
-                        |> Ports.track model.taco
-                    ]
+                |> R2.withCmd Ports.stealFocus
 
         KeyCmdClicked keyCmd ->
             Keys.exec keyCmd model
-                |> R2.addCmd
-                    (trackKeyCmdClick model.taco keyCmd)
 
         NewWindowClicked window ->
-            [ window
+            window
                 |> Window.toUrl model.taco.config.mountPath
                 |> Ports.OpenNewWindow
                 |> Ports.send
-            , window
-                |> Window.toString
-                |> TaskbarWindowClick
-                |> Ports.track model.taco
-            ]
-                |> Cmd.batch
                 |> R2.withModel model
 
         UploadClicked ->
-            [ Ports.send OpenUpFileUpload
-            , TaskbarUploadClick
-                |> Ports.track model.taco
-            ]
-                |> Cmd.batch
+            Ports.send OpenUpFileUpload
                 |> R2.withModel model
 
         ToolClicked tool ->
-            tool
-                |> Tool.name
-                |> TaskbarToolClick
-                |> Ports.track model.taco
-                |> R2.withModel
-                    { model | tool = tool }
+            { model | tool = tool }
+                |> R2.withNoCmd
 
         DrawingClicked ->
             { model
@@ -209,65 +162,35 @@ update msg model =
                         model.windowSize
                         |> Just
             }
-                |> R2.withCmds
-                    [ Ports.stealFocus
-                    , TaskbarDrawingClick
-                        |> Ports.track model.taco
-                    ]
+                |> R2.withCmd Ports.stealFocus
 
         OpenImageLinkClicked ->
             case User.getPublicId model.taco.user of
                 Just publicId ->
-                    [ publicId
+                    publicId
                         |> Window.Drawing
                         |> Window.toUrl model.taco.config.mountPath
                         |> OpenNewWindow
                         |> Ports.send
-                    , TaskbarOpenImageLinkClick
-                        |> Ports.track model.taco
-                    ]
-                        |> Cmd.batch
                         |> R2.withModel model
 
                 _ ->
                     model |> R2.withNoCmd
 
 
-trackKeyCmdClick : Taco -> Key.Cmd -> Platform.Cmd msg
-trackKeyCmdClick taco keyCmd =
-    keyCmd
-        |> toString
-        |> TaskbarKeyCmdClick
-        |> Ports.track taco
-
-
-hoverOnto : Dropdown -> Model -> ( Model, Platform.Cmd msg )
+hoverOnto : Dropdown -> Model -> Model
 hoverOnto dropdown model =
     case model.taskbarDropped of
         Nothing ->
             model
-                |> R2.withNoCmd
 
         Just currentDropdown ->
             if currentDropdown == dropdown then
-                dropdown
-                    |> trackHoverOnto model.taco
-                    |> R2.withModel model
+                model
             else
-                dropdown
-                    |> trackHoverOnto model.taco
-                    |> R2.withModel
-                        { model
-                            | taskbarDropped = Just dropdown
-                        }
-
-
-trackHoverOnto : Taco -> Dropdown -> Platform.Cmd msg
-trackHoverOnto taco dropdown =
-    dropdown
-        |> Taskbar.toString
-        |> TaskbarDropdownHoverOnto
-        |> Ports.track taco
+                { model
+                    | taskbarDropped = Just dropdown
+                }
 
 
 
@@ -297,19 +220,19 @@ css : Stylesheet
 css =
     [ Css.class Taskbar
         [ backgroundColor Ct.ignorable2
-        , height (px toolbarWidth)
-        , width (calc (pct 100) minus (px toolbarWidth))
-        , left (px (toolbarWidth - 1))
+        , height (px <| toFloat Style.taskbarHeight)
+        , width (calc (pct 100) minus (px <| toFloat Style.toolbarWidth))
+        , left (px <| toFloat (Style.toolbarWidth - 1))
         , top (px 0)
         , position absolute
         , borderBottom3 (px 1) solid Ct.ignorable3
         ]
     , Css.class InvisibleWall
-        [ width (calc (pct 100) plus (px toolbarWidth))
+        [ width (calc (pct 100) plus (px <| toFloat Style.toolbarWidth))
         , height (vh 100)
         , position absolute
         , top (px 0)
-        , left (px -toolbarWidth)
+        , left (px <| toFloat -Style.toolbarWidth)
         , zIndex (int 1)
         ]
     , Css.class Button

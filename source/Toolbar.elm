@@ -1,33 +1,28 @@
-module Toolbar exposing (Msg(..), css, update, view)
+module Toolbar
+    exposing
+        ( Msg(..)
+        , css
+        , update
+        , view
+        )
 
 import Canvas
 import Chadtech.Colors exposing (ignorable2, ignorable3)
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
-import Data.Selection as Selection
-import Data.Tool exposing (Tool(..))
 import Draw
-import Eraser
-import Helpers.Menu
 import Html exposing (Html, a, div)
 import Html.Attributes exposing (attribute, title)
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick)
-import Menu
+import Menu.Model as Menu
 import Model exposing (Model)
 import Ports
 import Return2 as R2
-import Tool
-import Tracking
-    exposing
-        ( Event
-            ( ToolbarDecreaseEraserClick
-            , ToolbarIncreaseEraserClick
-            , ToolbarOtherButtonClick
-            , ToolbarToolButtonClick
-            )
-        )
+import Selection.Model as Selection
+import Tool.Data as Tool exposing (Tool(..))
+import Tool.Eraser as Eraser
 
 
 -- TYPES --
@@ -35,12 +30,12 @@ import Tracking
 
 type Msg
     = ToolButtonClicked Tool
-    | OtherButtonClicked OtherThing
+    | OtherButtonClicked OtherButton
     | IncreaseEraserClicked
     | DecreaseEraserClicked
 
 
-type OtherThing
+type OtherButton
     = Text
     | Invert
     | Replace
@@ -55,17 +50,11 @@ update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
     case msg of
         ToolButtonClicked tool ->
-            tool
-                |> Tool.name
-                |> ToolbarToolButtonClick
-                |> Ports.track model.taco
-                |> R2.withModel
-                    { model | tool = tool }
+            { model | tool = tool }
+                |> R2.withNoCmd
 
-        OtherButtonClicked otherThing ->
-            handleOtherButtonClick otherThing model
-                |> R2.addCmd
-                    (trackOtherButtonClick otherThing model)
+        OtherButtonClicked otherButton ->
+            handleOtherButtonClick otherButton model
 
         IncreaseEraserClicked ->
             model
@@ -78,18 +67,9 @@ update msg model =
                 |> R2.withNoCmd
 
 
-trackOtherButtonClick : OtherThing -> Model -> Cmd msg
-trackOtherButtonClick otherThing model =
-    otherThing
-        |> toString
-        |> String.toLower
-        |> ToolbarOtherButtonClick
-        |> Ports.track model.taco
-
-
-handleOtherButtonClick : OtherThing -> Model -> ( Model, Cmd msg )
-handleOtherButtonClick otherThing model =
-    case otherThing of
+handleOtherButtonClick : OtherButton -> Model -> ( Model, Cmd msg )
+handleOtherButtonClick otherButton model =
+    case otherButton of
         Text ->
             { model
                 | menu =
@@ -104,7 +84,7 @@ handleOtherButtonClick otherThing model =
                 Just selection ->
                     { model
                         | selection =
-                            Selection.updateCanvas
+                            Selection.mapCanvas
                                 Draw.invert
                                 selection
                                 |> Just
@@ -112,21 +92,20 @@ handleOtherButtonClick otherThing model =
                         |> R2.withNoCmd
 
                 Nothing ->
-                    { model
-                        | canvas =
-                            Draw.invert model.canvas
-                    }
+                    Model.mapMainCanvas
+                        Draw.invert
+                        model
                         |> R2.withNoCmd
 
         Replace ->
-            Helpers.Menu.initReplaceColor model
+            Model.initReplaceColorMenu model
 
         Transparency ->
             case model.selection of
                 Just selection ->
                     { model
                         | selection =
-                            Selection.updateCanvas
+                            Selection.mapCanvas
                                 (Canvas.transparentColor model.color.swatches.bottom)
                                 selection
                                 |> Just
@@ -201,22 +180,12 @@ toolbarNamespace =
 
 view : Model -> Html Msg
 view model =
-    div
-        [ class [ Toolbar ] ]
-        (children model)
-
-
-
--- COMPONENTS --
-
-
-children : Model -> List (Html Msg)
-children model =
-    [ List.map (toolButton model.tool) Tool.all
-    , List.map otherButton otherThings
+    [ List.map (toolButtonView model.tool) Tool.all
+    , List.map otherButtonView otherButtons
     , toolMenu model
     ]
         |> List.concat
+        |> div [ class [ Toolbar ] ]
 
 
 toolMenu : Model -> List (Html Msg)
@@ -233,8 +202,8 @@ toolMenu model =
             []
 
 
-otherThings : List ( String, String, OtherThing )
-otherThings =
+otherButtons : List ( String, String, OtherButton )
+otherButtons =
     [ ( "\xEA19", "text", Text )
     , ( "\xEA0F", "replace color", Replace )
     , ( "\xEA0E", "invert colors", Invert )
@@ -242,12 +211,12 @@ otherThings =
     ]
 
 
-otherButton : ( String, String, OtherThing ) -> Html Msg
-otherButton ( icon, name, otherThing ) =
+otherButtonView : ( String, String, OtherButton ) -> Html Msg
+otherButtonView ( icon, name, otherButton ) =
     { icon = icon
     , selected = False
     , attrs =
-        [ onClick (OtherButtonClicked otherThing)
+        [ onClick (OtherButtonClicked otherButton)
         , attribute "data-toggle" "tooltip"
         , title name
         , class [ Button ]
@@ -256,8 +225,8 @@ otherButton ( icon, name, otherThing ) =
         |> Html.Custom.toolButton
 
 
-toolButton : Tool -> Tool -> Html Msg
-toolButton selectedTool tool =
+toolButtonView : Tool -> Tool -> Html Msg
+toolButtonView selectedTool tool =
     { icon = Tool.icon tool
     , selected = isSelectedTool selectedTool tool
     , attrs =

@@ -1,27 +1,28 @@
 module Init exposing (Error(..), fromFlags, init)
 
 import Canvas exposing (Canvas, DrawOp(..), Point, Size)
-import Data.Color
+import Canvas.Data.Params
+import Canvas.Helpers
+import Canvas.Model
+import Color.Model
 import Data.Flags as Flags exposing (Flags, Init(..))
-import Data.History
-import Data.Menu as Menu
 import Data.Minimap
+import Data.Position as Position exposing (Position)
 import Data.Taco as Taco
-import Data.Tool as Tool
 import Data.User as User
 import Data.Window as Window
-import Helpers.Canvas as Canvas
+import Draw.Model
 import Helpers.Import
+import History.Model as History
 import Id exposing (Origin(Local, Remote))
 import Json.Decode as Decode exposing (Value)
-import Menu
+import Menu.Model as Menu
 import Model exposing (Model)
-import Mouse exposing (Position)
 import Msg exposing (Msg(InitFromUrl))
 import Ports exposing (JsMsg(LoadDrawing, RedirectPageTo))
+import Position.Helpers
 import Return2 as R2
-import Tracking exposing (Event(AppInit, AppInitFail))
-import Util exposing (tbw)
+import Tool.Data as Tool
 
 
 -- TYPES --
@@ -38,15 +39,10 @@ init json =
         Ok flags ->
             case flags.user of
                 User.AllowanceExceeded ->
-                    [ Window.AllowanceExceeded
+                    Window.AllowanceExceeded
                         |> Window.toUrl flags.mountPath
                         |> RedirectPageTo
                         |> Ports.send
-                    , Ports.track
-                        (Taco.fromFlags flags)
-                        Tracking.AllowanceExceed
-                    ]
-                        |> Cmd.batch
                         |> R2.withModel
                             (Err AllowanceExceeded)
 
@@ -56,18 +52,9 @@ init json =
 
         Err err ->
             Err (Other err)
-                |> R2.withCmd (errCmd err)
-
-
-errCmd : String -> Cmd Msg
-errCmd err =
-    { sessionId = Id.fromString "ERROR"
-    , email = Nothing
-    , buildNumber = -1
-    , event = AppInitFail err
-    }
-        |> Ports.Track
-        |> Ports.send
+                -- TODO
+                -- App INit Error tracking
+                |> R2.withNoCmd
 
 
 fromFlags : Flags -> ( Model, Cmd Msg )
@@ -75,22 +62,17 @@ fromFlags flags =
     let
         ( fields, cmd ) =
             getFields flags
-
-        canvasSize =
-            Canvas.getSize fields.canvas
     in
     { canvas = fields.canvas
-    , color = fields.color
-    , canvasPosition = fields.canvasPosition
+    , draws = Draw.Model.init
+    , color = Color.Model.init
     , drawingName = fields.drawingName
     , drawingNameIsGenerated = fields.drawingNameIsGenerated
-    , pendingDraw = Canvas.noop
-    , drawAtRender = Canvas.noop
     , windowSize = flags.windowSize
     , tool = Tool.init
     , zoom = 1
     , galleryView = False
-    , history = Data.History.init fields.canvas
+    , history = History.init fields.canvas.main
     , mousePosition = Nothing
     , selection = Nothing
     , clipboard = Nothing
@@ -103,33 +85,14 @@ fromFlags flags =
     , taco = Taco.fromFlags flags
     }
         |> R2.withCmd cmd
-        |> withTracking
-
-
-withTracking : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
-withTracking ( model, cmd ) =
-    [ { windowSize = model.windowSize
-      , isMac = model.taco.config.isMac
-      , browser = model.taco.config.browser
-      , buildNumber = model.taco.config.buildNumber
-      , drawingId = User.getDrawingOrigin model.taco.user
-      }
-        |> AppInit
-        |> Ports.track model.taco
-    , cmd
-    ]
-        |> Cmd.batch
-        |> R2.withModel model
 
 
 type alias InitFields =
-    { canvas : Canvas
-    , canvasPosition : Position
+    { canvas : Canvas.Model.Model
     , drawingName : String
     , drawingNameIsGenerated : Bool
     , id : Origin
     , menu : Maybe Menu.Model
-    , color : Data.Color.Model
     }
 
 
@@ -137,13 +100,13 @@ getFields : Flags -> ( InitFields, Cmd Msg )
 getFields ({ windowSize } as flags) =
     case flags.init of
         NormalInit ->
-            let
-                size =
-                    Canvas.getSize Canvas.blank
-            in
-            { canvas = Canvas.blank
-            , canvasPosition =
-                Util.center flags.windowSize size
+            { canvas =
+                { main = Canvas.Helpers.blank
+                , position =
+                    Position.Helpers.centerInWorkarea
+                        flags.windowSize
+                        (Canvas.getSize Canvas.Helpers.blank)
+                }
             , drawingName = flags.randomValues.projectName
             , drawingNameIsGenerated = True
             , id = Local
@@ -152,13 +115,14 @@ getFields ({ windowSize } as flags) =
                     flags.randomValues.projectName
                     flags.windowSize
                     |> Just
-            , color = Data.Color.init
             }
                 |> R2.withCmd Ports.stealFocus
 
         FromId id ->
-            { canvas = Canvas.tiny
-            , canvasPosition = offScreen
+            { canvas =
+                { main = Canvas.Helpers.tiny
+                , position = offScreen
+                }
             , drawingName = "loading"
             , drawingNameIsGenerated = False
             , id = Remote id
@@ -167,14 +131,15 @@ getFields ({ windowSize } as flags) =
                     Nothing
                     flags.windowSize
                     |> Just
-            , color = Data.Color.init
             }
                 |> R2.withCmd
                     (Ports.send (LoadDrawing id))
 
         FromUrl url ->
-            { canvas = Canvas.tiny
-            , canvasPosition = offScreen
+            { canvas =
+                { main = Canvas.Helpers.tiny
+                , position = offScreen
+                }
             , drawingName = flags.randomValues.projectName
             , drawingNameIsGenerated = True
             , id = Local
@@ -183,7 +148,6 @@ getFields ({ windowSize } as flags) =
                     (Just url)
                     flags.windowSize
                     |> Just
-            , color = Data.Color.init
             }
                 |> R2.withCmd
                     (Helpers.Import.loadCmd url InitFromUrl)
@@ -191,21 +155,21 @@ getFields ({ windowSize } as flags) =
         FromParams params ->
             let
                 canvas =
-                    Canvas.fromParams params
-
-                size =
-                    Canvas.getSize canvas
+                    Canvas.Data.Params.toCanvas params
             in
-            { canvas = canvas
-            , canvasPosition =
-                Util.center flags.windowSize size
+            { canvas =
+                { main = canvas
+                , position =
+                    Position.Helpers.centerInWorkarea
+                        flags.windowSize
+                        (Canvas.getSize canvas)
+                }
             , drawingName =
                 params.name
                     |> Maybe.withDefault flags.randomValues.projectName
             , drawingNameIsGenerated = params.name /= Nothing
             , id = Local
             , menu = Nothing
-            , color = Data.Color.init
             }
                 |> R2.withNoCmd
 

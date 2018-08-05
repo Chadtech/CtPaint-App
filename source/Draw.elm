@@ -10,17 +10,12 @@ import Canvas
         , Size
         )
 import Color exposing (Color)
+import Data.Position as Position exposing (Position)
+import Data.Size as Size
 import Hfnss exposing (Pixel(..))
 import List.Extra exposing (groupsOf)
-import Mouse exposing (Position)
 import RasterShapes as Shapes
-import Util
-    exposing
-        ( positionMin
-        , toPoint
-        , toSize
-        , withIndex
-        )
+import Util exposing (withIndex)
 
 
 -- RESIZE --
@@ -292,7 +287,7 @@ rotate180 canvas =
 
 ellipse : Color -> Position -> Position -> DrawOp
 ellipse color p0 p1 =
-    Canvas.ellipse (toPoint p0) (toPoint p1)
+    Canvas.ellipse (Position.toPoint p0) (Position.toPoint p1)
         |> List.map (pixel color)
         |> Canvas.batch
 
@@ -304,7 +299,7 @@ ellipse color p0 p1 =
 line : Color -> Position -> Position -> DrawOp
 line color p0 p1 =
     Shapes.line p0 p1
-        |> List.map (toPoint >> pixel color)
+        |> List.map (Position.toPoint >> pixel color)
         |> Canvas.batch
 
 
@@ -340,14 +335,14 @@ fromColor color =
 rectangle : Color -> Position -> Position -> DrawOp
 rectangle color p q =
     Shapes.rectangle2 p q
-        |> List.map (toPoint >> pixel color)
+        |> List.map (Position.toPoint >> pixel color)
         |> Canvas.batch
 
 
 filledRectangle : Color -> Size -> Position -> DrawOp
 filledRectangle color size position =
     [ BeginPath
-    , Rect (toPoint position) size
+    , Rect (Position.toPoint position) size
     , FillStyle color
     , Fill
     ]
@@ -379,7 +374,7 @@ eraserPoint color size position =
 
 pasteSelection : Position -> Canvas -> DrawOp
 pasteSelection position selection =
-    DrawImage selection (At (toPoint position))
+    DrawImage selection (At (Position.toPoint position))
 
 
 getSelection : Position -> Position -> Color -> Canvas -> ( Canvas, DrawOp )
@@ -387,16 +382,16 @@ getSelection p q color canvas =
     let
         origin : Position
         origin =
-            positionMin p q
+            Position.min p q
 
         size : Size
         size =
-            toSize p q
+            Size.fromPositions p q
 
         cropOp : DrawOp
         cropOp =
             CropScaled
-                (toPoint origin)
+                (Position.toPoint origin)
                 size
                 (Point 0 0)
                 size
@@ -414,16 +409,16 @@ crop p q canvas =
     let
         origin : Position
         origin =
-            positionMin p q
+            Position.min p q
 
         size : Size
         size =
-            toSize p q
+            Size.fromPositions p q
 
         cropOp : DrawOp
         cropOp =
             CropScaled
-                (toPoint origin)
+                (Position.toPoint origin)
                 size
                 (Point 0 0)
                 size
@@ -440,14 +435,14 @@ crop p q canvas =
 
 makeRectParams : Position -> Position -> ( Position, Size )
 makeRectParams p q =
-    ( positionMin p q
+    ( Position.min p q
     , Size (abs (p.x - q.x)) (abs (p.y - q.y))
     )
 
 
 colorAt : Position -> Canvas -> Color
 colorAt pos =
-    Canvas.getImageData (toPoint pos) (Size 1 1)
+    Canvas.getImageData (Position.toPoint pos) (Size 1 1)
         >> toColor
 
 

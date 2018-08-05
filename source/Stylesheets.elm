@@ -1,30 +1,31 @@
 port module Stylesheets exposing (..)
 
-import About
-import BugReport
-import ColorPicker
+import Color.Palette.View as Palette
+import Color.Picker.View as Picker
+import Color.Swatches.View as Swatches
 import Css.File exposing (CssCompilerProgram, CssFileStructure)
-import Drawing
-import Eraser
 import Error
 import Html.Custom
-import Html.Loaded
-import Import
-import Loading
-import Login
-import Logout
-import Menu
+import Menu.About as About
+import Menu.BugReport as BugReport
+import Menu.Drawing as Drawing
+import Menu.Import as Import
+import Menu.Loaded as Loaded
+import Menu.Loading as Loading
+import Menu.Login as Login
+import Menu.Logout as Logout
+import Menu.New as New
+import Menu.ReplaceColor as ReplaceColor
+import Menu.Resize as Resize
+import Menu.Save as Save
+import Menu.Scale as Scale
+import Menu.Text as Text
+import Menu.Upload as Upload
+import Menu.View as Menu
 import Minimap
-import New
-import Palette
-import ReplaceColor
-import Resize
-import Save
-import Scale
 import Taskbar
-import Text
+import Tool.Eraser as Eraser
 import Toolbar
-import Upload
 import View
 
 
@@ -38,7 +39,8 @@ main =
     , Toolbar.css
     , Taskbar.css
     , Palette.css
-    , ColorPicker.css
+    , Swatches.css
+    , Picker.css
     , Error.css
     , Loading.css
     , Logout.css
@@ -56,7 +58,7 @@ main =
     , Eraser.css
     , About.css
     , BugReport.css
-    , Html.Loaded.css
+    , Loaded.css
     , Save.css
     , New.css
     ]

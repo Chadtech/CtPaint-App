@@ -25,10 +25,8 @@ import Data.Minimap
         , Reply(..)
         , State(..)
         )
-import Data.Selection as Selection
+import Data.Position as Position
 import Data.Taco exposing (Taco)
-import Data.Tool exposing (Tool(..))
-import Helpers.Zoom as Zoom
 import Html exposing (Attribute, Html, a, div, p)
 import Html.Attributes exposing (style)
 import Html.CssHelpers
@@ -37,25 +35,19 @@ import Html.Events exposing (onClick)
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
 import Ports
+import Position.Helpers
 import Return2 as R2
-import Tool
-import Tracking
-    exposing
-        ( Event
-            ( MinimapXMouseUp
-            , MinimapZeroClick
-            , MinimapZoomInClick
-            , MinimapZoomOutClick
-            )
-        )
-import Util exposing (toPoint)
+import Selection.Model as Selection
+import Tool.Data as Tool exposing (Tool(..))
+import Tool.Zoom as Zoom
+import Util
 import Window exposing (Size)
 
 
 -- INIT --
 
 
-init : Maybe Mouse.Position -> Size -> Model
+init : Maybe Position.Position -> Size -> Model
 init maybeInitialPosition { width, height } =
     { externalPosition =
         case maybeInitialPosition of
@@ -126,7 +118,7 @@ updateOpened taco msg model =
     case msg of
         XButtonMouseUp ->
             Closed model.externalPosition
-                |> R2.withCmd (Ports.track taco MinimapXMouseUp)
+                |> R2.withNoCmd
 
         XButtonMouseDown ->
             { model
@@ -138,28 +130,22 @@ updateOpened taco msg model =
         ZoomInClicked ->
             zoomIn model
                 |> Opened
-                |> R2.withCmd (Ports.track taco MinimapZoomInClick)
+                |> R2.withNoCmd
 
         ZoomOutClicked ->
             zoomOut model
                 |> Opened
-                |> R2.withCmd (Ports.track taco MinimapZoomOutClick)
+                |> R2.withNoCmd
 
         ZeroClicked ->
             { model | internalPosition = { x = 0, y = 0 } }
                 |> Opened
-                |> R2.withCmd (Ports.track taco MinimapZeroClick)
+                |> R2.withNoCmd
 
         ScreenMouseDown { targetPos, clientPos } ->
             { model
                 | clickState =
-                    let
-                        { x, y } =
-                            model.internalPosition
-                    in
-                    { x = clientPos.x - x
-                    , y = clientPos.y - y
-                    }
+                    Position.subtract clientPos model.internalPosition
                         |> ClickedInScreenAt
             }
                 |> Opened
@@ -175,7 +161,7 @@ updateOpened taco msg model =
                     { model
                         | clickState =
                             mouseEvent
-                                |> Util.elRel
+                                |> Position.relativeToTarget
                                 |> ClickedInHeaderAt
                     }
                         |> Opened
@@ -223,24 +209,38 @@ zoomOut : Model -> Model
 zoomOut model =
     let
         newZoom =
-            Zoom.prev model.zoom
+            Zoom.nextLevelOut model.zoom
+
+        newCanvasPosition =
+            Zoom.zoom
+                model.zoom
+                newZoom
+                center
+                model.internalPosition
     in
-    if model.zoom == newZoom then
-        model
-    else
-        adjust center 1 (set newZoom model)
+    { model
+        | internalPosition = newCanvasPosition
+        , zoom = newZoom
+    }
 
 
 zoomIn : Model -> Model
 zoomIn model =
     let
         newZoom =
-            Zoom.next model.zoom
+            Zoom.nextLevelIn model.zoom
+
+        newCanvasPosition =
+            Zoom.zoom
+                model.zoom
+                newZoom
+                center
+                model.internalPosition
     in
-    if model.zoom == newZoom then
-        model
-    else
-        adjust center -1 (set newZoom model)
+    { model
+        | internalPosition = newCanvasPosition
+        , zoom = newZoom
+    }
 
 
 center : Mouse.Position
@@ -437,7 +437,7 @@ withSelection canvas maybeSelection =
 
 drawSelectionOp : Selection.Model -> DrawOp
 drawSelectionOp { position, canvas } =
-    DrawImage canvas (At (toPoint position))
+    DrawImage canvas (At (Position.toPoint position))
 
 
 canvasAttrs : Model -> Canvas -> List (Attribute Msg)

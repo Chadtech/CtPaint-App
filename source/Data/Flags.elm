@@ -6,25 +6,16 @@ module Data.Flags
         , projectNameGenerator
         )
 
-import Data.Color
+import Canvas.Data.Params as CanvasParams
     exposing
-        ( BackgroundColor(Black, White)
-        , backgroundColorDecoder
+        ( CanvasParams
         )
 import Data.Drawing as Drawing
 import Data.User as User
-import Helpers.Canvas exposing (Params)
 import Helpers.Random as Random
 import Id exposing (Id, Origin(Local, Remote))
-import Json.Decode as Decode exposing (Decoder)
-import Json.Decode.Pipeline
-    exposing
-        ( custom
-        , decode
-        , optional
-        , optionalAt
-        , required
-        )
+import Json.Decode as JD exposing (Decoder)
+import Json.Decode.Pipeline as JDP
 import Keyboard.Extra.Browser exposing (Browser(Chrome, FireFox))
 import Random.Pcg as Random exposing (Generator, Seed)
 import Util
@@ -54,7 +45,7 @@ type Init
     = NormalInit
     | FromId Id
     | FromUrl String
-    | FromParams Params
+    | FromParams CanvasParams
 
 
 
@@ -63,21 +54,21 @@ type Init
 
 decoder : Decoder Flags
 decoder =
-    decode Flags
-        |> custom windowDecoder
-        |> optional "isMac" Decode.bool True
-        |> required "browser" browserDecoder
-        |> custom userDecoder
-        |> required "init" initDecoder
-        |> required "mountPath" Decode.string
-        |> required "buildNumber" Decode.int
-        |> required "seed" randomValuesDecoder
+    JDP.decode Flags
+        |> JDP.custom windowDecoder
+        |> JDP.optional "isMac" JD.bool True
+        |> JDP.required "browser" browserDecoder
+        |> JDP.custom userDecoder
+        |> JDP.required "init" initDecoder
+        |> JDP.required "mountPath" JD.string
+        |> JDP.required "buildNumber" JD.int
+        |> JDP.required "seed" randomValuesDecoder
 
 
 randomValuesDecoder : Decoder RandomValues
 randomValuesDecoder =
     seedDecoder
-        |> Decode.map toRandomValues
+        |> JD.map toRandomValues
 
 
 toRandomValues : Seed -> RandomValues
@@ -96,77 +87,63 @@ projectNameGenerator =
 
 userDecoder : Decoder User.State
 userDecoder =
-    decode (,)
-        |> required "browser" browserDecoder
-        |> optionalAt [ "init", "id" ] (Decode.map Just Id.decoder) Nothing
-        |> Decode.andThen toUserState
+    JDP.decode (,)
+        |> JDP.required "browser" browserDecoder
+        |> JDP.optionalAt [ "init", "id" ] (JD.map Just Id.decoder) Nothing
+        |> JD.andThen toUserState
 
 
 toUserState : ( Browser, Maybe Id ) -> Decoder User.State
 toUserState ( browser, maybeId ) =
     User.stateDecoder (Drawing.fromMaybe maybeId) browser
-        |> Decode.field "user"
+        |> JD.field "user"
 
 
 browserDecoder : Decoder Browser
 browserDecoder =
-    Decode.string
-        |> Decode.andThen toBrowser
+    JD.string
+        |> JD.andThen toBrowser
 
 
 toBrowser : String -> Decoder Browser
 toBrowser browser =
     case browser of
         "Firefox" ->
-            Decode.succeed FireFox
+            JD.succeed FireFox
 
         "Chrome" ->
-            Decode.succeed Chrome
+            JD.succeed Chrome
 
         "Unknown" ->
-            Decode.succeed Chrome
+            JD.succeed Chrome
 
         other ->
-            Decode.fail ("Unknown browser type " ++ other)
+            JD.fail ("Unknown browser type " ++ other)
 
 
 initDecoder : Decoder Init
 initDecoder =
-    [ Decode.null NormalInit
+    [ JD.null NormalInit
     , Id.decoder
-        |> Decode.field "id"
-        |> Decode.map FromId
-    , Decode.string
-        |> Decode.field "url"
-        |> Decode.map (Util.replace "%2F" "/")
-        |> Decode.map FromUrl
-    , paramsDecoder
-        |> Decode.map FromParams
+        |> JD.field "id"
+        |> JD.map FromId
+    , JD.string
+        |> JD.field "url"
+        |> JD.map (Util.replace "%2F" "/")
+        |> JD.map FromUrl
+    , CanvasParams.decoder
+        |> JD.map FromParams
     ]
-        |> Decode.oneOf
-
-
-paramsDecoder : Decoder Params
-paramsDecoder =
-    decode Params
-        |> optional_ "name" Decode.string
-        |> optional_ "width" Decode.int
-        |> optional_ "height" Decode.int
-        |> optional_ "background" backgroundColorDecoder
-
-
-optional_ : String -> Decoder a -> Decoder (Maybe a -> b) -> Decoder b
-optional_ field decoder =
-    optional field (Decode.map Just decoder) Nothing
+        |> JD.oneOf
 
 
 seedDecoder : Decoder Seed
 seedDecoder =
-    Decode.map Random.initialSeed Decode.int
+    JD.map Random.initialSeed JD.int
 
 
 windowDecoder : Decoder Size
 windowDecoder =
-    Decode.map2 Size
-        (Decode.field "windowWidth" Decode.int)
-        (Decode.field "windowHeight" Decode.int)
+    JD.map2 Size
+        (JD.field "windowWidth" JD.int)
+        (JD.field "windowHeight" JD.int)

@@ -1,11 +1,16 @@
 module Data.Window
     exposing
         ( Window(..)
+        , open
         , toString
         , toUrl
         )
 
 import Id exposing (Id)
+import Ports exposing (JsMsg(OpenNewWindow))
+
+
+-- TYPES --
 
 
 type Window
@@ -15,6 +20,10 @@ type Window
     | ForgotPassword
     | AllowanceExceeded
     | Drawing Id
+
+
+
+-- HELPERS --
 
 
 toUrl : String -> Window -> String
@@ -52,3 +61,11 @@ toString window =
             window
                 |> Basics.toString
                 |> String.toLower
+
+
+open : String -> Window -> Cmd msg
+open mountPath window =
+    window
+        |> toUrl mountPath
+        |> OpenNewWindow
+        |> Ports.send

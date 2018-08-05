@@ -1,6 +1,6 @@
 module Helpers.Drawing exposing (save)
 
-import Menu
+import Menu.Model as Menu
 import Model exposing (Model)
 import Ports exposing (JsMsg(Save))
 import Return2 as R2

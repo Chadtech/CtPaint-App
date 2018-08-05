@@ -11,7 +11,6 @@ import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode exposing (Value)
 import Mouse exposing (Position)
 import MouseEvents exposing (MouseEvent)
-import ParseInt
 import Process
 import Random.Pcg as Random
     exposing
@@ -67,63 +66,6 @@ replace target replacement str =
     str
         |> String.split target
         |> String.join replacement
-
-
-
--- COLOR --
-
-
-toHexColor : Color -> String
-toHexColor color =
-    let
-        { red, green, blue } =
-            Color.toRgb color
-    in
-    [ "#"
-    , toHex red
-    , toHex green
-    , toHex blue
-    ]
-        |> String.concat
-
-
-toHex : Int -> String
-toHex =
-    ParseInt.toHex >> toHexHelper
-
-
-toHexHelper : String -> String
-toHexHelper hex =
-    if String.length hex > 1 then
-        hex
-    else
-        "0" ++ hex
-
-
-toColor : String -> Maybe Color
-toColor colorMaybe =
-    if 6 == String.length colorMaybe then
-        let
-            r =
-                String.slice 0 2 colorMaybe
-                    |> ParseInt.parseIntHex
-
-            g =
-                String.slice 2 4 colorMaybe
-                    |> ParseInt.parseIntHex
-
-            b =
-                String.slice 4 6 colorMaybe
-                    |> ParseInt.parseIntHex
-        in
-        case ( r, g, b ) of
-            ( Ok red, Ok green, Ok blue ) ->
-                Just (Color.rgb red green blue)
-
-            _ ->
-                Nothing
-    else
-        Nothing
 
 
 
@@ -215,119 +157,6 @@ width =
 height : Int -> ( String, String )
 height =
     px >> (,) "height"
-
-
-background : Color -> Attribute msg
-background =
-    toHexColor
-        >> (,) "background"
-        >> List.singleton
-        >> style
-
-
-
--- Tool bar width, a constant used all over the place
-
-
-tbw : Int
-tbw =
-    floor toolbarWidth
-
-
-
--- palette bar height
-
-
-pbh : Int
-pbh =
-    58
-
-
-toolbarWidth : Float
-toolbarWidth =
-    29
-
-
-
--- POSITION AND POINT --
-
-
-encodePosition : Position -> Value
-encodePosition { x, y } =
-    [ def "x" <| Encode.int x
-    , def "y" <| Encode.int y
-    ]
-        |> Encode.object
-
-
-encodeSize : Size -> Value
-encodeSize { width, height } =
-    [ def "width" <| Encode.int width
-    , def "height" <| Encode.int height
-    ]
-        |> Encode.object
-
-
-{-| "elRel" means "element relative",
-as in the click position relative to
-the origin of the element that was clicked
-on
--}
-elRel : MouseEvent -> Position
-elRel { clientPos, targetPos } =
-    { x = clientPos.x - targetPos.x
-    , y = clientPos.y - targetPos.y
-    }
-
-
-center : Size -> Size -> Position
-center windowSize size =
-    { x =
-        ((windowSize.width - tbw) - size.width) // 2
-    , y =
-        (windowSize.height - size.height) // 2
-    }
-
-
-middle : Size -> Position
-middle { width, height } =
-    { x = width // 2
-    , y = height // 2
-    }
-
-
-toSize : Position -> Position -> Size
-toSize p q =
-    let
-        minPos =
-            positionMin p q
-
-        maxPos =
-            positionMax p q
-    in
-    Size
-        (maxPos.x - minPos.x + 1)
-        (maxPos.y - minPos.y + 1)
-
-
-positionMin : Position -> Position -> Position
-positionMin p q =
-    Position (min p.x q.x) (min p.y q.y)
-
-
-positionMax : Position -> Position -> Position
-positionMax p q =
-    Position (max p.x q.x) (max p.y q.y)
-
-
-toPosition : Point -> Position
-toPosition { x, y } =
-    Position (floor x) (floor y)
-
-
-toPoint : Position -> Point
-toPoint { x, y } =
-    Point (toFloat x) (toFloat y)
 
 
 

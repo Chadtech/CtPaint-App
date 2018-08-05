@@ -1,20 +1,18 @@
 module Msg exposing (Msg(..), decode)
 
 import Canvas exposing (Canvas, Error)
+import Color.Msg as Color
 import Data.Drawing as Drawing exposing (Drawing)
 import Data.Keys as Key
-import Data.Menu as Menu
 import Data.Minimap as Minimap
-import Data.Picker as Picker
 import Data.User as User exposing (User)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Keyboard.Extra.Browser exposing (Browser)
-import Mouse exposing (Position)
-import Mouse.Extra exposing (Button)
+import Menu.Msg as Menu
 import MouseEvents exposing (MouseEvent)
-import Palette
 import Taskbar
 import Time exposing (Time)
+import Tool.Msg as Tool
 import Toolbar
 import Window exposing (Size)
 
@@ -23,21 +21,17 @@ type Msg
     = WindowSizeReceived Size
     | ToolbarMsg Toolbar.Msg
     | TaskbarMsg Taskbar.Msg
-    | PaletteMsg Palette.Msg
     | MenuMsg Menu.Msg
     | Tick Time
-    | ColorPickerMsg Picker.Msg
+    | ColorMsg Color.Msg
+    | ToolMsg Tool.Msg
     | MinimapMsg Minimap.Msg
-    | ScreenMouseDown Button MouseEvent
-    | ScreenMouseUp MouseEvent
-    | ScreenMouseMove MouseEvent
-    | ScreenContextMenu
-    | ScreenMouseExit
+    | WorkareaMouseMove MouseEvent
+    | WorkareaContextMenu
+    | WorkareaMouseExit
     | KeyboardEvent (Result String Key.Event)
     | LogoutSucceeded
     | LogoutFailed String
-    | ClientMouseMoved Position
-    | ClientMouseUp Position
     | InitFromUrl (Result Error Canvas)
     | DrawingLoaded Drawing
     | DrawingDeblobed Drawing (Result Error Canvas)

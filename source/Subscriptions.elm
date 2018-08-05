@@ -2,18 +2,18 @@ port module Subscriptions exposing (subscriptions)
 
 import AnimationFrame
 import Canvas exposing (DrawOp(Batch))
-import ColorPicker
+import Color.Msg as Color
+import Color.Picker.Subscriptions as Picker
 import Data.Keys as Keys
-import Data.Menu
 import Data.Minimap exposing (State(..))
 import Init
 import Json.Decode as Decode exposing (Value)
-import Menu
+import Menu.Subscriptions as Menu
 import Minimap
 import Model exposing (Model)
-import Mouse
 import Msg exposing (Msg(..))
 import Ports
+import Tool.Subscriptions as Tool
 import Window
 
 
@@ -35,21 +35,20 @@ fromModel model =
     [ Window.resizes WindowSizeReceived
     , animationFrame model
     , model.color.picker
-        |> ColorPicker.subscriptions
-        |> Sub.map ColorPickerMsg
+        |> Picker.subscriptions
+        |> Sub.map (ColorMsg << Color.PickerMsg)
     , minimap model.minimap
     , keyEvent keyboardMsg
-    , menu model.menu
+    , Sub.map MenuMsg (Menu.subscriptions model.menu)
     , Ports.fromJs (Msg.decode model.taco.config.browser)
-    , Mouse.moves ClientMouseMoved
-    , Mouse.ups ClientMouseUp
+    , Sub.map ToolMsg (Tool.subscriptions model)
     ]
         |> Sub.batch
 
 
 animationFrame : Model -> Sub Msg
 animationFrame model =
-    if model.pendingDraw == Canvas.Batch [] then
+    if model.draws.pending == Canvas.Batch [] then
         Sub.none
     else
         AnimationFrame.diffs Tick
@@ -72,18 +71,4 @@ minimap state =
                 |> Sub.map MinimapMsg
 
         _ ->
-            Sub.none
-
-
-
--- MENU --
-
-
-menu : Maybe Data.Menu.Model -> Sub Msg
-menu maybeMenu =
-    case maybeMenu of
-        Just _ ->
-            Sub.map MenuMsg Menu.subscriptions
-
-        Nothing ->
             Sub.none
