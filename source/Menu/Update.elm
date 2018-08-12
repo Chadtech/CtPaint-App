@@ -1,6 +1,6 @@
 module Menu.Update exposing (update)
 
-import Data.Position as Position
+import Position.Data as Position
 import Data.Taco exposing (Taco)
 import Menu.BugReport as BugReport
 import Menu.Data as Menu exposing (Menu(..))

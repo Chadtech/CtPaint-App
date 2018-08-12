@@ -8,7 +8,7 @@ module Canvas.Model
         )
 
 import Canvas exposing (Canvas, DrawOp)
-import Data.Position as Position
+import Position.Data as Position
     exposing
         ( Position
         )

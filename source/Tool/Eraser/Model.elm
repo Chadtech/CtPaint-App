@@ -1,4 +1,4 @@
-module Tool.RectangleFilled.Model
+module Tool.Eraser.Model
     exposing
         ( Model
         )
@@ -8,6 +8,6 @@ import Mouse.Extra exposing (Button)
 
 
 type alias Model =
-    { initialClickPositionOnCanvas : Position
+    { mousePositionOnCanvas : Position
     , mouseButton : Button
     }

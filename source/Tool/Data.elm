@@ -10,6 +10,7 @@ module Tool.Data
 import Char
 import Mouse exposing (Position)
 import Mouse.Extra exposing (Button)
+import Tool.Eraser.Model as Eraser
 import Tool.Hand.Model as Hand
 import Tool.Line.Model as Line
 import Tool.Pencil.Model as Pencil
@@ -28,7 +29,7 @@ type Tool
     | Line (Maybe Line.Model)
     | Rectangle (Maybe Rectangle.Model)
     | RectangleFilled (Maybe RectangleFilled.Model)
-    | Eraser (Maybe ( Position, Button ))
+    | Eraser (Maybe Eraser.Model)
 
 
 init : Tool

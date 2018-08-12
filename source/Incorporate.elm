@@ -5,18 +5,14 @@ module Incorporate
         )
 
 import Canvas
+import Canvas.Draw as Draw
 import Color.Model as Color
 import Color.Reply as CR
 import Data.Drawing as Drawing
 import Data.Flags exposing (Init(NormalInit), projectNameGenerator)
-import Data.Position as Position
-    exposing
-        ( Position
-        )
 import Data.Size as Size exposing (Size)
 import Data.Taco as Taco
 import Data.User as User
-import Draw
 import Helpers.Drawing
 import Helpers.Random as Random
 import History.Helpers as History
@@ -26,6 +22,10 @@ import Menu.Reply as MR
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Ports
+import Position.Data as Position
+    exposing
+        ( Position
+        )
 import Position.Helpers
 import Return2 as R2
 import Selection.Model as Selection

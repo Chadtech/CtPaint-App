@@ -3,13 +3,12 @@ module Tool.RectangleFilled.Update
         ( update
         )
 
-import Data.Position exposing (Position)
-import Data.Size as Size
-import Draw
-import Draw.Model
+import Canvas.Draw as Draw
+import Canvas.Draw.Model as DrawModel
 import History.Helpers as History
 import Model exposing (Model)
 import Mouse.Extra exposing (Button)
+import Position.Data exposing (Position)
 import Tool.Data as Tool
 import Tool.Helpers exposing (getColor)
 import Tool.Msg exposing (Msg(..))
@@ -69,9 +68,9 @@ handleWindowMouseUp newPositionOnCanvas { initialClickPositionOnCanvas, mouseBut
                 (getColor mouseButton model.color.swatches)
                 size
                 drawPosition
-                |> Draw.Model.addToPending
-                |> Draw.Model.applyTo model.draws
-                |> Draw.Model.clearAtRender
+                |> DrawModel.addToPending
+                |> DrawModel.applyTo model.draws
+                |> DrawModel.clearAtRender
     }
 
 
@@ -89,8 +88,8 @@ handleWorkareaMouseDown mouseButton newPositionOnCanvas model =
                 (getColor mouseButton model.color.swatches)
                 { width = 1, height = 1 }
                 newPositionOnCanvas
-                |> Draw.Model.setAtRender
-                |> Draw.Model.applyTo model.draws
+                |> DrawModel.setAtRender
+                |> DrawModel.applyTo model.draws
     }
         |> History.canvas
 
@@ -109,6 +108,6 @@ handleWindowMouseMove newPositionOnCanvas { initialClickPositionOnCanvas, mouseB
                 (getColor mouseButton model.color.swatches)
                 size
                 drawPosition
-                |> Draw.Model.setAtRender
-                |> Draw.Model.applyTo model.draws
+                |> DrawModel.setAtRender
+                |> DrawModel.applyTo model.draws
     }

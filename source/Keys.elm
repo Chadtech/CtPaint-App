@@ -1,12 +1,12 @@
 module Keys exposing (..)
 
 import Canvas exposing (Canvas, DrawOp)
+import Canvas.Draw as Draw
 import Canvas.Model
 import Clipboard.Helpers
 import Color.Model as Color
 import Data.Keys as Key exposing (Cmd(..))
 import Data.Minimap exposing (State(..))
-import Draw
 import Helpers.Drawing
 import History.Helpers as History
 import Menu.Model as Menu

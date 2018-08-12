@@ -22,7 +22,7 @@ import Color.Picker.Data.Gradient
         ( Gradient
         )
 import Color.Util
-import Data.Position exposing (Position)
+import Position.Data exposing (Position)
 import Util
 
 

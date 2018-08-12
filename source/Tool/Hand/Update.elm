@@ -4,7 +4,7 @@ module Tool.Hand.Update
         )
 
 import Canvas.Model as Canvas
-import Data.Position as Position
+import Position.Data as Position
     exposing
         ( Position
         )
@@ -22,26 +22,26 @@ update msg maybeHandModel model =
         WorkareaMouseUp _ ->
             model
 
-        WorkareaMouseDown button positionOnCanvas ->
+        WorkareaMouseDown button positionInWindow ->
             handleWorkareaMouseDown
                 button
-                positionOnCanvas
+                positionInWindow
                 model
 
-        WindowMouseMove positionOnCanvas ->
+        WindowMouseMove positionInWindow ->
             case maybeHandModel of
                 Just handModel ->
                     case model.selection of
                         Just selection ->
                             handleWindowMouseMoveSelection
-                                positionOnCanvas
+                                positionInWindow
                                 handModel
                                 selection
                                 model
 
                         Nothing ->
                             handleWindowMouseMoveMainCanvas
-                                positionOnCanvas
+                                positionInWindow
                                 handModel
                                 model
 
@@ -53,13 +53,13 @@ update msg maybeHandModel model =
 
 
 handleWorkareaMouseDown : Button -> Position -> Model -> Model
-handleWorkareaMouseDown button positionOnCanvas model =
+handleWorkareaMouseDown button positionInWindow model =
     { model
         | tool =
             { initialCanvasPosition =
                 getInitialPosition model
             , mousePositionInWindow =
-                positionOnCanvas
+                positionInWindow
             }
                 |> Just
                 |> Tool.Hand
@@ -77,10 +77,10 @@ getInitialPosition model =
 
 
 handleWindowMouseMoveMainCanvas : Position -> Hand.Model -> Model -> Model
-handleWindowMouseMoveMainCanvas newPositionOnCanvas handModel model =
+handleWindowMouseMoveMainCanvas newPositionInWindow handModel model =
     { model
         | canvas =
-            newPositionOnCanvas
+            newPositionInWindow
                 |> Position.subtract handModel.mousePositionInWindow
                 |> Position.add handModel.initialCanvasPosition
                 |> Canvas.setPosition
@@ -89,10 +89,10 @@ handleWindowMouseMoveMainCanvas newPositionOnCanvas handModel model =
 
 
 handleWindowMouseMoveSelection : Position -> Hand.Model -> Selection.Model -> Model -> Model
-handleWindowMouseMoveSelection newPositionOnCanvas handModel selection model =
+handleWindowMouseMoveSelection newPositionInWindow handModel selection model =
     { model
         | selection =
-            newPositionOnCanvas
+            newPositionInWindow
                 |> Position.subtract handModel.mousePositionInWindow
                 |> Position.divideBy model.zoom
                 |> Position.add handModel.initialCanvasPosition

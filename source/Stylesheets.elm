@@ -24,7 +24,7 @@ import Menu.Upload as Upload
 import Menu.View as Menu
 import Minimap
 import Taskbar
-import Tool.Eraser as Eraser
+import Tool.Eraser.View as Eraser
 import Toolbar
 import View
 

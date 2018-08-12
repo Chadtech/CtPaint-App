@@ -17,7 +17,7 @@ import Color.Picker.Msg
         )
 import Color.Reply exposing (Reply(UpdateColorHistory))
 import Color.Util
-import Data.Position as Position
+import Position.Data as Position
 import MouseEvents exposing (MouseEvent)
 import Ports
 import Return2 as R2

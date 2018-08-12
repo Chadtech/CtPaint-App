@@ -26,12 +26,12 @@ import Color.Model as Color
 import Color.Swatches.Data as Swatches
 import Data.Drawing as Drawing
 import Data.Minimap as Minimap
-import Data.Position as Position exposing (Position)
+import Position.Data as Position exposing (Position)
 import Data.Size as Size exposing (Size)
 import Data.Taco exposing (Taco)
 import Data.Taskbar exposing (Dropdown)
 import Data.User as User
-import Draw.Model as Draw
+import Canvas.Draw.Model as Draw
 import History.Model as History
 import Menu.Model as Menu
 import Ports exposing (SavePayload)

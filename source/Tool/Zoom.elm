@@ -6,7 +6,7 @@ module Tool.Zoom
         )
 
 import Canvas.Model as Canvas
-import Data.Position as Position exposing (Position)
+import Position.Data as Position exposing (Position)
 import Data.Size as Size exposing (Size)
 import Model exposing (Model)
 import Position.Helpers

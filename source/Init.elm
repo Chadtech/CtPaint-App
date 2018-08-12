@@ -2,16 +2,15 @@ module Init exposing (Error(..), fromFlags, init)
 
 import Canvas exposing (Canvas, DrawOp(..), Point, Size)
 import Canvas.Data.Params
+import Canvas.Draw.Model
 import Canvas.Helpers
 import Canvas.Model
 import Color.Model
 import Data.Flags as Flags exposing (Flags, Init(..))
 import Data.Minimap
-import Data.Position as Position exposing (Position)
 import Data.Taco as Taco
 import Data.User as User
 import Data.Window as Window
-import Draw.Model
 import Helpers.Import
 import History.Model as History
 import Id exposing (Origin(Local, Remote))
@@ -20,6 +19,7 @@ import Menu.Model as Menu
 import Model exposing (Model)
 import Msg exposing (Msg(InitFromUrl))
 import Ports exposing (JsMsg(LoadDrawing, RedirectPageTo))
+import Position.Data as Position exposing (Position)
 import Position.Helpers
 import Return2 as R2
 import Tool.Data as Tool
@@ -64,7 +64,7 @@ fromFlags flags =
             getFields flags
     in
     { canvas = fields.canvas
-    , draws = Draw.Model.init
+    , draws = Canvas.Draw.Model.init
     , color = Color.Model.init
     , drawingName = fields.drawingName
     , drawingNameIsGenerated = fields.drawingNameIsGenerated

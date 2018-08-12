@@ -7,10 +7,10 @@ module Toolbar
         )
 
 import Canvas
+import Canvas.Draw as Draw
 import Chadtech.Colors exposing (ignorable2, ignorable3)
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
-import Draw
 import Html exposing (Html, a, div)
 import Html.Attributes exposing (attribute, title)
 import Html.CssHelpers
@@ -22,7 +22,7 @@ import Ports
 import Return2 as R2
 import Selection.Model as Selection
 import Tool.Data as Tool exposing (Tool(..))
-import Tool.Eraser as Eraser
+import Tool.Eraser.View as Eraser
 
 
 -- TYPES --

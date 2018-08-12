@@ -1,4 +1,4 @@
-module Draw.Model
+module Canvas.Draw.Model
     exposing
         ( Model
         , addToPending

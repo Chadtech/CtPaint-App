@@ -3,7 +3,7 @@ module Tool.Line.Model
         ( Model
         )
 
-import Data.Position exposing (Position)
+import Position.Data exposing (Position)
 import Mouse.Extra exposing (Button)
 
 

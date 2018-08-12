@@ -25,7 +25,7 @@ import Data.Minimap
         , Reply(..)
         , State(..)
         )
-import Data.Position as Position
+import Position.Data as Position
 import Data.Taco exposing (Taco)
 import Html exposing (Attribute, Html, a, div, p)
 import Html.Attributes exposing (style)

@@ -3,12 +3,12 @@ module Tool.Pencil.Update
         ( update
         )
 
-import Data.Position exposing (Position)
-import Draw
-import Draw.Model
+import Canvas.Draw as Draw
+import Canvas.Draw.Model as DrawModel
 import History.Helpers as History
 import Model exposing (Model)
 import Mouse.Extra exposing (Button)
+import Position.Data exposing (Position)
 import Tool.Data as Tool
 import Tool.Helpers exposing (getColor)
 import Tool.Msg exposing (Msg(..))
@@ -59,8 +59,8 @@ handleWindowMouseMove newPositionOnCanvas { mousePositionOnCanvas, mouseButton }
                 (getColor mouseButton model.color.swatches)
                 mousePositionOnCanvas
                 newPositionOnCanvas
-                |> Draw.Model.addToPending
-                |> Draw.Model.applyTo model.draws
+                |> DrawModel.addToPending
+                |> DrawModel.applyTo model.draws
     }
 
 
@@ -78,7 +78,7 @@ handleWorkareaMouseDown mouseButton newPositionOnCanvas model =
                 (getColor mouseButton model.color.swatches)
                 newPositionOnCanvas
                 newPositionOnCanvas
-                |> Draw.Model.addToPending
-                |> Draw.Model.applyTo model.draws
+                |> DrawModel.addToPending
+                |> DrawModel.applyTo model.draws
     }
         |> History.canvas

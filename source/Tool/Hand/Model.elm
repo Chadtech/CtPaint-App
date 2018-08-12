@@ -3,7 +3,7 @@ module Tool.Hand.Model
         ( Model
         )
 
-import Data.Position exposing (Position)
+import Position.Data exposing (Position)
 
 
 type alias Model =

@@ -6,7 +6,7 @@ module Position.Helpers
         , onCanvas
         )
 
-import Data.Position as Position
+import Position.Data as Position
     exposing
         ( Position
         )

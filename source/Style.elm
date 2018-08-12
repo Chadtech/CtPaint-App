@@ -1,6 +1,6 @@
 module Style exposing (..)
 
-import Data.Position exposing (Position)
+import Position.Data exposing (Position)
 
 
 toolbarWidth : Int

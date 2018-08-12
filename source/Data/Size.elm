@@ -10,7 +10,7 @@ module Data.Size
         , toPosition
         )
 
-import Data.Position as Position exposing (Position)
+import Position.Data as Position exposing (Position)
 import Json.Encode as JE
 import Style
 import Util exposing (def)

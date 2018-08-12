@@ -1,13 +1,12 @@
 module Update exposing (update)
 
 import Canvas exposing (DrawOp(Batch))
+import Canvas.Draw.Model as DrawModel
 import Canvas.Model
 import Color.Update as Color
 import Data.Minimap as Minimap
-import Data.Position as Position
 import Data.Taco as Taco
 import Data.User as User
-import Draw.Model
 import Helpers.Keys
 import Incorporate
 import Keys
@@ -15,6 +14,7 @@ import Menu.Update as Menu
 import Minimap
 import Model exposing (Model)
 import Msg exposing (Msg(..))
+import Position.Data as Position
 import Position.Helpers
 import Return2 as R2
 import Return3 as R3
@@ -31,12 +31,6 @@ update msg model =
             Tool.update subMsg model
                 |> R2.withNoCmd
 
-        -- ClientMouseMoved position ->
-        --     Tool.handleClientMouseMovement position model
-        --         |> R2.withNoCmd
-        -- ClientMouseUp position ->
-        --     Tool.handleClientMouseUp position model
-        --         |> R2.withNoCmd
         ToolbarMsg subMsg ->
             Toolbar.update subMsg model
 
@@ -94,7 +88,7 @@ update msg model =
                                 model.canvas
                         , draws =
                             model.draws
-                                |> Draw.Model.clearPending
+                                |> DrawModel.clearPending
                     }
                         |> R2.withNoCmd
 
@@ -104,12 +98,6 @@ update msg model =
                 |> R2.mapCmd MinimapMsg
                 |> R2.mapModel (setMinimap model)
 
-        -- ScreenMouseUp mouseEvent ->
-        --     Tool.handleScreenMouseUp mouseEvent model
-        --         |> R2.withNoCmd
-        -- ScreenMouseDown button mouseEvent ->
-        --     Tool.handleScreenMouseDown button mouseEvent model
-        --         |> R2.withNoCmd
         WorkareaContextMenu ->
             model
                 |> R2.withNoCmd

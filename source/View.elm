@@ -1,6 +1,7 @@
 module View exposing (css, view)
 
 import Canvas exposing (Canvas, DrawOp)
+import Canvas.Draw as Draw
 import Chadtech.Colors as Ct
 import Color
 import Color.Msg
@@ -13,8 +14,6 @@ import Css.Elements exposing (canvas)
 import Css.Namespace exposing (namespace)
 import Data.Keys as Key
 import Data.Minimap exposing (State(..))
-import Data.Position as Position
-import Draw
 import Helpers.Keys
 import Html
     exposing
@@ -28,7 +27,7 @@ import Html
 import Html.Attributes as Attr
 import Html.CssHelpers
 import Html.Custom exposing (indent)
-import Html.Events exposing (on, onClick, onMouseLeave)
+import Html.Events exposing (onClick, onMouseLeave)
 import Html.Lazy
 import Menu.View as Menu
 import Minimap
@@ -37,12 +36,11 @@ import Mouse.Extra
 import MouseEvents
     exposing
         ( MouseEvent
-        , onMouseDown
         , onMouseMove
         , onMouseUp
         )
 import Msg exposing (Msg(..))
-import Position.Helpers
+import Position.Data as Position
 import Style
 import Taskbar
 import Tool.Data exposing (Tool)
@@ -316,11 +314,13 @@ sampleColor model =
     case model.mousePosition of
         Just position ->
             let
+                color : Color.Color
                 color =
                     Draw.colorAt
                         position
                         model.canvas.main
 
+                colorStr : String
                 colorStr =
                     Color.Util.toHexString color
             in
@@ -391,10 +391,10 @@ toolContent ({ tool } as model) =
                     []
 
         Tool.Data.Rectangle subModel ->
-            case ( Maybe.map .initialClickPositionOnCanvas subModel, model.mousePosition ) of
-                ( Just origin, Just position ) ->
-                    [ rectInfo origin position
-                    , originInfo origin
+            case ( subModel, model.mousePosition ) of
+                ( Just { initialClickPositionOnCanvas }, Just position ) ->
+                    [ rectInfo initialClickPositionOnCanvas position
+                    , originInfo initialClickPositionOnCanvas
                     ]
                         |> List.map String.concat
 
@@ -402,10 +402,10 @@ toolContent ({ tool } as model) =
                     []
 
         Tool.Data.RectangleFilled subModel ->
-            case ( Maybe.map .initialClickPositionOnCanvas subModel, model.mousePosition ) of
-                ( Just origin, Just position ) ->
-                    [ rectInfo origin position
-                    , originInfo origin
+            case ( subModel, model.mousePosition ) of
+                ( Just { initialClickPositionOnCanvas }, Just position ) ->
+                    [ rectInfo initialClickPositionOnCanvas position
+                    , originInfo initialClickPositionOnCanvas
                     ]
                         |> List.map String.concat
 

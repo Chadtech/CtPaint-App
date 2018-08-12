@@ -7,6 +7,9 @@ module Data.Taskbar
 import String
 
 
+-- TYPES --
+
+
 type Dropdown
     = File
     | Edit
@@ -16,6 +19,10 @@ type Dropdown
     | View
     | Help
     | User
+
+
+
+-- HELPERS --
 
 
 toString : Dropdown -> String

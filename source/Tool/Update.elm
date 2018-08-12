@@ -6,6 +6,7 @@ module Tool.Update
 import Model exposing (Model)
 import Position.Helpers as Position
 import Tool.Data exposing (Tool(..))
+import Tool.Eraser.Update as Eraser
 import Tool.Fill.Update as Fill
 import Tool.Hand.Update as Hand
 import Tool.Line.Update as Line
@@ -14,6 +15,7 @@ import Tool.Pencil.Update as Pencil
 import Tool.Rectangle.Update as Rectangle
 import Tool.RectangleFilled.Update as RectangleFilled
 import Tool.Sample.Update as Sample
+import Tool.Select.Update as Select
 import Tool.Zoom.In.Update as ZoomIn
 import Tool.Zoom.Out.Update as ZoomOut
 
@@ -64,5 +66,14 @@ update msg model =
                 subModel
                 model
 
-        _ ->
-            model
+        Eraser subModel ->
+            Eraser.update
+                (Msg.mapPosition (Position.onCanvas model) msg)
+                subModel
+                model
+
+        Select subModel ->
+            Select.update
+                (Msg.mapPosition (Position.onCanvas model) msg)
+                subModel
+                model

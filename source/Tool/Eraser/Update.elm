@@ -1,7 +1,4 @@
-module Tool.Line.Update
-    exposing
-        ( update
-        )
+module Tool.Eraser.Update exposing (update)
 
 import Canvas.Draw as Draw
 import Canvas.Draw.Model as DrawModel
@@ -10,19 +7,19 @@ import Model exposing (Model)
 import Mouse.Extra exposing (Button)
 import Position.Data exposing (Position)
 import Tool.Data as Tool
+import Tool.Eraser.Model as Eraser
 import Tool.Helpers exposing (getColor)
-import Tool.Line.Model as Line
 import Tool.Msg exposing (Msg(..))
 
 
-update : Msg -> Maybe Line.Model -> Model -> Model
-update msg maybeLineModel model =
+update : Msg -> Maybe Eraser.Model -> Model -> Model
+update msg maybeEraserModel model =
     case msg of
         WorkareaMouseUp _ ->
             model
 
         WorkareaMouseDown button newPositionOnCanvas ->
-            if maybeLineModel == Nothing then
+            if maybeEraserModel == Nothing then
                 handleWorkareaMouseDown
                     button
                     newPositionOnCanvas
@@ -31,36 +28,37 @@ update msg maybeLineModel model =
                 model
 
         WindowMouseMove positionOnCanvas ->
-            case maybeLineModel of
-                Just lineModel ->
+            case maybeEraserModel of
+                Just eraserModel ->
                     handleWindowMouseMove
                         positionOnCanvas
-                        lineModel
+                        eraserModel
                         model
 
                 Nothing ->
                     model
 
         WindowMouseUp positionOnCanvas ->
-            case maybeLineModel of
-                Just lineModel ->
+            case maybeEraserModel of
+                Just eraserModel ->
                     handleWindowMouseUp
                         positionOnCanvas
-                        lineModel
+                        eraserModel
                         model
 
                 Nothing ->
                     model
 
 
-handleWindowMouseUp : Position -> Line.Model -> Model -> Model
-handleWindowMouseUp newPositionOnCanvas { initialClickPositionOnCanvas, mouseButton } model =
+handleWindowMouseUp : Position -> Eraser.Model -> Model -> Model
+handleWindowMouseUp newPositionOnCanvas { mousePositionOnCanvas, mouseButton } model =
     { model
-        | tool = Tool.Line Nothing
+        | tool = Tool.Eraser Nothing
         , draws =
-            Draw.line
+            Draw.eraser
                 (getColor mouseButton model.color.swatches)
-                initialClickPositionOnCanvas
+                model.eraserSize
+                mousePositionOnCanvas
                 newPositionOnCanvas
                 |> DrawModel.addToPending
                 |> DrawModel.applyTo model.draws
@@ -72,30 +70,37 @@ handleWorkareaMouseDown : Button -> Position -> Model -> Model
 handleWorkareaMouseDown mouseButton newPositionOnCanvas model =
     { model
         | tool =
-            { initialClickPositionOnCanvas = newPositionOnCanvas
+            { mousePositionOnCanvas = newPositionOnCanvas
             , mouseButton = mouseButton
             }
                 |> Just
-                |> Tool.Line
+                |> Tool.Eraser
         , draws =
-            Draw.line
+            Draw.eraserPoint
                 (getColor mouseButton model.color.swatches)
+                model.eraserSize
                 newPositionOnCanvas
-                newPositionOnCanvas
-                |> DrawModel.setAtRender
+                |> DrawModel.addToPending
                 |> DrawModel.applyTo model.draws
     }
         |> History.canvas
 
 
-handleWindowMouseMove : Position -> Line.Model -> Model -> Model
-handleWindowMouseMove newPositionOnCanvas { initialClickPositionOnCanvas, mouseButton } model =
+handleWindowMouseMove : Position -> Eraser.Model -> Model -> Model
+handleWindowMouseMove newPositionOnCanvas { mousePositionOnCanvas, mouseButton } model =
     { model
-        | draws =
-            Draw.line
+        | tool =
+            { mousePositionOnCanvas = newPositionOnCanvas
+            , mouseButton = mouseButton
+            }
+                |> Just
+                |> Tool.Eraser
+        , draws =
+            Draw.eraser
                 (getColor mouseButton model.color.swatches)
-                initialClickPositionOnCanvas
+                model.eraserSize
+                mousePositionOnCanvas
                 newPositionOnCanvas
-                |> DrawModel.setAtRender
+                |> DrawModel.addToPending
                 |> DrawModel.applyTo model.draws
     }

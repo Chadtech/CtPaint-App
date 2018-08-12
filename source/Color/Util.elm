@@ -68,8 +68,30 @@ toHexHelper hex =
         "0" ++ hex
 
 
+fromInts : List Int -> Color
+fromInts ints =
+    case ints of
+        r :: g :: b :: _ :: [] ->
+            Color.rgb r g b
 
--- CSS -
+        _ ->
+            Color.black
+
+
+rotate : Color -> Color
+rotate color =
+    let
+        { hue, saturation, lightness } =
+            Color.toHsl color
+    in
+    if isNaN hue then
+        Color.hsl (lightness * 2 * pi) 0.5 0.5
+    else
+        Color.hsl (hue - degrees 120) saturation (1 - lightness)
+
+
+
+-- CSS --
 
 
 background : Color -> Attribute msg

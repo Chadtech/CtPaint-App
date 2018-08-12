@@ -1,4 +1,4 @@
-module Data.Position
+module Position.Data
     exposing
         ( Position
         , add

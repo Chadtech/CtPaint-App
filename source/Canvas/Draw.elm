@@ -1,4 +1,4 @@
-module Draw exposing (..)
+module Canvas.Draw exposing (..)
 
 import Array exposing (Array)
 import Canvas
@@ -10,10 +10,11 @@ import Canvas
         , Size
         )
 import Color exposing (Color)
-import Data.Position as Position exposing (Position)
+import Color.Util
 import Data.Size as Size
 import Hfnss exposing (Pixel(..))
-import List.Extra exposing (groupsOf)
+import List.Extra as LE
+import Position.Data as Position exposing (Position)
 import RasterShapes as Shapes
 import Util exposing (withIndex)
 
@@ -443,29 +444,4 @@ makeRectParams p q =
 colorAt : Position -> Canvas -> Color
 colorAt pos =
     Canvas.getImageData (Position.toPoint pos) (Size 1 1)
-        >> toColor
-
-
-toColor : List Int -> Color
-toColor values =
-    case values of
-        r :: g :: b :: _ :: [] ->
-            Color.rgb r g b
-
-        _ ->
-            Color.black
-
-
-toGrid : Canvas -> Array (Array Color)
-toGrid canvas =
-    let
-        size =
-            Canvas.getSize canvas
-    in
-    canvas
-        |> Canvas.getImageData (Point 0 0) size
-        |> groupsOf 4
-        |> List.map toColor
-        |> groupsOf size.width
-        |> List.map Array.fromList
-        |> Array.fromList
+        >> Color.Util.fromInts

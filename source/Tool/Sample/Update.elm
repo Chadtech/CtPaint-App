@@ -3,15 +3,14 @@ module Tool.Sample.Update
         ( update
         )
 
-import Color exposing (Color)
+import Canvas.Draw as Draw
 import Color.Model
 import Color.Swatches.Data as Swatches
     exposing
         ( Swatches
         )
-import Data.Position exposing (Position)
-import Draw
 import Model exposing (Model)
+import Position.Data exposing (Position)
 import Tool.Msg exposing (Msg(..))
 
 
