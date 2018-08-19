@@ -1,13 +1,10 @@
-module Taskbar exposing (Msg(..), css, update, view)
+module Taskbar.View exposing (css, view)
 
 import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
 import Data.Keys as Key exposing (Cmd(..), QuickKey)
-import Data.Minimap exposing (State(..))
-import Data.Taco as Taco exposing (Taco)
-import Data.Taskbar as Taskbar exposing (Dropdown(..))
 import Data.User as User exposing (User)
 import Data.Window as Window exposing (Window(..))
 import Helpers.Keys
@@ -20,178 +17,15 @@ import Html.Events
         , onInput
         , onMouseOver
         )
-import Keys
-import Menu.Model as Menu
+import Minimap.Model as Minimap
 import Model exposing (Model)
-import Platform.Cmd as Platform
-import Ports
-    exposing
-        ( JsMsg
-            ( Logout
-            , OpenNewWindow
-            , OpenUpFileUpload
-            , StealFocus
-            )
-        )
-import Return2 as R2
 import Style
+import Taskbar.Data.Dropdown as Taskbar
+    exposing
+        ( Dropdown(..)
+        )
+import Taskbar.Msg exposing (Msg(..))
 import Tool.Data as Tool exposing (Tool)
-
-
--- TYPES --
-
-
-type Msg
-    = DropdownClickedOut
-    | DropdownClicked Dropdown
-    | HoveredOnto Dropdown
-    | LoginClicked
-    | UserClicked
-    | LogoutClicked
-    | AboutClicked
-    | ReportBugClicked
-    | KeyCmdClicked Key.Cmd
-    | NewWindowClicked Window
-    | UploadClicked
-    | ToolClicked Tool
-    | DrawingClicked
-    | OpenImageLinkClicked
-
-
-
--- UPDATE --
-
-
-update : Msg -> Model -> ( Model, Platform.Cmd msg )
-update msg model =
-    case msg of
-        DropdownClickedOut ->
-            { model
-                | taskbarDropped = Nothing
-            }
-                |> R2.withNoCmd
-
-        DropdownClicked dropdown ->
-            { model
-                | taskbarDropped = Just dropdown
-            }
-                |> R2.withNoCmd
-
-        HoveredOnto dropdown ->
-            hoverOnto dropdown model
-                |> R2.withNoCmd
-
-        LoginClicked ->
-            { model
-                | menu =
-                    model.windowSize
-                        |> Menu.initLogin
-                        |> Just
-            }
-                |> R2.withCmds
-                    [ Ports.stealFocus
-                    , Ports.send Ports.Logout
-                    ]
-
-        UserClicked ->
-            case model.taco.user of
-                User.LoggedIn user ->
-                    user
-                        |> User.toggleOptionsDropped
-                        |> User.LoggedIn
-                        |> Taco.setUser model.taco
-                        |> Model.setTaco model
-                        |> R2.withNoCmd
-
-                _ ->
-                    model
-                        |> R2.withNoCmd
-
-        LogoutClicked ->
-            { model
-                | menu =
-                    model.windowSize
-                        |> Menu.initLogout
-                        |> Just
-            }
-                |> R2.withNoCmd
-
-        AboutClicked ->
-            { model
-                | menu =
-                    model.windowSize
-                        |> Menu.initAbout
-                            model.taco.config.buildNumber
-                        |> Just
-            }
-                |> R2.withNoCmd
-
-        ReportBugClicked ->
-            { model
-                | menu =
-                    model.windowSize
-                        |> Menu.initBugReport
-                            (User.isLoggedIn model.taco.user)
-                        |> Just
-            }
-                |> R2.withCmd Ports.stealFocus
-
-        KeyCmdClicked keyCmd ->
-            Keys.exec keyCmd model
-
-        NewWindowClicked window ->
-            window
-                |> Window.toUrl model.taco.config.mountPath
-                |> Ports.OpenNewWindow
-                |> Ports.send
-                |> R2.withModel model
-
-        UploadClicked ->
-            Ports.send OpenUpFileUpload
-                |> R2.withModel model
-
-        ToolClicked tool ->
-            { model | tool = tool }
-                |> R2.withNoCmd
-
-        DrawingClicked ->
-            { model
-                | menu =
-                    Menu.initDrawing
-                        model.drawingName
-                        model.windowSize
-                        |> Just
-            }
-                |> R2.withCmd Ports.stealFocus
-
-        OpenImageLinkClicked ->
-            case User.getPublicId model.taco.user of
-                Just publicId ->
-                    publicId
-                        |> Window.Drawing
-                        |> Window.toUrl model.taco.config.mountPath
-                        |> OpenNewWindow
-                        |> Ports.send
-                        |> R2.withModel model
-
-                _ ->
-                    model |> R2.withNoCmd
-
-
-hoverOnto : Dropdown -> Model -> Model
-hoverOnto dropdown model =
-    case model.taskbarDropped of
-        Nothing ->
-            model
-
-        Just currentDropdown ->
-            if currentDropdown == dropdown then
-                model
-            else
-                { model
-                    | taskbarDropped = Just dropdown
-                }
-
 
 
 -- STYLES --
@@ -376,7 +210,11 @@ taskbarNamespace =
 
 
 view : Model -> Html Msg
-view ({ taskbarDropped, taco } as model) =
+view model =
+    let
+        user =
+            Model.getUser model
+    in
     div
         [ class [ Taskbar ] ]
         [ file model
@@ -385,10 +223,10 @@ view ({ taskbarDropped, taco } as model) =
         , tools model
         , colors model
         , view_ model
-        , help taskbarDropped
-        , homeButton taco.user
-        , userButton taco.user
-        , invisibleWall taskbarDropped
+        , help model.taskbarDropped
+        , homeButton user
+        , userButton user
+        , invisibleWall model.taskbarDropped
         ]
 
 
@@ -562,8 +400,8 @@ view_ model =
 
 minimapLabel : Model -> String
 minimapLabel model =
-    case model.minimap of
-        Opened _ ->
+    case model.minimap.openState of
+        Minimap.Open _ ->
             "hide mini map"
 
         _ ->
@@ -877,7 +715,11 @@ fileDropped model =
         { label = "save"
         , cmdKeys = keysLabel model Save
         , clickMsg = KeyCmdClicked Save
-        , disabled = not <| User.isLoggedIn model.taco.user
+        , disabled =
+            model
+                |> Model.getUser
+                |> User.isLoggedIn
+                |> not
         }
     , option
         { label = "download"
@@ -908,7 +750,11 @@ fileDropped model =
         { label = "open image link"
         , cmdKeys = ""
         , clickMsg = OpenImageLinkClicked
-        , disabled = not <| User.drawingLoaded model.taco.user
+        , disabled =
+            model
+                |> Model.getUser
+                |> User.drawingLoaded
+                |> not
         }
     ]
         |> taskbarButtonOpen "file" File
@@ -920,7 +766,9 @@ fileDropped model =
 
 keysLabel : Model -> Key.Cmd -> String
 keysLabel model =
-    Helpers.Keys.getKeysLabel model.taco.config
+    model
+        |> Model.getConfig
+        |> Helpers.Keys.getKeysLabel
 
 
 taskbarButtonClose : String -> Dropdown -> Html Msg

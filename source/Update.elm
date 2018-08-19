@@ -4,22 +4,18 @@ import Canvas exposing (DrawOp(Batch))
 import Canvas.Draw.Model as DrawModel
 import Canvas.Model
 import Color.Update as Color
-import Data.Minimap as Minimap
-import Data.Taco as Taco
+import Data.Position as Position
 import Data.User as User
-import Helpers.Keys
 import Incorporate
 import Keys
 import Menu.Update as Menu
-import Minimap
+import Minimap.Update as Minimap
 import Model exposing (Model)
 import Msg exposing (Msg(..))
-import Position.Data as Position
-import Position.Helpers
 import Return2 as R2
 import Return3 as R3
 import Task
-import Taskbar
+import Taskbar.Update as Taskbar
 import Tool.Update as Tool
 import Toolbar
 
@@ -47,7 +43,9 @@ update msg model =
             case model.menu of
                 Just menu ->
                     menu
-                        |> Menu.update model.taco subMsg
+                        |> Menu.update
+                            { mountPath = Model.getMountPath model }
+                            subMsg
                         |> R3.mapCmd MenuMsg
                         |> R3.incorp Incorporate.menu model
 
@@ -56,18 +54,18 @@ update msg model =
                         |> R2.withNoCmd
 
         WindowSizeReceived size ->
-            { model | windowSize = size }
+            Model.setWindowSize size model
                 |> R2.withNoCmd
 
         KeyboardEvent (Ok event) ->
             let
                 keyCmd =
-                    Helpers.Keys.getCmd
-                        model.taco.config
+                    Keys.getCmd
+                        (Model.getConfig model)
                         event
             in
             model
-                |> Helpers.Keys.setShift event
+                |> Model.setShift event
                 |> Keys.exec keyCmd
 
         KeyboardEvent (Err err) ->
@@ -94,9 +92,12 @@ update msg model =
 
         MinimapMsg subMsg ->
             model.minimap
-                |> Minimap.update model.taco subMsg
-                |> R2.mapCmd MinimapMsg
-                |> R2.mapModel (setMinimap model)
+                |> Minimap.update
+                    { windowSize = Model.getWindowSize model }
+                    subMsg
+                |> Model.setMinimap
+                |> Model.applyTo model
+                |> R2.withNoCmd
 
         WorkareaContextMenu ->
             model
@@ -137,8 +138,8 @@ update msg model =
                 | canvas =
                     { main = canvas
                     , position =
-                        Position.Helpers.centerInWorkarea
-                            model.windowSize
+                        Model.centerInWorkarea
+                            model
                             (Canvas.getSize canvas)
                     }
                 , menu = Nothing
@@ -156,26 +157,25 @@ update msg model =
                 |> R2.withModel model
 
         DrawingDeblobed drawing (Ok canvas) ->
-            case model.taco.user of
+            case Model.getUser model of
                 User.LoggedIn user ->
-                    { model
-                        | menu = Nothing
-                        , drawingName = drawing.name
-                        , drawingNameIsGenerated = drawing.nameIsGenerated
-                        , canvas =
-                            { main = canvas
-                            , position =
-                                Position.Helpers.centerInWorkarea
-                                    model.windowSize
-                                    (Canvas.getSize canvas)
+                    user
+                        |> User.setDrawing drawing
+                        |> User.LoggedIn
+                        |> Model.setUser
+                        |> Model.applyTo
+                            { model
+                                | drawingName = drawing.name
+                                , drawingNameIsGenerated = drawing.nameIsGenerated
+                                , canvas =
+                                    { main = canvas
+                                    , position =
+                                        Model.centerInWorkarea
+                                            model
+                                            (Canvas.getSize canvas)
+                                    }
                             }
-                        , taco =
-                            user
-                                |> User.setDrawing drawing
-                                |> User.LoggedIn
-                                |> Taco.setUser model.taco
-                    }
-                        |> R2.withNoCmd
+                        |> Model.closeMenu
 
                 _ ->
                     model
@@ -188,8 +188,3 @@ update msg model =
         DrawingDeblobed drawing (Err _) ->
             model
                 |> R2.withNoCmd
-
-
-setMinimap : Model -> Minimap.State -> Model
-setMinimap model state =
-    { model | minimap = state }

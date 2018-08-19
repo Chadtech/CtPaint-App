@@ -12,8 +12,6 @@ import Bool.Extra
 import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
-import Data.Config exposing (Config)
-import Data.Taco exposing (Taco)
 import Data.User exposing (User)
 import Data.Window as Window exposing (Window(ForgotPassword))
 import Html exposing (Attribute, Html, div, input, p, span)
@@ -253,15 +251,19 @@ errorStr problem =
 -- UPDATE --
 
 
-update : Taco -> Msg -> Model -> Return Model Msg Reply
-update taco msg model =
+type alias Payload a =
+    { a | mountPath : String }
+
+
+update : Payload a -> Msg -> Model -> Return Model Msg Reply
+update { mountPath } msg model =
     case msg of
         FieldUpdated Email email ->
             { model | email = email }
                 |> R3.withNothing
 
         ForgotPasswordClicked ->
-            openForgotPassword taco.config
+            openForgotPassword mountPath
                 |> R2.withModel model
                 |> R3.withNoReply
 
@@ -290,8 +292,8 @@ update taco msg model =
                 |> R3.withReply (SetUser user)
 
 
-openForgotPassword : Config -> Cmd Msg
-openForgotPassword { mountPath } =
+openForgotPassword : String -> Cmd Msg
+openForgotPassword mountPath =
     ForgotPassword
         |> Window.toUrl mountPath
         |> OpenNewWindow

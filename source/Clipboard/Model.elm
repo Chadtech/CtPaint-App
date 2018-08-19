@@ -4,7 +4,7 @@ module Clipboard.Model
         )
 
 import Canvas exposing (Canvas)
-import Position.Data as Position
+import Data.Position as Position
     exposing
         ( Position
         )

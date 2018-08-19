@@ -1,4 +1,4 @@
-module Position.Data
+module Data.Position
     exposing
         ( Position
         , add
@@ -10,6 +10,8 @@ module Position.Data
         , relativeToTarget
         , subtract
         , subtractFrom
+        , subtractFromX
+        , subtractFromY
         , toPoint
         )
 
@@ -70,6 +72,16 @@ subtract p q =
 subtractFrom : Position -> Position -> Position
 subtractFrom p q =
     subtract q p
+
+
+subtractFromX : Int -> Position -> Position
+subtractFromX int p =
+    { p | x = p.x - int }
+
+
+subtractFromY : Int -> Position -> Position
+subtractFromY int p =
+    { p | y = p.y - int }
 
 
 divideBy : Int -> Position -> Position

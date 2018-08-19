@@ -3,8 +3,7 @@ module Tool.Update
         ( update
         )
 
-import Model exposing (Model)
-import Position.Helpers as Position
+import Model exposing (Model, positionOnCanvas)
 import Tool.Data exposing (Tool(..))
 import Tool.Eraser.Update as Eraser
 import Tool.Fill.Update as Fill
@@ -22,29 +21,34 @@ import Tool.Zoom.Out.Update as ZoomOut
 
 update : Msg -> Model -> Model
 update msg model =
+    let
+        makeRelativeToCanvas : Msg -> Msg
+        makeRelativeToCanvas =
+            Msg.mapPosition (positionOnCanvas model)
+    in
     case model.tool of
         Hand subModel ->
             Hand.update msg subModel model
 
         Sample ->
             Sample.update
-                (Msg.mapPosition (Position.onCanvas model) msg)
+                (makeRelativeToCanvas msg)
                 model
 
         Fill ->
             Fill.update
-                (Msg.mapPosition (Position.onCanvas model) msg)
+                (makeRelativeToCanvas msg)
                 model
 
         Pencil subModel ->
             Pencil.update
-                (Msg.mapPosition (Position.onCanvas model) msg)
+                (makeRelativeToCanvas msg)
                 subModel
                 model
 
         Line subModel ->
             Line.update
-                (Msg.mapPosition (Position.onCanvas model) msg)
+                (makeRelativeToCanvas msg)
                 subModel
                 model
 
@@ -56,24 +60,24 @@ update msg model =
 
         Rectangle subModel ->
             Rectangle.update
-                (Msg.mapPosition (Position.onCanvas model) msg)
+                (makeRelativeToCanvas msg)
                 subModel
                 model
 
         RectangleFilled subModel ->
             RectangleFilled.update
-                (Msg.mapPosition (Position.onCanvas model) msg)
+                (makeRelativeToCanvas msg)
                 subModel
                 model
 
         Eraser subModel ->
             Eraser.update
-                (Msg.mapPosition (Position.onCanvas model) msg)
+                (makeRelativeToCanvas msg)
                 subModel
                 model
 
         Select subModel ->
             Select.update
-                (Msg.mapPosition (Position.onCanvas model) msg)
+                (makeRelativeToCanvas msg)
                 subModel
                 model

@@ -5,12 +5,7 @@ module Tool.Zoom
         , zoom
         )
 
-import Canvas.Model as Canvas
-import Position.Data as Position exposing (Position)
-import Data.Size as Size exposing (Size)
-import Model exposing (Model)
-import Position.Helpers
-import Style
+import Data.Position as Position exposing (Position)
 
 
 zoom : Int -> Int -> Position -> Position -> Position

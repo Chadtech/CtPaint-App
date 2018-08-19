@@ -2,6 +2,7 @@ module Data.Size
     exposing
         ( Size
         , center
+        , centerIn
         , divideBy
         , encode
         , fromPositions
@@ -10,8 +11,8 @@ module Data.Size
         , toPosition
         )
 
-import Position.Data as Position exposing (Position)
 import Json.Encode as JE
+import Data.Position as Position exposing (Position)
 import Style
 import Util exposing (def)
 
@@ -79,3 +80,18 @@ encode { width, height } =
     , def "height" <| JE.int height
     ]
         |> JE.object
+
+
+{-| In many cases, we need to put a new canvas right
+in the center of the work area (new canvases, imported
+images, text). This function calculates where to position
+the new canvas in the work area, such that its right
+in the center.
+-}
+centerIn : Size -> Size -> Position
+centerIn containerSize objectSize =
+    containerSize
+        |> subtractFromWidth objectSize.width
+        |> subtractFromHeight objectSize.height
+        |> divideBy 2
+        |> toPosition

@@ -2,14 +2,16 @@ module Tool.Data
     exposing
         ( Tool(..)
         , all
+        , handIcon
         , icon
         , init
         , name
+        , zoomInIcon
+        , zoomOutIcon
         )
 
 import Char
 import Mouse exposing (Position)
-import Mouse.Extra exposing (Button)
 import Tool.Eraser.Model as Eraser
 import Tool.Hand.Model as Hand
 import Tool.Line.Model as Line
@@ -145,3 +147,27 @@ name tool =
 
         Eraser _ ->
             "eraser"
+
+
+{-| The hand icon is used else where, but in
+a different context than indicating this tool
+-}
+handIcon : String
+handIcon =
+    icon (Hand Nothing)
+
+
+{-| The zoom in icon is used else where, but in
+a different context than indicating this tool
+-}
+zoomInIcon : String
+zoomInIcon =
+    icon ZoomIn
+
+
+{-| The zoom out icon is used else where, but in
+a different context than indicating this tool
+-}
+zoomOutIcon : String
+zoomOutIcon =
+    icon ZoomOut

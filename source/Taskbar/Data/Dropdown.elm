@@ -1,11 +1,8 @@
-module Data.Taskbar
+module Taskbar.Data.Dropdown
     exposing
         ( Dropdown(..)
         , toString
         )
-
-import String
-
 
 -- TYPES --
 

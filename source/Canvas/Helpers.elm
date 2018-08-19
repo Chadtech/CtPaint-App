@@ -13,7 +13,7 @@ import Canvas.Data.BackgroundColor as BackgroundColor
         ( BackgroundColor(Black, White)
         )
 import Color exposing (Color)
-import Position.Data exposing (Position)
+import Data.Position exposing (Position)
 import Data.Size as Size exposing (Size)
 import Json.Encode as JE exposing (Value)
 import Style

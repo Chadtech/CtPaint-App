@@ -13,7 +13,7 @@ import Css exposing (..)
 import Css.Elements exposing (canvas)
 import Css.Namespace exposing (namespace)
 import Data.Keys as Key
-import Data.Minimap exposing (State(..))
+import Data.Position as Position
 import Helpers.Keys
 import Html
     exposing
@@ -29,10 +29,10 @@ import Html.CssHelpers
 import Html.Custom exposing (indent)
 import Html.Events exposing (onClick, onMouseLeave)
 import Html.Lazy
+import Html.Mouse
 import Menu.View as Menu
-import Minimap
+import Minimap.View as Minimap
 import Model exposing (Model)
-import Mouse.Extra
 import MouseEvents
     exposing
         ( MouseEvent
@@ -40,11 +40,11 @@ import MouseEvents
         , onMouseUp
         )
 import Msg exposing (Msg(..))
-import Position.Data as Position
 import Style
-import Taskbar
+import Taskbar.View as Taskbar
 import Tool.Data exposing (Tool)
 import Tool.Msg
+import Tool.View as Tool
 import Toolbar
 import Util exposing (def)
 
@@ -164,7 +164,7 @@ css =
         ]
     , (Css.class Info << List.append indent)
         [ backgroundColor Ct.background2
-        , width (px 390)
+        , width (px 490)
         , position absolute
         , left (calc (pct 100) minus (px 397))
         , top (px 4)
@@ -201,8 +201,7 @@ view model =
     else
         let
             canvasAreaHeight =
-                [ model.windowSize.height
-                , -Style.palettebarHeight
+                [ (Model.getWindowSize model).height
                 , -Style.toolbarWidth
                 ]
                     |> List.sum
@@ -217,7 +216,12 @@ view model =
             , model.color
                 |> Html.Lazy.lazy Picker.view
                 |> Html.map (ColorMsg << Color.Msg.PickerMsg)
-            , minimap model
+            , Html.Lazy.lazy3
+                Minimap.view
+                model.minimap
+                model.canvas.main
+                model.selection
+                |> Html.map MinimapMsg
             , Html.Lazy.lazy Menu.view model.menu
                 |> Html.map MenuMsg
             ]
@@ -244,7 +248,7 @@ galleryNotice : Model -> Html Msg
 galleryNotice model =
     [ "Click anywhere or press"
     , Helpers.Keys.getKeysLabel
-        model.taco.config
+        (Model.getConfig model)
         Key.SwitchGalleryView
     , "to exit"
     ]
@@ -296,7 +300,9 @@ infoView str =
 
 infoBoxContent : Model -> List (Html msg)
 infoBoxContent model =
-    [ List.map infoView (toolContent model)
+    [ model.tool
+        |> Tool.infoBox model.mousePosition
+        |> List.map infoView
     , sampleColor model
     , List.map infoView (generalContent model)
     ]
@@ -352,70 +358,6 @@ sampleColorBackgroundStr color =
         "#ffffff"
 
 
-rectInfo : Position.Position -> Position.Position -> List String
-rectInfo origin position =
-    [ "rect("
-    , (origin.x - position.x + 1)
-        |> abs
-        |> toString
-    , ","
-    , (origin.y - position.y + 1)
-        |> abs
-        |> toString
-    , ")"
-    ]
-
-
-originInfo : Position.Position -> List String
-originInfo p =
-    [ "origin("
-    , toString p.x
-    , ","
-    , toString p.y
-    , ")"
-    ]
-
-
-toolContent : Model -> List String
-toolContent ({ tool } as model) =
-    case tool of
-        Tool.Data.Select maybePosition ->
-            case ( maybePosition, model.mousePosition ) of
-                ( Just origin, Just position ) ->
-                    [ rectInfo origin position
-                    , originInfo origin
-                    ]
-                        |> List.map String.concat
-
-                _ ->
-                    []
-
-        Tool.Data.Rectangle subModel ->
-            case ( subModel, model.mousePosition ) of
-                ( Just { initialClickPositionOnCanvas }, Just position ) ->
-                    [ rectInfo initialClickPositionOnCanvas position
-                    , originInfo initialClickPositionOnCanvas
-                    ]
-                        |> List.map String.concat
-
-                _ ->
-                    []
-
-        Tool.Data.RectangleFilled subModel ->
-            case ( subModel, model.mousePosition ) of
-                ( Just { initialClickPositionOnCanvas }, Just position ) ->
-                    [ rectInfo initialClickPositionOnCanvas position
-                    , originInfo initialClickPositionOnCanvas
-                    ]
-                        |> List.map String.concat
-
-                _ ->
-                    []
-
-        _ ->
-            []
-
-
 mouse : Maybe Position.Position -> Maybe String
 mouse maybePosition =
     case maybePosition of
@@ -436,24 +378,6 @@ zoom z =
     "zoom(" ++ toString (z * 100) ++ "%)"
 
 
-
--- MINI MAP --
-
-
-minimap : Model -> Html Msg
-minimap model =
-    case model.minimap of
-        Opened minimapModel ->
-            Minimap.view
-                minimapModel
-                model.canvas.main
-                model.selection
-                |> Html.map MinimapMsg
-
-        _ ->
-            Html.text ""
-
-
 {-| This is a transparent div that sits over
 the work area. Its purpose is to be clickable
 so that mouse events can be recorded relative to
@@ -467,33 +391,32 @@ workareaClickScreen canvasAreaHeight model =
         , Attr.style [ Util.height canvasAreaHeight ]
         , onMouseLeave WorkareaMouseExit
         , onMouseMove WorkareaMouseMove
-        , Mouse.Extra.onMouseDown
-            model.taco.config.isMac
-            (workareaMouseDownMsg model)
-        , onMouseUp (workareaMouseUpMsg model)
+        , Html.Mouse.onMouseDown
+            (Model.usersComputerIsMac model)
+            workareaMouseDownMsg
+        , onMouseUp workareaMouseUpMsg
 
         -- Necessary in order to capture the context
         -- menu event, and prevent it, even though
         -- we dont do anything from this Msg
         ----v
-        , Mouse.Extra.onContextMenu WorkareaContextMenu
+        , Html.Mouse.onContextMenu WorkareaContextMenu
         ]
         []
 
 
-workareaMouseUpMsg : Model -> MouseEvent -> Msg
-workareaMouseUpMsg model { clientPos } =
-    Tool.Msg.WorkareaMouseUp clientPos
-        -- (Position.Helpers.onCanvas model clientPos)
+workareaMouseUpMsg : MouseEvent -> Msg
+workareaMouseUpMsg { clientPos } =
+    clientPos
+        |> Tool.Msg.WorkareaMouseUp
         |> ToolMsg
 
 
-workareaMouseDownMsg : Model -> Mouse.Extra.Button -> MouseEvent -> Msg
-workareaMouseDownMsg model button { clientPos } =
+workareaMouseDownMsg : Html.Mouse.Button -> MouseEvent -> Msg
+workareaMouseDownMsg button { clientPos } =
     Tool.Msg.WorkareaMouseDown
         button
         clientPos
-        -- (Position.Helpers.onCanvas model clientPos)
         |> ToolMsg
 
 

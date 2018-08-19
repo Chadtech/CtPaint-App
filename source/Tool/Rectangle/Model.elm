@@ -3,8 +3,8 @@ module Tool.Rectangle.Model
         ( Model
         )
 
-import Position.Data exposing (Position)
-import Mouse.Extra exposing (Button)
+import Data.Position exposing (Position)
+import Html.Mouse exposing (Button)
 
 
 type alias Model =

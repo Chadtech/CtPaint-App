@@ -3,7 +3,6 @@ module Menu.Scale exposing (..)
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
-import Data.Taco exposing (Taco)
 import Html
     exposing
         ( Attribute
@@ -274,8 +273,8 @@ field =
 -- UPDATE --
 
 
-update : Taco -> Msg -> Model -> Return Model Msg Reply
-update taco msg model =
+update : Msg -> Model -> Return Model Msg Reply
+update msg model =
     case msg of
         FieldUpdated field str ->
             updateField field str model

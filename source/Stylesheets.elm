@@ -22,8 +22,8 @@ import Menu.Scale as Scale
 import Menu.Text as Text
 import Menu.Upload as Upload
 import Menu.View as Menu
-import Minimap
-import Taskbar
+import Minimap.View as Minimap
+import Taskbar.View as Taskbar
 import Tool.Eraser.View as Eraser
 import Toolbar
 import View

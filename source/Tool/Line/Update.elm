@@ -5,14 +5,14 @@ module Tool.Line.Update
 
 import Canvas.Draw as Draw
 import Canvas.Draw.Model as DrawModel
+import Data.Position exposing (Position)
 import History.Helpers as History
+import Html.Mouse exposing (Button)
 import Model exposing (Model)
-import Mouse.Extra exposing (Button)
-import Position.Data exposing (Position)
 import Tool.Data as Tool
-import Tool.Helpers exposing (getColor)
 import Tool.Line.Model as Line
 import Tool.Msg exposing (Msg(..))
+import Tool.Util exposing (getColor)
 
 
 update : Msg -> Maybe Line.Model -> Model -> Model

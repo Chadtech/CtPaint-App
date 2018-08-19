@@ -5,7 +5,7 @@ import Canvas.Draw.Model as CDM
 import Color.Util
 import History.Helpers as History
 import Model exposing (Model)
-import Position.Data as Position exposing (Position)
+import Data.Position as Position exposing (Position)
 import Selection.Model as Selection
 import Tool.Data exposing (Tool(..))
 import Tool.Msg exposing (Msg(..))

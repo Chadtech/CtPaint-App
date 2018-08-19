@@ -9,7 +9,6 @@ module Menu.Text
 
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
-import Data.Taco exposing (Taco)
 import Html exposing (Html, a, p, textarea)
 import Html.Attributes exposing (spellcheck, value)
 import Html.CssHelpers
@@ -42,8 +41,8 @@ init =
 -- UPDATE --
 
 
-update : Taco -> Msg -> String -> Return String Msg Reply
-update taco msg model =
+update : Msg -> String -> Return String Msg Reply
+update msg model =
     case msg of
         FieldUpdated str ->
             str

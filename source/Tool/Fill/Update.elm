@@ -8,7 +8,7 @@ import Canvas.Draw as Draw
 import Canvas.Draw.Model as DrawModel
 import History.Helpers as History
 import Model exposing (Model)
-import Position.Data as Position
+import Data.Position as Position
     exposing
         ( Position
         )

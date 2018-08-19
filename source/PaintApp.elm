@@ -6,10 +6,8 @@ import Init exposing (init)
 import Json.Decode as Decode exposing (Decoder, Value, value)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
-import Ports
 import Return2 as R2
-import Subscriptions exposing (subscriptions)
-import Track exposing (track)
+import Subscriptions
 import Update
 import View
 
@@ -54,15 +52,21 @@ update msg result =
         Ok model ->
             Update.update msg model
                 |> Tuple.mapFirst Ok
-                |> R2.addCmd (getTrackingCmd msg model)
 
         Err err ->
             Err err
                 |> R2.withNoCmd
 
 
-getTrackingCmd : Msg -> Model -> Cmd Msg
-getTrackingCmd msg model =
-    model
-        |> track msg
-        |> Ports.sendTracking model.taco
+
+-- SUBSCRIPTIONS --
+
+
+subscriptions : Result Init.Error Model -> Sub Msg
+subscriptions result =
+    case result of
+        Ok model ->
+            Subscriptions.subscriptions model
+
+        Err _ ->
+            Sub.none

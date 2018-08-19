@@ -4,13 +4,13 @@ import Canvas exposing (Canvas, Error)
 import Color.Msg as Color
 import Data.Drawing as Drawing exposing (Drawing)
 import Data.Keys as Key
-import Data.Minimap as Minimap
 import Data.User as User exposing (User)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Keyboard.Extra.Browser exposing (Browser)
 import Menu.Msg as Menu
+import Minimap.Msg as Minimap
 import MouseEvents exposing (MouseEvent)
-import Taskbar
+import Taskbar.Msg as Taskbar
 import Time exposing (Time)
 import Tool.Msg as Tool
 import Toolbar

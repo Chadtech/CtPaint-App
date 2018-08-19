@@ -10,7 +10,7 @@ import Color.Swatches.Data as Swatches
         ( Swatches
         )
 import Model exposing (Model)
-import Position.Data exposing (Position)
+import Data.Position exposing (Position)
 import Tool.Msg exposing (Msg(..))
 
 

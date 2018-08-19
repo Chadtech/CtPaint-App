@@ -5,7 +5,7 @@ module Tool.Msg
         )
 
 import Mouse exposing (Position)
-import Mouse.Extra exposing (Button)
+import Html.Mouse exposing (Button)
 
 
 -- TYPES --

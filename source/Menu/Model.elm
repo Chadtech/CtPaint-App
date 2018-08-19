@@ -20,7 +20,7 @@ module Menu.Model
         )
 
 import Color exposing (Color)
-import Position.Data as Position
+import Data.Position as Position
     exposing
         ( Position
         )

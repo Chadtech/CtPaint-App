@@ -4,8 +4,6 @@ module Menu.Data
         , toString
         )
 
-import Data.Drawing exposing (Drawing)
-import Data.User exposing (User)
 import Menu.About
 import Menu.BugReport
 import Menu.Download
@@ -13,13 +11,11 @@ import Menu.Drawing
 import Menu.Import
 import Menu.Loading
 import Menu.Login
-import Menu.Logout
 import Menu.New
 import Menu.ReplaceColor
 import Menu.Resize
 import Menu.Save
 import Menu.Scale
-import Menu.Text
 import Menu.Upload
 
 

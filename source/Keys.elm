@@ -1,23 +1,20 @@
-module Keys exposing (..)
+module Keys exposing (exec, getCmd)
 
 import Canvas exposing (Canvas, DrawOp)
 import Canvas.Draw as Draw
 import Canvas.Model
-import Clipboard.Helpers
 import Color.Model as Color
+import Data.Config exposing (Config)
 import Data.Keys as Key exposing (Cmd(..))
-import Data.Minimap exposing (State(..))
-import Helpers.Drawing
+import Dict
 import History.Helpers as History
 import Menu.Model as Menu
-import Minimap
 import Model exposing (Model)
 import Platform.Cmd as Platform
 import Ports exposing (JsMsg(..))
 import Return2 as R2
 import Selection.Model as Selection
 import Tool.Data as Tool exposing (Tool(..))
-import Tool.Zoom.Helpers as Zoom
 
 
 exec : Key.Cmd -> Model -> ( Model, Platform.Cmd msg )
@@ -128,15 +125,15 @@ exec keyCmd model =
                 |> R2.withNoCmd
 
         Copy ->
-            Clipboard.Helpers.copy model
+            Model.copy model
                 |> R2.withNoCmd
 
         Cut ->
-            Clipboard.Helpers.cut model
+            Model.cut model
                 |> R2.withNoCmd
 
         Paste ->
-            Clipboard.Helpers.paste model
+            Model.paste model
                 |> R2.withNoCmd
 
         SelectAll ->
@@ -157,40 +154,16 @@ exec keyCmd model =
                 |> R2.withNoCmd
 
         Key.ZoomIn ->
-            Zoom.in_ model
+            Model.zoomIn model
                 |> R2.withNoCmd
 
         Key.ZoomOut ->
-            Zoom.out model
+            Model.zoomOut model
                 |> R2.withNoCmd
 
         ToggleMinimap ->
-            case model.minimap of
-                Opened minimapModel ->
-                    { model
-                        | minimap =
-                            minimapModel.externalPosition
-                                |> Closed
-                    }
-                        |> R2.withNoCmd
-
-                Closed position ->
-                    { model
-                        | minimap =
-                            model.windowSize
-                                |> Minimap.init (Just position)
-                                |> Opened
-                    }
-                        |> R2.withNoCmd
-
-                NotInitialized ->
-                    { model
-                        | minimap =
-                            model.windowSize
-                                |> Minimap.init Nothing
-                                |> Opened
-                    }
-                        |> R2.withNoCmd
+            Model.toggleMinimapOpen model
+                |> R2.withNoCmd
 
         SwitchGalleryView ->
             { model
@@ -201,24 +174,15 @@ exec keyCmd model =
         InitImport ->
             { model
                 | menu =
-                    model.windowSize
+                    model
+                        |> Model.getWindowSize
                         |> Menu.initImport
                         |> Just
             }
                 |> R2.withCmd Ports.stealFocus
 
         InitDownload ->
-            { model
-                | menu =
-                    Menu.initDownload
-                        { name = model.drawingName
-                        , nameIsGenerated =
-                            model.drawingNameIsGenerated
-                        }
-                        model.windowSize
-                        |> Just
-            }
-                |> R2.withCmd Ports.stealFocus
+            Model.initDownload model
 
         InitText ->
             Model.initTextMenu model
@@ -266,7 +230,7 @@ exec keyCmd model =
             transform Draw.invert model
 
         Key.Save ->
-            Helpers.Drawing.save model
+            Model.saveDrawing model
 
         SetTransparency ->
             case model.selection of
@@ -284,23 +248,10 @@ exec keyCmd model =
                         |> R2.withNoCmd
 
         InitUpload ->
-            { model
-                | menu =
-                    model.windowSize
-                        |> Menu.initUpload
-                        |> Just
-            }
-                |> R2.withCmd (Ports.send OpenUpFileUpload)
+            Model.initUpload model
 
         InitResize ->
-            { model
-                | menu =
-                    model.windowSize
-                        |> Menu.initResize
-                            (Canvas.getSize model.canvas.main)
-                        |> Just
-            }
-                |> R2.withCmd Ports.stealFocus
+            Model.initResize model
 
 
 
@@ -333,3 +284,35 @@ transform transformation model =
                 transformation
                 (History.canvas model)
                 |> R2.withNoCmd
+
+
+
+-- PUBLIC HELPERS --
+
+
+getCmd : Config -> Key.Event -> Key.Cmd
+getCmd { keyCmds, cmdKey } event =
+    case Dict.get (eventToString cmdKey event) keyCmds of
+        Just cmd ->
+            cmd
+
+        Nothing ->
+            NoCmd
+
+
+eventToString : (Key.Event -> Bool) -> Key.Event -> String
+eventToString cmdKey payload =
+    let
+        direction =
+            toString payload.direction
+
+        code =
+            toString payload.code
+
+        shift =
+            toString payload.shift
+
+        cmd =
+            toString (cmdKey payload)
+    in
+    shift ++ cmd ++ code ++ direction

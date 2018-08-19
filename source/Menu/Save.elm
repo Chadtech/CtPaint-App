@@ -12,8 +12,6 @@ import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Data.Drawing exposing (Drawing)
-import Data.Taco exposing (Taco)
-import Data.Tracking as Tracking
 import Data.Window as Window exposing (Window(Home))
 import Html exposing (Html, a, div, p)
 import Html.CssHelpers
@@ -27,7 +25,6 @@ import Menu.Reply
             , TrySaving
             )
         )
-import Ports
 import Return2 as R2
 import Return3 as R3 exposing (Return)
 import Util
@@ -65,8 +62,12 @@ init =
 -- UPDATE --
 
 
-update : Taco -> Msg -> Model -> Return Model Msg Reply
-update taco msg model =
+type alias Payload a =
+    { a | mountPath : String }
+
+
+update : Payload a -> Msg -> Model -> Return Model Msg Reply
+update { mountPath } msg model =
     case msg of
         DrawingUpdateCompleted (Ok "200") ->
             Util.delay 1000 (OneSecondExpired Nothing)
@@ -108,7 +109,7 @@ update taco msg model =
                 |> R3.withTuple ( model, Cmd.none )
 
         OpenHomeClicked ->
-            Window.open taco.config.mountPath Home
+            Window.open mountPath Home
                 |> R2.withModel model
                 |> R3.withNoReply
 

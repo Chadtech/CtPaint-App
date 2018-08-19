@@ -5,7 +5,6 @@ port module Ports
         , fromJs
         , returnFocus
         , send
-        , sendTracking
         , stealFocus
         )
 
@@ -18,9 +17,6 @@ import Color.Swatches.Data as Swatches
     exposing
         ( Swatches
         )
-import Data.Taco exposing (Taco)
-import Data.Tracking as Tracking
-import Data.User as User
 import Id exposing (Id, Origin(Local, Remote))
 import Json.Encode as Encode exposing (Value)
 import Util exposing (def)
@@ -38,7 +34,6 @@ type JsMsg
     | OpenUpFileUpload
     | ReadFile
     | LoadDrawing Id
-    | Track Tracking.Payload
 
 
 type alias SavePayload =
@@ -69,22 +64,6 @@ toCmd type_ payload =
     ]
         |> Encode.object
         |> toJs
-
-
-sendTracking : Taco -> Maybe Tracking.Event -> Cmd msg
-sendTracking { config, user } trackingEvent =
-    case Tracking.namespace "desktop" trackingEvent of
-        Just ( name, properties ) ->
-            { sessionId = config.sessionId
-            , email = User.getEmail user
-            , name = name
-            , properties = properties
-            }
-                |> Track
-                |> send
-
-        Nothing ->
-            Cmd.none
 
 
 send : JsMsg -> Cmd msg
@@ -139,9 +118,6 @@ send msg =
 
         LoadDrawing id ->
             toCmd "loadDrawing" (Id.encode id)
-
-        Track payload ->
-            toCmd "track" (Tracking.encode payload)
 
 
 port toJs : Value -> Cmd msg

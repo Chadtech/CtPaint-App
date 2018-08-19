@@ -8,7 +8,6 @@ module Menu.Download
         , view
         )
 
-import Data.Taco exposing (Taco)
 import Html exposing (Html, a, form, input, p, text)
 import Html.Attributes exposing (placeholder, value)
 import Html.Custom
@@ -38,22 +37,22 @@ type alias Model =
 -- UPDATE --
 
 
-update : Taco -> Msg -> Model -> Return Model Msg Reply
-update taco msg model =
+update : Msg -> Model -> Return Model Msg Reply
+update msg model =
     case msg of
         FieldUpdated str ->
             { model | field = str }
                 |> R3.withNothing
 
         Submitted ->
-            download taco model
+            download model
 
         DownloadButtonPressed ->
-            download taco model
+            download model
 
 
-download : Taco -> Model -> Return Model Msg Reply
-download taco model =
+download : Model -> Return Model Msg Reply
+download model =
     model
         |> R2.withCmd (downloadCmd model)
         |> R3.withReply CloseMenu

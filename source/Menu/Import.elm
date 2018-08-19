@@ -5,7 +5,6 @@ import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
-import Data.Taco exposing (Taco)
 import Helpers.Import exposing (loadCmd)
 import Html exposing (Html, a, div, form, input, p, text)
 import Html.Attributes exposing (placeholder, value)
@@ -162,8 +161,8 @@ init =
 -- UPDATE --
 
 
-update : Taco -> Msg -> Model -> Return Model Msg Reply
-update taco msg model =
+update : Msg -> Model -> Return Model Msg Reply
+update msg model =
     case msg of
         FieldUpdated str ->
             case model of

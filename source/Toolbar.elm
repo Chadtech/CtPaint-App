@@ -73,7 +73,8 @@ handleOtherButtonClick otherButton model =
         Text ->
             { model
                 | menu =
-                    model.windowSize
+                    model
+                        |> Model.getWindowSize
                         |> Menu.initText
                         |> Just
             }

@@ -1,18 +1,18 @@
-module Tool.Helpers
+module Tool.Util
     exposing
         ( getColor
         )
 
 import Color exposing (Color)
 import Color.Swatches.Data exposing (Swatches)
-import Mouse.Extra
+import Html.Mouse
 
 
-getColor : Mouse.Extra.Button -> Swatches -> Color
+getColor : Html.Mouse.Button -> Swatches -> Color
 getColor button swatches =
     case button of
-        Mouse.Extra.Left ->
+        Html.Mouse.Left ->
             swatches.top
 
-        Mouse.Extra.Right ->
+        Html.Mouse.Right ->
             swatches.bottom

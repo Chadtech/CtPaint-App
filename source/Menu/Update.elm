@@ -1,7 +1,5 @@
 module Menu.Update exposing (update)
 
-import Position.Data as Position
-import Data.Taco exposing (Taco)
 import Menu.BugReport as BugReport
 import Menu.Data as Menu exposing (Menu(..))
 import Menu.Download as Download
@@ -20,6 +18,7 @@ import Menu.Scale as Scale
 import Menu.Text as Text
 import Menu.Upload as Upload
 import MouseEvents exposing (MouseEvent)
+import Data.Position as Position
 import Return2 as R2
 import Return3 as R3 exposing (Return)
 
@@ -27,8 +26,12 @@ import Return3 as R3 exposing (Return)
 -- UPDATE --
 
 
-update : Taco -> Msg -> Model -> Return Model Msg Reply
-update taco msg model =
+type alias Payload =
+    { mountPath : String }
+
+
+update : Payload -> Msg -> Model -> Return Model Msg Reply
+update payload msg model =
     case msg of
         XButtonMouseDown ->
             { model
@@ -49,7 +52,6 @@ update taco msg model =
 
                 _ ->
                     handleHeaderMouseDown
-                        taco
                         mouseEvent
                         model
 
@@ -77,7 +79,7 @@ update taco msg model =
             case model.content of
                 Download subModel ->
                     subModel
-                        |> Download.update taco subMsg
+                        |> Download.update subMsg
                         |> mapReturn model Menu.Download DownloadMsg
 
                 _ ->
@@ -87,7 +89,7 @@ update taco msg model =
             case model.content of
                 Import subModel ->
                     subModel
-                        |> Import.update taco subMsg
+                        |> Import.update subMsg
                         |> mapReturn model Menu.Import ImportMsg
 
                 _ ->
@@ -97,7 +99,7 @@ update taco msg model =
             case model.content of
                 Scale subModel ->
                     subModel
-                        |> Scale.update taco subMsg
+                        |> Scale.update subMsg
                         |> mapReturn model Menu.Scale ScaleMsg
 
                 _ ->
@@ -107,7 +109,7 @@ update taco msg model =
             case model.content of
                 Text subModel ->
                     subModel
-                        |> Text.update taco subMsg
+                        |> Text.update subMsg
                         |> mapReturn model Menu.Text TextMsg
 
                 _ ->
@@ -117,7 +119,7 @@ update taco msg model =
             case model.content of
                 BugReport subModel ->
                     subModel
-                        |> BugReport.update taco subMsg
+                        |> BugReport.update subMsg
                         |> mapReturn model Menu.BugReport BugReportMsg
 
                 _ ->
@@ -127,7 +129,7 @@ update taco msg model =
             case model.content of
                 ReplaceColor subModel ->
                     subModel
-                        |> ReplaceColor.update taco subMsg
+                        |> ReplaceColor.update subMsg
                         |> mapReturn model Menu.ReplaceColor ReplaceColorMsg
 
                 _ ->
@@ -137,7 +139,7 @@ update taco msg model =
             case model.content of
                 Login subModel ->
                     subModel
-                        |> Login.update taco subMsg
+                        |> Login.update payload subMsg
                         |> mapReturn model Menu.Login LoginMsg
 
                 _ ->
@@ -157,7 +159,7 @@ update taco msg model =
             case model.content of
                 Resize subModel ->
                     subModel
-                        |> Resize.update taco subMsg
+                        |> Resize.update subMsg
                         |> mapReturn model Menu.Resize ResizeMsg
 
                 _ ->
@@ -167,7 +169,7 @@ update taco msg model =
             case model.content of
                 New subModel ->
                     subModel
-                        |> New.update taco subMsg
+                        |> New.update subMsg
                         |> mapReturn model Menu.New NewMsg
 
                 _ ->
@@ -177,7 +179,7 @@ update taco msg model =
             case model.content of
                 Drawing subModel ->
                     subModel
-                        |> Drawing.update taco subMsg
+                        |> Drawing.update subMsg
                         |> mapReturn model Menu.Drawing DrawingMsg
 
                 _ ->
@@ -187,7 +189,7 @@ update taco msg model =
             case model.content of
                 Save subModel ->
                     subModel
-                        |> Save.update taco subMsg
+                        |> Save.update payload subMsg
                         |> mapReturn model Menu.Save SaveMsg
 
                 _ ->
@@ -205,8 +207,8 @@ update taco msg model =
                         |> R3.withNothing
 
 
-handleHeaderMouseDown : Taco -> MouseEvent -> Model -> Return Model Msg Reply
-handleHeaderMouseDown taco mouseEvent model =
+handleHeaderMouseDown : MouseEvent -> Model -> Return Model Msg Reply
+handleHeaderMouseDown mouseEvent model =
     { model
         | click =
             mouseEvent

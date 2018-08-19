@@ -11,9 +11,7 @@ import Color.Reply as CR
 import Data.Drawing as Drawing
 import Data.Flags exposing (Init(NormalInit), projectNameGenerator)
 import Data.Size as Size exposing (Size)
-import Data.Taco as Taco
 import Data.User as User
-import Helpers.Drawing
 import Helpers.Random as Random
 import History.Helpers as History
 import Init
@@ -22,11 +20,10 @@ import Menu.Reply as MR
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Ports
-import Position.Data as Position
+import Data.Position as Position
     exposing
         ( Position
         )
-import Position.Helpers
 import Return2 as R2
 import Selection.Model as Selection
 
@@ -89,8 +86,8 @@ menuReply menu reply model =
                 | canvas =
                     { main = image
                     , position =
-                        Position.Helpers.centerInWorkarea
-                            model.windowSize
+                        Model.centerInWorkarea
+                            model
                             (Canvas.getSize image)
                     }
             }
@@ -136,32 +133,23 @@ menuReply menu reply model =
                         |> Model.closeMenu
 
         MR.SetUser user ->
-            { model
-                | menu = Nothing
-                , taco =
-                    user
-                        |> User.initModel Drawing.Local
-                        |> User.LoggedIn
-                        |> Taco.setUser model.taco
-            }
-                |> R2.withNoCmd
+            user
+                |> User.initModel Drawing.Local
+                |> User.LoggedIn
+                |> Model.setUser
+                |> Model.applyTo model
+                |> Model.closeMenu
 
         MR.AttemptingLogin ->
-            { model
-                | menu = Just menu
-                , taco =
-                    User.LoggingIn
-                        |> Taco.setUser model.taco
-            }
+            model
+                |> Model.setMenu menu
+                |> Model.setUser User.LoggingIn
                 |> R2.withNoCmd
 
         MR.NoLongerLoggingIn ->
-            { model
-                | menu = Just menu
-                , taco =
-                    User.LoggedOut
-                        |> Taco.setUser model.taco
-            }
+            model
+                |> Model.setMenu menu
+                |> Model.setUser User.LoggedOut
                 |> R2.withNoCmd
 
         MR.ResizeTo position size ->
@@ -172,31 +160,30 @@ menuReply menu reply model =
                 |> Model.closeMenu
 
         MR.IncorporateDrawing drawing ->
-            { model
-                | taco =
-                    case model.taco.user of
-                        User.LoggedIn user ->
-                            user
-                                |> User.setDrawing drawing
-                                |> User.LoggedIn
-                                |> Taco.setUser model.taco
+            case Model.getUser model of
+                User.LoggedIn user ->
+                    user
+                        |> User.setDrawing drawing
+                        |> User.LoggedIn
+                        |> Model.setUser
+                        |> Model.applyTo model
+                        |> Model.closeMenu
 
-                        _ ->
-                            model.taco
-            }
-                |> Model.closeMenu
+                _ ->
+                    model
+                        |> R2.withNoCmd
 
         MR.TrySaving ->
-            Helpers.Drawing.save model
+            Model.saveDrawing model
 
         MR.Logout ->
-            { windowSize = model.windowSize
-            , isMac = model.taco.config.isMac
-            , browser = model.taco.config.browser
+            { windowSize = Model.getWindowSize model
+            , isMac = Model.usersComputerIsMac model
+            , browser = Model.usersBrowser model
             , user = User.LoggedOut
             , init = NormalInit
-            , mountPath = model.taco.config.mountPath
-            , buildNumber = model.taco.config.buildNumber
+            , mountPath = Model.getMountPath model
+            , buildNumber = Model.getBuildNumber model
             , randomValues =
                 let
                     ( newProjectName, newSeed ) =
@@ -204,7 +191,7 @@ menuReply menu reply model =
                             |> Random.from model.seed
                             |> Random.value projectNameGenerator
                 in
-                { sessionId = model.taco.config.sessionId
+                { sessionId = Model.getSessionId model
                 , projectName = newProjectName
                 , seed = newSeed
                 }
@@ -233,8 +220,8 @@ menuReply menu reply model =
                 | canvas =
                     { main = canvas
                     , position =
-                        Position.Helpers.centerInWorkarea
-                            model.windowSize
+                        Model.centerInWorkarea
+                            model
                             (Canvas.getSize canvas)
                     }
                 , drawingName = name
@@ -259,7 +246,7 @@ addText str ({ color } as model) =
                     |> Size.divideBy 2
                     |> Size.toPosition
                     |> Position.subtractFrom
-                        (Position.Helpers.canvasPosInCenterOfWindow model)
+                        (Model.canvasPosInCenterOfWindow model)
             , origin = Selection.Other
             }
                 |> Just

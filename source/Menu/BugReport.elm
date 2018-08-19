@@ -11,14 +11,12 @@ module Menu.BugReport
 import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
-import Data.Taco exposing (Taco)
 import Html exposing (Html, a, br, p, textarea)
 import Html.Attributes exposing (spellcheck, value)
 import Html.CssHelpers
 import Html.Custom exposing (indent)
 import Html.Events exposing (onClick, onInput)
 import Menu.Reply exposing (Reply(CloseMenu))
-import Ports
 import Return2 as R2
 import Return3 as R3 exposing (Return)
 import Util exposing (def)
@@ -55,15 +53,15 @@ init loggedIn =
 -- UPDATE --
 
 
-update : Taco -> Msg -> Model -> Return Model Msg Reply
-update taco msg model =
+update : Msg -> Model -> Return Model Msg Reply
+update msg model =
     case msg of
         FieldUpdated str ->
             updateField str model
                 |> R3.withNothing
 
         SubmitBugClicked ->
-            submitBug taco model
+            submitBug model
                 |> R3.withNoReply
 
         TwoSecondsExpired ->
@@ -82,8 +80,8 @@ updateField str model =
             model
 
 
-submitBug : Taco -> Model -> ( Model, Cmd Msg )
-submitBug taco model =
+submitBug : Model -> ( Model, Cmd Msg )
+submitBug model =
     case model of
         Ready "" ->
             model

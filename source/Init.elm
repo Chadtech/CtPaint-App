@@ -6,9 +6,10 @@ import Canvas.Draw.Model
 import Canvas.Helpers
 import Canvas.Model
 import Color.Model
+import Data.Config as Config
 import Data.Flags as Flags exposing (Flags, Init(..))
-import Data.Minimap
-import Data.Taco as Taco
+import Data.Position as Position exposing (Position)
+import Data.Size as Size
 import Data.User as User
 import Data.Window as Window
 import Helpers.Import
@@ -16,11 +17,10 @@ import History.Model as History
 import Id exposing (Origin(Local, Remote))
 import Json.Decode as Decode exposing (Value)
 import Menu.Model as Menu
+import Minimap.Model as Minimap
 import Model exposing (Model)
 import Msg exposing (Msg(InitFromUrl))
 import Ports exposing (JsMsg(LoadDrawing, RedirectPageTo))
-import Position.Data as Position exposing (Position)
-import Position.Helpers
 import Return2 as R2
 import Tool.Data as Tool
 
@@ -68,7 +68,6 @@ fromFlags flags =
     , color = Color.Model.init
     , drawingName = fields.drawingName
     , drawingNameIsGenerated = fields.drawingNameIsGenerated
-    , windowSize = flags.windowSize
     , tool = Tool.init
     , zoom = 1
     , galleryView = False
@@ -77,12 +76,14 @@ fromFlags flags =
     , selection = Nothing
     , clipboard = Nothing
     , taskbarDropped = Nothing
-    , minimap = Data.Minimap.NotInitialized
+    , minimap = Minimap.init (Canvas.getSize fields.canvas.main)
     , menu = fields.menu
     , seed = flags.randomValues.seed
     , eraserSize = 5
     , shiftIsDown = False
-    , taco = Taco.fromFlags flags
+    , windowSize = flags.windowSize
+    , user = flags.user
+    , config = Config.init flags
     }
         |> R2.withCmd cmd
 
@@ -103,7 +104,7 @@ getFields ({ windowSize } as flags) =
             { canvas =
                 { main = Canvas.Helpers.blank
                 , position =
-                    Position.Helpers.centerInWorkarea
+                    Size.centerIn
                         flags.windowSize
                         (Canvas.getSize Canvas.Helpers.blank)
                 }
@@ -160,7 +161,7 @@ getFields ({ windowSize } as flags) =
             { canvas =
                 { main = canvas
                 , position =
-                    Position.Helpers.centerInWorkarea
+                    Size.centerIn
                         flags.windowSize
                         (Canvas.getSize canvas)
                 }

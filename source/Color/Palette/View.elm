@@ -24,8 +24,8 @@ import Html.Custom
         , outdent
         )
 import Html.Events exposing (on, onClick)
+import Html.Mouse
 import Json.Decode as Decode exposing (Decoder)
-import Mouse.Extra
 import Style
 import Util
 
@@ -129,7 +129,7 @@ square picker ( index, color ) =
         [ class (squareClasses index picker)
         , Color.Util.background color
         , SquareRightClicked color index
-            |> Mouse.Extra.onContextMenu
+            |> Html.Mouse.onContextMenu
         , onClickWithShift (SquareClicked index color)
         ]
         []

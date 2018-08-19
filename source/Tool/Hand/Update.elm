@@ -4,12 +4,12 @@ module Tool.Hand.Update
         )
 
 import Canvas.Model as Canvas
-import Position.Data as Position
+import Data.Position as Position
     exposing
         ( Position
         )
+import Html.Mouse exposing (Button)
 import Model exposing (Model)
-import Mouse.Extra exposing (Button)
 import Selection.Model as Selection
 import Tool.Data as Tool
 import Tool.Hand.Model as Hand

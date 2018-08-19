@@ -11,7 +11,6 @@ module Menu.Drawing
 import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
-import Data.Taco exposing (Taco)
 import Html exposing (Html, input, p)
 import Html.Attributes exposing (value)
 import Html.CssHelpers
@@ -145,8 +144,8 @@ failView problem =
 -- UPDATE --
 
 
-update : Taco -> Msg -> Model -> Return Model Msg Reply
-update taco msg model =
+update : Msg -> Model -> Return Model Msg Reply
+update msg model =
     case msg of
         NameUpdated name ->
             { model | name = name }

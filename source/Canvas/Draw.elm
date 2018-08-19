@@ -1,6 +1,5 @@
 module Canvas.Draw exposing (..)
 
-import Array exposing (Array)
 import Canvas
     exposing
         ( Canvas
@@ -11,10 +10,9 @@ import Canvas
         )
 import Color exposing (Color)
 import Color.Util
+import Data.Position as Position exposing (Position)
 import Data.Size as Size
 import Hfnss exposing (Pixel(..))
-import List.Extra as LE
-import Position.Data as Position exposing (Position)
 import RasterShapes as Shapes
 import Util exposing (withIndex)
 

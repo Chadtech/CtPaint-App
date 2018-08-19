@@ -9,7 +9,6 @@ import Canvas.Data.Params as Params
 import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
-import Data.Taco exposing (Taco)
 import Html exposing (Attribute, Html, a, div, form, input, p)
 import Html.Attributes as Attrs
 import Html.CssHelpers
@@ -78,8 +77,8 @@ init name =
 -- UPDATE --
 
 
-update : Taco -> Msg -> Model -> Return Model Msg Reply
-update taco msg model =
+update : Msg -> Model -> Return Model Msg Reply
+update msg model =
     case msg of
         FieldUpdated Width str ->
             { model | widthField = str }
