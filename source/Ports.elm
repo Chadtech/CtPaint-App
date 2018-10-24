@@ -1,12 +1,12 @@
-port module Ports
-    exposing
-        ( JsMsg(..)
-        , SavePayload
-        , fromJs
-        , returnFocus
-        , send
-        , stealFocus
-        )
+port module Ports exposing
+    ( JsMsg(..)
+    , SavePayload
+    , fromJs
+    , returnFocus
+    , send
+    , sendTracking
+    , stealFocus
+    )
 
 import Array exposing (Array)
 import Canvas exposing (Canvas, Size)
@@ -17,6 +17,9 @@ import Color.Swatches.Data as Swatches
     exposing
         ( Swatches
         )
+import Data.Config as Config exposing (Config)
+import Data.Tracking as Tracking
+import Data.User as User exposing (User)
 import Id exposing (Id, Origin(Local, Remote))
 import Json.Encode as Encode exposing (Value)
 import Util exposing (def)
@@ -34,6 +37,7 @@ type JsMsg
     | OpenUpFileUpload
     | ReadFile
     | LoadDrawing Id
+    | Track Tracking.Payload
 
 
 type alias SavePayload =
@@ -45,6 +49,22 @@ type alias SavePayload =
     , email : String
     , id : Origin
     }
+
+
+sendTracking : Config -> User.State -> Tracking.Event -> Cmd msg
+sendTracking config user event =
+    case Tracking.toMaybe (Tracking.namespace "desktop" event) of
+        Just ( name, properties ) ->
+            { sessionId = config.sessionId
+            , email = User.getEmail user
+            , name = name
+            , properties = properties
+            }
+                |> Track
+                |> send
+
+        Nothing ->
+            Cmd.none
 
 
 returnFocus : Cmd msg
@@ -118,6 +138,9 @@ send msg =
 
         LoadDrawing id ->
             toCmd "loadDrawing" (Id.encode id)
+
+        Track payload ->
+            toCmd "track" (Tracking.encode payload)
 
 
 port toJs : Value -> Cmd msg

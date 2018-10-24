@@ -1,19 +1,18 @@
-module Data.User
-    exposing
-        ( Model
-        , State(..)
-        , User
-        , decoder
-        , drawingLoaded
-        , getDrawingOrigin
-        , getEmail
-        , getPublicId
-        , initModel
-        , isLoggedIn
-        , setDrawing
-        , stateDecoder
-        , toggleOptionsDropped
-        )
+module Data.User exposing
+    ( Model
+    , State(..)
+    , User
+    , decoder
+    , drawingLoaded
+    , getDrawingOrigin
+    , getEmail
+    , getPublicId
+    , initModel
+    , isLoggedIn
+    , setDrawing
+    , stateDecoder
+    , toggleOptionsDropped
+    )
 
 import Data.Drawing as Drawing exposing (Drawing)
 import Data.Keys as Keys

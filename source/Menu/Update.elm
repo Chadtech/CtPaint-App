@@ -1,5 +1,6 @@
 module Menu.Update exposing (update)
 
+import Data.Position as Position
 import Menu.BugReport as BugReport
 import Menu.Data as Menu exposing (Menu(..))
 import Menu.Download as Download
@@ -18,9 +19,9 @@ import Menu.Scale as Scale
 import Menu.Text as Text
 import Menu.Upload as Upload
 import MouseEvents exposing (MouseEvent)
-import Data.Position as Position
 import Return2 as R2
 import Return3 as R3 exposing (Return)
+
 
 
 -- UPDATE --

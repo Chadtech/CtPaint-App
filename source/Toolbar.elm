@@ -1,21 +1,23 @@
-module Toolbar
-    exposing
-        ( Msg(..)
-        , css
-        , update
-        , view
-        )
+module Toolbar exposing
+    ( Msg(..)
+    , css
+    , track
+    , update
+    , view
+    )
 
 import Canvas
 import Canvas.Draw as Draw
 import Chadtech.Colors exposing (ignorable2, ignorable3)
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
+import Data.Tracking as Tracking
 import Html exposing (Html, a, div)
 import Html.Attributes exposing (attribute, title)
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick)
+import Json.Encode as E
 import Menu.Model as Menu
 import Model exposing (Model)
 import Ports
@@ -23,6 +25,8 @@ import Return2 as R2
 import Selection.Model as Selection
 import Tool.Data as Tool exposing (Tool(..))
 import Tool.Eraser.View as Eraser
+import Util exposing (def)
+
 
 
 -- TYPES --
@@ -40,6 +44,22 @@ type OtherButton
     | Invert
     | Replace
     | Transparency
+
+
+otherButtonToString : OtherButton -> String
+otherButtonToString otherButton =
+    case otherButton of
+        Text ->
+            "text"
+
+        Invert ->
+            "invert"
+
+        Replace ->
+            "replace"
+
+        Transparency ->
+            "transparency"
 
 
 
@@ -122,6 +142,7 @@ increaseEraser : Model -> Model
 increaseEraser model =
     if model.eraserSize < 9 then
         { model | eraserSize = model.eraserSize + 1 }
+
     else
         model
 
@@ -130,8 +151,43 @@ decreaseEraser : Model -> Model
 decreaseEraser model =
     if model.eraserSize < 2 then
         model
+
     else
         { model | eraserSize = model.eraserSize - 1 }
+
+
+
+-- TRACKING --
+
+
+track : Msg -> Model -> Tracking.Event
+track msg model =
+    case msg of
+        ToolButtonClicked tool ->
+            tool
+                |> Tool.name
+                |> trackButtonClick
+
+        OtherButtonClicked otherButton ->
+            otherButton
+                |> otherButtonToString
+                |> trackButtonClick
+
+        IncreaseEraserClicked ->
+            Tracking.noProps "increase-eraser-clicked"
+
+        DecreaseEraserClicked ->
+            Tracking.noProps "decrease-eraser-clicked"
+
+
+trackButtonClick : String -> Tracking.Event
+trackButtonClick buttonName =
+    [ buttonName
+        |> E.string
+        |> def "button"
+    ]
+        |> Tracking.withProps
+            "button-clicked"
 
 
 

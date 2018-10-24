@@ -1,4 +1,4 @@
-module Menu.Scale exposing (..)
+module Menu.Scale exposing (Class(..), Field(..), Model, Msg(..), absoluteScaling, class, css, field, fixedHeightFromPercentHeight, fixedWidthFromPercentWidth, heightFromFixedWidth, heightFromPercentWidth, init, lock, lockedValue, parseFixedHeight, parseFixedWidth, parsePercentHeight, parsePercentWidth, percentHeightFromFixedHeight, percentScaling, percentWidthFromFixedWidth, scaleNamespace, scaleReply, update, updateField, view, widthFromFixedHeight, widthFromPercentHeight)
 
 import Css exposing (..)
 import Css.Elements
@@ -35,6 +35,7 @@ import Return2 as R2
 import Return3 as R3 exposing (Return)
 import Util exposing (valueIfFocus)
 import Window exposing (Size)
+
 
 
 -- TYPES --
@@ -84,7 +85,7 @@ init size =
     , percentWidthField = "100"
     , percentHeightField = "100"
     , initialSize = size
-    , lockRatio = False
+    , lockRatio = True
     , focus = Nothing
     }
 
@@ -189,6 +190,7 @@ lockedValue : Bool -> Attribute Msg
 lockedValue locked =
     if locked then
         value "x"
+
     else
         value " "
 
@@ -377,6 +379,7 @@ heightFromFixedWidth model =
                 in
                 (toFloat fixedHeight / initialHeight) * 100
         }
+
     else
         model
 
@@ -434,6 +437,7 @@ widthFromFixedHeight model =
                 in
                 (toFloat fixedWidth / initialWidth) * 100
         }
+
     else
         model
 
@@ -479,6 +483,7 @@ heightFromPercentWidth model =
                 in
                 Basics.round (initialHeight * (model.percentWidth / 100))
         }
+
     else
         model
 
@@ -524,5 +529,6 @@ widthFromPercentHeight model =
                 in
                 Basics.round (initialWidth * (model.percentWidth / 100))
         }
+
     else
         model

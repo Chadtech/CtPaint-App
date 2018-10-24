@@ -1,4 +1,4 @@
-module PaintApp exposing (..)
+module PaintApp exposing (getTrackingCmd, main, subscriptions, update, view)
 
 import Error
 import Html exposing (Html)
@@ -6,10 +6,13 @@ import Init exposing (init)
 import Json.Decode as Decode exposing (Decoder, Value, value)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
+import Ports
 import Return2 as R2
 import Subscriptions
+import Track exposing (track)
 import Update
 import View
+
 
 
 -- MAIN --
@@ -52,10 +55,20 @@ update msg result =
         Ok model ->
             Update.update msg model
                 |> Tuple.mapFirst Ok
+                |> R2.addCmd (getTrackingCmd msg model)
 
         Err err ->
             Err err
                 |> R2.withNoCmd
+
+
+getTrackingCmd : Msg -> Model -> Cmd Msg
+getTrackingCmd msg model =
+    model
+        |> track msg
+        |> Ports.sendTracking
+            model.config
+            model.user
 
 
 
