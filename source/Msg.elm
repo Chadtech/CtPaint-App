@@ -1,4 +1,8 @@
-module Msg exposing (Msg(..), decode)
+module Msg exposing
+    ( Msg(..)
+    , decode
+    , decodeProblemToString
+    )
 
 import Canvas exposing (Canvas, Error)
 import Color.Msg as Color
@@ -42,6 +46,16 @@ type Msg
 type DecodeProblem
     = Other String
     | UnrecognizedMsgType String
+
+
+decodeProblemToString : DecodeProblem -> String
+decodeProblemToString decodeProblem =
+    case decodeProblem of
+        Other str ->
+            "Other : " ++ str
+
+        UnrecognizedMsgType type_ ->
+            "unrecognized msg type : " ++ type_
 
 
 

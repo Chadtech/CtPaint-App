@@ -1,4 +1,12 @@
-module Menu.ReplaceColor exposing (..)
+module Menu.ReplaceColor exposing
+    ( Model
+    , Msg
+    , css
+    , init
+    , track
+    , update
+    , view
+    )
 
 import Chadtech.Colors as Ct
 import Color exposing (Color)
@@ -6,6 +14,7 @@ import Color.Util
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
+import Data.Tracking as Tracking
 import Html exposing (Html, a, div, input, p, text)
 import Html.Attributes exposing (spellcheck, value)
 import Html.CssHelpers
@@ -14,6 +23,7 @@ import Html.Events exposing (onClick, onInput)
 import Menu.Reply exposing (Reply(Replace))
 import Return2 as R2
 import Return3 as R3 exposing (Return)
+
 
 
 -- TYPES --
@@ -113,6 +123,25 @@ cohereTargetColor model =
 
         Nothing ->
             model
+
+
+
+-- TRACK --
+
+
+track : Msg -> Tracking.Event
+track msg =
+    case msg of
+        ReplaceButtonClicked ->
+            "replace-button-clicked"
+                |> Tracking.noProps
+
+        SquareClicked _ _ _ ->
+            "square-clicked"
+                |> Tracking.noProps
+
+        UpdateHexField _ _ ->
+            Tracking.none
 
 
 
@@ -286,6 +315,7 @@ squareClass maybeSelected index =
         Just selectedIndex ->
             if selectedIndex == index then
                 [ Square, Selected ]
+
             else
                 [ Square ]
 

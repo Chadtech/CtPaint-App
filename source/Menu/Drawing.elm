@@ -1,25 +1,26 @@
-module Menu.Drawing
-    exposing
-        ( Model
-        , Msg(..)
-        , css
-        , init
-        , update
-        , view
-        )
+module Menu.Drawing exposing
+    ( Model
+    , Msg(..)
+    , css
+    , init
+    , track
+    , update
+    , view
+    )
 
 import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
+import Data.Tracking as Tracking
 import Html exposing (Html, input, p)
 import Html.Attributes exposing (value)
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Menu.Reply exposing (Reply(SaveDrawingAttrs))
-import Ports
 import Return2 as R2
 import Return3 as R3 exposing (Return)
+
 
 
 -- TYPES --
@@ -155,3 +156,18 @@ update msg model =
             { model | state = Saving }
                 |> R2.withNoCmd
                 |> R3.withReply (SaveDrawingAttrs model.name)
+
+
+
+-- TRACK --
+
+
+track : Msg -> Tracking.Event
+track msg =
+    case msg of
+        NameUpdated _ ->
+            Tracking.none
+
+        SaveClicked ->
+            "save-clicked"
+                |> Tracking.noProps

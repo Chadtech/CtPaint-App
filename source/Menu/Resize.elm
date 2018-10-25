@@ -1,37 +1,34 @@
-module Menu.Resize
-    exposing
-        ( Model
-        , Msg(..)
-        , css
-        , init
-        , update
-        , view
-        )
+module Menu.Resize exposing
+    ( Model
+    , Msg(..)
+    , css
+    , init
+    , track
+    , update
+    , view
+    )
 
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
+import Data.Tracking as Tracking
 import Html
     exposing
         ( Html
         , input
         , p
         )
-import Html.Attributes exposing (placeholder)
+import Html.Attributes as Attrs
 import Html.CssHelpers
 import Html.Custom
-import Html.Events
-    exposing
-        ( onClick
-        , onFocus
-        , onInput
-        , onSubmit
-        )
+import Html.Events as Events
+import Json.Encode as E
 import Menu.Reply exposing (Reply(ResizeTo))
 import Mouse
 import Return3 as R3 exposing (Return)
-import Util exposing (valueIfFocus)
+import Util exposing (def, valueIfFocus)
 import Window exposing (Size)
+
 
 
 -- TYPES --
@@ -81,6 +78,28 @@ type Field
     | Bottom
     | Width
     | Height
+
+
+fieldToString : Field -> String
+fieldToString field =
+    case field of
+        Left ->
+            "left"
+
+        Right ->
+            "right"
+
+        Top ->
+            "top"
+
+        Bottom ->
+            "bottom"
+
+        Width ->
+            "width"
+
+        Height ->
+            "height"
 
 
 
@@ -162,7 +181,7 @@ view model =
     , rightField model
     , Html.Custom.menuButton
         [ class [ SubmitButton ]
-        , onClick ResizeClicked
+        , Events.onClick ResizeClicked
         ]
         [ Html.text "resize" ]
     ]
@@ -171,20 +190,22 @@ view model =
 
 header : String -> Html Msg
 header str =
-    p [ class [ Header ] ] [ Html.text str ]
+    p
+        [ class [ Header ] ]
+        [ Html.text str ]
 
 
 widthField : Model -> Html Msg
 widthField model =
     [ p [] [ Html.text "width" ]
     , input
-        [ placeholder (Util.px model.width)
-        , onFocus (FieldFocused Width)
+        [ Attrs.placeholder (Util.px model.width)
+        , Events.onFocus (FieldFocused Width)
         , valueIfFocus
             Width
             model.focus
             model.widthField
-        , onInput (FieldUpdated Width)
+        , Events.onInput (FieldUpdated Width)
         ]
         []
     ]
@@ -195,13 +216,13 @@ heightField : Model -> Html Msg
 heightField model =
     [ p [] [ Html.text "height" ]
     , input
-        [ placeholder (Util.px model.height)
-        , onFocus (FieldFocused Height)
+        [ Attrs.placeholder (Util.px model.height)
+        , Events.onFocus (FieldFocused Height)
         , valueIfFocus
             Height
             model.focus
             model.heightField
-        , onInput (FieldUpdated Height)
+        , Events.onInput (FieldUpdated Height)
         ]
         []
     ]
@@ -212,13 +233,13 @@ topField : Model -> Html Msg
 topField model =
     [ p [] [ Html.text "top" ]
     , input
-        [ placeholder (Util.px model.top)
-        , onFocus (FieldFocused Top)
+        [ Attrs.placeholder (Util.px model.top)
+        , Events.onFocus (FieldFocused Top)
         , valueIfFocus
             Top
             model.focus
             model.topField
-        , onInput (FieldUpdated Top)
+        , Events.onInput (FieldUpdated Top)
         ]
         []
     ]
@@ -229,13 +250,13 @@ bottomField : Model -> Html Msg
 bottomField model =
     [ p [] [ Html.text "bottom" ]
     , input
-        [ placeholder (Util.px model.bottom)
-        , onFocus (FieldFocused Bottom)
+        [ Attrs.placeholder (Util.px model.bottom)
+        , Events.onFocus (FieldFocused Bottom)
         , valueIfFocus
             Bottom
             model.focus
             model.bottomField
-        , onInput (FieldUpdated Bottom)
+        , Events.onInput (FieldUpdated Bottom)
         ]
         []
     ]
@@ -246,13 +267,13 @@ leftField : Model -> Html Msg
 leftField model =
     [ p [] [ Html.text "left" ]
     , input
-        [ placeholder (Util.px model.left)
-        , onFocus (FieldFocused Left)
+        [ Attrs.placeholder (Util.px model.left)
+        , Events.onFocus (FieldFocused Left)
         , valueIfFocus
             Left
             model.focus
             model.leftField
-        , onInput (FieldUpdated Left)
+        , Events.onInput (FieldUpdated Left)
         ]
         []
     ]
@@ -263,13 +284,13 @@ rightField : Model -> Html Msg
 rightField model =
     [ p [] [ Html.text "right" ]
     , input
-        [ placeholder (Util.px model.right)
-        , onFocus (FieldFocused Right)
+        [ Attrs.placeholder (Util.px model.right)
+        , Events.onFocus (FieldFocused Right)
         , valueIfFocus
             Right
             model.focus
             model.rightField
-        , onInput (FieldUpdated Right)
+        , Events.onInput (FieldUpdated Right)
         ]
         []
     ]
@@ -280,7 +301,7 @@ field : List (Html Msg) -> Html Msg
 field =
     Html.Custom.field
         [ class [ Field ]
-        , onSubmit ResizeClicked
+        , Events.onSubmit ResizeClicked
         ]
 
 
@@ -414,3 +435,25 @@ coherePadding model =
         , bottom = bottom
         , bottomField = toString bottom
     }
+
+
+
+-- TRACK --
+
+
+track : Msg -> Tracking.Event
+track msg =
+    case msg of
+        FieldUpdated _ _ ->
+            Tracking.none
+
+        FieldFocused field ->
+            [ def "field" <|
+                E.string (fieldToString field)
+            ]
+                |> Tracking.withProps
+                    "field-focused"
+
+        ResizeClicked ->
+            "resize-clicked"
+                |> Tracking.noProps

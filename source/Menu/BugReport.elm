@@ -1,25 +1,28 @@
-module Menu.BugReport
-    exposing
-        ( Model
-        , Msg
-        , css
-        , init
-        , update
-        , view
-        )
+module Menu.BugReport exposing
+    ( Model
+    , Msg
+    , css
+    , init
+    , track
+    , update
+    , view
+    )
 
 import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
+import Data.Tracking as Tracking
 import Html exposing (Html, a, br, p, textarea)
 import Html.Attributes exposing (spellcheck, value)
 import Html.CssHelpers
 import Html.Custom exposing (indent)
 import Html.Events exposing (onClick, onInput)
+import Json.Encode as E
 import Menu.Reply exposing (Reply(CloseMenu))
 import Return2 as R2
 import Return3 as R3 exposing (Return)
 import Util exposing (def)
+
 
 
 -- TYPES --
@@ -45,6 +48,7 @@ init : Bool -> Model
 init loggedIn =
     if loggedIn then
         Ready ""
+
     else
         NotLoggedIn
 
@@ -87,13 +91,40 @@ submitBug model =
             model
                 |> R2.withNoCmd
 
-        Ready str ->
+        Ready _ ->
             Util.delay 2000 TwoSecondsExpired
                 |> R2.withModel Done
 
         _ ->
             model
                 |> R2.withNoCmd
+
+
+
+-- TRACK --
+
+
+track : Msg -> Model -> Tracking.Event
+track msg model =
+    case msg of
+        FieldUpdated _ ->
+            Tracking.none
+
+        SubmitBugClicked ->
+            case model of
+                Ready report ->
+                    [ def "report" <|
+                        E.string report
+                    ]
+                        |> Tracking.withProps
+                            "submit-bug-clicked"
+
+                _ ->
+                    Tracking.none
+
+        TwoSecondsExpired ->
+            Tracking.noProps
+                "two-seconds-expired"
 
 
 

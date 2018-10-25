@@ -1,29 +1,26 @@
-module Menu.Login
-    exposing
-        ( Model
-        , Msg(..)
-        , css
-        , init
-        , update
-        , view
-        )
+module Menu.Login exposing
+    ( Model
+    , Msg(..)
+    , css
+    , init
+    , track
+    , update
+    , view
+    )
 
 import Bool.Extra
 import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
+import Data.Tracking as Tracking
 import Data.User exposing (User)
 import Data.Window as Window exposing (Window(ForgotPassword))
 import Html exposing (Attribute, Html, div, input, p, span)
-import Html.Attributes as Attr
-    exposing
-        ( placeholder
-        , type_
-        , value
-        )
+import Html.Attributes as Attrs
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
+import Json.Encode as E
 import Maybe.Extra
 import Menu.Reply
     exposing
@@ -37,7 +34,8 @@ import Ports exposing (JsMsg(AttemptLogin, OpenNewWindow))
 import Regex
 import Return2 as R2
 import Return3 as R3 exposing (Return)
-import Util
+import Util exposing (def)
+
 
 
 -- TYPES --
@@ -139,7 +137,7 @@ view model =
     let
         value_ : String -> Attribute Msg
         value_ =
-            Util.showField model.showFields >> value
+            Util.showField model.showFields >> Attrs.value
     in
     [ responseErrorView model.responseError
     , Html.Custom.field
@@ -147,13 +145,17 @@ view model =
         [ p [] [ Html.text "email" ]
         , input
             [ onInput (FieldUpdated Email)
-            , Attr.name "email"
+            , Attrs.name "email"
             , value_ model.email
-            , placeholder "name@email.com"
-            , Attr.spellcheck False
+            , Attrs.placeholder "name@email.com"
+            , Attrs.spellcheck False
             ]
             []
-        , input [ type_ "submit", Attr.hidden True ] []
+        , input
+            [ Attrs.type_ "submit"
+            , Attrs.hidden True
+            ]
+            []
         ]
     , fieldErrorView model.errors Email
     , Html.Custom.field
@@ -161,13 +163,17 @@ view model =
         [ p [] [ Html.text "password" ]
         , input
             [ onInput (FieldUpdated Password)
-            , Attr.name "password"
+            , Attrs.name "password"
             , value_ model.password
-            , type_ "password"
-            , Attr.spellcheck False
+            , Attrs.type_ "password"
+            , Attrs.spellcheck False
             ]
             []
-        , input [ type_ "submit", Attr.hidden True ] []
+        , input
+            [ Attrs.type_ "submit"
+            , Attrs.hidden True
+            ]
+            []
         ]
     , fieldErrorView model.errors Password
     , p
@@ -354,6 +360,7 @@ check : Bool -> ( Field, Problem ) -> Maybe ( Field, Problem )
 check condition error =
     if condition then
         Just error
+
     else
         Nothing
 
@@ -366,6 +373,43 @@ submitIfNoErrors model =
             |> R2.withModel
                 { model | showFields = False, password = "" }
             |> R3.withReply AttemptingLogin
+
     else
         model
             |> R3.withNothing
+
+
+
+-- TRACK --
+
+
+track : Msg -> Tracking.Event
+track msg =
+    case msg of
+        FieldUpdated _ _ ->
+            Tracking.none
+
+        ForgotPasswordClicked ->
+            "forgot-password-clicked"
+                |> Tracking.noProps
+
+        LoginButtonPressed ->
+            "login-button-pressed"
+                |> Tracking.noProps
+
+        FormSubmitted ->
+            "form-submitted"
+                |> Tracking.noProps
+
+        LoginFailed error ->
+            trackLogin (E.string error)
+
+        LoginSucceeded _ ->
+            trackLogin E.null
+
+
+trackLogin : E.Value -> Tracking.Event
+trackLogin error =
+    [ def "error" error ]
+        |> Tracking.withProps
+            "login-result"

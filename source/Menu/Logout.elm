@@ -1,18 +1,20 @@
-module Menu.Logout
-    exposing
-        ( Msg
-        , css
-        , update
-        , view
-        )
+module Menu.Logout exposing
+    ( Msg
+    , css
+    , track
+    , update
+    , view
+    )
 
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
+import Data.Tracking as Tracking
 import Html exposing (Html, p)
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick)
 import Menu.Reply exposing (Reply(Logout))
+
 
 
 -- TYPES --
@@ -29,6 +31,16 @@ type Msg
 update : Msg -> Reply
 update LogoutClicked =
     Logout
+
+
+
+-- TRACK --
+
+
+track : Msg -> Tracking.Event
+track LogoutClicked =
+    "logout-clicked"
+        |> Tracking.noProps
 
 
 

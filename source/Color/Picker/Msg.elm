@@ -1,8 +1,8 @@
-module Color.Picker.Msg
-    exposing
-        ( Direction(..)
-        , Msg(..)
-        )
+module Color.Picker.Msg exposing
+    ( Direction(..)
+    , Msg(..)
+    , directionToString
+    )
 
 import Color.Picker.Data.Gradient
     exposing
@@ -32,3 +32,13 @@ type Msg
 type Direction
     = Left
     | Right
+
+
+directionToString : Direction -> String
+directionToString direction =
+    case direction of
+        Left ->
+            "left"
+
+        Right ->
+            "right"

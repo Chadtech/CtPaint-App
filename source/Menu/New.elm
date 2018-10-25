@@ -1,4 +1,11 @@
-module Menu.New exposing (..)
+module Menu.New exposing
+    ( Model
+    , Msg
+    , init
+    , track
+    , update
+    , view
+    )
 
 import Canvas exposing (Canvas)
 import Canvas.Data.BackgroundColor as BackgroundColor
@@ -9,17 +16,19 @@ import Canvas.Data.Params as Params
 import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
+import Data.Tracking as Tracking
 import Html exposing (Attribute, Html, a, div, form, input, p)
 import Html.Attributes as Attrs
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
+import Json.Encode as E
 import Menu.Reply exposing (Reply(StartNewDrawing))
-import Ports
 import Return2 as R2
 import Return3 as R3 exposing (Return)
 import Util exposing (def)
 import Window exposing (Size)
+
 
 
 -- TYPES --
@@ -162,6 +171,38 @@ validateHeight model =
 
         Err _ ->
             model
+
+
+
+-- TRACK --
+
+
+track : Msg -> Tracking.Event
+track msg =
+    case msg of
+        ColorClicked bgColor ->
+            [ bgColor
+                |> BackgroundColor.toString
+                |> E.string
+                |> def "background-color"
+            ]
+                |> Tracking.withProps
+                    "background-color-clicked"
+
+        FieldUpdated _ _ ->
+            Tracking.none
+
+        StartClicked ->
+            "start-clicked"
+                |> Tracking.noProps
+
+        StartSubmitted ->
+            "start-submitted"
+                |> Tracking.noProps
+
+        EnterPressed ->
+            "enter-pressed"
+                |> Tracking.noProps
 
 
 

@@ -1,13 +1,14 @@
-module Menu.Download
-    exposing
-        ( Flags
-        , Model
-        , Msg
-        , init
-        , update
-        , view
-        )
+module Menu.Download exposing
+    ( Flags
+    , Model
+    , Msg
+    , init
+    , track
+    , update
+    , view
+    )
 
+import Data.Tracking as Tracking
 import Html exposing (Html, a, form, input, p, text)
 import Html.Attributes exposing (placeholder, value)
 import Html.Custom
@@ -16,6 +17,7 @@ import Menu.Reply exposing (Reply(CloseMenu))
 import Ports exposing (JsMsg(Download))
 import Return2 as R2
 import Return3 as R3 exposing (Return)
+
 
 
 -- TYPES --
@@ -74,6 +76,21 @@ fileName { field, placeholder } =
 
 
 
+-- TRACK --
+
+
+track : Msg -> Tracking.Event
+track msg =
+    case msg of
+        DownloadButtonPressed ->
+            "download-button-pressed"
+                |> Tracking.noProps
+
+        _ ->
+            Tracking.none
+
+
+
 -- VIEW --
 
 
@@ -112,6 +129,7 @@ init { name, nameIsGenerated } =
     { field =
         if nameIsGenerated then
             ""
+
         else
             name
     , placeholder = name

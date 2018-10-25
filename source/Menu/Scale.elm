@@ -1,40 +1,28 @@
-module Menu.Scale exposing (Class(..), Field(..), Model, Msg(..), absoluteScaling, class, css, field, fixedHeightFromPercentHeight, fixedWidthFromPercentWidth, heightFromFixedWidth, heightFromPercentWidth, init, lock, lockedValue, parseFixedHeight, parseFixedWidth, parsePercentHeight, parsePercentWidth, percentHeightFromFixedHeight, percentScaling, percentWidthFromFixedWidth, scaleNamespace, scaleReply, update, updateField, view, widthFromFixedHeight, widthFromPercentHeight)
+module Menu.Scale exposing
+    ( Model
+    , Msg
+    , css
+    , init
+    , track
+    , update
+    , view
+    )
 
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
-import Html
-    exposing
-        ( Attribute
-        , Html
-        , div
-        , form
-        , input
-        , p
-        , text
-        )
-import Html.Attributes
-    exposing
-        ( class
-        , placeholder
-        , type_
-        , value
-        )
+import Data.Size exposing (Size)
+import Data.Tracking as Tracking
+import Html exposing (Attribute, Html)
+import Html.Attributes as Attrs
 import Html.CssHelpers
 import Html.Custom
-import Html.Events
-    exposing
-        ( onClick
-        , onFocus
-        , onInput
-        , onSubmit
-        )
+import Html.Events as Events
+import Json.Encode as E
 import Menu.Reply exposing (Reply(ScaleTo))
-import Ports
 import Return2 as R2
 import Return3 as R3 exposing (Return)
-import Util exposing (valueIfFocus)
-import Window exposing (Size)
+import Util exposing (def, valueIfFocus)
 
 
 
@@ -68,6 +56,22 @@ type Field
     | FixedHeight
     | PercentWidth
     | PercentHeight
+
+
+fieldToString : Field -> String
+fieldToString field =
+    case field of
+        FixedWidth ->
+            "fixed-width"
+
+        FixedHeight ->
+            "fixed-height"
+
+        PercentWidth ->
+            "percent-width"
+
+        PercentHeight ->
+            "percent-height"
 
 
 
@@ -160,12 +164,12 @@ view : Model -> Html Msg
 view model =
     [ percentScaling model
     , absoluteScaling model
-    , div
+    , Html.div
         []
         [ lock model.lockRatio
         ]
     , Html.Custom.menuButton
-        [ onClick ScaleClick ]
+        [ Events.onClick ScaleClick ]
         [ Html.text "set size" ]
     ]
         |> Html.Custom.cardBody []
@@ -173,14 +177,14 @@ view model =
 
 lock : Bool -> Html Msg
 lock locked =
-    form
+    Html.form
         [ class [ Field, LockContainer ] ]
-        [ p [] [ Html.text "lock" ]
-        , input
+        [ Html.p [] [ Html.text "lock" ]
+        , Html.input
             [ class [ Lock ]
             , lockedValue locked
-            , onClick LockButtonClicked
-            , type_ "button"
+            , Events.onClick LockButtonClicked
+            , Attrs.type_ "button"
             ]
             []
         ]
@@ -189,40 +193,40 @@ lock locked =
 lockedValue : Bool -> Attribute Msg
 lockedValue locked =
     if locked then
-        value "x"
+        Attrs.value "x"
 
     else
-        value " "
+        Attrs.value " "
 
 
 percentScaling : Model -> Html Msg
 percentScaling model =
-    div
+    Html.div
         [ class [ Row ] ]
-        [ p [] [ Html.text "percent" ]
+        [ Html.p [] [ Html.text "percent" ]
         , field
-            [ p [] [ Html.text "width" ]
-            , input
-                [ placeholder (Util.pct model.percentWidth)
-                , onFocus (FieldFocused PercentWidth)
+            [ Html.p [] [ Html.text "width" ]
+            , Html.input
+                [ Attrs.placeholder (Util.pct model.percentWidth)
+                , Events.onFocus (FieldFocused PercentWidth)
                 , valueIfFocus
                     PercentWidth
                     model.focus
                     model.percentWidthField
-                , onInput (FieldUpdated PercentWidth)
+                , Events.onInput (FieldUpdated PercentWidth)
                 ]
                 []
             ]
         , field
-            [ p [] [ Html.text "height" ]
-            , input
-                [ placeholder (Util.pct model.percentHeight)
-                , onFocus (FieldFocused PercentHeight)
+            [ Html.p [] [ Html.text "height" ]
+            , Html.input
+                [ Attrs.placeholder (Util.pct model.percentHeight)
+                , Events.onFocus (FieldFocused PercentHeight)
                 , valueIfFocus
                     PercentHeight
                     model.focus
                     model.percentHeightField
-                , onInput (FieldUpdated PercentHeight)
+                , Events.onInput (FieldUpdated PercentHeight)
                 ]
                 []
             ]
@@ -231,32 +235,32 @@ percentScaling model =
 
 absoluteScaling : Model -> Html Msg
 absoluteScaling model =
-    div
+    Html.div
         [ class [ Row ] ]
-        [ p [] [ Html.text "absolute" ]
+        [ Html.p [] [ Html.text "absolute" ]
         , field
-            [ p [] [ Html.text "width" ]
-            , input
-                [ placeholder (Util.px model.fixedWidth)
-                , onFocus (FieldFocused FixedWidth)
+            [ Html.p [] [ Html.text "width" ]
+            , Html.input
+                [ Attrs.placeholder (Util.px model.fixedWidth)
+                , Events.onFocus (FieldFocused FixedWidth)
                 , valueIfFocus
                     FixedWidth
                     model.focus
                     model.fixedWidthField
-                , onInput (FieldUpdated FixedWidth)
+                , Events.onInput (FieldUpdated FixedWidth)
                 ]
                 []
             ]
         , field
-            [ p [] [ Html.text "height" ]
-            , input
-                [ placeholder (Util.px model.fixedHeight)
-                , onFocus (FieldFocused FixedHeight)
+            [ Html.p [] [ Html.text "height" ]
+            , Html.input
+                [ Attrs.placeholder (Util.px model.fixedHeight)
+                , Events.onFocus (FieldFocused FixedHeight)
                 , valueIfFocus
                     FixedHeight
                     model.focus
                     model.fixedHeightField
-                , onInput (FieldUpdated FixedHeight)
+                , Events.onInput (FieldUpdated FixedHeight)
                 ]
                 []
             ]
@@ -267,7 +271,7 @@ field : List (Html Msg) -> Html Msg
 field =
     Html.Custom.field
         [ class [ Field ]
-        , onSubmit ScaleClick
+        , Events.onSubmit ScaleClick
         ]
 
 
@@ -532,3 +536,27 @@ widthFromPercentHeight model =
 
     else
         model
+
+
+
+-- TRACK --
+
+
+track : Msg -> Tracking.Event
+track msg =
+    case msg of
+        FieldUpdated _ _ ->
+            Tracking.none
+
+        LockButtonClicked ->
+            "lock-button-clicked"
+                |> Tracking.noProps
+
+        FieldFocused field ->
+            [ def "field" <| E.string (fieldToString field) ]
+                |> Tracking.withProps
+                    "field-focused"
+
+        ScaleClick ->
+            "scale-clicked"
+                |> Tracking.noProps

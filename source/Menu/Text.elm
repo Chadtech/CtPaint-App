@@ -1,23 +1,24 @@
-module Menu.Text
-    exposing
-        ( Msg
-        , css
-        , init
-        , update
-        , view
-        )
+module Menu.Text exposing
+    ( Msg
+    , css
+    , init
+    , track
+    , update
+    , view
+    )
 
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
-import Html exposing (Html, a, p, textarea)
-import Html.Attributes exposing (spellcheck, value)
+import Data.Tracking as Tracking
+import Html exposing (Html)
+import Html.Attributes as Attrs
 import Html.CssHelpers
 import Html.Custom exposing (indent)
-import Html.Events exposing (onClick, onInput)
+import Html.Events as Events
 import Menu.Reply exposing (Reply(AddText))
-import Ports
 import Return2 as R2
 import Return3 as R3 exposing (Return)
+
 
 
 -- TYPES --
@@ -55,6 +56,21 @@ update msg model =
 
 
 
+-- TRACK --
+
+
+track : Msg -> Tracking.Event
+track msg =
+    case msg of
+        FieldUpdated _ ->
+            Tracking.none
+
+        AddTextClicked ->
+            "add-text-clicked"
+                |> Tracking.noProps
+
+
+
 -- STYLES --
 
 
@@ -86,15 +102,15 @@ textNamespace =
 
 view : String -> Html Msg
 view str =
-    [ textarea
-        [ onInput FieldUpdated
+    [ Html.textarea
+        [ Events.onInput FieldUpdated
         , class [ Text ]
-        , spellcheck False
-        , value str
+        , Attrs.spellcheck False
+        , Attrs.value str
         ]
         []
     , Html.Custom.menuButton
-        [ onClick AddTextClicked ]
+        [ Events.onClick AddTextClicked ]
         [ Html.text "add text" ]
     ]
         |> Html.Custom.cardBody []

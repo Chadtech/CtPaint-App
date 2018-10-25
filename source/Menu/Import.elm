@@ -1,21 +1,32 @@
-module Menu.Import exposing (..)
+module Menu.Import exposing
+    ( Model
+    , Msg
+    , css
+    , init
+    , track
+    , update
+    , view
+    )
 
 import Canvas exposing (Canvas, Error)
 import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Elements
 import Css.Namespace exposing (namespace)
+import Data.Tracking as Tracking
 import Helpers.Import exposing (loadCmd)
 import Html exposing (Html, a, div, form, input, p, text)
 import Html.Attributes exposing (placeholder, value)
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick, onInput, onSubmit)
+import Json.Encode as E
 import Menu.Loaded as Loaded
 import Menu.Reply exposing (Reply)
-import Ports
 import Return2 as R2
 import Return3 as R3 exposing (Return)
+import Util exposing (def)
+
 
 
 -- TYPES --
@@ -220,3 +231,54 @@ sendLoadCmd url =
     Loading
         |> R2.withCmd (loadCmd url CanvasLoaded)
         |> R3.withNoReply
+
+
+
+-- TRACK --
+
+
+track : Msg -> Model -> Tracking.Event
+track msg model =
+    case msg of
+        FieldUpdated _ ->
+            Tracking.none
+
+        ImportPressed ->
+            "import-pressed"
+                |> Tracking.noProps
+
+        Submitted ->
+            "submitted"
+                |> Tracking.noProps
+
+        CanvasLoaded result ->
+            [ def "error" (canvasLoadedTrackingPayload result) ]
+                |> Tracking.withProps
+                    "canvas-loaded"
+
+        TryAgainPressed ->
+            "try-again-pressed"
+                |> Tracking.noProps
+
+        LoadedMsg subMsg ->
+            case model of
+                Loaded _ ->
+                    Loaded.track subMsg
+
+                _ ->
+                    [ "loaded msg while no loaded state"
+                        |> E.string
+                        |> def "mismatch"
+                    ]
+                        |> Tracking.withProps
+                            "msg-mismatch"
+
+
+canvasLoadedTrackingPayload : Result Error Canvas -> E.Value
+canvasLoadedTrackingPayload result =
+    case result of
+        Ok _ ->
+            E.null
+
+        Err _ ->
+            E.string "Errored!"

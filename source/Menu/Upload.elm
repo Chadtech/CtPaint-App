@@ -1,26 +1,30 @@
-module Menu.Upload
-    exposing
-        ( Model
-        , Msg(..)
-        , Problem(..)
-        , css
-        , init
-        , update
-        , view
-        )
+module Menu.Upload exposing
+    ( Model
+    , Msg(..)
+    , Problem(..)
+    , css
+    , init
+    , track
+    , update
+    , view
+    )
 
 import Canvas exposing (Canvas)
 import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
+import Data.Tracking as Tracking
 import Html exposing (Html, div, p)
 import Html.CssHelpers
 import Html.Custom
+import Json.Encode as E
 import Menu.Loaded as Loaded
 import Menu.Reply exposing (Reply)
 import Return2 as R2
 import Return3 as R3 exposing (Return)
 import Task
+import Util exposing (def)
+
 
 
 -- TYPES --
@@ -37,6 +41,19 @@ type Problem
     = Other String
     | CouldNotReadDataUrl
     | FileNotImage
+
+
+problemToString : Problem -> String
+problemToString problem =
+    case problem of
+        Other str ->
+            "Other : " ++ str
+
+        CouldNotReadDataUrl ->
+            "could not read data url"
+
+        FileNotImage ->
+            "file not image"
 
 
 type Model
@@ -176,3 +193,41 @@ loadCmd url =
     url
         |> Canvas.loadImage
         |> Task.attempt LoadedCanvas
+
+
+
+-- TRACK --
+
+
+track : Msg -> Tracking.Event
+track msg =
+    case msg of
+        UploadFailed problem ->
+            [ def "error" <|
+                E.string (problemToString problem)
+            ]
+                |> Tracking.withProps
+                    "upload-failed"
+
+        GotDataUrl _ ->
+            Tracking.noProps
+                "got-data-url"
+
+        LoadedCanvas (Err _) ->
+            "Error"
+                |> E.string
+                |> trackLoadedCanvas
+
+        LoadedCanvas (Ok _) ->
+            E.null
+                |> trackLoadedCanvas
+
+        LoadedMsg subMsg ->
+            Loaded.track subMsg
+
+
+trackLoadedCanvas : E.Value -> Tracking.Event
+trackLoadedCanvas error =
+    [ def "error" error ]
+        |> Tracking.withProps
+            "loaded-canvas"

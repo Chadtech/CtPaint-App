@@ -1,10 +1,12 @@
 module Track exposing (track)
 
+import Color.Track as Color
 import Data.Tracking as Tracking
 import Json.Encode as E
 import Menu.Track as Menu
+import Minimap.Track as Minimap
 import Model exposing (Model)
-import Msg exposing (Msg(..))
+import Msg exposing (Msg(..), decodeProblemToString)
 import Taskbar.Track as Taskbar
 import Toolbar
 import Util exposing (def)
@@ -41,8 +43,73 @@ track msg model =
                     "menu msg but no menu"
                         |> msgMismatch
 
-        _ ->
+        Tick _ ->
             Tracking.none
+
+        ColorMsg subMsg ->
+            Color.track subMsg
+                |> Tracking.namespace
+                    "color"
+
+        ToolMsg _ ->
+            Tracking.none
+
+        MinimapMsg subMsg ->
+            Minimap.track subMsg
+                |> Tracking.namespace
+                    "minimap"
+
+        WorkareaMouseMove _ ->
+            Tracking.none
+
+        WorkareaContextMenu ->
+            "workarea-context-menu"
+                |> Tracking.noProps
+
+        WorkareaMouseExit ->
+            Tracking.none
+
+        KeyboardEvent _ ->
+            Tracking.none
+
+        LogoutSucceeded ->
+            logoutResult E.null
+
+        LogoutFailed error ->
+            logoutResult (E.string error)
+
+        InitFromUrl _ ->
+            Tracking.none
+
+        DrawingLoaded _ ->
+            Tracking.none
+
+        DrawingDeblobed _ (Ok _) ->
+            Tracking.none
+
+        DrawingDeblobed _ (Err _) ->
+            "drawing-failed-to-deblob"
+                |> Tracking.noProps
+
+        GalleryScreenClicked ->
+            "gallery-screen-clicked"
+                |> Tracking.noProps
+
+        MsgDecodeFailed problem ->
+            [ problem
+                |> decodeProblemToString
+                |> E.string
+                |> def "msg-decode-failed"
+            ]
+                |> Tracking.withProps
+                    "msg-decode-failed"
+
+
+logoutResult : E.Value -> Tracking.Event
+logoutResult error =
+    [ def "error" error ]
+        |> Tracking.withProps
+            "logout-result"
 
 
 msgMismatch : String -> Tracking.Event

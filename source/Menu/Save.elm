@@ -1,22 +1,24 @@
-module Menu.Save
-    exposing
-        ( Model
-        , Msg(..)
-        , css
-        , init
-        , update
-        , view
-        )
+module Menu.Save exposing
+    ( Model
+    , Msg(..)
+    , css
+    , init
+    , track
+    , update
+    , view
+    )
 
 import Chadtech.Colors as Ct
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
 import Data.Drawing exposing (Drawing)
+import Data.Tracking as Tracking
 import Data.Window as Window exposing (Window(Home))
 import Html exposing (Html, a, div, p)
 import Html.CssHelpers
 import Html.Custom
 import Html.Events exposing (onClick)
+import Json.Encode as E
 import Menu.Reply
     exposing
         ( Reply
@@ -27,7 +29,7 @@ import Menu.Reply
         )
 import Return2 as R2
 import Return3 as R3 exposing (Return)
-import Util
+import Util exposing (def)
 
 
 type Model
@@ -127,6 +129,45 @@ toError err =
 
         _ ->
             Other err
+
+
+
+-- TRACK --
+
+
+track : Msg -> Tracking.Event
+track msg =
+    case msg of
+        DrawingUpdateCompleted result ->
+            [ def "error" (encodeResult result) ]
+                |> Tracking.withProps
+                    "drawing-update-completed"
+
+        DrawingCreateCompleted result ->
+            [ def "error" (encodeResult result) ]
+                |> Tracking.withProps
+                    "drawing-create-completed"
+
+        OneSecondExpired _ ->
+            Tracking.none
+
+        OpenHomeClicked ->
+            "open-home-clicked"
+                |> Tracking.noProps
+
+        TryAgainClicked ->
+            "try-again-clicked"
+                |> Tracking.noProps
+
+
+encodeResult : Result String a -> E.Value
+encodeResult maybeError =
+    case maybeError of
+        Err str ->
+            E.string str
+
+        Ok _ ->
+            E.null
 
 
 

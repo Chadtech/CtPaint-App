@@ -1,13 +1,12 @@
-module Menu.Msg
-    exposing
-        ( Msg(..)
-        , drawingCreateCompleted
-        , drawingUpdateCompleted
-        , fileNotImage
-        , fileRead
-        , loginFailed
-        , loginSucceeded
-        )
+module Menu.Msg exposing
+    ( Msg(..)
+    , drawingCreateCompleted
+    , drawingUpdateCompleted
+    , fileNotImage
+    , fileRead
+    , loginFailed
+    , loginSucceeded
+    )
 
 import Data.Drawing exposing (Drawing)
 import Data.User exposing (User)

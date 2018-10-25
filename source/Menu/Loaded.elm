@@ -1,14 +1,15 @@
-module Menu.Loaded
-    exposing
-        ( Msg(..)
-        , css
-        , update
-        , view
-        )
+module Menu.Loaded exposing
+    ( Msg(..)
+    , css
+    , track
+    , update
+    , view
+    )
 
 import Canvas exposing (Canvas)
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
+import Data.Tracking as Tracking
 import Html exposing (Html, div, p)
 import Html.CssHelpers
 import Html.Custom
@@ -20,6 +21,7 @@ import Menu.Reply
             , IncorporateImageAsSelection
             )
         )
+
 
 
 -- TYPES --
@@ -42,6 +44,22 @@ update msg canvas =
 
         AsSelectionClicked ->
             IncorporateImageAsSelection canvas
+
+
+
+-- TRACK --
+
+
+track : Msg -> Tracking.Event
+track msg =
+    case msg of
+        AsCanvasClicked ->
+            "as-canvas-clicked"
+                |> Tracking.noProps
+
+        AsSelectionClicked ->
+            "as-selection-clicked"
+                |> Tracking.noProps
 
 
 
