@@ -16,7 +16,7 @@ function logout(Client, toElm) {
     }
     Client.logout({
         onSuccess: succeed,
-        onFailure: function(err) {
+        onFailure: function (err) {
             switch (err) {
                 case "user was not signed in":
                     succeed();
@@ -32,8 +32,8 @@ function logout(Client, toElm) {
 
 function login(Client, toElm, payload) {
     Client.login(payload, {
-        onSuccess: function(user) {
-            user.getUserAttributes(function(err, attrs) {
+        onSuccess: function (user) {
+            user.getUserAttributes(function (err, attrs) {
                 if (err) {
                     toElm("login failed", String(err));
                 } else {
@@ -41,7 +41,7 @@ function login(Client, toElm, payload) {
                 }
             });
         },
-        onFailure: function(err) {
+        onFailure: function (err) {
             toElm("login failed", String(err));
         }
     });
@@ -49,16 +49,20 @@ function login(Client, toElm, payload) {
 
 function get(Client, init) {
     Client.getSession({
-        onSuccess: function(attrs) {
+        onSuccess: function (attrs) {
             init(fromAttributes(attrs));
         },
-        onFailure: function(err) {
+        onFailure: function (err) {
             if (Allowance.exceeded()) {
                 err = "allowance exceeded";
             }
             var errStr = String(err);
             switch (errStr) {
                 case "no session":
+                    init(null);
+                    break;
+
+                case "NotAuthorizedException: Refresh Token has expired":
                     init(null);
                     break;
 
@@ -77,16 +81,16 @@ function get(Client, init) {
     });
 }
 
-module.exports = function(Client, toElm) {
+module.exports = function (Client, toElm) {
     return {
         fromAttributes: fromAttributes,
-        logout: function() {
+        logout: function () {
             logout(Client, toElm);
         },
-        login: function(payload) {
+        login: function (payload) {
             login(Client, toElm, payload);
         },
-        get: function(init) {
+        get: function (init) {
             get(Client, init);
         }
     };
