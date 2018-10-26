@@ -4,6 +4,8 @@ module Menu.Upload exposing
     , Problem(..)
     , css
     , init
+    , initFromFileNotImage
+    , loadedCanvas
     , track
     , update
     , view
@@ -32,9 +34,13 @@ import Util exposing (def)
 
 type Msg
     = UploadFailed Problem
-    | GotDataUrl String
     | LoadedCanvas (Result Canvas.Error Canvas)
     | LoadedMsg Loaded.Msg
+
+
+loadedCanvas : Result Canvas.Error Canvas -> Msg
+loadedCanvas =
+    LoadedCanvas
 
 
 type Problem
@@ -65,6 +71,11 @@ type Model
 init : Model
 init =
     Loading
+
+
+initFromFileNotImage : Model
+initFromFileNotImage =
+    Failed FileNotImage
 
 
 
@@ -162,11 +173,6 @@ update msg model =
             Failed problem
                 |> R3.withNothing
 
-        GotDataUrl url ->
-            Loading
-                |> R2.withCmd (loadCmd url)
-                |> R3.withNoReply
-
         LoadedCanvas (Ok canvas) ->
             Loaded canvas
                 |> R3.withNothing
@@ -208,10 +214,6 @@ track msg =
             ]
                 |> Tracking.withProps
                     "upload-failed"
-
-        GotDataUrl _ ->
-            Tracking.noProps
-                "got-data-url"
 
         LoadedCanvas (Err _) ->
             "Error"

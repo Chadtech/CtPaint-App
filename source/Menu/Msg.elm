@@ -2,12 +2,12 @@ module Menu.Msg exposing
     ( Msg(..)
     , drawingCreateCompleted
     , drawingUpdateCompleted
-    , fileNotImage
-    , fileRead
+    , loadedCanvas
     , loginFailed
     , loginSucceeded
     )
 
+import Canvas exposing (Canvas)
 import Data.Drawing exposing (Drawing)
 import Data.User exposing (User)
 import Menu.BugReport as BugReport
@@ -52,16 +52,9 @@ type Msg
 -- MSG HELPERS --
 
 
-fileRead : String -> Msg
-fileRead =
-    Upload.GotDataUrl >> UploadMsg
-
-
-fileNotImage : Msg
-fileNotImage =
-    Upload.FileNotImage
-        |> Upload.UploadFailed
-        |> UploadMsg
+loadedCanvas : Result Canvas.Error Canvas -> Msg
+loadedCanvas =
+    Upload.loadedCanvas >> UploadMsg
 
 
 drawingUpdateCompleted : Result String String -> Msg

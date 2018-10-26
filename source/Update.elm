@@ -185,6 +185,15 @@ update msg model =
             { model | galleryView = False }
                 |> R2.withNoCmd
 
+        FileRead url ->
+            model
+                |> Model.initUpload
+                |> R2.addCmd (Msg.loadCmd url)
+
+        FileNotImage ->
+            model
+                |> Model.initUploadFromFileNotImage
+
         DrawingDeblobed drawing (Err _) ->
             model
                 |> R2.withNoCmd

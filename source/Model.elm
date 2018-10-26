@@ -1,52 +1,52 @@
-module Model
-    exposing
-        ( Model
-        , applyTo
-        , canvasPosInCenterOfWindow
-        , centerInWorkarea
-        , centerOfWorkarea
-        , closeMenu
-        , copy
-        , cut
-        , getBuildNumber
-        , getConfig
-        , getMountPath
-        , getSessionId
-        , getUser
-        , getWindowSize
-        , initAbout
-        , initDownload
-        , initDrawing
-        , initLogin
-        , initLogout
-        , initReplaceColorMenu
-        , initResize
-        , initScaleMenu
-        , initTextMenu
-        , initUpload
-        , mapCanvasModel
-        , mapMainCanvas
-        , moveTowardsClickPosition
-        , paste
-        , positionOnCanvas
-        , saveDrawing
-        , setColorModel
-        , setKeyAsDown
-        , setKeyAsUp
-        , setMenu
-        , setMinimap
-        , setShift
-        , setUser
-        , setWindowSize
-        , swatchesTurnLeft
-        , swatchesTurnRight
-        , toSavePayload
-        , toggleMinimapOpen
-        , usersBrowser
-        , usersComputerIsMac
-        , zoomIn
-        , zoomOut
-        )
+module Model exposing
+    ( Model
+    , applyTo
+    , canvasPosInCenterOfWindow
+    , centerInWorkarea
+    , centerOfWorkarea
+    , closeMenu
+    , copy
+    , cut
+    , getBuildNumber
+    , getConfig
+    , getMountPath
+    , getSessionId
+    , getUser
+    , getWindowSize
+    , initAbout
+    , initDownload
+    , initDrawing
+    , initLogin
+    , initLogout
+    , initReplaceColorMenu
+    , initResize
+    , initScaleMenu
+    , initTextMenu
+    , initUpload
+    , initUploadFromFileNotImage
+    , mapCanvasModel
+    , mapMainCanvas
+    , moveTowardsClickPosition
+    , paste
+    , positionOnCanvas
+    , saveDrawing
+    , setColorModel
+    , setKeyAsDown
+    , setKeyAsUp
+    , setMenu
+    , setMinimap
+    , setShift
+    , setUser
+    , setWindowSize
+    , swatchesTurnLeft
+    , swatchesTurnRight
+    , toSavePayload
+    , toggleMinimapOpen
+    , usersBrowser
+    , usersComputerIsMac
+    , zoomIn
+    , zoomOut
+    )
 
 import Array
 import Canvas exposing (Canvas)
@@ -311,8 +311,11 @@ initScaleCanvas model =
 initUpload : Model -> ( Model, Cmd msg )
 initUpload model =
     initMenu model Menu.initUpload
-        |> R2.addCmd
-            (Ports.send Ports.OpenUpFileUpload)
+
+
+initUploadFromFileNotImage : Model -> ( Model, Cmd msg )
+initUploadFromFileNotImage model =
+    initMenu model Menu.initUploadFromFileNotImage
 
 
 initResize : Model -> ( Model, Cmd msg )

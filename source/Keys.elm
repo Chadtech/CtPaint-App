@@ -70,6 +70,7 @@ exec keyCmd model =
         SwatchesQuickTurnLeft ->
             if model.color.swatches.keyIsDown then
                 model |> R2.withNoCmd
+
             else
                 model
                     |> Model.swatchesTurnLeft
@@ -86,6 +87,7 @@ exec keyCmd model =
             if model.color.swatches.keyIsDown then
                 model
                     |> R2.withNoCmd
+
             else
                 model
                     |> Model.swatchesTurnRight
@@ -102,6 +104,7 @@ exec keyCmd model =
             if model.color.swatches.keyIsDown then
                 model
                     |> R2.withNoCmd
+
             else
                 model
                     |> Model.swatchesTurnLeft
@@ -248,7 +251,9 @@ exec keyCmd model =
                         |> R2.withNoCmd
 
         InitUpload ->
-            Model.initUpload model
+            model
+                |> R2.withCmd
+                    (Ports.send Ports.OpenUpFileUpload)
 
         InitResize ->
             Model.initResize model

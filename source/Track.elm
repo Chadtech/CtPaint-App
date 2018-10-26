@@ -95,6 +95,12 @@ track msg model =
             "gallery-screen-clicked"
                 |> Tracking.noProps
 
+        FileRead _ ->
+            Tracking.none
+
+        FileNotImage ->
+            Tracking.none
+
         MsgDecodeFailed problem ->
             [ problem
                 |> decodeProblemToString

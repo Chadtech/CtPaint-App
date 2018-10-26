@@ -2,6 +2,7 @@ module Msg exposing
     ( Msg(..)
     , decode
     , decodeProblemToString
+    , loadCmd
     )
 
 import Canvas exposing (Canvas, Error)
@@ -9,11 +10,12 @@ import Color.Msg as Color
 import Data.Drawing as Drawing exposing (Drawing)
 import Data.Keys as Key
 import Data.User as User exposing (User)
-import Json.Decode as Decode exposing (Decoder, Value)
+import Json.Decode as D exposing (Decoder)
 import Keyboard.Extra.Browser exposing (Browser)
 import Menu.Msg as Menu
 import Minimap.Msg as Minimap
 import MouseEvents exposing (MouseEvent)
+import Task
 import Taskbar.Msg as Taskbar
 import Time exposing (Time)
 import Tool.Msg as Tool
@@ -40,6 +42,8 @@ type Msg
     | DrawingLoaded Drawing
     | DrawingDeblobed Drawing (Result Error Canvas)
     | GalleryScreenClicked
+    | FileRead String
+    | FileNotImage
     | MsgDecodeFailed DecodeProblem
 
 
@@ -58,13 +62,21 @@ decodeProblemToString decodeProblem =
             "unrecognized msg type : " ++ type_
 
 
+loadCmd : String -> Cmd Msg
+loadCmd url =
+    url
+        |> Canvas.loadImage
+        |> Task.attempt
+            (Menu.loadedCanvas >> MenuMsg)
+
+
 
 -- DECODER --
 
 
-decode : Browser -> Value -> Msg
+decode : Browser -> D.Value -> Msg
 decode browser json =
-    case Decode.decodeValue (decoder browser) json of
+    case D.decodeValue (decoder browser) json of
         Ok msg ->
             msg
 
@@ -74,8 +86,8 @@ decode browser json =
 
 decoder : Browser -> Decoder Msg
 decoder browser =
-    Decode.field "type" Decode.string
-        |> Decode.andThen (payload << toMsg browser)
+    D.field "type" D.string
+        |> D.andThen (payload << toMsg browser)
 
 
 toMsg : Browser -> String -> Decoder Msg
@@ -84,47 +96,46 @@ toMsg browser type_ =
         "login succeeded" ->
             browser
                 |> User.decoder
-                |> Decode.map (Menu.loginSucceeded >> MenuMsg)
+                |> D.map (Menu.loginSucceeded >> MenuMsg)
 
         "login failed" ->
-            Decode.string
-                |> Decode.map (Menu.loginFailed >> MenuMsg)
+            D.string
+                |> D.map (Menu.loginFailed >> MenuMsg)
 
         "logout succeeded" ->
-            Decode.succeed LogoutSucceeded
+            D.succeed LogoutSucceeded
 
         "logout failed" ->
-            Decode.string
-                |> Decode.map LogoutFailed
+            D.string
+                |> D.map LogoutFailed
 
         "file read" ->
-            Decode.string
-                |> Decode.map (Menu.fileRead >> MenuMsg)
+            D.string
+                |> D.map FileRead
 
         "file not image" ->
-            Menu.fileNotImage
-                |> MenuMsg
-                |> Decode.succeed
+            FileNotImage
+                |> D.succeed
 
         "drawing loaded" ->
             Drawing.decoder
-                |> Decode.map DrawingLoaded
+                |> D.map DrawingLoaded
 
         "drawing update completed" ->
-            [ Decode.string
-                |> Decode.map
+            [ D.string
+                |> D.map
                     (Ok >> Menu.drawingUpdateCompleted)
             , "Result had no data"
                 |> Err
                 |> Menu.drawingUpdateCompleted
-                |> Decode.null
+                |> D.null
             ]
-                |> Decode.oneOf
-                |> Decode.map MenuMsg
+                |> D.oneOf
+                |> D.map MenuMsg
 
         "drawing create completed" ->
-            [ Decode.string
-                |> Decode.map
+            [ D.string
+                |> D.map
                     (Err >> Menu.drawingCreateCompleted)
             , { fromErr = Err >> Menu.drawingCreateCompleted
               , fromData = Ok >> Menu.drawingCreateCompleted
@@ -132,14 +143,14 @@ toMsg browser type_ =
               }
                 |> recordingDecoder
             ]
-                |> Decode.oneOf
-                |> Decode.map MenuMsg
+                |> D.oneOf
+                |> D.map MenuMsg
 
         _ ->
             type_
                 |> UnrecognizedMsgType
                 |> MsgDecodeFailed
-                |> Decode.succeed
+                |> D.succeed
 
 
 type alias RecordingConfig a msg =
@@ -151,14 +162,14 @@ type alias RecordingConfig a msg =
 
 recordingDecoder : RecordingConfig a msg -> Decoder msg
 recordingDecoder config =
-    Decode.value
-        |> Decode.andThen
-            (toResult config >> Decode.succeed)
+    D.value
+        |> D.andThen
+            (toResult config >> D.succeed)
 
 
-toResult : RecordingConfig a msg -> Value -> msg
+toResult : RecordingConfig a msg -> D.Value -> msg
 toResult { fromErr, fromData, decoder } json =
-    case Decode.decodeValue decoder json of
+    case D.decodeValue decoder json of
         Ok data ->
             fromData data
 
@@ -168,4 +179,4 @@ toResult { fromErr, fromData, decoder } json =
 
 payload : Decoder a -> Decoder a
 payload =
-    Decode.field "payload"
+    D.field "payload"

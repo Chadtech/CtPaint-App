@@ -1,23 +1,23 @@
-module Menu.Model
-    exposing
-        ( ClickState(..)
-        , Model
-        , initAbout
-        , initBugReport
-        , initDownload
-        , initDrawing
-        , initImport
-        , initLoading
-        , initLogin
-        , initLogout
-        , initNew
-        , initReplaceColor
-        , initResize
-        , initSave
-        , initScale
-        , initText
-        , initUpload
-        )
+module Menu.Model exposing
+    ( ClickState(..)
+    , Model
+    , initAbout
+    , initBugReport
+    , initDownload
+    , initDrawing
+    , initImport
+    , initLoading
+    , initLogin
+    , initLogout
+    , initNew
+    , initReplaceColor
+    , initResize
+    , initSave
+    , initScale
+    , initText
+    , initUpload
+    , initUploadFromFileNotImage
+    )
 
 import Color exposing (Color)
 import Data.Position as Position
@@ -39,6 +39,7 @@ import Menu.Save as Save
 import Menu.Scale as Scale
 import Menu.Text as Text
 import Menu.Upload as Upload
+
 
 
 -- TYPES --
@@ -160,10 +161,25 @@ initReplaceColor target replacement palette =
 
 initUpload : Size -> Model
 initUpload =
+    init
+        "upload"
+        (Menu.Upload Upload.init)
+        uploadSize
+
+
+initUploadFromFileNotImage : Size -> Model
+initUploadFromFileNotImage =
+    init
+        "upload"
+        (Menu.Upload Upload.initFromFileNotImage)
+        uploadSize
+
+
+uploadSize : Size
+uploadSize =
     { width = 524
     , height = 558
     }
-        |> init "upload" (Menu.Upload Upload.init)
 
 
 initResize : Size -> Size -> Model
