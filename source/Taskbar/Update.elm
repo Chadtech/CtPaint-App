@@ -44,11 +44,8 @@ update msg model =
         UserClicked ->
             case Model.getUser model of
                 User.LoggedIn user ->
-                    user
-                        |> User.toggleOptionsDropped
-                        |> User.LoggedIn
-                        |> Model.setUser
-                        |> Model.applyTo model
+                    model
+                        |> handleUserClick user
                         |> R2.withNoCmd
 
                 _ ->
@@ -107,6 +104,14 @@ update msg model =
                     model |> R2.withNoCmd
 
 
+handleUserClick : User.Model -> Model -> Model
+handleUserClick user =
+    user
+        |> User.toggleOptionsDropped
+        |> User.LoggedIn
+        |> Model.setUser
+
+
 hoverOnto : Dropdown -> Model -> Model
 hoverOnto dropdown model =
     case model.taskbarDropped of
@@ -116,6 +121,7 @@ hoverOnto dropdown model =
         Just currentDropdown ->
             if currentDropdown == dropdown then
                 model
+
             else
                 { model
                     | taskbarDropped = Just dropdown

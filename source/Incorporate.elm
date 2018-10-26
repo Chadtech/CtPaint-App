@@ -1,17 +1,20 @@
-module Incorporate
-    exposing
-        ( colorModel
-        , menu
-        )
+module Incorporate exposing
+    ( colorModel
+    , menu
+    )
 
 import Canvas
 import Canvas.Draw as Draw
 import Color.Model as Color
 import Color.Reply as CR
-import Data.Drawing as Drawing
+import Data.Drawing as Drawing exposing (Drawing)
 import Data.Flags exposing (Init(NormalInit), projectNameGenerator)
+import Data.Position as Position
+    exposing
+        ( Position
+        )
 import Data.Size as Size exposing (Size)
-import Data.User as User
+import Data.User as User exposing (User)
 import Helpers.Random as Random
 import History.Helpers as History
 import Init
@@ -20,10 +23,6 @@ import Menu.Reply as MR
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Ports
-import Data.Position as Position
-    exposing
-        ( Position
-        )
 import Return2 as R2
 import Selection.Model as Selection
 
@@ -133,11 +132,8 @@ menuReply menu reply model =
                         |> Model.closeMenu
 
         MR.SetUser user ->
-            user
-                |> User.initModel Drawing.Local
-                |> User.LoggedIn
-                |> Model.setUser
-                |> Model.applyTo model
+            model
+                |> handleSetUser user
                 |> Model.closeMenu
 
         MR.AttemptingLogin ->
@@ -162,11 +158,10 @@ menuReply menu reply model =
         MR.IncorporateDrawing drawing ->
             case Model.getUser model of
                 User.LoggedIn user ->
-                    user
-                        |> User.setDrawing drawing
-                        |> User.LoggedIn
-                        |> Model.setUser
-                        |> Model.applyTo model
+                    model
+                        |> incorporateDrawingForUser
+                            drawing
+                            user
                         |> Model.closeMenu
 
                 _ ->
@@ -228,6 +223,22 @@ menuReply menu reply model =
                 , drawingNameIsGenerated = nameIsGenerated
             }
                 |> Model.closeMenu
+
+
+incorporateDrawingForUser : Drawing -> User.Model -> Model -> Model
+incorporateDrawingForUser drawing user =
+    user
+        |> User.setDrawing drawing
+        |> User.LoggedIn
+        |> Model.setUser
+
+
+handleSetUser : User -> Model -> Model
+handleSetUser user =
+    user
+        |> User.initModel Drawing.Local
+        |> User.LoggedIn
+        |> Model.setUser
 
 
 addText : String -> Model -> ( Model, Cmd msg )

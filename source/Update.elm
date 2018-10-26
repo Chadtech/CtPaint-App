@@ -4,6 +4,7 @@ import Canvas exposing (DrawOp(Batch))
 import Canvas.Draw.Model as DrawModel
 import Canvas.Model
 import Color.Update as Color
+import Data.Drawing exposing (Drawing)
 import Data.Position as Position
 import Data.User as User
 import Incorporate
@@ -91,12 +92,16 @@ update msg model =
                         |> R2.withNoCmd
 
         MinimapMsg subMsg ->
-            model.minimap
-                |> Minimap.update
-                    { windowSize = Model.getWindowSize model }
-                    subMsg
-                |> Model.setMinimap
-                |> Model.applyTo model
+            let
+                setMinimap : Model -> Model
+                setMinimap =
+                    Minimap.update
+                        { windowSize = Model.getWindowSize model }
+                        subMsg
+                        |> Model.mapMinimap
+            in
+            model
+                |> setMinimap
                 |> R2.withNoCmd
 
         WorkareaContextMenu ->
@@ -159,22 +164,18 @@ update msg model =
         DrawingDeblobed drawing (Ok canvas) ->
             case Model.getUser model of
                 User.LoggedIn user ->
-                    user
-                        |> User.setDrawing drawing
-                        |> User.LoggedIn
-                        |> Model.setUser
-                        |> Model.applyTo
-                            { model
-                                | drawingName = drawing.name
-                                , drawingNameIsGenerated = drawing.nameIsGenerated
-                                , canvas =
-                                    { main = canvas
-                                    , position =
-                                        Model.centerInWorkarea
-                                            model
-                                            (Canvas.getSize canvas)
-                                    }
+                    { model
+                        | drawingName = drawing.name
+                        , drawingNameIsGenerated = drawing.nameIsGenerated
+                        , canvas =
+                            { main = canvas
+                            , position =
+                                Model.centerInWorkarea
+                                    model
+                                    (Canvas.getSize canvas)
                             }
+                    }
+                        |> giveUserDrawing user drawing
                         |> Model.closeMenu
 
                 _ ->
@@ -197,3 +198,11 @@ update msg model =
         DrawingDeblobed drawing (Err _) ->
             model
                 |> R2.withNoCmd
+
+
+giveUserDrawing : User.Model -> Drawing -> Model -> Model
+giveUserDrawing user drawing =
+    user
+        |> User.setDrawing drawing
+        |> User.LoggedIn
+        |> Model.setUser

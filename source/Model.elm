@@ -1,6 +1,5 @@
 module Model exposing
     ( Model
-    , applyTo
     , canvasPosInCenterOfWindow
     , centerInWorkarea
     , centerOfWorkarea
@@ -26,6 +25,7 @@ module Model exposing
     , initUploadFromFileNotImage
     , mapCanvasModel
     , mapMainCanvas
+    , mapMinimap
     , moveTowardsClickPosition
     , paste
     , positionOnCanvas
@@ -34,7 +34,6 @@ module Model exposing
     , setKeyAsDown
     , setKeyAsUp
     , setMenu
-    , setMinimap
     , setShift
     , setUser
     , setWindowSize
@@ -103,15 +102,6 @@ type alias Model =
     , user : User.State
     , config : Config
     }
-
-
-
--- HELPERS --
-
-
-applyTo : Model -> (Model -> Model) -> Model
-applyTo model f =
-    f model
 
 
 
@@ -550,9 +540,9 @@ toggleMinimapOpen model =
     }
 
 
-setMinimap : Minimap.Model -> Model -> Model
-setMinimap minimapModel model =
-    { model | minimap = minimapModel }
+mapMinimap : (Minimap.Model -> Minimap.Model) -> Model -> Model
+mapMinimap f model =
+    { model | minimap = f model.minimap }
 
 
 setMenu : Menu.Model -> Model -> Model
