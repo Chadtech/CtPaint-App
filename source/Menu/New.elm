@@ -1,6 +1,7 @@
 module Menu.New exposing
     ( Model
     , Msg
+    , css
     , init
     , track
     , update

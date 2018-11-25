@@ -1,8 +1,6 @@
-module Util exposing (..)
+module Util exposing (ClickState(..), alphanumeric, def, delay, encodeOrigin, enterDecoder, filterNan, height, left, listIntToString, maybeCons, onEnter, pct, px, replace, showField, toChar, top, uuid, uuidGenerator, valueIfFocus, viewIf, width, withIndex)
 
 import Array exposing (Array)
-import Canvas exposing (Canvas, Point)
-import Color exposing (Color)
 import Html exposing (Attribute, Html)
 import Html.Attributes exposing (style, value)
 import Html.Events exposing (keyCode, on)
@@ -10,7 +8,6 @@ import Id exposing (Origin(Local, Remote))
 import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode exposing (Value)
 import Mouse exposing (Position)
-import MouseEvents exposing (MouseEvent)
 import Process
 import Random.Pcg as Random
     exposing
@@ -19,7 +16,6 @@ import Random.Pcg as Random
         )
 import Task
 import Time exposing (Time)
-import Window exposing (Size)
 
 
 type ClickState
@@ -76,6 +72,7 @@ filterNan : Float -> Float
 filterNan fl =
     if isNaN fl then
         0
+
     else
         fl
 
@@ -106,6 +103,7 @@ valueIfFocus thisField maybeFocusedField str =
         Just focusedField ->
             if thisField == focusedField then
                 value str
+
             else
                 value ""
 
@@ -117,6 +115,7 @@ viewIf : Bool -> Html msg -> Html msg
 viewIf condition html =
     if condition then
         html
+
     else
         Html.text ""
 
@@ -125,6 +124,7 @@ showField : Bool -> String -> String
 showField condition str =
     if condition then
         str
+
     else
         "********"
 

@@ -49,6 +49,7 @@ import Toolbar
 import Util exposing (def)
 
 
+
 -- STYLES --
 
 
@@ -154,6 +155,7 @@ css =
         , bottom (px 0)
         , left (px <| toFloat Style.toolbarWidth)
         , width (calc (pct 100) minus (px 29))
+        , zIndex (int 1)
         ]
     , Css.class Edge
         [ height (px 3)
@@ -198,6 +200,7 @@ view : Model -> Html Msg
 view model =
     if model.galleryView then
         galleryView model
+
     else
         let
             canvasAreaHeight =
@@ -354,6 +357,7 @@ sampleColorBackgroundStr : Color.Color -> String
 sampleColorBackgroundStr color =
     if (Color.toHsl color).lightness > 0.5 then
         ""
+
     else
         "#ffffff"
 

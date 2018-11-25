@@ -25,17 +25,17 @@ gulp.task("js", function () {
 gulp.task("elm", makeElm);
 
 function elmCss() {
-  // util.log(util.colors.cyan("Elm-Css"), "starting");
-  // cp.spawn("elm-css", ["./source/Stylesheets.elm"], {
-  //   stdio: 'inherit'
-  // }).on('close', function () {
-  //   util.log(util.colors.cyan("Elm-Css"), "closed");
-  // });
+  util.log(util.colors.cyan("Elm-Css"), "starting");
+  cp.spawn("elm-css", ["./source/Stylesheets.elm"], {
+    stdio: 'inherit'
+  }).on('close', function () {
+    util.log(util.colors.cyan("Elm-Css"), "closed");
+  });
 }
 
 function makeElm() {
   util.log(util.colors.cyan("Elm"), "starting");
-  cp.spawn("/Users/Chadtech/.npm-global/bin/elm-make", [
+  cp.spawn("elm-make", [
     paths.mainElm,
     "--warn",
     "--output",
@@ -64,4 +64,3 @@ gulp.task("watch", function () {
 
 gulp.task("build", ["elm", "js"]);
 gulp.task("default", ["watch", "elm", "js", "server"]);
-

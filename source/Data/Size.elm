@@ -1,19 +1,17 @@
-module Data.Size
-    exposing
-        ( Size
-        , center
-        , centerIn
-        , divideBy
-        , encode
-        , fromPositions
-        , subtractFromHeight
-        , subtractFromWidth
-        , toPosition
-        )
+module Data.Size exposing
+    ( Size
+    , center
+    , centerIn
+    , divideBy
+    , encode
+    , fromPositions
+    , subtractFromHeight
+    , subtractFromWidth
+    , toPosition
+    )
 
-import Json.Encode as JE
 import Data.Position as Position exposing (Position)
-import Style
+import Json.Encode as JE
 import Util exposing (def)
 
 

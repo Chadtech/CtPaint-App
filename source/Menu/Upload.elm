@@ -104,7 +104,9 @@ css =
         , marginBottom (px 8)
         ]
     , Css.class Error
-        [ backgroundColor Ct.lowWarning ]
+        [ backgroundColor Ct.lowWarning
+        , maxWidth (px 300)
+        ]
     ]
         |> namespace uploadNamespace
         |> stylesheet

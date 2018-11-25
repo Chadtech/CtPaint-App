@@ -1,22 +1,18 @@
-module Canvas.Helpers
-    exposing
-        ( blank
-        , defaultSize
-        , encode
-        , noop
-        , tiny
-        )
+module Canvas.Helpers exposing
+    ( blank
+    , defaultSize
+    , encode
+    , noop
+    , tiny
+    )
 
 import Canvas exposing (Canvas, DrawOp(..))
 import Canvas.Data.BackgroundColor as BackgroundColor
     exposing
         ( BackgroundColor(Black, White)
         )
-import Color exposing (Color)
-import Data.Position exposing (Position)
 import Data.Size as Size exposing (Size)
 import Json.Encode as JE exposing (Value)
-import Style
 
 
 blank : Canvas
